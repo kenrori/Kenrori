@@ -3,13 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kenrori</title>
+<title>Kho Game & Dịch Thuật của Kenrori</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#eceff3;--card:#fff;--tx:#232a35;--mu:#717b8c;--ac:#13919b;--ac2:#f08c00;--bd:#dfe3ea;--sh:0 4px 16px #1d26331a}
 :root[data-theme=dark]{--bg:#13151a;--card:#1e2128;--tx:#e6e9f0;--mu:#97a0b3;--ac:#2cc3cf;--ac2:#ffb020;--bd:#2d323d;--sh:0 4px 16px #0007}
 @media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#13151a;--card:#1e2128;--tx:#e6e9f0;--mu:#97a0b3;--ac:#2cc3cf;--ac2:#ffb020;--bd:#2d323d;--sh:0 4px 16px #0007}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:15.5px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bg);color:var(--tx);font:15.5px/1.6 "Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;font-kerning:normal;word-break:normal;overflow-wrap:break-word;hyphens:manual;letter-spacing:0}
 a{color:var(--ac);text-decoration:none}button,input,select,textarea{font:inherit;color:var(--tx)}
 .w{max-width:1040px;margin:auto;padding:0 14px}
 .nav{background:var(--card);border-bottom:1px solid var(--bd);box-shadow:0 2px 8px #0000000d;z-index:20}
@@ -55,7 +57,7 @@ dl{display:grid;grid-template-columns:110px 1fr;gap:5px 10px;margin:0 0 10px}dt{
 #rp button{border:1px solid var(--bd);background:var(--bg);border-radius:8px;padding:4px 11px;cursor:pointer}#rp span{color:var(--mu);margin-left:8px}
 .nv{display:flex;gap:8px;justify-content:space-between;margin:12px 0}
 .rd.novel{font-size:var(--fs);line-height:var(--lh);max-width:740px;margin:0 auto;padding:24px;background:var(--card);border:1px solid var(--bd);border-radius:12px}
-.rd.serif{font-family:Georgia,"Noto Serif","Times New Roman",serif}
+.rd.serif{font-family:"Noto Serif",Georgia,"Times New Roman",serif}.rd.novel{text-align:left}
 .rd.sepia{background:#f4ecd8;color:#3b3226;border-color:#e3d6b5}.rd.night{background:#08090d;color:#c9cdd9;border-color:#1c1f2b}
 .rd.manga{max-width:800px;margin:0 auto}.rd.manga img{display:block;width:100%;min-height:200px}
 details{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;margin-bottom:10px}summary{cursor:pointer;font-weight:600}
@@ -70,12 +72,14 @@ textarea{width:100%;min-height:80px;margin-top:8px;border:1px solid var(--bd);bo
 .empty{color:var(--mu);text-align:center;padding:20px 0}footer{text-align:center;color:var(--mu);font-size:.85rem;padding:0 14px 30px}
 @media(max-width:560px){.sp .cover{width:140px}dl{grid-template-columns:90px 1fr}.rd.novel{padding:16px}}
 .chr{display:flex}.chr .ch{flex:1}.ed{display:flex;align-items:center;padding:0 14px;border-bottom:1px solid var(--bd);color:var(--mu)}.ed:hover{color:var(--ac)}
+#adm{background:var(--ac);color:#fff;border-radius:999px;padding:6px 14px;white-space:nowrap;font-size:.9rem;font-weight:600}#adm:hover{opacity:.88}
+.gc{margin-bottom:14px}.gc .tag{font-size:.82rem}.tag:hover{border-color:var(--ac);color:var(--ac)}.tag small{opacity:.7}
 </style>
 </head>
 <body>
-<header class="nav"><div class="w"><a class="logo" href="#home">📚 <b>Kenrori</a><input id="q" type="search" placeholder="Tìm truyện, mẹo..."><button id="th" title="Sáng/Tối">🌓</button><nav id="nv"></nav></div></header>
+<header class="nav"><div class="w"><a class="logo" href="#home">📚 <b>Kho Game</b> & Dịch Thuật</a><input id="q" type="search" placeholder="Tìm truyện, mẹo..."><a id="adm" href="admin.html" title="Đăng nhập quản trị">🔑 Admin</a><button id="th" title="Sáng/Tối">🌓</button><nav id="nv"></nav></div></header>
 <main class="w" id="app"></main>
-<footer>© Kenrori · GitHub Pages</footer>
+<footer>© Kenrori · Dịch phi lợi nhuận · Chạy trên GitHub Pages · <a href="admin.html">Quản trị</a></footer>
 <div id="pg"></div><button id="up" hidden>↑</button>
 <div id="lb"><img alt=""></div>
 <script>
@@ -117,6 +121,7 @@ const DATA = {
 /* ============ CÔNG CỤ TÍCH HỢP ============ */
 const W = x => x.trim() ? x.trim().split(/\s+/).length : 0;
 const TOOLS = [
+ { t: "Sửa lỗi chữ tách dấu tiếng Việt", h: "Chuẩn hóa dấu về dạng chuẩn (NFC), xóa ký tự vô hình và khoảng trắng lạ.", fn: x => x.normalize("NFC").replace(/[\u200B-\u200D\uFEFF]/g, "").replace(/\u00A0/g, " ") },
  { t: "Đếm chữ & ký tự", fn: x => `${W(x)} chữ · ${x.length} ký tự · ${x.split("\n").filter(l => l.trim()).length} đoạn` },
  { t: "Dọn văn bản", h: "Xóa khoảng trắng thừa, gộp dòng trống.", fn: x => x.replace(/\r/g, "").replace(/[ \t]+/g, " ").replace(/ ?\n ?/g, "\n").replace(/\n{3,}/g, "\n\n").trim() },
  { t: "Nối dòng bị ngắt (PDF/OCR)", h: "Nối các dòng bị ngắt giữa câu, giữ dòng trống giữa đoạn.", fn: x => x.replace(/\r/g, "").replace(/([^\n])\n(?!\n)/g, "$1 ") },
@@ -128,7 +133,7 @@ const TOOLS = [
 ];
 /* ============ CODE ============ */
 const $ = (s, r = document) => r.querySelector(s);
-const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const esc = s => String(s ?? "").normalize("NFC").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const fmtD = d => d ? d.split("-").reverse().join("/") : "";
 const fmtN = n => n ? Number(n).toLocaleString("vi-VN") + " chữ" : "";
 const hue = t => [...t].reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
@@ -136,13 +141,16 @@ const ls = { get: k => { try { return localStorage.getItem(k) } catch (e) {} }, 
 const ADM = !!ls.get("cfg2");
 const imgTag = s => s ? `<img src="${esc(s)}" alt="" loading="lazy" onerror="this.remove()">` : "";
 const KEY = { novel: "novels", manga: "manga" }, app = $("#app"), EMPTY = '<p class="empty">Chưa có nội dung.</p>';
-const NAV = [["home", "🏠 Trang chủ"], ["novels", "📖 Novel"], ["manga", "🖼️ Manga"], ["tips", "💡 Mẹo game"], ["tools", "🛠️ Công cụ"], ["videos", "🎵 Video"], ["links", "🔗 Liên kết"]];
-$("#nv").innerHTML = NAV.map(([k, l]) => `<a href="#${k}" data-k="${k}">${l}</a>`).join("") + `<a href="admin.html" style="margin-left:auto">🔑 Admin</a>`;
+const NAV = [["home", "🏠 Trang chủ"], ["novels", "📖 Novel"], ["manga", "🖼️ Manga"], ["the-loai", "🏷️ Thể loại"], ["tips", "💡 Mẹo game"], ["tools", "🛠️ Công cụ"], ["videos", "🎵 Video"], ["links", "🔗 Liên kết"]];
+$("#nv").innerHTML = NAV.map(([k, l]) => `<a href="#${k}" data-k="${k}">${l}</a>`).join("");
+const allG = (k = "all") => { const m = new Map(); for (const x of (k === "all" ? ["novel", "manga"] : [k])) DATA[KEY[x]].forEach(s => (s.genres || []).forEach(g => m.set(g, (m.get(g) || 0) + 1))); return [...m].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "vi")) };
+const gHref = (g, k = "all") => `#the-loai/${k}/${encodeURIComponent(g)}`;
+const gChips = k => { const a = allG(k); return a.length ? `<div class="gc">${a.map(([g, n]) => `<a class="tag" href="${gHref(g, k)}">${esc(g)} <small>${n}</small></a>`).join("")}</div>` : "" };
 const latest = s => s.chapters.map(c => c.date || "").sort().pop();
 const sum = s => s.chapters.reduce((a, c) => a + (c.words || (c.text ? W(c.text) : 0)), 0);
 const byNew = a => [...a].sort((x, y) => (latest(y) || "").localeCompare(latest(x) || ""));
 const sec = (t, more, body) => `<section class="sec"><div class="sh"><h2>${t}</h2>${more ? `<a href="#${more}">Xem tất cả →</a>` : ""}</div>${body}</section>`;
-const card = (k, s) => `<a class="sc" href="#${k}/${s.slug}"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<em>${esc(s.status)}</em><b>${esc(s.title)}</b></div><small>${s.chapters.length} chương · ${fmtD(latest(s))}</small></a>`;
+const card = (k, s) => `<a class="sc" href="#${k}/${s.slug}"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<em>${esc(s.status)}</em><b>${esc(s.title)}</b></div><small>${s.chapters.length} chương · ${fmtD(latest(s))}</small>${(s.genres || []).length ? `<small>${esc(s.genres.slice(0, 2).join(" · "))}</small>` : ""}</a>`;
 const recent = n => { const a = []; for (const k of ["novel", "manga"]) DATA[KEY[k]].forEach(s => s.chapters.forEach((c, i) => a.push({ k, s, c, i }))); return a.sort((x, y) => (y.c.date || "").localeCompare(x.c.date || "") || y.i - x.i).slice(0, n) };
 const row = r => `<a class="up" href="#${r.k}/${r.s.slug}/${r.i}"><div class="th" style="--h:${hue(r.s.title)}">${imgTag(r.s.cover)}</div><div class="ut"><b>${esc(r.s.title)}</b><span>${esc(r.c.t)}</span></div><small>${fmtD(r.c.date)}</small></a>`;
 const gridOf = (k, a) => a.length ? `<div class="series">${byNew(a).map(s => card(k, s)).join("")}</div>` : EMPTY;
@@ -156,12 +164,17 @@ const toolUI = (t, i) => `<details class="tb"><summary>${esc(t.t)}</summary>${t.
 function runTool(i, b) { const d = b.closest(".tb"), o = $(".o", d); try { o.value = TOOLS[i].fn($(".i", d).value, $(".x", d)?.value || "") } catch (e) { o.value = "Lỗi: " + e.message } }
 function copyOut(b) { const o = $(".o", b.closest(".tb")); o.select(); navigator.clipboard?.writeText(o.value) }
 const P = {
-  home: () => sec("📢 Mới cập nhật", null, `<div class="ups">${recent(10).map(row).join("") || EMPTY}</div>`) + sec("📖 Novel", "novels", gridOf("novel", DATA.novels.slice(0, 20)).replace(/(<a class="sc"[\s\S]*?<\/a>){6}[\s\S]*/, m => m)) + sec("🖼️ Manga", "manga", gridOf("manga", DATA.manga)) + sec("💡 Mẹo game mới", "tips", DATA.tips.slice(0, 3).map(R.tips).join("") || EMPTY),
-  novels: () => sec("📖 Tất cả Novel", null, gridOf("novel", DATA.novels)),
-  manga: () => sec("🖼️ Tất cả Manga", null, gridOf("manga", DATA.manga)),
+  home: () => sec("📢 Mới cập nhật", null, `<div class="ups">${recent(10).map(row).join("") || EMPTY}</div>`) + sec("📖 Novel", "novels", gridOf("novel", DATA.novels.slice(0, 20)).replace(/(<a class="sc"[\s\S]*?<\/a>){6}[\s\S]*/, m => m)) + sec("🖼️ Manga", "manga", gridOf("manga", DATA.manga)) + (allG().length ? sec("🏷️ Thể loại", "the-loai", gChips("all")) : "") + sec("💡 Mẹo game mới", "tips", DATA.tips.slice(0, 3).map(R.tips).join("") || EMPTY),
+  novels: () => sec("📖 Tất cả Novel", null, gChips("novel") + gridOf("novel", DATA.novels)),
+  manga: () => sec("🖼️ Tất cả Manga", null, gChips("manga") + gridOf("manga", DATA.manga)),
   tips: () => sec("💡 Mẹo game", null, DATA.tips.map(R.tips).join("") || EMPTY),
   links: () => sec("🔗 Liên kết hữu ích", null, `<div class="grid">${DATA.links.map(R.links).join("") || EMPTY}</div>`),
   videos: () => sec("🎵 Video nhạc Vietsub", null, `<div class="grid">${DATA.videos.map(R.videos).join("") || EMPTY}</div>`),
+  genre: (k, g) => {
+    if (!g) return sec("🏷️ Tất cả thể loại", null, gChips("all") || '<p class="empty">Chưa có thể loại nào. Hãy thêm thể loại cho truyện trong trang quản trị.</p>');
+    const items = (k === "novel" || k === "manga" ? [k] : ["novel", "manga"]).flatMap(x => DATA[KEY[x]].filter(s => (s.genres || []).includes(g)).map(s => card(x, s)));
+    return sec(`🏷️ Thể loại: ${esc(g)}`, "the-loai", items.length ? `<div class="series">${items.join("")}</div>` : EMPTY);
+  },
   tools: () => sec("🛠️ Công cụ", null, `<p class="sum" style="color:var(--mu);margin-bottom:12px">Dán nội dung, bấm Chạy rồi sao chép kết quả.</p>` + DATA.guides.map(R.guides).join("") + TOOLS.map(toolUI).join(""))
 };
 const rdSet = (k, s) => { try { return JSON.parse(ls.get("r:" + k + ":" + s.slug) || "[]") } catch (e) { return [] } };
@@ -178,7 +191,7 @@ function detail(kind, s) {
   const last = ls.get(kind + ":" + s.slug), rs = rdSet(kind, s), n = s.chapters.length; let desc = true;
   const info = [["Tác giả", s.author], ["Tình trạng", s.status], ["Loại", kind === "novel" ? "Light Novel" : "Manga"], ["Số chương", n], kind === "novel" ? ["Tổng số chữ", fmtN(sum(s))] : null, ["Cập nhật", fmtD(latest(s))]].filter(Boolean);
   app.innerHTML = `<div class="crumb"><a href="#home">Trang chủ</a> › <a href="#${KEY[kind]}">${kind === "novel" ? "Novel" : "Manga"}</a> › ${esc(s.title)}</div>
-<div class="sp"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></div><div class="si"><h1>${esc(s.title)}</h1><dl>${info.map(([a, b]) => `<dt>${a}</dt><dd>${esc(b || "—")}</dd>`).join("")}</dl>${(s.genres || []).map(g => `<span class="tag">${esc(g)}</span>`).join("")}<div class="acts">${n ? `<a class="btn" href="#${kind}/${s.slug}/0">▶ Đọc từ đầu</a>${last != null ? `<a class="btn alt" href="#${kind}/${s.slug}/${last}">⏵ Đọc tiếp</a>` : ""}<a class="btn alt" href="#${kind}/${s.slug}/${n - 1}">Chương mới nhất</a>` : ""}${ADM ? `<a class="btn alt" href="admin.html#chap/${kind}/${s.slug}">➕ Thêm chương</a><a class="btn alt" href="admin.html#series/${kind}/${s.slug}">✎ Sửa bộ</a>` : ""}</div></div></div>
+<div class="sp"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></div><div class="si"><h1>${esc(s.title)}</h1><dl>${info.map(([a, b]) => `<dt>${a}</dt><dd>${esc(b || "—")}</dd>`).join("")}</dl>${(s.genres || []).map(g => `<a class="tag" href="${gHref(g)}">${esc(g)}</a>`).join("")}<div class="acts">${n ? `<a class="btn" href="#${kind}/${s.slug}/0">▶ Đọc từ đầu</a>${last != null ? `<a class="btn alt" href="#${kind}/${s.slug}/${last}">⏵ Đọc tiếp</a>` : ""}<a class="btn alt" href="#${kind}/${s.slug}/${n - 1}">Chương mới nhất</a>` : ""}${ADM ? `<a class="btn alt" href="admin.html#chap/${kind}/${s.slug}">➕ Thêm chương</a><a class="btn alt" href="admin.html#series/${kind}/${s.slug}">✎ Sửa bộ</a>` : ""}</div></div></div>
 ${sec("📝 Tóm tắt", null, `<p class="sum">${esc(s.desc) || "Chưa có tóm tắt."}</p>`)}
 <section class="sec"><div class="sh"><h2>📑 Danh sách chương</h2></div><div class="bar2"><input id="cq" type="search" placeholder="Tìm chương (tên hoặc số)..."><button id="cs">↕ Mới nhất trước</button></div><div id="cl"></div></section>`;
   const draw = () => {
@@ -208,6 +221,7 @@ async function read(kind, s, i) {
 function route() {
   const [a, b, c] = decodeURIComponent(location.hash.slice(1)).split("/");
   document.querySelectorAll("#nv a").forEach(x => x.classList.toggle("on", x.dataset.k === (a === "novel" ? "novels" : a || "home")));
+  if (a === "the-loai") { app.innerHTML = P.genre(b, c); scrollTo(0, 0); return }
   const s = b && ({ novel: DATA.novels, manga: DATA.manga }[a] || []).find(x => x.slug === b);
   if (s) { c !== undefined ? read(a, s, +c) : detail(a, s); scrollTo(0, 0); return }
   app.innerHTML = (P[a] || P.home)(); scrollTo(0, 0);

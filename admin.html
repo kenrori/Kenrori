@@ -26,6 +26,7 @@ button:disabled{opacity:.5}
 #log{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--bd);padding:10px 16px;font-size:.92rem;z-index:9}
 .row{padding:8px 0;border-bottom:1px solid var(--bd)}.row button,.sub button{margin:0 0 0 8px;padding:2px 10px;background:#d33}.sub{margin-left:20px;color:var(--mu);font-size:.9rem;padding:2px 0}
 .row button.ok,.sub button.ok{background:var(--ac)}
+button.chip{background:var(--bg);color:var(--tx);border:1px solid var(--bd);padding:3px 11px;margin:0 6px 6px 0;border-radius:999px;font-size:.85rem}button.chip.on{background:var(--ac);color:#fff;border-color:var(--ac)}
 </style>
 </head>
 <body>
@@ -52,7 +53,7 @@ button:disabled{opacity:.5}
 <label>Tên truyện</label><input id="s_title">
 <label>Slug (tên thư mục, để trống sẽ tự tạo)</label><input id="s_slug">
 <label>Tác giả</label><input id="s_author">
-<label>Thể loại (cách nhau bằng dấu phẩy)</label><input id="s_genres">
+<label>Thể loại (bấm để chọn, hoặc gõ thêm, cách nhau bằng dấu phẩy)</label><div id="g_chips"></div><input id="s_genres">
 <label>Trạng thái</label><select id="s_status"><option>Đang dịch</option><option>Hoàn thành</option><option>Tạm ngưng</option></select>
 <label>Mô tả</label><textarea id="s_desc"></textarea>
 <label>Ảnh bìa (tự thu nhỏ)</label><input id="s_cover" type="file" accept="image/*">
@@ -91,7 +92,7 @@ const $ = s => document.querySelector(s), esc = s => String(s ?? "").replace(/[&
 const ls = { get: k => { try { return localStorage.getItem(k) } catch (e) {} }, set: (k, v) => { try { localStorage.setItem(k, v) } catch (e) {} }, del: k => { try { localStorage.removeItem(k) } catch (e) {} } };
 const KEYS = { novel: "novels", manga: "manga" }, log = m => $("#log").textContent = m;
 const slugify = x => x.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-const b64t = t => { const b = new TextEncoder().encode(t); let s = ""; for (let i = 0; i < b.length; i += 8192) s += String.fromCharCode(...b.subarray(i, i + 8192)); return btoa(s) };
+const b64t = t => { const b = new TextEncoder().encode(String(t).normalize("NFC")); let s = ""; for (let i = 0; i < b.length; i += 8192) s += String.fromCharCode(...b.subarray(i, i + 8192)); return btoa(s) };
 const t64 = b => new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\n/g, "")), c => c.charCodeAt(0)));
 const fileB64 = f => new Promise(r => { const x = new FileReader(); x.onload = () => r(x.result.split(",")[1]); x.readAsDataURL(f) });
 const resize = (f, w = 600) => new Promise(r => { const im = new Image(); im.onload = () => { const k = Math.min(1, w / im.width), c = document.createElement("canvas"); c.width = im.width * k; c.height = im.height * k; c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); r(c.toDataURL("image/jpeg", .85).split(",")[1]) }; im.src = URL.createObjectURL(f) });
@@ -157,7 +158,7 @@ $("#tabs").onclick = e => { const b = e.target.closest("button"); if (b) tab(b.d
 
 function fillSel() {
   const o = []; for (const k of ["novel", "manga"]) data[KEYS[k]].forEach((s, i) => o.push(`<option value="${k}|${i}">${k === "novel" ? "📖" : "🖼️"} ${esc(s.title)}</option>`));
-  $("#c_ser").innerHTML = o.join("") || "<option value=''>(chưa có bộ nào)</option>"; chapUI();
+  $("#c_ser").innerHTML = o.join("") || "<option value=''>(chưa có bộ nào)</option>"; chapUI(); gChips();
 }
 function chapUI() { const k = $("#c_ser").value.split("|")[0]; $("#c_novel").hidden = k !== "novel"; $("#c_manga").hidden = k !== "manga" }
 $("#c_ser").onchange = chapUI;
@@ -225,7 +226,7 @@ $("#manage").addEventListener("click", e => {
   if (bs) {
     const [k, i] = bs.dataset.s.split("|"), s = data[k][+i];
     $("#s_kind").value = k === "novels" ? "novel" : "manga"; $("#s_title").value = s.title; $("#s_slug").value = s.slug; $("#s_author").value = s.author || "";
-    $("#s_status").value = s.status || "Đang dịch"; $("#s_desc").value = s.desc || ""; $("#s_genres").value = (s.genres || []).join(", "); $("#s_cover").value = ""; tab("series"); log("Đang sửa bộ: " + s.title + " (chọn ảnh bìa mới nếu muốn đổi)");
+    $("#s_status").value = s.status || "Đang dịch"; $("#s_desc").value = s.desc || ""; $("#s_genres").value = (s.genres || []).join(", "); gChips(); $("#s_cover").value = ""; tab("series"); log("Đang sửa bộ: " + s.title + " (chọn ảnh bìa mới nếu muốn đổi)");
   } else if (bm) {
     const [k, i, j, d] = bm.dataset.m.split("|"), a = data[k][+i].chapters, x = +j, y = x + +d; if (y < 0 || y >= a.length) return;
     [a[x], a[y]] = [a[y], a[x]]; run(async () => { await save("Đổi thứ tự chương"); done("✅ Đã đổi thứ tự chương.") });
@@ -257,6 +258,15 @@ function deepLink() {
   else if (a === "series") $(`#manage button[data-s="${key}|${i}"]`)?.click();
   else if (a === "editchap") $(`#manage button[data-e="${key}|${i}|${j}"]`)?.click();
 }
+
+const GENRES = ["Hành động", "Phiêu lưu", "Lãng mạn", "Học đường", "Fantasy", "Isekai", "Hài hước", "Kinh dị", "Slice of Life", "Harem", "Drama", "Sci-fi", "Võ thuật", "Tu tiên", "Game", "Trinh thám"];
+const curG = () => $("#s_genres").value.split(",").map(x => x.trim()).filter(Boolean);
+function gChips() {
+  const ex = new Set(GENRES); ["novels", "manga"].forEach(k => data[k].forEach(s => (s.genres || []).forEach(g => ex.add(g))));
+  const cur = curG(); $("#g_chips").innerHTML = [...ex].map(g => `<button type="button" class="chip${cur.includes(g) ? " on" : ""}" data-g="${esc(g)}">${esc(g)}</button>`).join("");
+}
+$("#g_chips").onclick = e => { const b = e.target.closest("button[data-g]"); if (!b) return; const g = b.dataset.g, c = curG(); $("#s_genres").value = (c.includes(g) ? c.filter(x => x !== g) : [...c, g]).join(", "); gChips() };
+$("#s_genres").addEventListener("input", () => gChips());
 </script>
 </body>
 </html>
