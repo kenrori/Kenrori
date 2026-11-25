@@ -74,6 +74,10 @@ textarea{width:100%;min-height:80px;margin-top:8px;border:1px solid var(--bd);bo
 .chr{display:flex}.chr .ch{flex:1}.ed{display:flex;align-items:center;padding:0 14px;border-bottom:1px solid var(--bd);color:var(--mu)}.ed:hover{color:var(--ac)}
 #adm{background:var(--ac);color:#fff;border-radius:999px;padding:6px 14px;white-space:nowrap;font-size:.9rem;font-weight:600}#adm:hover{opacity:.88}
 .gc{margin-bottom:14px}.gc .tag{font-size:.82rem}.tag:hover{border-color:var(--ac);color:var(--ac)}.tag small{opacity:.7}
+.cover img~b{display:none}
+.cover b{font-size:.9rem;font-weight:600;text-wrap:balance}.cover em{font-size:.66rem;padding:2px 7px}
+.ct{margin-top:8px;font-weight:600;font-size:.86rem;line-height:1.3;color:var(--tx);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-wrap:balance;overflow-wrap:break-word}
+.sc:hover .ct{color:var(--ac)}.sc small{margin-top:3px}h1,h2{text-wrap:balance}
 </style>
 </head>
 <body>
@@ -150,7 +154,7 @@ const latest = s => s.chapters.map(c => c.date || "").sort().pop();
 const sum = s => s.chapters.reduce((a, c) => a + (c.words || (c.text ? W(c.text) : 0)), 0);
 const byNew = a => [...a].sort((x, y) => (latest(y) || "").localeCompare(latest(x) || ""));
 const sec = (t, more, body) => `<section class="sec"><div class="sh"><h2>${t}</h2>${more ? `<a href="#${more}">Xem tất cả →</a>` : ""}</div>${body}</section>`;
-const card = (k, s) => `<a class="sc" href="#${k}/${s.slug}"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<em>${esc(s.status)}</em><b>${esc(s.title)}</b></div><small>${s.chapters.length} chương · ${fmtD(latest(s))}</small>${(s.genres || []).length ? `<small>${esc(s.genres.slice(0, 2).join(" · "))}</small>` : ""}</a>`;
+const card = (k, s) => `<a class="sc" href="#${k}/${s.slug}"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<em>${esc(s.status)}</em><b>${esc(s.title)}</b></div><div class="ct" title="${esc(s.title)}">${esc(s.title)}</div><small>${s.chapters.length} chương · ${fmtD(latest(s))}</small>${(s.genres || []).length ? `<small>${esc(s.genres.slice(0, 2).join(" · "))}</small>` : ""}</a>`;
 const recent = n => { const a = []; for (const k of ["novel", "manga"]) DATA[KEY[k]].forEach(s => s.chapters.forEach((c, i) => a.push({ k, s, c, i }))); return a.sort((x, y) => (y.c.date || "").localeCompare(x.c.date || "") || y.i - x.i).slice(0, n) };
 const row = r => `<a class="up" href="#${r.k}/${r.s.slug}/${r.i}"><div class="th" style="--h:${hue(r.s.title)}">${imgTag(r.s.cover)}</div><div class="ut"><b>${esc(r.s.title)}</b><span>${esc(r.c.t)}</span></div><small>${fmtD(r.c.date)}</small></a>`;
 const gridOf = (k, a) => a.length ? `<div class="series">${byNew(a).map(s => card(k, s)).join("")}</div>` : EMPTY;
