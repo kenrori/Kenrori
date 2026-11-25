@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Quản trị · Kho Game</title>
+<title>Quản trị · Kenrori</title>
 <style>
 :root{--bg:#f4f5fb;--card:#fff;--tx:#1b2033;--mu:#6a7288;--ac:#6558f5;--ac2:#b05cf5;--bd:#e4e7f1}
 @media(prefers-color-scheme:dark){:root{--bg:#0f1117;--card:#1a1d29;--tx:#e8eaf2;--mu:#9aa2b8;--ac:#8b84ff;--ac2:#c47dff;--bd:#2b3042}}
@@ -77,6 +77,18 @@ button.chip{background:var(--bg);color:var(--tx);border:1px solid var(--bd);padd
 <form class="panel" id="p-vid"><h3>Thêm video YouTube</h3>
 <label>Tên bài</label><input id="v_title"><label>Link hoặc ID YouTube</label><input id="v_yt"><label>Mô tả</label><input id="v_desc"><button>Thêm video</button></form>
 
+<form class="panel" id="p-proj"><h3>Thêm / sửa dự án</h3>
+<label>Tên dự án</label><input id="j_title">
+<label>Loại</label><input id="j_type" list="j_types" placeholder="Userscript, Mod, Công cụ..."><datalist id="j_types"><option>Userscript</option><option>Mod</option><option>Công cụ</option><option>Bản dịch game</option></datalist>
+<label>Trạng thái</label><select id="j_status"><option>Đang phát triển</option><option>Ổn định</option><option>Tạm dừng</option></select>
+<label>Phiên bản</label><input id="j_ver" placeholder="1.0.0">
+<label>Ngày cập nhật</label><input id="j_date" type="date">
+<label>Mô tả</label><textarea id="j_desc"></textarea>
+<label>Nút liên kết (mỗi dòng: Tên nút | https://link)</label><textarea id="j_links" placeholder="Cài đặt | https://greasyfork.org/..."></textarea>
+<label>Hướng dẫn sử dụng (không bắt buộc)</label><textarea id="j_how"></textarea>
+<label>Ảnh minh họa (không bắt buộc)</label><input id="j_img" type="file" accept="image/*">
+<button>Lưu dự án</button></form>
+
 <form class="panel" id="p-edit"><h3>Sửa chương</h3><p class="mu" id="e_info"></p>
 <label>Tên chương</label><input id="e_title"><label>Ngày cập nhật</label><input id="e_date" type="date">
 <div id="e_novel"><label>Nội dung</label><textarea id="e_text" style="min-height:280px"></textarea></div>
@@ -128,9 +140,9 @@ async function connect(c, after) {
     if (!rp.ok) throw new Error("Không vào được repo (" + rp.status + "). Kiểm tra tên người dùng, tên repo và token.");
     const r = await api("data.json", { q: "?ref=" + cfg.b });
     if (r.status === 404) data = {}; else if (r.ok) data = JSON.parse(t64((await r.json()).content)); else throw new Error("Không đọc được data.json (" + r.status + ")");
-    for (const k of ["tips", "links", "novels", "manga", "videos"]) data[k] ??= [];
+    for (const k of ["tips", "links", "novels", "manga", "videos", "projects"]) data[k] ??= [];
     if (after) await after();
-    $("#login").hidden = $("#setup").hidden = true; $("#bye").hidden = false; $("#app").hidden = false; $("#c_date").value = new Date().toISOString().slice(0, 10);
+    $("#login").hidden = $("#setup").hidden = true; $("#bye").hidden = false; $("#app").hidden = false; $("#c_date").value = $("#j_date").value = new Date().toISOString().slice(0, 10);
     fillSel(); manage(); log("✅ Đã đăng nhập. Chọn mục cần thêm."); deepLink();
   });
 }
@@ -151,7 +163,7 @@ $("#g_go").onclick = async () => {
 };
 $("#l_out").onclick = () => location.reload();
 
-const TABS = [["series", "📚 Bộ truyện"], ["chap", "➕ Chương"], ["tip", "💡 Mẹo"], ["link", "🔗 Liên kết"], ["vid", "🎵 Video"], ["man", "🗂️ Quản lý"]];
+const TABS = [["series", "📚 Bộ truyện"], ["chap", "➕ Chương"], ["tip", "💡 Mẹo"], ["link", "🔗 Liên kết"], ["vid", "🎵 Video"], ["proj", "🧩 Dự án"], ["man", "🗂️ Quản lý"]];
 $("#tabs").innerHTML = TABS.map(([k, l]) => `<button type="button" data-k="${k}">${l}</button>`).join("");
 const tab = k => { [...TABS.map(x => x[0]), "edit"].forEach(t => $("#p-" + t).classList.toggle("on", t === k)); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)) };
 $("#tabs").onclick = e => { const b = e.target.closest("button"); if (b) tab(b.dataset.k) }; tab("series");
@@ -210,7 +222,7 @@ $("#p-vid").onsubmit = e => { e.preventDefault(); run(async () => {
 function manage() {
   const out = [];
   for (const k of ["novels", "manga"]) data[k].forEach((s, i) => out.push(`<div class="row"><b>${k === "novels" ? "📖" : "🖼️"} ${esc(s.title)}</b><button class="ok" data-s="${k}|${i}">✎ Sửa bộ</button><button data-d="${k}|${i}">✕ Xóa bộ</button>${s.chapters.map((c, j) => `<div class="sub">${esc(c.t)} <span class="mu">${c.date ? "· " + c.date : ""}</span><button class="ok" data-e="${k}|${i}|${j}">✎ Sửa</button><button class="ok" data-m="${k}|${i}|${j}|-1">↑</button><button class="ok" data-m="${k}|${i}|${j}|1">↓</button><button data-d="${k}|${i}|${j}">✕</button></div>`).join("")}</div>`));
-  for (const [k, l] of [["tips", "💡"], ["links", "🔗"], ["videos", "🎵"]]) data[k].forEach((d, i) => out.push(`<div class="row">${l} ${esc(d.title)}<button data-d="${k}|${i}">✕</button></div>`));
+  for (const [k, l] of [["tips", "💡"], ["links", "🔗"], ["videos", "🎵"], ["projects", "🧩"]]) data[k].forEach((d, i) => out.push(`<div class="row">${l} ${esc(d.title)}${k === "projects" ? `<button class="ok" data-p="${i}">✎ Sửa</button>` : ""}<button data-d="${k}|${i}">✕</button></div>`));
   $("#manage").innerHTML = out.join("") || "<p class='mu'>Chưa có gì.</p>";
 }
 $("#manage").onclick = e => { const b = e.target.closest("button[data-d]"); if (!b) return; const [k, i, j] = b.dataset.d.split("|"); if (!confirm("Gỡ mục này khỏi web?")) return;
@@ -267,6 +279,23 @@ function gChips() {
 }
 $("#g_chips").onclick = e => { const b = e.target.closest("button[data-g]"); if (!b) return; const g = b.dataset.g, c = curG(); $("#s_genres").value = (c.includes(g) ? c.filter(x => x !== g) : [...c, g]).join(", "); gChips() };
 $("#s_genres").addEventListener("input", () => gChips());
+
+let pe = null;
+$("#p-proj").onsubmit = e => { e.preventDefault(); run(async () => {
+  const title = $("#j_title").value.trim(); if (!title) throw new Error("Hãy nhập tên dự án");
+  const links = $("#j_links").value.split("\n").map(l => l.split("|").map(x => x.trim())).filter(([a, b]) => a && /^https?:\/\//.test(b || "")).map(([label, url]) => ({ label, url }));
+  const d = { title, type: $("#j_type").value.trim(), status: $("#j_status").value, version: $("#j_ver").value.trim(), date: $("#j_date").value, desc: $("#j_desc").value.trim(), links, howto: $("#j_how").value.trim(), img: pe != null ? (data.projects[pe].img || "") : "" };
+  const f = $("#j_img").files[0];
+  if (f) { const p = `images/projects/${slugify(title)}-${rid()}.${(f.name.split(".").pop() || "jpg").toLowerCase()}`; log("Đang tải ảnh..."); await put(p, await fileB64(f), "Ảnh dự án: " + title); d.img = p }
+  if (pe != null) data.projects[pe] = d; else data.projects.unshift(d);
+  await save("Dự án: " + title); pe = null; e.target.reset(); $("#j_date").value = new Date().toISOString().slice(0, 10); done("✅ Đã lưu dự án. Web cập nhật sau 1–2 phút.");
+}) };
+$("#manage").addEventListener("click", e => {
+  const b = e.target.closest("button[data-p]"); if (!b) return; pe = +b.dataset.p; const d = data.projects[pe];
+  $("#j_title").value = d.title; $("#j_type").value = d.type || ""; $("#j_status").value = d.status || "Đang phát triển"; $("#j_ver").value = d.version || ""; $("#j_date").value = d.date || "";
+  $("#j_desc").value = d.desc || ""; $("#j_links").value = (d.links || []).map(l => l.label + " | " + l.url).join("\n"); $("#j_how").value = d.howto || ""; $("#j_img").value = "";
+  tab("proj"); log("Đang sửa dự án: " + d.title + " (chọn ảnh mới nếu muốn đổi)");
+});
 </script>
 </body>
 </html>
