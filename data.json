@@ -21,7 +21,14 @@
  "novels": [
   {
    "slug": "yuushashoukan",
-   "chapters": [],
+   "chapters": [
+    {
+     "t": "Chương 1: Dị Giới thật yên bình",
+     "date": "2026-11-25",
+     "file": "novels/yuushashoukan/c1_mwvvrsrh.txt",
+     "words": 464
+    }
+   ],
    "title": "Yuusha Shoukan ni Makikomareta kedo, Isekai wa Heiwa deshita",
    "author": "Toudai",
    "status": "Đang dịch",
@@ -76,5 +83,6 @@
    "youtube": "OHbsnZ9UKBk",
    "desc": ""
   }
- ]
+ ],
+ "projects": []
 }
