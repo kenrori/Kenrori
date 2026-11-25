@@ -20,32 +20,6 @@
  ],
  "novels": [
   {
-   "slug": "vi-du-novel",
-   "title": "Tên Light Novel (ví dụ)",
-   "author": "Tác giả",
-   "status": "Đang dịch",
-   "cover": "images/bia-1.jpg",
-   "desc": "Giới thiệu ngắn về bộ truyện.",
-   "chapters": [
-    {
-     "t": "Chương 1: Khởi đầu",
-     "date": "2026-11-01",
-     "text": "Đây là đoạn mở đầu.\nĐoạn thứ hai của chương 1."
-    },
-    {
-     "t": "Chương 2: Gặp gỡ",
-     "date": "2026-11-05",
-     "text": "Nội dung chương 2.\nThêm một đoạn nữa."
-    },
-    {
-     "t": "Chương 3: Hành trình",
-     "date": "2026-11-12",
-     "file": "novels/vi-du-novel/c3.txt",
-     "words": 3200
-    }
-   ]
-  },
-  {
    "slug": "yuushashoukan",
    "chapters": [],
    "title": "Yuusha Shoukan ni Makikomareta kedo, Isekai wa Heiwa deshita",
