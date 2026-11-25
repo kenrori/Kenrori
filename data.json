@@ -83,11 +83,6 @@
  ],
  "videos": [
   {
-   "title": "Bài hát Vietsub (YouTube)",
-   "youtube": "dQw4w9WgXcQ",
-   "desc": "Thay ID bằng video của bạn."
-  },
-  {
    "title": "Bài hát Vietsub (file trong repo)",
    "mp4": "videos/bai-hat.mp4",
    "vtt": "videos/bai-hat.vi.vtt",
