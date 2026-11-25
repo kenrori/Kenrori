@@ -5,69 +5,79 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kho Game & Dịch Thuật của Kenrori</title>
 <style>
-:root{--bg:#f4f5fb;--card:#fff;--tx:#1b2033;--mu:#6a7288;--ac:#6558f5;--ac2:#b05cf5;--bd:#e4e7f1;--sh:0 8px 26px #1b20331c;--fs:18px}
-:root[data-theme=dark]{--bg:#0f1117;--card:#1a1d29;--tx:#e8eaf2;--mu:#9aa2b8;--ac:#8b84ff;--ac2:#c47dff;--bd:#2b3042;--sh:0 8px 26px #0008}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0f1117;--card:#1a1d29;--tx:#e8eaf2;--mu:#9aa2b8;--ac:#8b84ff;--ac2:#c47dff;--bd:#2b3042;--sh:0 8px 26px #0008}}
+:root{--bg:#eceff3;--card:#fff;--tx:#232a35;--mu:#717b8c;--ac:#13919b;--ac2:#f08c00;--bd:#dfe3ea;--sh:0 4px 16px #1d26331a}
+:root[data-theme=dark]{--bg:#13151a;--card:#1e2128;--tx:#e6e9f0;--mu:#97a0b3;--ac:#2cc3cf;--ac2:#ffb020;--bd:#2d323d;--sh:0 4px 16px #0007}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#13151a;--card:#1e2128;--tx:#e6e9f0;--mu:#97a0b3;--ac:#2cc3cf;--ac2:#ffb020;--bd:#2d323d;--sh:0 4px 16px #0007}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
-a{color:var(--ac)}button,input,select,textarea{font:inherit;color:var(--tx)}
-.hero{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;padding:26px 16px 30px;border-radius:0 0 28px 28px;box-shadow:var(--sh)}
-.hero .in{max-width:980px;margin:auto}.hero .top{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.hero h1{margin:0;font-size:1.65rem;letter-spacing:-.3px}.hero p{margin:6px 0 0;opacity:.92}
-#th{border:0;background:#ffffff33;color:#fff;border-radius:50%;width:40px;height:40px;font-size:1.15rem;cursor:pointer;flex:none}
-.sb{margin-top:16px}.sb input{width:100%;border:0;border-radius:14px;padding:13px 18px;font-size:1rem;background:#fff;color:#1b2033;box-shadow:0 4px 16px #0003;outline:none}
-.hero.slim{padding:12px 16px;border-radius:0 0 18px 18px}.hero.slim p,.hero.slim .sb{display:none}.hero.slim h1{font-size:1.1rem}
-.bar{display:flex;gap:8px;max-width:980px;margin:auto;padding:12px 16px;position:sticky;top:0;background:var(--bg);z-index:5;overflow-x:auto;scrollbar-width:none}
-.bar button{flex:none;border:1px solid var(--bd);background:var(--card);border-radius:999px;padding:9px 16px;cursor:pointer;white-space:nowrap;transition:.15s}
-.bar button:hover{border-color:var(--ac)}
-.bar button.on{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent;box-shadow:0 4px 12px #6558f555}
-main,#view{max-width:980px;margin:auto;padding:4px 16px 70px}
-.lead{color:var(--mu);margin:4px 0 14px}
-section{display:none}section.on{display:block;animation:in .25s}@keyframes in{from{opacity:0;transform:translateY(6px)}}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.series{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:20px}
-.card,details{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;box-shadow:0 1px 3px #1b20330d;transition:.2s}
-.card:hover,details:hover{box-shadow:var(--sh)}
-details{margin-bottom:12px}summary{cursor:pointer;font-weight:600;padding:2px 0}
-.card h3{margin:0 0 6px;font-size:1.08rem}.card p,details p{margin:6px 0;color:var(--mu);font-size:.94rem}
-.tag{display:inline-block;font-size:.75rem;background:var(--bg);border:1px solid var(--bd);border-radius:20px;padding:0 9px;margin-right:4px;color:var(--mu)}
-details img{max-width:100%;border-radius:12px;margin-top:10px;cursor:zoom-in}
-iframe,video{width:100%;border:1px solid var(--bd);border-radius:12px;background:#000;aspect-ratio:16/9;margin-top:8px}iframe.tool{aspect-ratio:auto;height:480px}
-textarea{width:100%;min-height:80px;margin-top:8px;border:1px solid var(--bd);border-radius:12px;padding:10px;background:var(--bg)}
-.tb button,.btn{border:0;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-radius:10px;padding:9px 16px;cursor:pointer;text-decoration:none;display:inline-block;margin-top:8px}
-[disabled]{opacity:.35;pointer-events:none}
-.sc{text-decoration:none;color:var(--tx)}.sc small{color:var(--mu);display:block;margin-top:6px;font-size:.82rem}
-.cover{position:relative;aspect-ratio:2/3;border-radius:14px;overflow:hidden;background:linear-gradient(160deg,hsl(var(--h) 60% 48%),hsl(calc(var(--h) + 50) 60% 26%));box-shadow:0 6px 18px #0004;transition:.25s}
-.sc:hover .cover{transform:translateY(-5px);box-shadow:0 12px 28px #0005}
-.cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:.4s}.sc:hover .cover img{transform:scale(1.05)}
-.cover b{position:absolute;left:0;right:0;bottom:0;padding:36px 11px 11px;color:#fff;font-size:1.05rem;line-height:1.25;text-shadow:0 1px 4px #000a;background:linear-gradient(transparent,#000e)}
-.cover em{position:absolute;top:9px;left:9px;background:#000a;color:#fff;font-style:normal;font-size:.72rem;padding:3px 9px;border-radius:20px;backdrop-filter:blur(4px)}
-.hd{display:flex;gap:20px;margin:14px 0;flex-wrap:wrap}.hd .cover{width:180px}.hd>div:last-child{flex:1;min-width:220px}.hd h2{font-size:1.5rem}
-.bar2{display:flex;gap:8px;margin:14px 0}.bar2 input{flex:1;border:1px solid var(--bd);background:var(--card);border-radius:12px;padding:10px 14px}
-.bar2 button,select{border:1px solid var(--bd);background:var(--card);border-radius:12px;padding:9px 14px;cursor:pointer}
-.ch{display:flex;justify-content:space-between;gap:10px;padding:12px 14px;border:1px solid var(--bd);border-radius:12px;margin-bottom:8px;background:var(--card);text-decoration:none;color:var(--tx);transition:.15s}
-.ch:hover{border-color:var(--ac);transform:translateX(3px)}.ch.done{opacity:.55}.ch small{color:var(--mu);white-space:nowrap}
-.nv{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:12px 0}.nv select{max-width:42%}.nv .btn{margin:0}
-#rd.novel{font-size:var(--fs);line-height:1.9;max-width:720px;margin:16px auto;padding:22px 22px;border-radius:16px;background:var(--card);border:1px solid var(--bd)}
-#rd.novel.sepia{background:#f4ecd8;color:#3b3226;border-color:#e3d6b5}#rd.novel.night{background:#08090d;color:#c9cdd9;border-color:#1c1f2b}
-#rd.manga{max-width:800px;margin:12px auto}#rd.manga img{display:block;width:100%;min-height:200px}
-.fz{float:right;display:flex;gap:6px}.fz button{border:1px solid var(--bd);background:var(--card);border-radius:10px;padding:4px 11px;cursor:pointer}
-#pg{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--ac),var(--ac2));z-index:30;opacity:0;transition:width .1s}
-#up{position:fixed;right:16px;bottom:18px;width:46px;height:46px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;font-size:1.3rem;cursor:pointer;box-shadow:var(--sh);z-index:15}
-#lb{display:none;position:fixed;inset:0;background:#000d;z-index:40;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}#lb img{max-width:100%;max-height:100%;border-radius:10px}
-.empty{color:var(--mu);padding:28px 0;text-align:center}
-footer{text-align:center;color:var(--mu);font-size:.85rem;padding:10px 16px 30px}
-@media(max-width:560px){.hero h1{font-size:1.35rem}.hd .cover{width:130px}.nv select{max-width:100%;order:3;width:100%}}
+body{margin:0;background:var(--bg);color:var(--tx);font:15.5px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--ac);text-decoration:none}button,input,select,textarea{font:inherit;color:var(--tx)}
+.w{max-width:1040px;margin:auto;padding:0 14px}
+.nav{background:var(--card);border-bottom:1px solid var(--bd);box-shadow:0 2px 8px #0000000d;z-index:20}
+@media(min-width:700px){.nav{position:sticky;top:0}}
+.nav .w{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}
+.logo{font-size:1.2rem;color:var(--tx);font-weight:700;white-space:nowrap}.logo b{color:var(--ac)}
+#nv{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+#nv a{color:var(--tx);padding:8px 12px;border-radius:8px;white-space:nowrap;font-size:.93rem}
+#nv a:hover{background:var(--bg)}#nv a.on{color:#fff;background:var(--ac)}
+#q{border:1px solid var(--bd);background:var(--bg);border-radius:999px;padding:7px 14px;width:200px;outline:none}#q:focus{border-color:var(--ac)}
+#th{border:1px solid var(--bd);background:var(--bg);border-radius:50%;width:36px;height:36px;cursor:pointer}
+@media(max-width:699px){#nv{order:3;flex-basis:100%}#q{flex:1;width:auto}}
+main{padding-top:16px;padding-bottom:70px;min-height:70vh}
+.sec{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.sh{display:flex;justify-content:space-between;align-items:center;gap:10px;border-left:4px solid var(--ac);padding-left:10px;margin-bottom:14px}
+.sh h2{margin:0;font-size:1.1rem}.sh a{font-size:.85rem}
+.ups{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:0 20px}
+.up{display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px dashed var(--bd);color:var(--tx)}
+.up:hover .ut b{color:var(--ac)}.th{position:relative;flex:none;width:46px;height:64px;border-radius:6px;overflow:hidden;background:linear-gradient(160deg,hsl(var(--h) 60% 48%),hsl(calc(var(--h) + 50) 60% 26%))}
+.th img,.cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ut{flex:1;min-width:0}.ut b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ut span{color:var(--mu);font-size:.88rem}.up small{color:var(--mu);white-space:nowrap}
+.series{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:16px}
+.sc{color:var(--tx)}.sc small{display:block;margin-top:5px;color:var(--mu);font-size:.8rem}
+.cover{position:relative;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:linear-gradient(160deg,hsl(var(--h) 60% 48%),hsl(calc(var(--h) + 50) 60% 26%));box-shadow:0 4px 12px #0003;transition:.2s}
+.sc:hover .cover{transform:translateY(-4px);box-shadow:0 10px 22px #0004}
+.cover b{position:absolute;left:0;right:0;bottom:0;padding:34px 9px 9px;color:#fff;font-size:.98rem;line-height:1.25;text-shadow:0 1px 3px #000a;background:linear-gradient(transparent,#000e)}
+.cover em{position:absolute;top:7px;left:7px;background:var(--ac2);color:#fff;font-style:normal;font-size:.7rem;font-weight:600;padding:2px 8px;border-radius:4px}
+.crumb{color:var(--mu);font-size:.85rem;margin-bottom:10px}
+.sp{display:flex;gap:20px;flex-wrap:wrap;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:18px;margin-bottom:16px}
+.sp .cover{width:200px;flex:none}.si{flex:1;min-width:240px}.si h1{margin:0 0 10px;font-size:1.5rem;line-height:1.3}
+dl{display:grid;grid-template-columns:110px 1fr;gap:5px 10px;margin:0 0 10px}dt{color:var(--mu)}dd{margin:0;font-weight:500}
+.tag{display:inline-block;font-size:.78rem;background:var(--bg);border:1px solid var(--bd);border-radius:5px;padding:1px 9px;margin:0 5px 5px 0;color:var(--mu)}
+.acts{margin-top:8px}.btn,.tb button{display:inline-block;border:0;background:var(--ac);color:#fff;border-radius:8px;padding:9px 16px;margin:4px 6px 0 0;cursor:pointer}
+.btn.alt{background:none;color:var(--ac);border:1px solid var(--ac)}.btn:hover{opacity:.88}[disabled]{opacity:.35;pointer-events:none}
+.sum{white-space:pre-line;margin:0}
+.bar2{display:flex;gap:8px;margin-bottom:10px}.bar2 input{flex:1;border:1px solid var(--bd);background:var(--bg);border-radius:8px;padding:8px 12px}
+.bar2 button,select{border:1px solid var(--bd);background:var(--bg);border-radius:8px;padding:8px 12px;cursor:pointer}
+.ch{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid var(--bd);color:var(--tx)}.ch:hover{background:var(--bg)}.ch:hover span{color:var(--ac)}
+.ch.done span{color:var(--mu)}.ch small{color:var(--mu);white-space:nowrap}
+.rbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 14px;margin-bottom:12px}
+.rbar a.t{font-weight:600;flex:1;min-width:140px}.rbar select{max-width:220px}.rbar button{border:1px solid var(--bd);background:var(--bg);border-radius:8px;padding:6px 12px;cursor:pointer}
+#rp{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 14px;margin-bottom:12px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}#rp[hidden]{display:none}
+#rp button{border:1px solid var(--bd);background:var(--bg);border-radius:8px;padding:4px 11px;cursor:pointer}#rp span{color:var(--mu);margin-left:8px}
+.nv{display:flex;gap:8px;justify-content:space-between;margin:12px 0}
+.rd.novel{font-size:var(--fs);line-height:var(--lh);max-width:740px;margin:0 auto;padding:24px;background:var(--card);border:1px solid var(--bd);border-radius:12px}
+.rd.serif{font-family:Georgia,"Noto Serif","Times New Roman",serif}
+.rd.sepia{background:#f4ecd8;color:#3b3226;border-color:#e3d6b5}.rd.night{background:#08090d;color:#c9cdd9;border-color:#1c1f2b}
+.rd.manga{max-width:800px;margin:0 auto}.rd.manga img{display:block;width:100%;min-height:200px}
+details{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;margin-bottom:10px}summary{cursor:pointer;font-weight:600}
+details p,.card p{color:var(--mu);margin:6px 0;font-size:.93rem}details img{max-width:100%;border-radius:8px;margin-top:8px;cursor:zoom-in}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.card{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:14px}.card h3{margin:0 0 4px;font-size:1.02rem}
+iframe,video{width:100%;border:1px solid var(--bd);border-radius:10px;background:#000;aspect-ratio:16/9;margin-top:8px}iframe.tool{aspect-ratio:auto;height:480px}
+textarea{width:100%;min-height:80px;margin-top:8px;border:1px solid var(--bd);border-radius:8px;padding:10px;background:var(--bg)}
+#pg{position:fixed;top:0;left:0;height:3px;width:0;background:var(--ac2);z-index:50;opacity:0}
+#up{position:fixed;right:16px;bottom:18px;width:44px;height:44px;border-radius:50%;border:0;background:var(--ac);color:#fff;font-size:1.2rem;cursor:pointer;box-shadow:var(--sh);z-index:15}
+#lb{display:none;position:fixed;inset:0;background:#000d;z-index:60;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}#lb img{max-width:100%;max-height:100%}
+.empty{color:var(--mu);text-align:center;padding:20px 0}footer{text-align:center;color:var(--mu);font-size:.85rem;padding:0 14px 30px}
+@media(max-width:560px){.sp .cover{width:140px}dl{grid-template-columns:90px 1fr}.rd.novel{padding:16px}}
+.chr{display:flex}.chr .ch{flex:1}.ed{display:flex;align-items:center;padding:0 14px;border-bottom:1px solid var(--bd);color:var(--mu)}.ed:hover{color:var(--ac)}
 </style>
 </head>
 <body>
-<header class="hero"><div class="in"><div class="top"><h1>🎮 Kho Game & Dịch Thuật</h1><button id="th" title="Đổi giao diện sáng/tối">🌓</button></div><p>Mẹo game, công cụ, novel, manga và video Vietsub — tất cả ở một nơi.</p><div class="sb"><input id="q" type="search" placeholder="🔍 Tìm mẹo, truyện, công cụ..."></div></div></header>
-<div class="bar" id="tabs"></div>
-<main id="app"></main>
-<div id="view" hidden></div>
-<div id="pg"></div><button id="up" hidden title="Lên đầu trang">↑</button>
+<header class="nav"><div class="w"><a class="logo" href="#home">📚 <b>Kho Game</b> & Dịch Thuật</a><input id="q" type="search" placeholder="Tìm truyện, mẹo..."><button id="th" title="Sáng/Tối">🌓</button><nav id="nv"></nav></div></header>
+<main class="w" id="app"></main>
+<footer>© Kenrori · Dịch phi lợi nhuận · Chạy trên GitHub Pages</footer>
+<div id="pg"></div><button id="up" hidden>↑</button>
 <div id="lb"><img alt=""></div>
-<footer>Làm với ❤️ bởi Kenrori · Chạy trên GitHub Pages</footer>
 <script>
 /* ============ DATA: CHỈ CẦN SỬA PHẦN NÀY ============ */
 const DATA = {
@@ -123,54 +133,57 @@ const fmtD = d => d ? d.split("-").reverse().join("/") : "";
 const fmtN = n => n ? Number(n).toLocaleString("vi-VN") + " chữ" : "";
 const hue = t => [...t].reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
 const ls = { get: k => { try { return localStorage.getItem(k) } catch (e) {} }, set: (k, v) => { try { localStorage.setItem(k, v) } catch (e) {} } };
+const ADM = !!ls.get("cfg2");
 const imgTag = s => s ? `<img src="${esc(s)}" alt="" loading="lazy" onerror="this.remove()">` : "";
-const TABS = [["tips", "💡 Mẹo game"], ["links", "🔗 Liên kết"], ["tools", "🛠️ Công cụ"], ["novels", "📖 Novel"], ["manga", "🖼️ Manga"], ["videos", "🎵 Video Vietsub"]];
-const LEAD = { tips: "Bấm vào từng mục để xem chi tiết, bấm vào ảnh để phóng to.", links: "Những website hữu ích, bấm để mở trong tab mới.", tools: "Công cụ chạy ngay trên trang: dán nội dung, bấm Chạy, rồi sao chép kết quả.", novels: "Chọn một bộ để xem danh sách chương và bắt đầu đọc.", manga: "Chọn một bộ để xem danh sách chương và bắt đầu đọc.", videos: "Video nhạc Vietsub, có thể bật phụ đề Việt trong trình phát." };
-const V = $("#view"), app = $("#app"), tabs = $("#tabs");
-
-const card = (k, s) => { const lt = s.chapters.map(c => c.date).sort().pop(); return `<a class="sc" href="#${k}/${s.slug}"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<em>${esc(s.status)}</em><b>${esc(s.title)}</b></div><small>${s.chapters.length} chương · cập nhật ${fmtD(lt)}</small></a>` };
-const toolUI = (t, i) => `<details class="tb" data-t="${esc(t.t)}"><summary>${esc(t.t)}</summary>${t.h ? `<p>${esc(t.h)}</p>` : ""}<textarea class="i" placeholder="Dán nội dung vào đây..."></textarea>${t.x ? `<textarea class="x" placeholder="${esc(t.x)}"></textarea>` : ""}<button onclick="runTool(${i},this)">Chạy</button> <button onclick="copyOut(this)">Sao chép kết quả</button><textarea class="o" readonly placeholder="Kết quả"></textarea></details>`;
-function runTool(i, b) { const d = b.closest(".tb"), o = $(".o", d); try { o.value = TOOLS[i].fn($(".i", d).value, $(".x", d)?.value || "") } catch (e) { o.value = "Lỗi: " + e.message } }
-function copyOut(b) { const o = $(".o", b.closest(".tb")); o.select(); navigator.clipboard?.writeText(o.value) }
-
+const KEY = { novel: "novels", manga: "manga" }, app = $("#app"), EMPTY = '<p class="empty">Chưa có nội dung.</p>';
+const NAV = [["home", "🏠 Trang chủ"], ["novels", "📖 Novel"], ["manga", "🖼️ Manga"], ["tips", "💡 Mẹo game"], ["tools", "🛠️ Công cụ"], ["videos", "🎵 Video"], ["links", "🔗 Liên kết"]];
+$("#nv").innerHTML = NAV.map(([k, l]) => `<a href="#${k}" data-k="${k}">${l}</a>`).join("") + `<a href="admin.html" style="margin-left:auto">🔑 Admin</a>`;
+const latest = s => s.chapters.map(c => c.date || "").sort().pop();
+const sum = s => s.chapters.reduce((a, c) => a + (c.words || (c.text ? W(c.text) : 0)), 0);
+const byNew = a => [...a].sort((x, y) => (latest(y) || "").localeCompare(latest(x) || ""));
+const sec = (t, more, body) => `<section class="sec"><div class="sh"><h2>${t}</h2>${more ? `<a href="#${more}">Xem tất cả →</a>` : ""}</div>${body}</section>`;
+const card = (k, s) => `<a class="sc" href="#${k}/${s.slug}"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<em>${esc(s.status)}</em><b>${esc(s.title)}</b></div><small>${s.chapters.length} chương · ${fmtD(latest(s))}</small></a>`;
+const recent = n => { const a = []; for (const k of ["novel", "manga"]) DATA[KEY[k]].forEach(s => s.chapters.forEach((c, i) => a.push({ k, s, c, i }))); return a.sort((x, y) => (y.c.date || "").localeCompare(x.c.date || "") || y.i - x.i).slice(0, n) };
+const row = r => `<a class="up" href="#${r.k}/${r.s.slug}/${r.i}"><div class="th" style="--h:${hue(r.s.title)}">${imgTag(r.s.cover)}</div><div class="ut"><b>${esc(r.s.title)}</b><span>${esc(r.c.t)}</span></div><small>${fmtD(r.c.date)}</small></a>`;
+const gridOf = (k, a) => a.length ? `<div class="series">${byNew(a).map(s => card(k, s)).join("")}</div>` : EMPTY;
 const R = {
   tips: d => `<details><summary>${esc(d.title)} <span class="tag">${esc(d.game)}</span></summary><p>${esc(d.text)}</p>${imgTag(d.img)}</details>`,
   links: d => `<div class="card"><h3><a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.title)}</a></h3><p>${esc(d.desc)}</p>${(d.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>`,
   guides: d => `<details><summary>${esc(d.title)}</summary><p>${esc(d.text)}</p>${imgTag(d.img)}${d.embed ? `<iframe class="tool" src="${esc(d.embed)}" loading="lazy"></iframe>` : ""}</details>`,
   videos: d => `<div class="card"><h3>${esc(d.title)}</h3><p>${esc(d.desc)}</p>` + (d.youtube ? `<iframe src="https://www.youtube-nocookie.com/embed/${esc(d.youtube)}" allowfullscreen loading="lazy"></iframe>` : `<video controls preload="none" src="${esc(d.mp4)}">${d.vtt ? `<track kind="subtitles" srclang="vi" label="Tiếng Việt" src="${esc(d.vtt)}" default>` : ""}</video>`) + `</div>`
 };
-tabs.innerHTML = TABS.map(([k, l]) => `<button data-k="${k}">${l}</button>`).join("");
-app.innerHTML = TABS.map(([k]) => `<section id="s-${k}"></section>`).join("");
-
-function render(f = "") {
-  f = f.trim().toLowerCase(); const m = d => !f || JSON.stringify(d).toLowerCase().includes(f);
-  const set = (k, h, c) => $("#s-" + k).innerHTML = `<p class="lead">${LEAD[k]}</p>` + (h ? `<div class="${c || ""}">${h}</div>` : `<p class="empty">😕 Không tìm thấy kết quả phù hợp.</p>`);
-  set("tips", DATA.tips.filter(m).map(R.tips).join(""));
-  set("links", DATA.links.filter(m).map(R.links).join(""), "grid");
-  set("tools", DATA.guides.filter(m).map(R.guides).join("") + TOOLS.map((t, i) => [t, i]).filter(([t]) => !f || t.t.toLowerCase().includes(f)).map(([t, i]) => toolUI(t, i)).join(""));
-  set("novels", DATA.novels.filter(m).map(s => card("novel", s)).join(""), "series");
-  set("manga", DATA.manga.filter(m).map(s => card("manga", s)).join(""), "series");
-  set("videos", DATA.videos.filter(m).map(R.videos).join(""), "grid");
+const toolUI = (t, i) => `<details class="tb"><summary>${esc(t.t)}</summary>${t.h ? `<p>${esc(t.h)}</p>` : ""}<textarea class="i" placeholder="Dán nội dung vào đây..."></textarea>${t.x ? `<textarea class="x" placeholder="${esc(t.x)}"></textarea>` : ""}<button onclick="runTool(${i},this)">Chạy</button> <button onclick="copyOut(this)">Sao chép kết quả</button><textarea class="o" readonly placeholder="Kết quả"></textarea></details>`;
+function runTool(i, b) { const d = b.closest(".tb"), o = $(".o", d); try { o.value = TOOLS[i].fn($(".i", d).value, $(".x", d)?.value || "") } catch (e) { o.value = "Lỗi: " + e.message } }
+function copyOut(b) { const o = $(".o", b.closest(".tb")); o.select(); navigator.clipboard?.writeText(o.value) }
+const P = {
+  home: () => sec("📢 Mới cập nhật", null, `<div class="ups">${recent(10).map(row).join("") || EMPTY}</div>`) + sec("📖 Novel", "novels", gridOf("novel", DATA.novels.slice(0, 20)).replace(/(<a class="sc"[\s\S]*?<\/a>){6}[\s\S]*/, m => m)) + sec("🖼️ Manga", "manga", gridOf("manga", DATA.manga)) + sec("💡 Mẹo game mới", "tips", DATA.tips.slice(0, 3).map(R.tips).join("") || EMPTY),
+  novels: () => sec("📖 Tất cả Novel", null, gridOf("novel", DATA.novels)),
+  manga: () => sec("🖼️ Tất cả Manga", null, gridOf("manga", DATA.manga)),
+  tips: () => sec("💡 Mẹo game", null, DATA.tips.map(R.tips).join("") || EMPTY),
+  links: () => sec("🔗 Liên kết hữu ích", null, `<div class="grid">${DATA.links.map(R.links).join("") || EMPTY}</div>`),
+  videos: () => sec("🎵 Video nhạc Vietsub", null, `<div class="grid">${DATA.videos.map(R.videos).join("") || EMPTY}</div>`),
+  tools: () => sec("🛠️ Công cụ", null, `<p class="sum" style="color:var(--mu);margin-bottom:12px">Dán nội dung, bấm Chạy rồi sao chép kết quả.</p>` + DATA.guides.map(R.guides).join("") + TOOLS.map(toolUI).join(""))
+};
+const rdSet = (k, s) => { try { return JSON.parse(ls.get("r:" + k + ":" + s.slug) || "[]") } catch (e) { return [] } };
+let RS = { fs: 18, lh: 1.9, ff: "sans", bg: "" }; try { Object.assign(RS, JSON.parse(ls.get("rs") || "{}")) } catch (e) {}
+function applyRS() { const st = document.documentElement.style; st.setProperty("--fs", RS.fs + "px"); st.setProperty("--lh", RS.lh); const r = $("#rd.novel"); if (r) r.className = `rd novel ${RS.ff} ${RS.bg}`; ls.set("rs", JSON.stringify(RS)) }
+function rset(k, d) {
+  if (k === "fs") RS.fs = Math.min(32, Math.max(14, RS.fs + d * 2));
+  if (k === "lh") RS.lh = Math.min(2.4, Math.max(1.4, +(RS.lh + d * .1).toFixed(1)));
+  if (k === "ff") RS.ff = RS.ff === "sans" ? "serif" : "sans";
+  if (k === "bg") { const o = ["", "sepia", "night"]; RS.bg = o[(o.indexOf(RS.bg) + 1) % 3] }
+  applyRS();
 }
-function showTab(k) {
-  V.hidden = true; app.hidden = tabs.hidden = false;
-  TABS.forEach(([t]) => $("#s-" + t).classList.toggle("on", t === k));
-  tabs.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.k === k));
-}
-tabs.addEventListener("click", e => { const b = e.target.closest("button"); if (b) location.hash = "#" + b.dataset.k });
-$("#q").addEventListener("input", e => render(e.target.value));
-app.addEventListener("click", e => { if (e.target.matches("details img")) { $("#lb img").src = e.target.src; $("#lb").style.display = "flex" } });
-$("#lb").onclick = () => $("#lb").style.display = "none";
-
-let fs = +ls.get("fs") || 18; document.documentElement.style.setProperty("--fs", fs + "px");
-function fz(d) { fs = Math.min(32, Math.max(14, fs + d * 2)); document.documentElement.style.setProperty("--fs", fs + "px"); ls.set("fs", fs) }
-
 function detail(kind, s) {
-  const last = ls.get(kind + ":" + s.slug), back = kind === "novel" ? "novels" : "manga"; let desc = true; const rs = rdSet(kind, s);
-  V.innerHTML = `<a href="#${back}">← Quay lại</a><div class="hd"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></div><div><h2>${esc(s.title)}</h2><p class="mu">${esc(s.author)} · ${esc(s.status)} · ${s.chapters.length} chương</p><p>${esc(s.desc)}</p><a class="btn" href="#${kind}/${s.slug}/${last || 0}">${last ? "Đọc tiếp" : "Đọc từ đầu"}</a></div></div><div class="bar2"><input id="cq" type="search" placeholder="Tìm chương (tên hoặc số)..."><button id="cs">↕ Mới nhất trước</button></div><div id="cl"></div>`;
+  const last = ls.get(kind + ":" + s.slug), rs = rdSet(kind, s), n = s.chapters.length; let desc = true;
+  const info = [["Tác giả", s.author], ["Tình trạng", s.status], ["Loại", kind === "novel" ? "Light Novel" : "Manga"], ["Số chương", n], kind === "novel" ? ["Tổng số chữ", fmtN(sum(s))] : null, ["Cập nhật", fmtD(latest(s))]].filter(Boolean);
+  app.innerHTML = `<div class="crumb"><a href="#home">Trang chủ</a> › <a href="#${KEY[kind]}">${kind === "novel" ? "Novel" : "Manga"}</a> › ${esc(s.title)}</div>
+<div class="sp"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></div><div class="si"><h1>${esc(s.title)}</h1><dl>${info.map(([a, b]) => `<dt>${a}</dt><dd>${esc(b || "—")}</dd>`).join("")}</dl>${(s.genres || []).map(g => `<span class="tag">${esc(g)}</span>`).join("")}<div class="acts">${n ? `<a class="btn" href="#${kind}/${s.slug}/0">▶ Đọc từ đầu</a>${last != null ? `<a class="btn alt" href="#${kind}/${s.slug}/${last}">⏵ Đọc tiếp</a>` : ""}<a class="btn alt" href="#${kind}/${s.slug}/${n - 1}">Chương mới nhất</a>` : ""}${ADM ? `<a class="btn alt" href="admin.html#chap/${kind}/${s.slug}">➕ Thêm chương</a><a class="btn alt" href="admin.html#series/${kind}/${s.slug}">✎ Sửa bộ</a>` : ""}</div></div></div>
+${sec("📝 Tóm tắt", null, `<p class="sum">${esc(s.desc) || "Chưa có tóm tắt."}</p>`)}
+<section class="sec"><div class="sh"><h2>📑 Danh sách chương</h2></div><div class="bar2"><input id="cq" type="search" placeholder="Tìm chương (tên hoặc số)..."><button id="cs">↕ Mới nhất trước</button></div><div id="cl"></div></section>`;
   const draw = () => {
     const q = $("#cq").value.trim().toLowerCase(); let L = s.chapters.map((c, i) => ({ c, i })).filter(({ c }) => !q || c.t.toLowerCase().includes(q)); if (desc) L.reverse();
-    $("#cl").innerHTML = L.map(({ c, i }) => { const info = kind === "novel" ? (fmtN(c.words || (c.text ? W(c.text) : 0)) || "—") : (c.pages ? c.pages.length : c.n) + " trang"; return `<a class="ch${rs.includes(i) ? " done" : ""}" href="#${kind}/${s.slug}/${i}"><span>${esc(c.t)}${i == last ? " ★" : ""}</span><small>${fmtD(c.date)} · ${info}</small></a>` }).join("") || `<p class="empty">Không tìm thấy chương.</p>`;
+    $("#cl").innerHTML = L.map(({ c, i }) => { const info = kind === "novel" ? (fmtN(c.words || (c.text ? W(c.text) : 0)) || "—") : (c.pages ? c.pages.length : c.n) + " trang"; return `<div class="chr"><a class="ch${rs.includes(i) ? " done" : ""}" href="#${kind}/${s.slug}/${i}"><span>${esc(c.t)}${i == last ? " ★" : ""}</span><small>${fmtD(c.date)} · ${info}</small></a>${ADM ? `<a class="ed" href="admin.html#editchap/${kind}/${s.slug}/${i}" title="Sửa chương">✎</a>` : ""}</div>` }).join("") || `<p class="empty">Không tìm thấy chương.</p>`;
   };
   $("#cq").oninput = draw; $("#cs").onclick = e => { desc = !desc; e.target.textContent = desc ? "↕ Mới nhất trước" : "↕ Cũ nhất trước"; draw() }; draw();
 }
@@ -178,14 +191,14 @@ async function read(kind, s, i) {
   const c = s.chapters[i]; if (!c) { location.hash = `#${kind}/${s.slug}`; return }
   ls.set(kind + ":" + s.slug, i); const rs = rdSet(kind, s); if (!rs.includes(i)) { rs.push(i); ls.set("r:" + kind + ":" + s.slug, JSON.stringify(rs)) }
   const base = `#${kind}/${s.slug}`, n = s.chapters.length;
-  const nav = `<div class="nv"><a class="btn" ${i > 0 ? `href="${base}/${i - 1}"` : "disabled"}>← Trước</a><a href="${base}">Mục lục</a><select onchange="location.hash='${base}/'+this.value">${s.chapters.map((x, j) => `<option value="${j}" ${j == i ? "selected" : ""}>${esc(x.t)}</option>`).join("")}</select><a class="btn" ${i < n - 1 ? `href="${base}/${i + 1}"` : "disabled"}>Sau →</a></div>`;
-  V.innerHTML = (kind === "novel" ? `<div class="fz"><button onclick="fz(-1)">A−</button> <button onclick="fz(1)">A+</button><button onclick="rm()">🎨 Nền</button></div>` : "") + `<h2>${esc(s.title)}</h2><p class="mu" id="meta">${esc(c.t)} · ${fmtD(c.date)}</p>${nav}<article id="rd" class="${kind} ${kind === "novel" ? (ls.get("rt") || "") : ""}"></article>${nav}`;
+  const nav = `<div class="nv"><a class="btn" ${i > 0 ? `href="${base}/${i - 1}"` : "disabled"}>← Chương trước</a><a class="btn" ${i < n - 1 ? `href="${base}/${i + 1}"` : "disabled"}>Chương sau →</a></div>`;
+  app.innerHTML = `<div class="rbar"><a class="t" href="${base}">← ${esc(s.title)}</a><select onchange="location.hash='${base}/'+this.value">${s.chapters.map((x, j) => `<option value="${j}" ${j == i ? "selected" : ""}>${esc(x.t)}</option>`).join("")}</select>${kind === "novel" ? `<button onclick="$('#rp').hidden=!$('#rp').hidden">⚙ Cài đặt</button>` : ""}${ADM ? `<a class="btn alt" style="margin:0;padding:6px 12px" href="admin.html#editchap/${kind}/${s.slug}/${i}">✎ Sửa chương</a>` : ""}</div>
+<div id="rp" hidden><button onclick="rset('fs',-1)">A−</button><button onclick="rset('fs',1)">A+</button><span>Giãn dòng</span><button onclick="rset('lh',-1)">−</button><button onclick="rset('lh',1)">+</button><span>Font</span><button onclick="rset('ff')">Aa</button><span>Nền</span><button onclick="rset('bg')">🎨</button></div>
+<h2 style="margin:6px 0">${esc(c.t)}</h2><p class="crumb" id="meta">${fmtD(c.date)}</p>${nav}<article id="rd" class="rd ${kind} ${kind === "novel" ? RS.ff + " " + RS.bg : ""}"></article>${nav}`;
   const rd = $("#rd");
   if (kind === "novel") {
-    let t = c.text;
-    if (t == null) { rd.textContent = "Đang tải..."; try { const r = await fetch(c.file); if (!r.ok) throw 0; t = await r.text() } catch (e) { rd.innerHTML = "<p>Không tải được chương. Hãy chạy trên GitHub Pages hoặc server cục bộ (không mở file trực tiếp).</p>"; return } }
-    rd.innerHTML = t.split(/\n+/).filter(l => l.trim()).map(l => `<p>${esc(l)}</p>`).join("");
-    $("#meta").textContent += " · " + fmtN(c.words || W(t));
+    let t = c.text; if (t == null) { rd.textContent = "Đang tải..."; try { const r = await fetch(c.file); if (!r.ok) throw 0; t = await r.text() } catch (e) { rd.innerHTML = "<p>Không tải được chương. Hãy chạy trên GitHub Pages hoặc server cục bộ (không mở file trực tiếp).</p>"; return } }
+    rd.innerHTML = t.split(/\n+/).filter(l => l.trim()).map(l => `<p>${esc(l)}</p>`).join(""); $("#meta").textContent += " · " + fmtN(c.words || W(t));
   } else {
     const pg = c.pages || Array.from({ length: c.n }, (_, k) => c.dir + String(k + 1).padStart(c.pad || 2, "0") + "." + (c.ext || "jpg"));
     rd.innerHTML = pg.map(u => `<img src="${esc(u)}" alt="" loading="lazy">`).join("");
@@ -194,19 +207,27 @@ async function read(kind, s, i) {
 }
 function route() {
   const [a, b, c] = decodeURIComponent(location.hash.slice(1)).split("/");
-  const s = b && (a === "novel" ? DATA.novels : a === "manga" ? DATA.manga : []).find(x => x.slug === b);
-  $(".hero").classList.toggle("slim", !!s);
-  if (s) { app.hidden = tabs.hidden = true; V.hidden = false; scrollTo(0, 0); c !== undefined ? read(a, s, +c) : detail(a, s); return }
-  showTab(TABS.some(([k]) => k === a) ? a : "tips");
+  document.querySelectorAll("#nv a").forEach(x => x.classList.toggle("on", x.dataset.k === (a === "novel" ? "novels" : a || "home")));
+  const s = b && ({ novel: DATA.novels, manga: DATA.manga }[a] || []).find(x => x.slug === b);
+  if (s) { c !== undefined ? read(a, s, +c) : detail(a, s); scrollTo(0, 0); return }
+  app.innerHTML = (P[a] || P.home)(); scrollTo(0, 0);
 }
-const rdSet = (k, s) => { try { return JSON.parse(ls.get("r:" + k + ":" + s.slug) || "[]") } catch (e) { return [] } };
-function rm() { const o = ["", "sepia", "night"], n = o[(o.indexOf(ls.get("rt") || "") + 1) % 3]; ls.set("rt", n); const r = $("#rd.novel"); if (r) r.className = "novel " + n }
+$("#q").addEventListener("input", e => {
+  const f = e.target.value.trim().toLowerCase(); if (!f) return route();
+  const m = d => JSON.stringify(d).toLowerCase().includes(f);
+  const ss = [...DATA.novels.filter(m).map(s => card("novel", s)), ...DATA.manga.filter(m).map(s => card("manga", s))];
+  const body = (ss.length ? `<div class="series">${ss.join("")}</div>` : "") + DATA.tips.filter(m).map(R.tips).join("") + `<div class="grid">${DATA.links.filter(m).map(R.links).join("")}${DATA.videos.filter(m).map(R.videos).join("")}</div>` + TOOLS.map((t, i) => [t, i]).filter(([t]) => t.t.toLowerCase().includes(f)).map(([t, i]) => toolUI(t, i)).join("");
+  app.innerHTML = sec(`🔍 Kết quả cho “${esc(e.target.value)}”`, null, body.replace(/<div class="grid"><\/div>/, "") || '<p class="empty">😕 Không tìm thấy kết quả phù hợp.</p>');
+});
+app.addEventListener("click", e => { if (e.target.matches("details img")) { $("#lb img").src = e.target.src; $("#lb").style.display = "flex" } });
+$("#lb").onclick = () => $("#lb").style.display = "none";
 const root = document.documentElement; if (ls.get("theme")) root.dataset.theme = ls.get("theme");
 $("#th").onclick = () => { const cur = root.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"), n = cur === "dark" ? "light" : "dark"; root.dataset.theme = n; ls.set("theme", n) };
 addEventListener("scroll", () => { const h = document.documentElement.scrollHeight - innerHeight; $("#pg").style.width = (h > 0 ? scrollY / h * 100 : 0) + "%"; $("#pg").style.opacity = $("#rd") ? 1 : 0; $("#up").hidden = scrollY < 600 }, { passive: true });
 $("#up").onclick = () => scrollTo({ top: 0, behavior: "smooth" });
-addEventListener("hashchange", route);
-(async () => { try { const r = await fetch("data.json?v=" + Date.now()); if (r.ok) Object.assign(DATA, await r.json()) } catch (e) {} render(); route() })();
+addEventListener("hashchange", () => { $("#q").value = ""; route() });
+applyRS();
+(async () => { try { const r = await fetch("data.json?v=" + Date.now()); if (r.ok) Object.assign(DATA, await r.json()) } catch (e) {} route() })();
 </script>
 </body>
 </html>

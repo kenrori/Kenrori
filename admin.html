@@ -31,13 +31,18 @@ button:disabled{opacity:.5}
 <body>
 <header><div><h1>🛠️ Trang quản trị</h1><span class="mu" style="color:#ffffffcc">Thêm truyện, chương, mẹo... không cần sửa code · <a href="index.html">← Về trang chính</a></span></div></header>
 <main>
-<details id="cfg" open><summary>🔑 Kết nối GitHub</summary>
-<p class="mu">Token chỉ lưu trong trình duyệt của bạn và chỉ gửi tới GitHub. Tạo token giới hạn cho đúng repo này (quyền Contents: Read and write).</p>
+<div class="panel on" id="login" hidden><h3>🔐 Đăng nhập quản trị</h3>
+<label>Mã PIN</label><input id="l_pin" type="password" autocomplete="current-password">
+<button id="l_go">Đăng nhập</button> <button type="button" id="l_new" style="background:#888">Đổi tài khoản / quên PIN</button></div>
+<details id="setup" open><summary>🔑 Thiết lập lần đầu (chỉ làm một lần trên mỗi thiết bị)</summary>
+<p class="mu">Token và mã PIN: token được mã hóa bằng PIN rồi lưu trong trình duyệt này. Lần sau chỉ cần nhập PIN. Token tạo giới hạn cho đúng repo này (quyền Contents: Read and write).</p>
 <label>Tên người dùng GitHub</label><input id="g_u" placeholder="username">
 <label>Tên repo</label><input id="g_r" placeholder="kho-game">
 <label>Nhánh</label><input id="g_b" value="main">
 <label>Token (github_pat_...)</label><input id="g_t" type="password" autocomplete="off">
-<button id="g_go">Lưu & kết nối</button> <button id="g_out" style="background:#888">Xóa thông tin đã lưu</button></details>
+<label>Đặt mã PIN (ít nhất 6 ký tự, nên dài hơn)</label><input id="g_p" type="password" autocomplete="new-password">
+<button id="g_go">Lưu & đăng nhập</button></details>
+<div id="bye" hidden style="text-align:right"><button id="l_out" style="background:#888;margin:0 0 10px">Đăng xuất</button></div>
 
 <div id="app" hidden>
 <div class="tabs" id="tabs"></div>
@@ -47,6 +52,7 @@ button:disabled{opacity:.5}
 <label>Tên truyện</label><input id="s_title">
 <label>Slug (tên thư mục, để trống sẽ tự tạo)</label><input id="s_slug">
 <label>Tác giả</label><input id="s_author">
+<label>Thể loại (cách nhau bằng dấu phẩy)</label><input id="s_genres">
 <label>Trạng thái</label><select id="s_status"><option>Đang dịch</option><option>Hoàn thành</option><option>Tạm ngưng</option></select>
 <label>Mô tả</label><textarea id="s_desc"></textarea>
 <label>Ảnh bìa (tự thu nhỏ)</label><input id="s_cover" type="file" accept="image/*">
@@ -79,7 +85,7 @@ button:disabled{opacity:.5}
 <div class="panel" id="p-man"><h3>Quản lý / xóa</h3><p class="mu">Xóa chỉ gỡ khỏi web; file ảnh và chương vẫn còn trong repo.</p><div id="manage"></div></div>
 </div>
 </main>
-<div id="log">Nhập thông tin kết nối ở trên.</div>
+<div id="log">Đang chờ đăng nhập.</div>
 <script>
 const $ = s => document.querySelector(s), esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const ls = { get: k => { try { return localStorage.getItem(k) } catch (e) {} }, set: (k, v) => { try { localStorage.setItem(k, v) } catch (e) {} }, del: k => { try { localStorage.removeItem(k) } catch (e) {} } };
@@ -108,9 +114,13 @@ const save = msg => put("data.json", b64t(JSON.stringify(data, null, 1)), msg);
 async function run(fn) { const bs = [...document.querySelectorAll("button")]; bs.forEach(b => b.disabled = true); try { await fn() } catch (e) { log("❌ " + e.message) } bs.forEach(b => b.disabled = false) }
 const done = m => { log(m); fillSel(); manage() };
 
-async function connect() {
-  cfg = { u: $("#g_u").value.trim(), r: $("#g_r").value.trim(), b: $("#g_b").value.trim() || "main", t: $("#g_t").value.trim() };
-  ls.set("cfg", JSON.stringify(cfg));
+const needHttps = () => { if (!window.crypto?.subtle) throw new Error("Cần mở bằng địa chỉ https (GitHub Pages) để dùng đăng nhập bảo mật.") };
+const enc = new TextEncoder(), toB = u => btoa(String.fromCharCode(...u)), fromB = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function pkey(pin, salt) { const k = await crypto.subtle.importKey("raw", enc.encode(pin), "PBKDF2", false, ["deriveKey"]); return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 250000, hash: "SHA-256" }, k, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]) }
+async function seal(pin, text) { const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12)); const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, await pkey(pin, salt), enc.encode(text))); return { salt: toB(salt), iv: toB(iv), ct: toB(ct) } }
+async function unseal(pin, o) { return new TextDecoder().decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: fromB(o.iv) }, await pkey(pin, fromB(o.salt)), fromB(o.ct))) }
+async function connect(c, after) {
+  cfg = c;
   await run(async () => {
     log("Đang kết nối...");
     const rp = await fetch(`https://api.github.com/repos/${cfg.u}/${cfg.r}`, { headers: { Authorization: "Bearer " + cfg.t } });
@@ -118,13 +128,27 @@ async function connect() {
     const r = await api("data.json", { q: "?ref=" + cfg.b });
     if (r.status === 404) data = {}; else if (r.ok) data = JSON.parse(t64((await r.json()).content)); else throw new Error("Không đọc được data.json (" + r.status + ")");
     for (const k of ["tips", "links", "novels", "manga", "videos"]) data[k] ??= [];
-    $("#app").hidden = false; $("#cfg").open = false; $("#c_date").value = new Date().toISOString().slice(0, 10);
-    fillSel(); manage(); log("✅ Đã kết nối. Chọn mục cần thêm.");
+    if (after) await after();
+    $("#login").hidden = $("#setup").hidden = true; $("#bye").hidden = false; $("#app").hidden = false; $("#c_date").value = new Date().toISOString().slice(0, 10);
+    fillSel(); manage(); log("✅ Đã đăng nhập. Chọn mục cần thêm."); deepLink();
   });
 }
-const saved = ls.get("cfg"); if (saved) { try { const c = JSON.parse(saved); $("#g_u").value = c.u; $("#g_r").value = c.r; $("#g_b").value = c.b; $("#g_t").value = c.t } catch (e) {} }
-$("#g_go").onclick = connect;
-$("#g_out").onclick = () => { ls.del("cfg"); ["g_u", "g_r", "g_t"].forEach(i => $("#" + i).value = ""); $("#app").hidden = true; log("Đã xóa thông tin đã lưu.") };
+let sealed = null; try { sealed = JSON.parse(ls.get("cfg2") || "null") } catch (e) {}
+const oldCfg = ls.get("cfg"); if (oldCfg) { try { const c = JSON.parse(oldCfg); $("#g_u").value = c.u; $("#g_r").value = c.r; $("#g_b").value = c.b; $("#g_t").value = c.t } catch (e) {} ls.del("cfg") }
+if (sealed) { $("#login").hidden = false; $("#setup").hidden = true; $("#g_u").value = sealed.u; $("#g_r").value = sealed.r; $("#g_b").value = sealed.b; log("Nhập mã PIN để đăng nhập.") }
+$("#l_go").onclick = async () => {
+  try { needHttps(); let t; try { t = await unseal($("#l_pin").value, sealed) } catch (e) { throw new Error("Sai mã PIN") } await connect({ u: sealed.u, r: sealed.r, b: sealed.b, t }) } catch (e) { log("❌ " + e.message) }
+};
+$("#l_pin").addEventListener("keydown", e => { if (e.key === "Enter") $("#l_go").click() });
+$("#l_new").onclick = () => { $("#login").hidden = true; $("#setup").hidden = false; $("#setup").open = true; log("Nhập lại thông tin và đặt PIN mới.") };
+$("#g_go").onclick = async () => {
+  try {
+    needHttps(); const c = { u: $("#g_u").value.trim(), r: $("#g_r").value.trim(), b: $("#g_b").value.trim() || "main", t: $("#g_t").value.trim() }, pin = $("#g_p").value;
+    if (!c.u || !c.r || !c.t) throw new Error("Hãy điền đủ tên người dùng, repo và token"); if (pin.length < 6) throw new Error("PIN cần ít nhất 6 ký tự");
+    await connect(c, async () => { ls.set("cfg2", JSON.stringify({ u: c.u, r: c.r, b: c.b, ...await seal(pin, c.t) })) });
+  } catch (e) { log("❌ " + e.message) }
+};
+$("#l_out").onclick = () => location.reload();
 
 const TABS = [["series", "📚 Bộ truyện"], ["chap", "➕ Chương"], ["tip", "💡 Mẹo"], ["link", "🔗 Liên kết"], ["vid", "🎵 Video"], ["man", "🗂️ Quản lý"]];
 $("#tabs").innerHTML = TABS.map(([k, l]) => `<button type="button" data-k="${k}">${l}</button>`).join("");
@@ -142,7 +166,7 @@ $("#p-series").onsubmit = e => { e.preventDefault(); run(async () => {
   const kind = $("#s_kind").value, title = $("#s_title").value.trim(); if (!title) throw new Error("Hãy nhập tên truyện");
   const slug = slugify($("#s_slug").value || title), list = data[KEYS[kind]]; let s = list.find(x => x.slug === slug);
   if (!s) { s = { slug, chapters: [] }; list.push(s) }
-  Object.assign(s, { title, author: $("#s_author").value.trim(), status: $("#s_status").value, desc: $("#s_desc").value.trim() });
+  Object.assign(s, { title, author: $("#s_author").value.trim(), status: $("#s_status").value, genres: $("#s_genres").value.split(",").map(x => x.trim()).filter(Boolean), desc: $("#s_desc").value.trim() });
   const f = $("#s_cover").files[0];
   if (f) { log("Đang tải ảnh bìa..."); const p = `images/${slug}-bia.jpg`; await put(p, await resize(f), "Bìa: " + title); s.cover = p }
   await save("Thêm/sửa truyện: " + title); done("✅ Đã lưu bộ truyện. Web cập nhật sau 1–2 phút.");
@@ -201,7 +225,7 @@ $("#manage").addEventListener("click", e => {
   if (bs) {
     const [k, i] = bs.dataset.s.split("|"), s = data[k][+i];
     $("#s_kind").value = k === "novels" ? "novel" : "manga"; $("#s_title").value = s.title; $("#s_slug").value = s.slug; $("#s_author").value = s.author || "";
-    $("#s_status").value = s.status || "Đang dịch"; $("#s_desc").value = s.desc || ""; $("#s_cover").value = ""; tab("series"); log("Đang sửa bộ: " + s.title + " (chọn ảnh bìa mới nếu muốn đổi)");
+    $("#s_status").value = s.status || "Đang dịch"; $("#s_desc").value = s.desc || ""; $("#s_genres").value = (s.genres || []).join(", "); $("#s_cover").value = ""; tab("series"); log("Đang sửa bộ: " + s.title + " (chọn ảnh bìa mới nếu muốn đổi)");
   } else if (bm) {
     const [k, i, j, d] = bm.dataset.m.split("|"), a = data[k][+i].chapters, x = +j, y = x + +d; if (y < 0 || y >= a.length) return;
     [a[x], a[y]] = [a[y], a[x]]; run(async () => { await save("Đổi thứ tự chương"); done("✅ Đã đổi thứ tự chương.") });
@@ -225,6 +249,14 @@ $("#p-edit").onsubmit = e => { e.preventDefault(); run(async () => {
   await save("Sửa chương: " + s.title + " - " + t); ed = null; done("✅ Đã lưu chỉnh sửa. Web cập nhật sau 1–2 phút."); tab("man");
 }) };
 $("#e_cancel").onclick = () => { ed = null; tab("man") };
+
+function deepLink() {
+  const [a, k, slug, j] = decodeURIComponent(location.hash.slice(1)).split("/"); if (!a || !KEYS[k]) return;
+  const key = KEYS[k], i = data[key].findIndex(x => x.slug === slug); if (i < 0) { log("Không tìm thấy bộ truyện này trong dữ liệu."); return }
+  if (a === "chap") { $("#c_ser").value = k + "|" + i; chapUI(); tab("chap"); $("#c_title").focus(); log("Thêm chương cho: " + data[key][i].title) }
+  else if (a === "series") $(`#manage button[data-s="${key}|${i}"]`)?.click();
+  else if (a === "editchap") $(`#manage button[data-e="${key}|${i}|${j}"]`)?.click();
+}
 </script>
 </body>
 </html>
