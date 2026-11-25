@@ -25,6 +25,7 @@ button:disabled{opacity:.5}
 .mu{color:var(--mu);font-size:.88rem}
 #log{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--bd);padding:10px 16px;font-size:.92rem;z-index:9}
 .row{padding:8px 0;border-bottom:1px solid var(--bd)}.row button,.sub button{margin:0 0 0 8px;padding:2px 10px;background:#d33}.sub{margin-left:20px;color:var(--mu);font-size:.9rem;padding:2px 0}
+.row button.ok,.sub button.ok{background:var(--ac)}
 </style>
 </head>
 <body>
@@ -69,6 +70,12 @@ button:disabled{opacity:.5}
 <form class="panel" id="p-vid"><h3>Thêm video YouTube</h3>
 <label>Tên bài</label><input id="v_title"><label>Link hoặc ID YouTube</label><input id="v_yt"><label>Mô tả</label><input id="v_desc"><button>Thêm video</button></form>
 
+<form class="panel" id="p-edit"><h3>Sửa chương</h3><p class="mu" id="e_info"></p>
+<label>Tên chương</label><input id="e_title"><label>Ngày cập nhật</label><input id="e_date" type="date">
+<div id="e_novel"><label>Nội dung</label><textarea id="e_text" style="min-height:280px"></textarea></div>
+<p class="mu" id="e_mn" hidden>Với manga, ở đây sửa được tên chương và ngày. Muốn đổi ảnh thì xóa chương rồi đăng lại.</p>
+<button>Lưu thay đổi</button> <button type="button" id="e_cancel" style="background:#888">Hủy</button></form>
+
 <div class="panel" id="p-man"><h3>Quản lý / xóa</h3><p class="mu">Xóa chỉ gỡ khỏi web; file ảnh và chương vẫn còn trong repo.</p><div id="manage"></div></div>
 </div>
 </main>
@@ -85,12 +92,17 @@ const resize = (f, w = 600) => new Promise(r => { const im = new Image(); im.onl
 const rid = () => Date.now().toString(36);
 let cfg = {}, data = null;
 
-const api = (p, o = {}) => fetch(`https://api.github.com/repos/${cfg.u}/${cfg.r}/contents/${p}` + (o.q || ""), { method: o.m || "GET", headers: { Authorization: "Bearer " + cfg.t, Accept: "application/vnd.github+json" }, body: o.body && JSON.stringify(o.body) });
+const api = (p, o = {}) => fetch(`https://api.github.com/repos/${cfg.u}/${cfg.r}/contents/${p}` + (o.q ? o.q + "&_=" + Date.now() : ""), { method: o.m || "GET", cache: "no-store", headers: { Authorization: "Bearer " + cfg.t, Accept: "application/vnd.github+json" }, body: o.body && JSON.stringify(o.body) });
 async function put(path, content, msg) {
-  let sha; const g = await api(path, { q: "?ref=" + cfg.b });
-  if (g.ok) sha = (await g.json()).sha; else if (g.status !== 404) throw new Error("Không đọc được " + path + " (" + g.status + ")");
-  const r = await api(path, { m: "PUT", body: { message: msg, content, branch: cfg.b, sha } });
-  if (!r.ok) throw new Error((await r.json()).message || "Lỗi " + r.status);
+  for (let t = 0; t < 3; t++) {
+    let sha; const g = await api(path, { q: "?ref=" + cfg.b });
+    if (g.ok) sha = (await g.json()).sha; else if (g.status !== 404) throw new Error("Không đọc được " + path + " (" + g.status + ")");
+    const r = await api(path, { m: "PUT", body: { message: msg, content, branch: cfg.b, sha } });
+    if (r.ok) return;
+    const j = await r.json().catch(() => ({}));
+    if (r.status === 409 && t < 2) { await new Promise(res => setTimeout(res, 800)); continue }
+    throw new Error(j.message || "Lỗi " + r.status);
+  }
 }
 const save = msg => put("data.json", b64t(JSON.stringify(data, null, 1)), msg);
 async function run(fn) { const bs = [...document.querySelectorAll("button")]; bs.forEach(b => b.disabled = true); try { await fn() } catch (e) { log("❌ " + e.message) } bs.forEach(b => b.disabled = false) }
@@ -116,7 +128,7 @@ $("#g_out").onclick = () => { ls.del("cfg"); ["g_u", "g_r", "g_t"].forEach(i => 
 
 const TABS = [["series", "📚 Bộ truyện"], ["chap", "➕ Chương"], ["tip", "💡 Mẹo"], ["link", "🔗 Liên kết"], ["vid", "🎵 Video"], ["man", "🗂️ Quản lý"]];
 $("#tabs").innerHTML = TABS.map(([k, l]) => `<button type="button" data-k="${k}">${l}</button>`).join("");
-const tab = k => { TABS.forEach(([t]) => $("#p-" + t).classList.toggle("on", t === k)); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)) };
+const tab = k => { [...TABS.map(x => x[0]), "edit"].forEach(t => $("#p-" + t).classList.toggle("on", t === k)); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)) };
 $("#tabs").onclick = e => { const b = e.target.closest("button"); if (b) tab(b.dataset.k) }; tab("series");
 
 function fillSel() {
@@ -172,12 +184,47 @@ $("#p-vid").onsubmit = e => { e.preventDefault(); run(async () => {
 
 function manage() {
   const out = [];
-  for (const k of ["novels", "manga"]) data[k].forEach((s, i) => out.push(`<div class="row"><b>${k === "novels" ? "📖" : "🖼️"} ${esc(s.title)}</b><button data-d="${k}|${i}">✕ Xóa bộ</button>${s.chapters.map((c, j) => `<div class="sub">${esc(c.t)}<button data-d="${k}|${i}|${j}">✕</button></div>`).join("")}</div>`));
+  for (const k of ["novels", "manga"]) data[k].forEach((s, i) => out.push(`<div class="row"><b>${k === "novels" ? "📖" : "🖼️"} ${esc(s.title)}</b><button class="ok" data-s="${k}|${i}">✎ Sửa bộ</button><button data-d="${k}|${i}">✕ Xóa bộ</button>${s.chapters.map((c, j) => `<div class="sub">${esc(c.t)} <span class="mu">${c.date ? "· " + c.date : ""}</span><button class="ok" data-e="${k}|${i}|${j}">✎ Sửa</button><button class="ok" data-m="${k}|${i}|${j}|-1">↑</button><button class="ok" data-m="${k}|${i}|${j}|1">↓</button><button data-d="${k}|${i}|${j}">✕</button></div>`).join("")}</div>`));
   for (const [k, l] of [["tips", "💡"], ["links", "🔗"], ["videos", "🎵"]]) data[k].forEach((d, i) => out.push(`<div class="row">${l} ${esc(d.title)}<button data-d="${k}|${i}">✕</button></div>`));
   $("#manage").innerHTML = out.join("") || "<p class='mu'>Chưa có gì.</p>";
 }
 $("#manage").onclick = e => { const b = e.target.closest("button[data-d]"); if (!b) return; const [k, i, j] = b.dataset.d.split("|"); if (!confirm("Gỡ mục này khỏi web?")) return;
   run(async () => { j === undefined ? data[k].splice(+i, 1) : data[k][+i].chapters.splice(+j, 1); await save("Xóa mục"); done("✅ Đã gỡ.") }) };
+
+async function getText(p) {
+  const r = await fetch(`https://api.github.com/repos/${cfg.u}/${cfg.r}/contents/${p}?ref=${cfg.b}&_=${Date.now()}`, { cache: "no-store", headers: { Authorization: "Bearer " + cfg.t, Accept: "application/vnd.github.raw+json" } });
+  if (!r.ok) throw new Error("Không tải được " + p + " (" + r.status + ")"); return r.text();
+}
+let ed = null;
+$("#manage").addEventListener("click", e => {
+  const bs = e.target.closest("button[data-s]"), bm = e.target.closest("button[data-m]"), be = e.target.closest("button[data-e]");
+  if (bs) {
+    const [k, i] = bs.dataset.s.split("|"), s = data[k][+i];
+    $("#s_kind").value = k === "novels" ? "novel" : "manga"; $("#s_title").value = s.title; $("#s_slug").value = s.slug; $("#s_author").value = s.author || "";
+    $("#s_status").value = s.status || "Đang dịch"; $("#s_desc").value = s.desc || ""; $("#s_cover").value = ""; tab("series"); log("Đang sửa bộ: " + s.title + " (chọn ảnh bìa mới nếu muốn đổi)");
+  } else if (bm) {
+    const [k, i, j, d] = bm.dataset.m.split("|"), a = data[k][+i].chapters, x = +j, y = x + +d; if (y < 0 || y >= a.length) return;
+    [a[x], a[y]] = [a[y], a[x]]; run(async () => { await save("Đổi thứ tự chương"); done("✅ Đã đổi thứ tự chương.") });
+  } else if (be) {
+    const [k, i, j] = be.dataset.e.split("|"), s = data[k][+i], c = s.chapters[+j]; ed = { k, i: +i, j: +j };
+    run(async () => {
+      $("#e_info").textContent = s.title; $("#e_title").value = c.t; $("#e_date").value = c.date || ""; $("#e_novel").hidden = k !== "novels"; $("#e_mn").hidden = k === "novels";
+      if (k === "novels") { log("Đang tải nội dung chương..."); $("#e_text").value = c.text ?? await getText(c.file) }
+      tab("edit"); log("Đang sửa: " + c.t);
+    });
+  }
+});
+$("#p-edit").onsubmit = e => { e.preventDefault(); run(async () => {
+  if (!ed) throw new Error("Chưa chọn chương nào"); const s = data[ed.k][ed.i], c = s.chapters[ed.j], t = $("#e_title").value.trim(); if (!t) throw new Error("Hãy nhập tên chương");
+  c.t = t; c.date = $("#e_date").value;
+  if (ed.k === "novels") {
+    const text = $("#e_text").value; if (!text.trim()) throw new Error("Nội dung đang trống");
+    c.words = text.trim().split(/\s+/).length;
+    if (c.text !== undefined) c.text = text; else { log("Đang lưu nội dung..."); await put(c.file, b64t(text), "Sửa chương: " + t) }
+  }
+  await save("Sửa chương: " + s.title + " - " + t); ed = null; done("✅ Đã lưu chỉnh sửa. Web cập nhật sau 1–2 phút."); tab("man");
+}) };
+$("#e_cancel").onclick = () => { ed = null; tab("man") };
 </script>
 </body>
 </html>
