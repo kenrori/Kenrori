@@ -83,12 +83,6 @@
  ],
  "videos": [
   {
-   "title": "Bài hát Vietsub (file trong repo)",
-   "mp4": "videos/bai-hat.mp4",
-   "vtt": "videos/bai-hat.vi.vtt",
-   "desc": "Phụ đề .vtt hiện trong trình phát."
-  },
-  {
    "title": "NELKE - ステレオタイプヒロイック / Stereotype Heroic",
    "youtube": "vIgR0XQxFig",
    "desc": ""
