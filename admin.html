@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Quản trị · Kho Game</title>
+<style>
+:root{--bg:#f4f5fb;--card:#fff;--tx:#1b2033;--mu:#6a7288;--ac:#6558f5;--ac2:#b05cf5;--bd:#e4e7f1}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1117;--card:#1a1d29;--tx:#e8eaf2;--mu:#9aa2b8;--ac:#8b84ff;--ac2:#c47dff;--bd:#2b3042}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;padding:18px 16px}header div,main{max-width:760px;margin:auto}
+header h1{margin:0;font-size:1.3rem}header a{color:#fff}
+main{padding:14px 16px 80px}
+details,.panel{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:14px}
+summary{font-weight:600;cursor:pointer}
+label{display:block;margin:12px 0 4px;font-weight:600;font-size:.9rem}
+input,select,textarea{width:100%;font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:9px 12px}
+textarea{min-height:110px}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:10px 18px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;margin-top:14px}
+button:disabled{opacity:.5}
+.tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px}.tabs button{margin:0;background:var(--card);color:var(--tx);border:1px solid var(--bd);white-space:nowrap;flex:none}
+.tabs button.on{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent}
+.panel{display:none}.panel.on{display:block}
+.mu{color:var(--mu);font-size:.88rem}
+#log{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--bd);padding:10px 16px;font-size:.92rem;z-index:9}
+.row{padding:8px 0;border-bottom:1px solid var(--bd)}.row button,.sub button{margin:0 0 0 8px;padding:2px 10px;background:#d33}.sub{margin-left:20px;color:var(--mu);font-size:.9rem;padding:2px 0}
+</style>
+</head>
+<body>
+<header><div><h1>🛠️ Trang quản trị</h1><span class="mu" style="color:#ffffffcc">Thêm truyện, chương, mẹo... không cần sửa code · <a href="index.html">← Về trang chính</a></span></div></header>
+<main>
+<details id="cfg" open><summary>🔑 Kết nối GitHub</summary>
+<p class="mu">Token chỉ lưu trong trình duyệt của bạn và chỉ gửi tới GitHub. Tạo token giới hạn cho đúng repo này (quyền Contents: Read and write).</p>
+<label>Tên người dùng GitHub</label><input id="g_u" placeholder="username">
+<label>Tên repo</label><input id="g_r" placeholder="kho-game">
+<label>Nhánh</label><input id="g_b" value="main">
+<label>Token (github_pat_...)</label><input id="g_t" type="password" autocomplete="off">
+<button id="g_go">Lưu & kết nối</button> <button id="g_out" style="background:#888">Xóa thông tin đã lưu</button></details>
+
+<div id="app" hidden>
+<div class="tabs" id="tabs"></div>
+
+<form class="panel" id="p-series"><h3>Thêm / sửa bộ truyện</h3><p class="mu">Nhập trùng đường dẫn (slug) của bộ có sẵn thì sẽ sửa bộ đó.</p>
+<label>Loại</label><select id="s_kind"><option value="novel">📖 Novel</option><option value="manga">🖼️ Manga</option></select>
+<label>Tên truyện</label><input id="s_title">
+<label>Slug (tên thư mục, để trống sẽ tự tạo)</label><input id="s_slug">
+<label>Tác giả</label><input id="s_author">
+<label>Trạng thái</label><select id="s_status"><option>Đang dịch</option><option>Hoàn thành</option><option>Tạm ngưng</option></select>
+<label>Mô tả</label><textarea id="s_desc"></textarea>
+<label>Ảnh bìa (tự thu nhỏ)</label><input id="s_cover" type="file" accept="image/*">
+<button>Lưu bộ truyện</button></form>
+
+<form class="panel" id="p-chap"><h3>Thêm chương mới</h3>
+<label>Chọn bộ</label><select id="c_ser"></select>
+<label>Tên chương</label><input id="c_title" placeholder="Chương 12: ...">
+<label>Ngày cập nhật</label><input id="c_date" type="date">
+<div id="c_novel"><label>Nội dung (dán vào) — hoặc chọn file .txt bên dưới</label><textarea id="c_text" style="min-height:200px"></textarea><input id="c_file" type="file" accept=".txt"></div>
+<div id="c_manga"><label>Ảnh các trang (chọn nhiều ảnh, tự xếp theo tên file)</label><input id="c_imgs" type="file" accept="image/*" multiple></div>
+<button>Đăng chương</button></form>
+
+<form class="panel" id="p-tip"><h3>Thêm mẹo game</h3>
+<label>Tiêu đề</label><input id="t_title"><label>Game</label><input id="t_game"><label>Nội dung</label><textarea id="t_text"></textarea>
+<label>Ảnh minh họa (không bắt buộc)</label><input id="t_img" type="file" accept="image/*"><button>Thêm mẹo</button></form>
+
+<form class="panel" id="p-link"><h3>Thêm liên kết</h3>
+<label>Tên</label><input id="l_title"><label>Địa chỉ (https://...)</label><input id="l_url"><label>Mô tả</label><input id="l_desc"><label>Nhãn (cách nhau bằng dấu phẩy)</label><input id="l_tags"><button>Thêm liên kết</button></form>
+
+<form class="panel" id="p-vid"><h3>Thêm video YouTube</h3>
+<label>Tên bài</label><input id="v_title"><label>Link hoặc ID YouTube</label><input id="v_yt"><label>Mô tả</label><input id="v_desc"><button>Thêm video</button></form>
+
+<div class="panel" id="p-man"><h3>Quản lý / xóa</h3><p class="mu">Xóa chỉ gỡ khỏi web; file ảnh và chương vẫn còn trong repo.</p><div id="manage"></div></div>
+</div>
+</main>
+<div id="log">Nhập thông tin kết nối ở trên.</div>
+<script>
+const $ = s => document.querySelector(s), esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const ls = { get: k => { try { return localStorage.getItem(k) } catch (e) {} }, set: (k, v) => { try { localStorage.setItem(k, v) } catch (e) {} }, del: k => { try { localStorage.removeItem(k) } catch (e) {} } };
+const KEYS = { novel: "novels", manga: "manga" }, log = m => $("#log").textContent = m;
+const slugify = x => x.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const b64t = t => { const b = new TextEncoder().encode(t); let s = ""; for (let i = 0; i < b.length; i += 8192) s += String.fromCharCode(...b.subarray(i, i + 8192)); return btoa(s) };
+const t64 = b => new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\n/g, "")), c => c.charCodeAt(0)));
+const fileB64 = f => new Promise(r => { const x = new FileReader(); x.onload = () => r(x.result.split(",")[1]); x.readAsDataURL(f) });
+const resize = (f, w = 600) => new Promise(r => { const im = new Image(); im.onload = () => { const k = Math.min(1, w / im.width), c = document.createElement("canvas"); c.width = im.width * k; c.height = im.height * k; c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); r(c.toDataURL("image/jpeg", .85).split(",")[1]) }; im.src = URL.createObjectURL(f) });
+const rid = () => Date.now().toString(36);
+let cfg = {}, data = null;
+
+const api = (p, o = {}) => fetch(`https://api.github.com/repos/${cfg.u}/${cfg.r}/contents/${p}` + (o.q || ""), { method: o.m || "GET", headers: { Authorization: "Bearer " + cfg.t, Accept: "application/vnd.github+json" }, body: o.body && JSON.stringify(o.body) });
+async function put(path, content, msg) {
+  let sha; const g = await api(path, { q: "?ref=" + cfg.b });
+  if (g.ok) sha = (await g.json()).sha; else if (g.status !== 404) throw new Error("Không đọc được " + path + " (" + g.status + ")");
+  const r = await api(path, { m: "PUT", body: { message: msg, content, branch: cfg.b, sha } });
+  if (!r.ok) throw new Error((await r.json()).message || "Lỗi " + r.status);
+}
+const save = msg => put("data.json", b64t(JSON.stringify(data, null, 1)), msg);
+async function run(fn) { const bs = [...document.querySelectorAll("button")]; bs.forEach(b => b.disabled = true); try { await fn() } catch (e) { log("❌ " + e.message) } bs.forEach(b => b.disabled = false) }
+const done = m => { log(m); fillSel(); manage() };
+
+async function connect() {
+  cfg = { u: $("#g_u").value.trim(), r: $("#g_r").value.trim(), b: $("#g_b").value.trim() || "main", t: $("#g_t").value.trim() };
+  ls.set("cfg", JSON.stringify(cfg));
+  await run(async () => {
+    log("Đang kết nối...");
+    const rp = await fetch(`https://api.github.com/repos/${cfg.u}/${cfg.r}`, { headers: { Authorization: "Bearer " + cfg.t } });
+    if (!rp.ok) throw new Error("Không vào được repo (" + rp.status + "). Kiểm tra tên người dùng, tên repo và token.");
+    const r = await api("data.json", { q: "?ref=" + cfg.b });
+    if (r.status === 404) data = {}; else if (r.ok) data = JSON.parse(t64((await r.json()).content)); else throw new Error("Không đọc được data.json (" + r.status + ")");
+    for (const k of ["tips", "links", "novels", "manga", "videos"]) data[k] ??= [];
+    $("#app").hidden = false; $("#cfg").open = false; $("#c_date").value = new Date().toISOString().slice(0, 10);
+    fillSel(); manage(); log("✅ Đã kết nối. Chọn mục cần thêm.");
+  });
+}
+const saved = ls.get("cfg"); if (saved) { try { const c = JSON.parse(saved); $("#g_u").value = c.u; $("#g_r").value = c.r; $("#g_b").value = c.b; $("#g_t").value = c.t } catch (e) {} }
+$("#g_go").onclick = connect;
+$("#g_out").onclick = () => { ls.del("cfg"); ["g_u", "g_r", "g_t"].forEach(i => $("#" + i).value = ""); $("#app").hidden = true; log("Đã xóa thông tin đã lưu.") };
+
+const TABS = [["series", "📚 Bộ truyện"], ["chap", "➕ Chương"], ["tip", "💡 Mẹo"], ["link", "🔗 Liên kết"], ["vid", "🎵 Video"], ["man", "🗂️ Quản lý"]];
+$("#tabs").innerHTML = TABS.map(([k, l]) => `<button type="button" data-k="${k}">${l}</button>`).join("");
+const tab = k => { TABS.forEach(([t]) => $("#p-" + t).classList.toggle("on", t === k)); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)) };
+$("#tabs").onclick = e => { const b = e.target.closest("button"); if (b) tab(b.dataset.k) }; tab("series");
+
+function fillSel() {
+  const o = []; for (const k of ["novel", "manga"]) data[KEYS[k]].forEach((s, i) => o.push(`<option value="${k}|${i}">${k === "novel" ? "📖" : "🖼️"} ${esc(s.title)}</option>`));
+  $("#c_ser").innerHTML = o.join("") || "<option value=''>(chưa có bộ nào)</option>"; chapUI();
+}
+function chapUI() { const k = $("#c_ser").value.split("|")[0]; $("#c_novel").hidden = k !== "novel"; $("#c_manga").hidden = k !== "manga" }
+$("#c_ser").onchange = chapUI;
+
+$("#p-series").onsubmit = e => { e.preventDefault(); run(async () => {
+  const kind = $("#s_kind").value, title = $("#s_title").value.trim(); if (!title) throw new Error("Hãy nhập tên truyện");
+  const slug = slugify($("#s_slug").value || title), list = data[KEYS[kind]]; let s = list.find(x => x.slug === slug);
+  if (!s) { s = { slug, chapters: [] }; list.push(s) }
+  Object.assign(s, { title, author: $("#s_author").value.trim(), status: $("#s_status").value, desc: $("#s_desc").value.trim() });
+  const f = $("#s_cover").files[0];
+  if (f) { log("Đang tải ảnh bìa..."); const p = `images/${slug}-bia.jpg`; await put(p, await resize(f), "Bìa: " + title); s.cover = p }
+  await save("Thêm/sửa truyện: " + title); done("✅ Đã lưu bộ truyện. Web cập nhật sau 1–2 phút.");
+}) };
+
+$("#p-chap").onsubmit = e => { e.preventDefault(); run(async () => {
+  const [kind, i] = $("#c_ser").value.split("|"), s = data[KEYS[kind]]?.[i]; if (!s) throw new Error("Hãy tạo/chọn bộ truyện trước");
+  const t = $("#c_title").value.trim(); if (!t) throw new Error("Hãy nhập tên chương");
+  const id = `c${s.chapters.length + 1}_${rid()}`, ch = { t, date: $("#c_date").value };
+  if (kind === "novel") {
+    let text = $("#c_text").value; const f = $("#c_file").files[0]; if (!text.trim() && f) text = await f.text();
+    if (!text.trim()) throw new Error("Hãy dán nội dung hoặc chọn file .txt");
+    const p = `novels/${s.slug}/${id}.txt`; log("Đang tải chương..."); await put(p, b64t(text), "Chương: " + t); ch.file = p; ch.words = text.trim().split(/\s+/).length;
+  } else {
+    const fs = [...$("#c_imgs").files].sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })); if (!fs.length) throw new Error("Hãy chọn ảnh các trang");
+    ch.pages = [];
+    for (let j = 0; j < fs.length; j++) { const ext = (fs[j].name.split(".").pop() || "jpg").toLowerCase(), p = `manga/${s.slug}/${id}/${String(j + 1).padStart(3, "0")}.${ext}`; log(`Đang tải trang ${j + 1}/${fs.length}...`); await put(p, await fileB64(fs[j]), `${s.title} ${t} tr.${j + 1}`); ch.pages.push(p) }
+  }
+  s.chapters.push(ch); await save("Thêm chương: " + s.title + " - " + t);
+  ["c_title", "c_text"].forEach(x => $("#" + x).value = ""); $("#c_file").value = $("#c_imgs").value = ""; done("✅ Đã đăng chương. Web cập nhật sau 1–2 phút.");
+}) };
+
+$("#p-tip").onsubmit = e => { e.preventDefault(); run(async () => {
+  const title = $("#t_title").value.trim(); if (!title) throw new Error("Hãy nhập tiêu đề");
+  const d = { title, game: $("#t_game").value.trim(), text: $("#t_text").value.trim(), img: "" }, f = $("#t_img").files[0];
+  if (f) { const p = `images/tips/${slugify(title)}-${rid()}.${(f.name.split(".").pop() || "jpg").toLowerCase()}`; log("Đang tải ảnh..."); await put(p, await fileB64(f), "Ảnh mẹo: " + title); d.img = p }
+  data.tips.unshift(d); await save("Thêm mẹo: " + title); e.target.reset(); done("✅ Đã thêm mẹo.");
+}) };
+$("#p-link").onsubmit = e => { e.preventDefault(); run(async () => {
+  const title = $("#l_title").value.trim(), url = $("#l_url").value.trim(); if (!title || !/^https?:\/\//.test(url)) throw new Error("Cần tên và địa chỉ bắt đầu bằng https://");
+  data.links.push({ title, url, desc: $("#l_desc").value.trim(), tags: $("#l_tags").value.split(",").map(x => x.trim()).filter(Boolean) });
+  await save("Thêm liên kết: " + title); e.target.reset(); done("✅ Đã thêm liên kết.");
+}) };
+$("#p-vid").onsubmit = e => { e.preventDefault(); run(async () => {
+  const title = $("#v_title").value.trim(), v = $("#v_yt").value.trim(); if (!title || !v) throw new Error("Cần tên bài và link/ID YouTube");
+  const m = v.match(/(?:v=|youtu\.be\/|embed\/)([\w-]{11})/);
+  data.videos.push({ title, youtube: m ? m[1] : v, desc: $("#v_desc").value.trim() }); await save("Thêm video: " + title); e.target.reset(); done("✅ Đã thêm video.");
+}) };
+
+function manage() {
+  const out = [];
+  for (const k of ["novels", "manga"]) data[k].forEach((s, i) => out.push(`<div class="row"><b>${k === "novels" ? "📖" : "🖼️"} ${esc(s.title)}</b><button data-d="${k}|${i}">✕ Xóa bộ</button>${s.chapters.map((c, j) => `<div class="sub">${esc(c.t)}<button data-d="${k}|${i}|${j}">✕</button></div>`).join("")}</div>`));
+  for (const [k, l] of [["tips", "💡"], ["links", "🔗"], ["videos", "🎵"]]) data[k].forEach((d, i) => out.push(`<div class="row">${l} ${esc(d.title)}<button data-d="${k}|${i}">✕</button></div>`));
+  $("#manage").innerHTML = out.join("") || "<p class='mu'>Chưa có gì.</p>";
+}
+$("#manage").onclick = e => { const b = e.target.closest("button[data-d]"); if (!b) return; const [k, i, j] = b.dataset.d.split("|"); if (!confirm("Gỡ mục này khỏi web?")) return;
+  run(async () => { j === undefined ? data[k].splice(+i, 1) : data[k][+i].chapters.splice(+j, 1); await save("Xóa mục"); done("✅ Đã gỡ.") }) };
+</script>
+</body>
+</html>

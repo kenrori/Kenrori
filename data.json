@@ -1,0 +1,105 @@
+{
+ "tips": [
+  {
+   "title": "Cách farm Raid nhanh (ví dụ)",
+   "game": "Granblue Fantasy",
+   "text": "Viết mẹo ở đây. Bấm vào ảnh để phóng to.",
+   "img": "images/vi-du-1.png"
+  }
+ ],
+ "links": [
+  {
+   "title": "Greasyfork",
+   "url": "https://greasyfork.org/",
+   "desc": "Kho userscript.",
+   "tags": [
+    "script"
+   ]
+  },
+  {
+   "title": "NovelUpdates",
+   "url": "https://www.novelupdates.com/",
+   "desc": "Tra cứu novel.",
+   "tags": [
+    "novel"
+   ]
+  },
+  {
+   "title": "Nexus Mods",
+   "url": "https://www.nexusmods.com/",
+   "desc": "Kho mod game.",
+   "tags": [
+    "mod"
+   ]
+  }
+ ],
+ "novels": [
+  {
+   "slug": "vi-du-novel",
+   "title": "Tên Light Novel (ví dụ)",
+   "author": "Tác giả",
+   "status": "Đang dịch",
+   "cover": "images/bia-1.jpg",
+   "desc": "Giới thiệu ngắn về bộ truyện.",
+   "chapters": [
+    {
+     "t": "Chương 1: Khởi đầu",
+     "date": "2026-11-01",
+     "text": "Đây là đoạn mở đầu.\nĐoạn thứ hai của chương 1."
+    },
+    {
+     "t": "Chương 2: Gặp gỡ",
+     "date": "2026-11-05",
+     "text": "Nội dung chương 2.\nThêm một đoạn nữa."
+    },
+    {
+     "t": "Chương 3: Hành trình",
+     "date": "2026-11-12",
+     "file": "novels/vi-du-novel/c3.txt",
+     "words": 3200
+    }
+   ]
+  }
+ ],
+ "manga": [
+  {
+   "slug": "vi-du-manga",
+   "title": "Tên Manga (ví dụ)",
+   "author": "Tác giả",
+   "status": "Hoàn thành",
+   "cover": "images/bia-2.jpg",
+   "desc": "Giới thiệu ngắn.",
+   "chapters": [
+    {
+     "t": "Chương 1",
+     "date": "2026-11-02",
+     "dir": "manga/vi-du-manga/c1/",
+     "n": 20,
+     "pad": 2,
+     "ext": "jpg"
+    },
+    {
+     "t": "Chương 2",
+     "date": "2026-11-09",
+     "dir": "manga/vi-du-manga/c2/",
+     "n": 18,
+     "pad": 2,
+     "ext": "jpg"
+    }
+   ]
+  }
+ ],
+ "videos": [
+  {
+   "title": "Bài hát Vietsub (YouTube)",
+   "youtube": "dQw4w9WgXcQ",
+   "desc": "Thay ID bằng video của bạn."
+  },
+  {
+   "title": "Bài hát Vietsub (file trong repo)",
+   "mp4": "videos/bai-hat.mp4",
+   "vtt": "videos/bai-hat.vi.vtt",
+   "desc": "Phụ đề .vtt hiện trong trình phát."
+  }
+ ]
+}
