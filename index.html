@@ -250,6 +250,21 @@ a.nxc:hover{background:var(--ach)}
 .fc{border:0;background:var(--bg);border-radius:5px;padding:4px 11px;font-size:.84rem;font-weight:600}.fc:hover{color:var(--ac)}.fc.on{background:var(--ac);color:#fff}
 .sh .lnk{font-size:.9rem}
 @media(max-width:700px){.frow{grid-template-columns:1fr;gap:6px}.frow>span{padding:0}.subl{margin-left:0;width:100%}.admb{margin-left:0}.endr{flex-direction:column}}
+.sh{flex-wrap:wrap}
+.utabs{display:flex;gap:2px;background:var(--s1);border-radius:8px;padding:3px;overflow-x:auto;max-width:100%;scrollbar-width:none}
+.utabs button{border:0;background:none;padding:5px 12px;border-radius:6px;font-weight:600;font-size:.88rem;color:var(--mu);white-space:nowrap}.utabs button:hover{color:var(--tx)}
+.utabs button.on{background:var(--bg);color:var(--tx);box-shadow:0 1px 3px #0002}
+.sha{display:flex;gap:6px;align-items:center}.more.all{width:auto;border-radius:18px;padding:0 14px;font-size:.88rem;font-weight:600}
+.more.arw{border:0;color:var(--tx)}@media(hover:none){.more.arw{display:none}}
+.nwt{position:absolute;top:6px;right:6px;font-style:normal;font-size:.68rem;font-weight:700;background:var(--ac);color:#fff;padding:1px 7px;border-radius:4px}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px 16px}
+.card.vd{padding:0;background:none}.card.vd h3{margin:10px 0 2px;font-size:.98rem}.card.vd p{margin:0}
+.yt{position:relative;display:block;width:100%;aspect-ratio:16/9;border:0;padding:0;border-radius:8px;background:#000 center/cover no-repeat;overflow:hidden}
+.yt .pl{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:56px;height:56px;border-radius:50%;background:#000b;color:#fff;display:grid;place-items:center;transition:background .15s}
+.yt .pl svg{fill:#fff;stroke:none;width:22px;height:22px;margin-left:3px}.yt:hover .pl{background:var(--ac)}
+iframe.ytf{width:100%;aspect-ratio:16/9;margin:0;border-radius:8px}
+.sc small{flex-wrap:wrap;gap:2px 8px}.sc small>*{white-space:nowrap}
+@media(max-width:700px){.hau{display:none}.hero{height:400px}}
 </style>
 </head>
 <body>
@@ -354,20 +369,21 @@ const first = s => s.chapters.map(c => c.date || "").filter(Boolean).sort()[0] |
 const sum = s => s.chapters.reduce((a, c) => a + (c.words || (c.text ? W(c.text) : 0)), 0);
 const allS = () => [...DATA.novels.map(s => ({ k: "novel", s })), ...DATA.manga.map(s => ({ k: "manga", s }))];
 const byNew = a => [...a].sort((x, y) => latest(y.s || y).localeCompare(latest(x.s || x)));
-const sec = (t, more, body) => `<section class="sec"><div class="sh"><h2>${t}</h2>${more ? `<a class="more" href="#${more}" title="Xem tất cả">${ic(I.next)}</a>` : ""}</div>${body}</section>`;
+const sec = (t, more, body) => `<section class="sec"><div class="sh"><h2>${t}</h2>${more ? `<a class="more all" href="#${more}">Xem tất cả</a>` : ""}</div>${body}</section>`;
 const fmtOf = (k, s) => k === "manga" ? "Manga" : s.format === "Web Novel" ? "Web Novel" : "Light Novel";
 const isWN = s => s.format === "Web Novel";
 const people = t => String(t || "").split(/\s*[,、&]\s*/).map(x => x.trim()).filter(Boolean);
 const aHref = n => "#tac-gia/" + encodeURIComponent(n);
 const credit = (lbl, t) => people(t).map(n => `<a class="cr" href="${aHref(n)}"><span>${lbl}</span><b>${esc(n)}</b></a>`).join("");
 const pLinks = t => people(t).map(n => `<a class="al" href="${aHref(n)}">${esc(n)}</a>`).join(", ");
-const card = (k, s) => `<a class="sc" href="#${k}/${s.slug}"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b><i class="kd">${fmtOf(k, s)}</i></div><div class="ct" title="${esc(s.title)}${s.orig ? "\n" + esc(s.orig) : ""}">${esc(s.title)}</div>${s.author ? `<div class="ca">${esc(s.author)}</div>` : ""}<small>${stDot(s)}<span>${s.chapters.length} chương</span></small></a>`;
+const isNew = s => { const d = first(s); if (!d) return false; const t = new Date(); return (Date.UTC(t.getFullYear(), t.getMonth(), t.getDate()) - Date.parse(d)) / 864e5 <= 14 };
+const card = (k, s) => `<a class="sc" href="#${k}/${s.slug}"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b><i class="kd">${fmtOf(k, s)}</i>${isNew(s) ? '<i class="nwt">Mới</i>' : ""}</div><div class="ct" title="${esc(s.title)}${s.orig ? "\n" + esc(s.orig) : ""}">${esc(s.title)}</div>${s.author ? `<div class="ca">${esc(s.author)}</div>` : ""}<small>${stDot(s)}<span>${s.chapters.length} chương</span></small></a>`;
 const gridOf = (k, a) => a.length ? `<div class="series">${byNew(a).map(s => card(k, s)).join("")}</div>` : EMPTY;
 const recent = n => { const a = []; for (const { k, s } of allS()) s.chapters.forEach((c, i) => a.push({ k, s, c, i })); return a.sort((x, y) => (y.c.date || "").localeCompare(x.c.date || "") || y.i - x.i).slice(0, n) };
 const rdSet = (k, s) => { try { return JSON.parse(ls.get("r:" + k + ":" + s.slug) || "[]") } catch (e) { return [] } };
-function latestUpdates() {
+function latestUpdates(f = "all") {
   const m = new Map();
-  for (const r of recent(80)) { const id = r.k + ":" + r.s.slug; if (!m.has(id)) m.set(id, { k: r.k, s: r.s, c: [] }); const g = m.get(id); if (g.c.length < 3) g.c.push(r) }
+  for (const r of recent(400).filter(r => f === "all" || fKey(r.k, r.s) === f)) { const id = r.k + ":" + r.s.slug; if (!m.has(id)) m.set(id, { k: r.k, s: r.s, c: [] }); const g = m.get(id); if (g.c.length < 3) g.c.push(r) }
   const G = [...m.values()].slice(0, 12); if (!G.length) return EMPTY;
   return `<div class="lu">${G.map(g => { const rs = rdSet(g.k, g.s); return `<div class="lui"><a class="th" href="#${g.k}/${g.s.slug}" style="--h:${hue(g.s.title)}">${imgTag(g.s.cover)}</a><div class="lub"><a class="lut" href="#${g.k}/${g.s.slug}" title="${esc(g.s.title)}">${esc(g.s.title)}</a>${g.c.map(r => `<a class="luc${rs.includes(r.i) ? " rd" : ""}" href="#${r.k}/${r.s.slug}/${r.i}"><span>${r.c.vol ? esc(r.c.vol) + ", " : ""}${esc(r.c.t)}</span><small>${ago(r.c.date)}</small></a>`).join("")}</div></div>` }).join("")}</div>`;
 }
@@ -398,7 +414,7 @@ const R = {
   tips: d => `<details class="it"><summary>${esc(d.title)} <span class="pill">${esc(d.game)}</span></summary><p>${esc(d.text)}</p>${imgTag(d.img)}</details>`,
   links: d => `<div class="card"><h3><a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.title)}</a></h3><p>${esc(d.desc)}</p><div class="acts">${(d.tags || []).map(t => `<span class="pill">${esc(t)}</span>`).join("")}</div></div>`,
   guides: d => `<details class="it"><summary>${esc(d.title)}</summary><p>${esc(d.text)}</p>${imgTag(d.img)}${d.embed ? `<iframe class="tool" src="${esc(d.embed)}" loading="lazy"></iframe>` : ""}</details>`,
-  videos: d => `<div class="card"><h3>${esc(d.title)}</h3><p>${esc(d.desc)}</p>` + (d.youtube ? `<iframe src="https://www.youtube-nocookie.com/embed/${esc(d.youtube)}" allowfullscreen loading="lazy"></iframe>` : `<video controls preload="none" src="${esc(d.mp4)}">${d.vtt ? `<track kind="subtitles" srclang="vi" label="Tiếng Việt" src="${esc(d.vtt)}" default>` : ""}</video>`) + `</div>`
+  videos: d => `<div class="card vd">` + (d.youtube ? `<button class="yt" style="background-image:url(&quot;https://i.ytimg.com/vi/${esc(d.youtube)}/hqdefault.jpg&quot;)" onclick="ytPlay(this,'${esc(d.youtube)}')" aria-label="Phát video ${esc(d.title)}"><span class="pl">${ic(I.play)}</span></button>` : `<video controls preload="none" src="${esc(d.mp4)}">${d.vtt ? `<track kind="subtitles" srclang="vi" label="Tiếng Việt" src="${esc(d.vtt)}" default>` : ""}</video>`) + `<h3>${esc(d.title)}</h3>${d.desc ? `<p>${esc(d.desc)}</p>` : ""}</div>`
 };
 const toolUI = (t, i) => `<details class="it tb"><summary>${esc(t.t)}</summary>${t.h ? `<p>${esc(t.h)}</p>` : ""}<textarea class="i" placeholder="Dán nội dung vào đây"></textarea>${t.x ? `<textarea class="x" placeholder="${esc(t.x)}"></textarea>` : ""}<button onclick="runTool(${i},this)">Chạy</button><button onclick="copyOut(this)">Sao chép kết quả</button><textarea class="o" readonly placeholder="Kết quả"></textarea></details>`;
 function runTool(i, b) { const d = b.closest(".tb"), o = $(".o", d); try { o.value = TOOLS[i].fn($(".i", d).value, $(".x", d)?.value || "") } catch (e) { o.value = "Lỗi: " + e.message } }
@@ -421,14 +437,23 @@ function searchInit() {
   $("#frs").onclick = () => { FS = { ...FS0, k: [], st: [], g: [] }; searchInit() };
   searchRes();
 }
+function shelfSec(t, more, items) { return `<section class="sec"><div class="sh"><h2>${t}</h2><div class="sha"><button class="more arw" onclick="shScroll(this,-1)" title="Cuộn sang trái" aria-label="Cuộn sang trái">${ic(I.prev)}</button><button class="more arw" onclick="shScroll(this,1)" title="Cuộn sang phải" aria-label="Cuộn sang phải">${ic(I.next)}</button>${more ? `<a class="more all" href="#${more}">Xem tất cả</a>` : ""}</div></div><div class="shelf">${items.join("")}</div></section>` }
+function shArrows() { document.querySelectorAll(".shelf").forEach(sh => sh.closest("section").querySelectorAll(".arw").forEach(a => a.hidden = sh.scrollWidth <= sh.clientWidth + 4)) }
+addEventListener("resize", () => shArrows());
+function shScroll(b, d) { const sh = b.closest("section").querySelector(".shelf"); sh.scrollBy({ left: d * sh.clientWidth * .85, behavior: "smooth" }) }
+function luTab(f) { ls.set("lut", f); $("#lu").innerHTML = latestUpdates(f); document.querySelectorAll(".utabs button").forEach(b => b.classList.toggle("on", b.dataset.f === f)) }
+function ytPlay(b, id) { const f = document.createElement("iframe"); f.className = "ytf"; f.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1`; f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen"; f.allowFullscreen = true; b.replaceWith(f) }
 const P = {
   home: () => {
-    const rd = reading(), fv = favList(), news = allS().filter(x => x.s.chapters.length).sort((x, y) => first(y.s).localeCompare(first(x.s))).slice(0, 15);
+    const rd = reading(), fv = favList(), lt = ls.get("lut") || "all";
+    const cat = f => allS().filter(({ k, s }) => fKey(k, s) === f && s.chapters.length).sort((x, y) => latest(y.s).localeCompare(latest(x.s))).slice(0, 18);
+    const tabs = [["all", "Tất cả"], ["ln", "Light Novel"], ["wn", "Web Novel"], ["manga", "Manga"]].filter(([f]) => f === "all" || cat(f).length);
     return heroHtml()
-      + (rd.length ? sec("Đọc tiếp", "library", `<div class="shelf">${rd.map(rdCard).join("")}</div>`) : "")
-      + sec("Mới cập nhật", null, latestUpdates())
-      + (fv.length ? sec("Thư viện của bạn", "library", `<div class="shelf">${fv.slice(0, 15).map(({ k, s }) => card(k, s)).join("")}</div>`) : "")
-      + (news.length ? sec("Mới thêm", null, `<div class="shelf">${news.map(({ k, s }) => card(k, s)).join("")}</div>`) : "")
+      + (rd.length ? shelfSec("Đọc tiếp", "library", rd.map(rdCard)) : "")
+      + `<section class="sec"><div class="sh"><h2>Mới cập nhật</h2>${tabs.length > 2 ? `<div class="utabs" role="tablist">${tabs.map(([f, l]) => `<button role="tab" data-f="${f}" class="${f === lt ? "on" : ""}" onclick="luTab('${f}')">${l}</button>`).join("")}</div>` : ""}</div><div id="lu">${latestUpdates(tabs.some(([f]) => f === lt) ? lt : "all")}</div></section>`
+      + [["ln", "Light Novel", "novels"], ["wn", "Web Novel", "webnovel"], ["manga", "Manga", "manga"]].map(([f, l, h]) => { const L = cat(f); return L.length ? shelfSec(l, h, L.map(({ k, s }) => card(k, s))) : "" }).join("")
+      + (DATA.videos.length ? sec("Video Vietsub", "videos", `<div class="vgrid">${DATA.videos.slice(0, 4).map(R.videos).join("")}</div>`) : "")
+      + (fv.length ? shelfSec("Thư viện của bạn", "library", fv.slice(0, 18).map(({ k, s }) => card(k, s))) : "")
       + (DATA.projects.length ? sec("Dự án", "projects", `<div class="grid">${DATA.projects.slice(0, 3).map(projCard).join("")}</div>`) : "")
       + (allG().length ? sec("Thể loại", "the-loai", gChips("all")) : "");
   },
@@ -440,7 +465,7 @@ const P = {
   library: () => { const rd = reading(100), fv = favList(); return sec("Đang đọc", null, rd.length ? `<div class="series">${rd.map(rdCard).join("")}</div>` : '<p class="empty">Bạn chưa đọc bộ nào. Chọn một bộ ở trang chủ để bắt đầu.</p>') + sec("Yêu thích", null, fv.length ? favGrid(fv) : '<p class="empty">Chưa có bộ nào. Mở trang truyện và bấm Thêm vào thư viện.</p>') + `<p class="lead">Thư viện lưu trên trình duyệt này.</p>` },
   tips: () => sec("Mẹo game", null, DATA.tips.map(R.tips).join("") || EMPTY),
   links: () => sec("Liên kết hữu ích", null, DATA.links.length ? `<div class="grid">${DATA.links.map(R.links).join("")}</div>` : EMPTY),
-  videos: () => sec("Video nhạc Vietsub", null, DATA.videos.length ? `<div class="grid">${DATA.videos.map(R.videos).join("")}</div>` : EMPTY),
+  videos: () => sec("Video nhạc Vietsub", null, DATA.videos.length ? `<div class="vgrid">${DATA.videos.map(R.videos).join("")}</div>` : EMPTY),
   projects: () => sec("Dự án", null, `<p class="lead">Script, mod và công cụ do Kenrori làm.</p>` + (DATA.projects.length ? `<div class="grid">${DATA.projects.map(projCard).join("")}</div>` : EMPTY)),
   about: () => {
     const A = DATA.site.about || {}, isU = u => /^https?:\/\//.test(u || "");
@@ -560,7 +585,7 @@ function route() {
   else if (a === "tac-gia") app.innerHTML = P.author(b || "");
   else if (s) c !== undefined ? read(a, s, +c) : detail(a, s);
   else app.innerHTML = (P[k] || P.home)();
-  scrollTo(0, 0); setClear();
+  scrollTo(0, 0); setClear(); shArrows();
   if (document.querySelectorAll(".hs").length > 1) HT = setInterval(() => heroGo(1), 8000);
 }
 $("#q").addEventListener("input", e => {
