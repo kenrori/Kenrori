@@ -306,12 +306,13 @@ iframe.ytf{width:100%;aspect-ratio:16/9;margin:0;border-radius:8px}
 <div id="ann" hidden></div>
 <header id="top"><button class="ib" id="hb" title="Menu"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><a class="logo" href="#home"><i>K</i>Kenrori</a>
 <label class="srch"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Tìm truyện, dự án, mẹo..." aria-label="Tìm kiếm"></label>
-<button class="ib" id="th" title="Đổi sáng/tối"><svg class="i" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button></header>
+<a class="ib" id="stu" href="#viet" hidden aria-label="Góc tác giả"></a><button class="ib" id="th" title="Đổi sáng/tối"><svg class="i" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button></header>
 <main id="app"></main>
 <footer><span>© Kenrori. Dịch phi lợi nhuận.</span><a href="#about">Giới thiệu</a><a href="feed.xml">RSS</a><a href="admin.html">Quản trị</a></footer>
 </div>
 <div id="pg"></div><button id="up" hidden title="Lên đầu trang"><svg class="i" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg></button>
 <div id="lb" role="dialog" aria-label="Xem ảnh"><img alt=""><button class="lbb lbx" aria-label="Đóng">✕</button><button class="lbb lbp" aria-label="Ảnh trước">‹</button><button class="lbb lbn" aria-label="Ảnh sau">›</button><span class="lbc"></span></div>
+<script src="sangtac.js"></script>
 <script>
 /* ============ DATA: CHỈ CẦN SỬA PHẦN NÀY ============ */
 const DATA = { tips: [], links: [], guides: [], novels: [], manga: [], videos: [], projects: [], site: {} };
@@ -351,7 +352,7 @@ const I = {
 DATA.projects ??= [];
 DATA.site ??= {};
 const KEY = { novel: "novels", manga: "manga" }, app = $("#app"), EMPTY = '<p class="empty">Chưa có nội dung.</p>';
-const NAV = [["home", "home", "Trang chủ"], ["—", "book", "Truyện"], ["novels", "", "Light Novel"], ["webnovel", "", "Web Novel"], ["manga", "", "Manga"], ["tim-kiem", "", "Tìm truyện"], ["the-loai", "", "Thể loại"], ["library", "", "Thư viện của tôi"], ["—", "game", "Game & công cụ"], ["projects", "", "Dự án"], ["tips", "", "Mẹo game"], ["tools", "", "Công cụ"], ["—", "more", "Khác"], ["videos", "", "Video Vietsub"], ["links", "", "Liên kết"], ["about", "", "Giới thiệu"]];
+const NAV = [["home", "home", "Trang chủ"], ["—", "book", "Truyện"], ["novels", "", "Light Novel"], ["webnovel", "", "Web Novel"], ["manga", "", "Manga"], ["sang-tac", "", "Sáng tác"], ["tim-kiem", "", "Tìm truyện"], ["the-loai", "", "Thể loại"], ["library", "", "Thư viện của tôi"], ["—", "game", "Game & công cụ"], ["projects", "", "Dự án"], ["tips", "", "Mẹo game"], ["tools", "", "Công cụ"], ["—", "more", "Khác"], ["videos", "", "Video Vietsub"], ["links", "", "Liên kết"], ["about", "", "Giới thiệu"]];
 function toast(m) { let t = $("#toast"); if (!t) { t = document.createElement("div"); t.id = "toast"; document.body.appendChild(t) } t.textContent = m; t.className = "on"; clearTimeout(toast.t); toast.t = setTimeout(() => t.className = "", 3500) }
 async function shareS(k, slug) {
   const s = (DATA[KEY[k]] || []).find(x => x.slug === slug); if (!s) return;
@@ -375,7 +376,7 @@ function setTitle(a, b, c, s) {
   document.title = t ? `${t} | Kenrori` : "Kenrori";
 }
 function renderSide() {
-  $("#nv").innerHTML = NAV.map(([k, icn, l]) => k === "—" ? `<div class="sg">${ic(I[icn])}${l}</div>` : `<a href="#${k}" data-k="${k}"${icn ? ' class="top"' : ""}>${icn ? ic(I[icn]) : ""}${l}</a>`).join("");
+  $("#nv").innerHTML = NAV.filter(([k]) => k !== "sang-tac" || (window.ST && ST.enabled())).map(([k, icn, l]) => k === "—" ? `<div class="sg">${ic(I[icn])}${l}</div>` : `<a href="#${k}" data-k="${k}"${icn ? ' class="top"' : ""}>${icn ? ic(I[icn]) : ""}${l}</a>`).join("");
   const dc = (DATA.site.about || {}).discord;
   $("#sfoot").innerHTML = (/^https?:\/\//.test(dc || "") ? `<a class="dcb" href="${esc(dc)}" target="_blank" rel="noopener">Tham gia Discord</a>` : "") + (installEv ? `<a class="dcb ins" href="javascript:void 0" onclick="doInstall()">${ic(I.dl)}Cài ứng dụng</a>` : "") + `<a href="feed.xml">Theo dõi qua RSS</a><a href="admin.html">Quản trị</a><span>© Kenrori</span>`;
 }
@@ -485,6 +486,7 @@ const P = {
       + `<section class="sec"><div class="sh"><h2>Mới cập nhật</h2>${tabs.length > 2 ? `<div class="utabs" role="tablist">${tabs.map(([f, l]) => `<button role="tab" data-f="${f}" class="${f === lt ? "on" : ""}" onclick="luTab('${f}')">${l}</button>`).join("")}</div>` : ""}</div><div id="lu">${latestUpdates(tabs.some(([f]) => f === lt) ? lt : "all")}</div></section>`
       + schedSec()
       + [["ln", "Light Novel", "novels"], ["wn", "Web Novel", "webnovel"], ["manga", "Manga", "manga"]].map(([f, l, h]) => { const L = cat(f); return L.length ? shelfSec(l, h, L.map(({ k, s }) => card(k, s))) : "" }).join("")
+      + (window.ST && ST.enabled() ? '<div id="st_home"></div>' : "")
       + (soon.length ? shelfSec("Sắp ra mắt", null, soon.map(({ k, s }) => card(k, s))) : "")
       + (fin.length ? shelfSec("Đã hoàn thành", null, fin.map(({ k, s }) => card(k, s))) : "")
       + (DATA.videos.length ? sec("Video Vietsub", "videos", `<div class="vgrid">${DATA.videos.slice(0, 4).map(R.videos).join("")}</div>`) : "")
@@ -536,7 +538,7 @@ function rset(k, d) {
   applyRS();
 }
 function detail(kind, s) {
-  const last = ls.get(kind + ":" + s.slug), rs = rdSet(kind, s), n = s.chapters.length, nv = new Set(s.chapters.map(c => (c.vol || "").trim()).filter(Boolean)).size; let desc = true, allOpen = false;
+  const last = ls.get(kind + ":" + s.slug), rs = rdSet(kind, s), n = s.chapters.length, nv = new Set(s.chapters.map(c => (c.vol || "").trim()).filter(Boolean)).size; let desc = ls.get("cdesc") === "1", allOpen = false;
   const tags = (s.genres || []).map(g => `<a class="pill" href="${gHref(g)}">${esc(g)}</a>`).join("");
   const shownAlt = s.orig || (s.alts || [])[0], alt = [s.orig, ...(s.alts || [])].filter(x => x && x !== shownAlt);
   const team = (s.team || []).filter(t => t.n), vc = s.vc || {};
@@ -547,7 +549,7 @@ function detail(kind, s) {
 <div class="tpt"><h1>${esc(s.title)}</h1>${s.orig || (s.alts || [])[0] ? `<div class="tpo" lang="${s.orig ? "ja" : "vi"}">${esc(s.orig || s.alts[0])}</div>` : ""}${s.author || s.artist ? `<div class="crs">${credit("Tác giả", s.author)}${s.artist && s.artist !== s.author ? credit("Minh họa", s.artist) : ""}</div>` : ""}</div>
 <div class="tpm"><div class="acts tpa2">${n ? `<a class="btn pri big" href="#${kind}/${s.slug}/${last ?? 0}">${ic(I.play)}${last != null ? "Đọc tiếp" : "Đọc từ đầu"}</a>` : ""}<button class="btn ico${fav ? " on" : ""}" id="fvb" title="${fav ? "Bỏ khỏi thư viện" : "Thêm vào thư viện"}" aria-label="Thư viện" aria-pressed="${fav}" onclick="toggleFav('${kind}','${esc(s.slug)}')">${ic(I.star)}</button><button class="btn ico" title="Chia sẻ" aria-label="Chia sẻ" onclick="shareS('${kind}','${esc(s.slug)}')">${ic(I.share)}</button>${n ? `<span class="subl">${last != null ? `<a href="#${kind}/${s.slug}/0">Đọc từ đầu</a>` : ""}<a href="#${kind}/${s.slug}/${n - 1}">Chương mới nhất</a></span>` : ""}${ADM ? `<span class="admb"><a class="btn ico sm" title="Thêm chương" href="admin.html#chap/${kind}/${s.slug}">${ic(I.plus)}</a><a class="btn ico sm" title="Sửa bộ" href="admin.html#series/${kind}/${s.slug}">${ic(I.edit)}</a></span>` : ""}</div><div class="tptg">${stDot(s)}${tags}</div>${s.prog || s.sched ? `<div class="prog">${s.prog ? `<span><i>Tiến độ</i>${esc(s.prog)}</span>` : ""}${s.sched ? `<span><i>Lịch ra chương</i>${esc(s.sched)}</span>` : ""}</div>` : ""}</div></div>
 <div class="tpd"><p class="sum clamp" id="dsc">${esc(s.desc) || "Chưa có tóm tắt."}</p><button class="lnk" id="dmore" hidden>Xem thêm</button></div>
-<div class="tpc"><div class="tpl"><div class="sh"><h2>Danh sách chương</h2></div><div class="bar2"><input id="cq" type="search" placeholder="Tìm chương theo tên hoặc số"><button id="cs">Mới nhất trước</button>${nv ? `<button id="cx">Hiện tất cả chương</button>` : ""}</div><div id="cl"></div></div>
+<div class="tpc"><div class="tpl"><div class="sh"><h2>Danh sách chương</h2></div><div class="bar2"><input id="cq" type="search" placeholder="Tìm chương theo tên hoặc số"><button id="cs" title="Đổi thứ tự">${ls.get("cdesc") === "1" ? "Mới nhất trước" : "Từ chương đầu"}</button>${nv ? `<button id="cx">Hiện tất cả chương</button>` : ""}</div><div id="cl"></div></div>
 <aside class="tpx">${info.map(([a, b]) => `<div class="ibx"><h4>${a}</h4><div>${b}</div></div>`).join("")}</aside></div></div>`;
   const dsc = $("#dsc"); if (dsc.scrollHeight > dsc.clientHeight + 2) { $("#dmore").hidden = false; $("#dmore").onclick = e => { const c = dsc.classList.toggle("clamp"); e.target.textContent = c ? "Xem thêm" : "Thu gọn" } }
   const volOf = c => (c.vol || "").trim();
@@ -568,7 +570,7 @@ function detail(kind, s) {
     }
     $("#cl").innerHTML = h || `<p class="empty">Không có chương nào khớp với từ khóa.</p>`;
   };
-  $("#cq").oninput = draw; $("#cs").onclick = e => { desc = !desc; e.target.textContent = desc ? "Mới nhất trước" : "Cũ nhất trước"; draw() };
+  $("#cq").oninput = draw; $("#cs").onclick = e => { desc = !desc; ls.set("cdesc", desc ? 1 : 0); e.target.textContent = desc ? "Mới nhất trước" : "Từ chương đầu"; draw() };
   if (nv) $("#cx").onclick = e => { allOpen = !allOpen; e.target.textContent = allOpen ? "Thu gọn danh sách" : "Hiện tất cả chương"; draw() };
   draw();
 }
@@ -620,6 +622,13 @@ addEventListener("resize", sideMode);
 function route() {
   RDKEY = null; clearInterval(HT); HI = 0; document.body.classList.remove("so");
   const [a, b, c] = decodeURIComponent(location.hash.slice(1)).split("/");
+  if (window.ST && ST.handles(a)) {
+    reading_ = a === "st" && !!c; sideMode(); document.body.classList.toggle("rdg", reading_);
+    document.querySelectorAll("#nv a").forEach(x => x.classList.toggle("on", x.dataset.k === "sang-tac" && (a === "sang-tac" || a === "st")));
+    scrollTo(0, 0); setClear();
+    ST.route().then(() => { scrollTo(0, 0); setClear(); shArrows(); gcCount() });
+    return;
+  }
   const s = b && ({ novel: DATA.novels, manga: DATA.manga }[a] || []).find(x => x.slug === b);
   const k = a === "novel" ? (s && isWN(s) ? "webnovel" : "novels") : a === "fav" ? "library" : a || "home";
   document.querySelectorAll("#nv a").forEach(x => x.classList.toggle("on", x.dataset.k === k));
@@ -630,6 +639,7 @@ function route() {
   else if (s) c !== undefined ? read(a, s, +c) : detail(a, s);
   else app.innerHTML = (P[k] || P.home)();
   scrollTo(0, 0); setClear(); shArrows(); setTitle(a, b, c, s); gcCount();
+  if ($("#st_home") && window.ST) ST.homeShelf();
   if (document.querySelectorAll(".hs").length > 1) HT = setInterval(() => heroGo(1), 8000);
 }
 $("#q").addEventListener("input", e => {
@@ -658,7 +668,7 @@ addEventListener("click", e => { const p = $("#rsp"), path = e.composedPath(); i
 addEventListener("keydown", e => { if (lbOpen()) { if (e.key === "Escape") lbClose(); else if (e.key === "ArrowRight") lbShow(LBI + 1); else if (e.key === "ArrowLeft") lbShow(LBI - 1); return } if (e.key === "Escape" && $("#rsp") && !$("#rsp").hidden) { rsToggle(false); return } if (!RDKEY || e.altKey || e.ctrlKey || e.metaKey || /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "")) return; if (e.key === "ArrowRight") RDKEY(1); else if (e.key === "ArrowLeft") RDKEY(-1) });
 addEventListener("hashchange", () => { $("#q").value = ""; route() });
 applyRS(); renderSide(); sideMode();
-(async () => { try { const r = await fetch("data.json?v=" + Date.now()); if (r.ok) Object.assign(DATA, await r.json()) } catch (e) {} DATA.site ??= {}; DATA.projects ??= []; gcInit(); renderSide(); renderAnn(); route() })();
+(async () => { try { const r = await fetch("data.json?v=" + Date.now()); if (r.ok) Object.assign(DATA, await r.json()) } catch (e) {} DATA.site ??= {}; DATA.projects ??= []; gcInit(); renderSide(); renderAnn(); if (window.ST) ST.initBtn(); route() })();
 </script>
 </body>
 </html>
