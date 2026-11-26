@@ -120,7 +120,19 @@ details.ms>summary::-webkit-details-marker{display:none}
 .vcbox{background:var(--s1);border-radius:8px;padding:14px 16px;margin:8px 0 18px}.vcbox input,.vcbox select{background:var(--bg)}
 .vcl{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0 4px}.vci{width:96px;text-align:center;font-size:.8rem}.vci img{width:96px;aspect-ratio:7/10;object-fit:cover;border-radius:4px;display:block;margin-bottom:4px}.vci button{margin:4px 0 0}
 .gt{display:grid;grid-template-columns:minmax(0,1fr) 60px minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 10px;background:var(--bg);border-radius:6px}.gt input{background:var(--bg);padding:6px 10px}.gt small{color:var(--mu)}
-.vc{display:flex;align-items:center;gap:8px;margin:0;padding:4px 6px;border-radius:4px;font-weight:400;font-size:.9rem;cursor:pointer}.vc:hover{background:var(--s2)}
+.vc{display:flex;align-items:center;gap:8px;margin:0;padding:4px 6px;border-radius:4px;font-weight:400;font-size:.9rem;cursor:pointer}.vc:hover{background:var(--s2)}.vc input,.vgh input{width:auto;margin:0;flex:none}
+#v_list{max-height:none;padding:6px}
+.vg+.vg{margin-top:4px}.vgh{display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--bg);border-radius:6px}
+.vgt{flex:1;min-width:0;display:flex;align-items:baseline;gap:10px;margin:0;padding:2px 4px;background:none!important;color:var(--tx);font-weight:400;text-align:left}
+.vgt::before{content:"";flex:none;width:0;height:0;border:5px solid transparent;border-left:6px solid var(--mu);transform:translateY(1px);transition:transform .15s}.vg.open .vgt::before{transform:translate(-2px,4px) rotate(90deg)}
+.vgt b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vgt small{color:var(--mu);white-space:nowrap}.vg.nov .vgt b{color:var(--warn)}
+.vgb{display:none;padding:4px 0 4px 26px}.vg.open .vgb{display:block}
+.vauto{display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--s1);border-radius:8px;padding:12px 16px;margin:8px 0 10px}.vauto p{margin:2px 0 0;font-size:.85rem}.vauto button{margin:0;flex:none;background:var(--bg)}.vauto button:hover{background:var(--s2)}
+.vhint{font-size:.85rem;margin:14px 0 0}
+.vbar{position:sticky;bottom:0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px;padding:10px 12px;background:var(--s2);border-radius:8px;box-shadow:0 -6px 16px #0000001f}
+.vbar input{flex:1 1 180px;width:auto;background:var(--bg)}.vbar button{margin:0}#v_cnt{font-weight:600;font-size:.9rem;flex:1 1 100%}
+@media(min-width:901px){#v_cnt{flex:0 0 auto;margin-right:4px}}
+@media(max-width:900px){.vauto{flex-direction:column;align-items:stretch}.vbar{padding:8px;gap:6px}#v_cnt{font-size:.82rem}.vbar button{padding:8px 12px;font-size:.88rem}.vbar input{padding:7px 10px;flex-basis:100%}}
 
 /* ---------- Translator ---------- */
 #t_set{background:var(--s1);border-radius:8px;padding:12px 16px;margin:16px 0}
@@ -333,9 +345,11 @@ details.ms>summary::-webkit-details-marker{display:none}
 <div class="g2"><div><label for="vc_vol">Tập</label><select id="vc_vol"></select></div><div><label for="vc_file">Ảnh bìa tập</label><input id="vc_file" type="file" accept="image/*"></div></div>
 <div class="acts"><button type="button" id="vc_save">Lưu bìa tập</button></div></div>
 <h4>Gán chương vào tập</h4>
-<label for="v_name">Tên tập <small>(để trống để bỏ các chương đã chọn khỏi tập)</small></label><input id="v_name" placeholder="Tập 1">
-<div class="vtools">Từ chương <input id="v_from" type="number" min="1"> đến <input id="v_to" type="number" min="1"><button type="button" id="v_range" class="sec">Chọn khoảng</button><button type="button" id="v_all" class="sec">Chọn tất cả</button><button type="button" id="v_none" class="sec">Bỏ chọn</button></div>
-<div id="v_list"></div><div class="acts"><button>Áp dụng</button><button type="button" id="v_cancel" class="sec">Hủy</button></div></form>
+<div class="vauto"><div><b>Tự chia tập</b><p class="mu">Bắt đầu tập mới mỗi khi gặp Minh họa hoặc Mở đầu sau chương thường, hoặc khi số chương quay về 1. Bạn xem trước rồi mới lưu.</p></div><button type="button" id="v_auto" class="sec">Tự chia tập</button></div>
+<p class="mu vhint">Hoặc gán tay: bấm vào tên tập để mở danh sách, tích ô cạnh tên tập để chọn cả tập. Giữ Shift khi bấm để chọn một dải chương.</p>
+<div class="vtools">Từ chương <input id="v_from" type="number" min="1"> đến <input id="v_to" type="number" min="1"><button type="button" id="v_range" class="sec">Chọn khoảng</button><button type="button" id="v_none" class="sec">Bỏ chọn</button><button type="button" id="v_exp" class="sec">Mở hết</button></div>
+<div id="v_list"></div>
+<div class="vbar"><span id="v_cnt">Chưa chọn chương nào</span><input id="v_name" list="v_vols" placeholder="Tên tập, ví dụ Tập 2" aria-label="Tên tập"><datalist id="v_vols"></datalist><button>Gán vào tập</button><button type="button" id="v_clear" class="sec" title="Bỏ các chương đã chọn ra khỏi tập">Bỏ khỏi tập</button><button type="button" id="v_cancel" class="sec">Xong</button></div></form>
 
 <form class="panel" id="p-edit"><h3>Sửa chương</h3><p class="mu" id="e_info"></p>
 <div class="g2"><div class="full"><label for="e_title">Tên chương</label><input id="e_title"></div><div><label for="e_vol">Tập <small>(để trống nếu không chia tập)</small></label><input id="e_vol"></div><div><label for="e_date">Ngày đăng</label><input id="e_date" type="date"></div></div>
@@ -542,7 +556,7 @@ const NUM = "(\\d+(?:[.,]\\d+)?|[IVXLC]+(?![\\p{L}]))";
 const CK = [
   [0, /^(minh h(ọa|oạ)|tranh minh h(ọa|oạ)|ảnh minh h(ọa|oạ)|ảnh màu|illustrations?|colou?r (pages|illustrations?))/i],
   [1, /^(lời mở đầu|mở đầu|mở màn|khúc dạo đầu|dạo đầu|prologue|lời dẫn|tự chương|序章|プロローグ)/i],
-  [3, /^(vĩ thanh|epilogue|lời kết|hồi kết|kết thúc|chương cuối|終章|エピローグ)/i],
+  [3, /^(vĩ thanh|epilogue|lời kết|hồi kết|kết thúc|chương cuối|chương kết|終章|エピローグ)/i],
   [4, /^(ngoại truyện|side ?story|extra|bonus|phụ lục|phiên ngoại|short story|truyện ngắn|ss(?![\p{L}])|番外)/iu],
   [5, /^(lời bạt|lời tác giả|lời người dịch|lời nhóm dịch|lời cảm ơn|afterword|postscript|tái bút|あとがき)/i]];
 const CHN = new RegExp(`(?:^|[\\s:\\-–—(\\[,])(?:chương|chapter|chap|ch\\.?|hồi|phần|tiết|episode|ep\\.?|part|act|第)\\s*${NUM}`, "iu"), LEAD = new RegExp(`^${NUM}\\s*[.:\\-–—)]`, "iu");
@@ -686,18 +700,70 @@ let ve = null;
 $("#manage").addEventListener("click", e => {
   const b = e.target.closest("button[data-v]"); if (!b) return; const [k, i] = b.dataset.v.split("|"); ve = { k, i: +i }; const s = data[k][+i];
   $("#v_info").textContent = s.title + " · " + s.chapters.length + " chương"; $("#v_name").value = ""; $("#v_from").value = $("#v_to").value = "";
-  $("#v_list").innerHTML = s.chapters.map((c, j) => `<label class="vc"><input type="checkbox" value="${j}"> ${j + 1}. ${c.vol ? "<b>" + esc(c.vol) + "</b> · " : ""}${esc(c.t)}</label>`).join(""); vcRender(); tab("vol");
+  vRender(); vcRender(); tab("vol");
 });
-const vbox = f => document.querySelectorAll("#v_list input").forEach((c, j) => c.checked = f(j));
-$("#v_all").onclick = () => vbox(() => true); $("#v_none").onclick = () => vbox(() => false);
-$("#v_range").onclick = () => { const x = +$("#v_from").value, y = +$("#v_to").value || x; vbox(j => j + 1 >= x && j + 1 <= y) };
-$("#v_cancel").onclick = () => { ve = null; tab("man") };
-$("#p-vol").onsubmit = e => { e.preventDefault(); run(async () => {
-  if (!ve) throw new Error("Chưa chọn bộ truyện"); const s = data[ve.k][ve.i], v = $("#v_name").value.trim(), sel = [...document.querySelectorAll("#v_list input:checked")].map(c => +c.value);
-  if (!sel.length) throw new Error("Hãy chọn ít nhất một chương");
+let vLast = null;
+const vols = s => [...new Set(s.chapters.map(c => (c.vol || "").trim()).filter(Boolean))];
+const nextVol = s => { const n = vols(s).map(volNum).filter(x => x != null); return "Tập " + ((n.length ? Math.floor(Math.max(...n)) : 0) + 1) };
+function vRender(keep) {
+  const s = data[ve.k][ve.i], runs = [], open = new Set(keep ? [...document.querySelectorAll("#v_list .vg.open")].map(g => g.dataset.v) : []);
+  s.chapters.forEach((c, j) => { const v = (c.vol || "").trim(), r = runs[runs.length - 1]; if (r && r.v === v) r.js.push(j); else runs.push({ v, js: [j] }) });
+  const few = s.chapters.length <= 20;
+  $("#v_list").innerHTML = runs.map(r => `<div class="vg${(keep ? open.has(r.v) : few || !r.v) ? " open" : ""}${r.v ? "" : " nov"}" data-v="${esc(r.v)}"><div class="vgh"><input type="checkbox" class="vga" aria-label="Chọn cả nhóm"><button type="button" class="vgt"><b>${r.v ? esc(r.v) : "Chưa có tập"}</b><small>${r.js.length} chương, số ${r.js[0] + 1}${r.js.length > 1 ? "–" + (r.js[r.js.length - 1] + 1) : ""}</small></button>${r.v ? `<button type="button" class="sec sm" data-vren="${esc(r.v)}">Đổi tên</button>` : ""}</div><div class="vgb">${r.js.map(j => `<label class="vc"><input type="checkbox" value="${j}"> ${j + 1}. ${esc(s.chapters[j].t)}${s.chapters[j].type === "img" ? ' <small class="mu">(ảnh)</small>' : ""}</label>`).join("")}</div></div>`).join("") || '<p class="mu">Bộ này chưa có chương nào.</p>';
+  $("#v_vols").innerHTML = vols(s).map(v => `<option value="${esc(v)}">`).join("");
+  $("#v_info").textContent = `${s.title}: ${s.chapters.length} chương, ${vols(s).length} tập`;
+  if (!$("#v_name").value.trim()) $("#v_name").value = s.chapters.some(c => !(c.vol || "").trim()) ? nextVol(s) : "";
+  vLast = null; vSync();
+}
+function vSync() {
+  let n = 0; document.querySelectorAll("#v_list .vg").forEach(g => { const L = [...g.querySelectorAll(".vgb input")], k = L.filter(c => c.checked).length; n += k; const a = g.querySelector(".vga"); a.checked = k > 0 && k === L.length; a.indeterminate = k > 0 && k < L.length });
+  $("#v_cnt").textContent = n ? `Đã chọn ${n} chương` : "Chưa chọn chương nào";
+}
+const vSel = () => [...document.querySelectorAll("#v_list .vgb input:checked")].map(c => +c.value);
+const vbox = f => { document.querySelectorAll("#v_list .vgb input").forEach(c => c.checked = f(+c.value)); document.querySelectorAll("#v_list .vg").forEach(g => { if (g.querySelector(".vgb input:checked")) g.classList.add("open") }); vSync() };
+$("#v_none").onclick = () => vbox(() => false);
+$("#v_exp").onclick = () => { const L = document.querySelectorAll("#v_list .vg"), all = [...L].every(g => g.classList.contains("open")); L.forEach(g => g.classList.toggle("open", !all)); $("#v_exp").textContent = all ? "Mở hết" : "Thu gọn hết" };
+$("#v_range").onclick = () => { const x = +$("#v_from").value, y = +$("#v_to").value || x; if (!x) return log("❌ Nhập số chương bắt đầu"); vbox(j => j + 1 >= x && j + 1 <= y) };
+$("#v_list").addEventListener("click", e => {
+  const t = e.target.closest(".vgt"); if (t) { t.closest(".vg").classList.toggle("open"); return }
+  const rn = e.target.closest("button[data-vren]");
+  if (rn) { const s = data[ve.k][ve.i], old = rn.dataset.vren, nw = (prompt(`Đổi tên "${old}" thành:`, old) || "").trim(); if (!nw || nw === old) return;
+    run(async () => { s.chapters.forEach(c => { if ((c.vol || "").trim() === old) c.vol = nw }); if (s.vc && s.vc[old]) { s.vc[nw] = s.vc[old]; delete s.vc[old] } await save(`Đổi tên tập: ${s.title} - ${old} thành ${nw}`); vRender(true); vcRender(); done(`✅ Đã đổi tên ${old} thành ${nw}.`) }); return }
+  const c = e.target.closest(".vgb input"); if (!c) return;
+  const j = +c.value; if (e.shiftKey && vLast != null) { const [a, b] = [Math.min(vLast, j), Math.max(vLast, j)]; document.querySelectorAll("#v_list .vgb input").forEach(x => { const k = +x.value; if (k >= a && k <= b) x.checked = c.checked }) }
+  vLast = j; vSync();
+});
+$("#v_list").addEventListener("change", e => { const a = e.target.closest(".vga"); if (!a) return; a.closest(".vg").querySelectorAll(".vgb input").forEach(c => c.checked = a.checked); vSync() });
+$("#v_cancel").onclick = () => { ve = null; manage(); tab("man") };
+const vAssign = v => run(async () => {
+  if (!ve) throw new Error("Chưa chọn bộ truyện"); const s = data[ve.k][ve.i], sel = vSel();
+  if (!sel.length) throw new Error("Hãy chọn ít nhất một chương (tích ô cạnh tên chương hoặc cạnh tên tập)");
   sel.forEach(j => { if (v) s.chapters[j].vol = v; else delete s.chapters[j].vol });
-  await save("Gán tập: " + s.title); ve = null; done("✅ Đã gán " + (v || "không tập") + " cho " + sel.length + " chương."); tab("man");
-}) };
+  await save("Gán tập: " + s.title); $("#v_name").value = ""; vRender(true); vcRender(); done(v ? `✅ Đã gán ${sel.length} chương vào ${v}.` : `✅ Đã bỏ ${sel.length} chương ra khỏi tập.`);
+});
+$("#p-vol").onsubmit = e => { e.preventDefault(); const v = $("#v_name").value.trim(); if (!v) return log("❌ Nhập tên tập, hoặc bấm Bỏ khỏi tập"); vAssign(v) };
+$("#v_clear").onclick = () => vAssign("");
+function vAutoPlan(L) {
+  const seg = []; let prev = null;
+  L.forEach((c, j) => {
+    let k = chKey(c); if (!k && (c.type === "img" || (c.pages && !c.file && !c.text)) && !/\d/.test(c.t || "")) k = [0, 0];
+    let brk = !seg.length;
+    if (!brk && k && prev) brk = (k[0] <= 1 && prev[0] >= 2) || (k[0] === 2 && (prev[0] === 3 || prev[0] === 5)) || (k[0] === 2 && prev[0] === 2 && k[1] <= 1 && prev[1] > 1);
+    if (brk) seg.push({ js: [] }); seg[seg.length - 1].js.push(j); if (k) prev = k;
+  });
+  const used = new Set(); seg.forEach((g, n) => { const own = (L[g.js[0]].vol || "").trim(); let name = own && !used.has(own) ? own : "Tập " + (n + 1), x = n + 1; while (used.has(name)) name = "Tập " + (++x); g.name = name; used.add(name) });
+  return seg;
+}
+$("#v_auto").onclick = () => {
+  if (!ve) return; const s = data[ve.k][ve.i], seg = vAutoPlan(s.chapters);
+  if (!s.chapters.length) return log("❌ Bộ này chưa có chương nào");
+  if (seg.length < 2) return log("Không tìm thấy chỗ chuyển tập (không có Minh họa hoặc Mở đầu xen giữa, số chương không quay về 1). Hãy gán tay.");
+  const same = seg.every(g => g.js.every(j => (s.chapters[j].vol || "").trim() === g.name));
+  if (same) return log("✅ Các chương đã được chia tập đúng như cách tự chia, không cần đổi.");
+  const sum = seg.map(g => `${g.name}: chương ${g.js[0] + 1}–${g.js[g.js.length - 1] + 1} (${g.js.length} chương, bắt đầu bằng "${s.chapters[g.js[0]].t.slice(0, 40)}")`).join("\n");
+  if (!confirm(`Chia "${s.title}" thành ${seg.length} tập như sau?\n\n${sum}\n\nSau đó vẫn sửa tay hoặc đổi tên tập được.`)) return;
+  run(async () => { seg.forEach(g => g.js.forEach(j => s.chapters[j].vol = g.name)); await save("Tự chia tập: " + s.title); $("#v_name").value = ""; vRender(); vcRender(); done(`✅ Đã chia thành ${seg.length} tập.`) });
+};
 
 /* ===== Công cụ dịch ===== */
 let sessionPin = "", trKey = "", trSlug = null, trTimer = null, trStop = false, trNext = 0;
