@@ -216,7 +216,8 @@ details.ms>summary::-webkit-details-marker{display:none}
 .pvg{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}.pvg img{width:100%;aspect-ratio:7/10;object-fit:cover;border-radius:6px;background:var(--s1)}
 .ilist{display:flex;flex-direction:column;gap:6px;margin-top:10px;max-height:62vh;overflow-y:auto;padding-right:4px}
 .irow{display:grid;grid-template-columns:24px 34px 130px minmax(0,1fr) auto auto;gap:4px 8px;align-items:center;background:var(--s1);border-radius:6px;padding:6px 8px}
-.isv{display:inline-flex;gap:6px;align-items:center;margin-left:auto}.isv input{width:150px;padding:5px 9px}.irow.off{opacity:.5}.irow input[type=text]{padding:6px 9px;background:var(--bg)}.irow .n{color:var(--mu);font-size:.8rem;text-align:right}.irow small{color:var(--mu);white-space:nowrap;font-size:.8rem}
+.isv{display:inline-flex;gap:6px;align-items:center;margin-left:auto}.isv input{width:150px;padding:5px 9px}.stkl{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}.stki{position:relative;width:76px;height:76px;border-radius:8px;background:var(--s1);display:grid;place-items:center}.stki img{max-width:64px;max-height:64px}.stki button{position:absolute;top:-6px;right:-6px;margin:0;width:22px;height:22px;padding:0;border-radius:50%;justify-content:center;font-size:.75rem}.stkup{display:inline-flex;align-items:center;padding:9px 16px;border-radius:6px;background:var(--s1);font-weight:600;cursor:pointer}.stkup:hover{background:var(--s2)}details.gsx{margin:12px 0}details.gsx summary{cursor:pointer;font-weight:600}
+.irow.off{opacity:.5}.irow input[type=text]{padding:6px 9px;background:var(--bg)}.irow .n{color:var(--mu);font-size:.8rem;text-align:right}.irow small{color:var(--mu);white-space:nowrap;font-size:.8rem}
 .irow .sn{grid-column:3 / -1;color:var(--mu);font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #i_opt{background:var(--s1);border-radius:8px;padding:10px 14px;margin-top:14px}#i_opt summary{cursor:pointer;font-weight:600}#i_opt input:not([type=checkbox]),#i_opt select{background:var(--bg)}
 @media(max-width:900px){.irow{grid-template-columns:24px minmax(0,1fr) auto auto;grid-template-areas:"c v w b" "t t t t" "s s s s"}.irow .n{display:none}.irow>input[type=checkbox]{grid-area:c}.irow .vi{grid-area:v}.irow small{grid-area:w}.irow button{grid-area:b}.irow input[data-it]{grid-area:t}.irow .sn{grid-area:s}}
@@ -381,12 +382,20 @@ details.ms>summary::-webkit-details-marker{display:none}
 <div class="full"><label for="b_rep">Link báo lỗi chương <small>(hiện ở cuối mỗi chương; để trống sẽ dùng link Discord)</small></label><input id="b_rep" placeholder="https://discord.gg/... hoặc link một kênh, một form"></div>
 <div class="full"><label for="b_intro">Giới thiệu nhóm</label><textarea id="b_intro"></textarea></div>
 <div class="full"><label for="b_ct">Nguồn liên hệ <small>(mỗi dòng: Tên | link hoặc email)</small></label><textarea id="b_ct" placeholder="Facebook | https://facebook.com/...&#10;Email | ten@mail.com"></textarea></div></div>
-<h4>Bình luận (Giscus)</h4><p class="mu">Lấy 4 giá trị tại giscus.app. Để trống để tắt bình luận.</p>
+<h4>Supabase</h4><p class="mu">Nơi lưu bình luận ẩn danh (và khu Sáng tác nếu bạn bật). Tạo project miễn phí tại supabase.com, chạy file binh-luan.sql trong SQL Editor, rồi dán 2 giá trị dưới đây (nút Connect trong project). Chỉ dùng key loại "publishable" (hoặc "anon"), tuyệt đối không dùng key "secret" hay "service_role".</p>
+<div class="g2"><div><label for="sb_url">Project URL</label><input id="sb_url" placeholder="https://abcxyz.supabase.co"></div><div><label for="sb_key">Publishable key</label><input id="sb_key" placeholder="sb_publishable_..."></div></div>
+<h4>Bình luận</h4><label for="cm_mode">Kiểu bình luận</label><select id="cm_mode"><option value="anon">Ẩn danh: chỉ cần nhập tên, có biểu cảm và GIF (cần Supabase ở trên)</option><option value="giscus">Giscus: người đọc đăng nhập GitHub</option><option value="off">Tắt bình luận</option></select>
+<div class="g2"><div class="full"><label for="gp_key">GIPHY API key <small>(không bắt buộc; có key thì người đọc tìm được GIF ngay trong khung bình luận. Lấy miễn phí tại developers.giphy.com. Không có key người đọc vẫn dán được link GIF.)</small></label><input id="gp_key" placeholder="Để trống nếu không dùng"></div></div>
+<details class="gsx"><summary>Giscus (chỉ khi chọn kiểu Giscus)</summary><p class="mu">Lấy 4 giá trị tại giscus.app.</p>
 <div class="g2"><div><label for="g_repo">Repo <small>(tên-người-dùng/tên-repo)</small></label><input id="g_repo"></div><div><label for="g_rid">Repo ID</label><input id="g_rid"></div>
-<div><label for="g_cat">Tên danh mục</label><input id="g_cat"></div><div><label for="g_cid">Category ID</label><input id="g_cid"></div></div>
-<h4>Khu Sáng tác (Supabase)</h4><p class="mu">Điền sau khi tạo project Supabase và chạy file supabase-setup.sql. Để trống để tắt khu Sáng tác. Key dùng loại "publishable" (hoặc "anon"), tuyệt đối không dùng key "secret" hay "service_role".</p>
-<div class="g2"><div><label for="sb_url">Project URL</label><input id="sb_url" placeholder="https://abcxyz.supabase.co"></div><div><label for="sb_key">Publishable key</label><input id="sb_key" placeholder="sb_publishable_..."></div>
-<div class="full"><label for="st_rules">Nội quy Sáng tác <small>(mỗi dòng một điều; để trống để dùng nội quy mặc định)</small></label><textarea id="st_rules" style="min-height:120px"></textarea></div></div>
+<div><label for="g_cat">Tên danh mục</label><input id="g_cat"></div><div><label for="g_cid">Category ID</label><input id="g_cid"></div></div></details>
+<h4>Khu Sáng tác</h4><label class="ck"><input type="checkbox" id="st_on"> Bật khu Sáng tác: người đọc tạo tài khoản và tự đăng truyện của mình <small>(cần chạy thêm file supabase-setup.sql)</small></label>
+<div class="g2"><div class="full"><label for="st_rules">Nội quy Sáng tác <small>(mỗi dòng một điều; để trống để dùng nội quy mặc định)</small></label><textarea id="st_rules" style="min-height:120px"></textarea></div></div>
+<h4>Kiểm duyệt bình luận</h4><p class="mu">Đặt mật khẩu kiểm duyệt trong Supabase (xem đầu file binh-luan.sql), rồi nhập vào đây. Mật khẩu chỉ lưu trên máy này, không đưa lên web. Khi đã lưu, trên web bạn thấy nút Ẩn, Xóa và Chặn dưới mỗi bình luận.</p>
+<div class="g2"><div><label for="cm_pw">Mật khẩu kiểm duyệt</label><input id="cm_pw" type="password" autocomplete="off"></div><div class="acts" style="align-self:end"><button type="button" class="sec" id="cm_pwgo">Kiểm tra và lưu trên máy này</button><button type="button" class="sec" id="cm_pwx">Xóa khỏi máy này</button></div></div>
+<h4>Nhãn dán (emote) riêng của nhóm</h4><p class="mu">Ảnh nhỏ (GIF động, PNG, WebP) người đọc chọn được trong khung bình luận, giống emote trên các web truyện. Nên dùng ảnh vuông, dưới 500 KB. Ảnh tĩnh được tự thu nhỏ còn 160 px.</p>
+<div id="stk_list" class="stkl"></div>
+<div class="acts"><label class="sec stkup">Thêm nhãn dán<input type="file" id="stk_in" accept="image/gif,image/png,image/webp,image/jpeg" multiple hidden></label></div>
 <h4>Thống kê lượt xem (GoatCounter)</h4><p class="mu">Đăng ký miễn phí tại goatcounter.com, rồi nhập mã trang của bạn (phần đứng trước .goatcounter.com). Để trống để tắt. Lượt xem trên máy đã đăng nhập quản trị không được tính.</p>
 <label for="gc_code">Mã GoatCounter</label><input id="gc_code" placeholder="kenrori">
 <h4>Địa chỉ web cho RSS</h4><label for="w_url">Để trống nếu dùng địa chỉ github.io mặc định</label><input id="w_url" placeholder="https://username.github.io/kho-game/">
@@ -841,16 +850,41 @@ function siteLoad() {
   const S = data.site, A = S.about || {}, G = S.giscus || {};
   $("#a_text").value = S.announce?.text || ""; $("#a_url").value = S.announce?.url || ""; $("#b_name").value = A.name || ""; $("#b_intro").value = A.intro || ""; $("#b_dc").value = A.discord || "";
   $("#b_ct").value = (A.contacts || []).map(c => c.label + " | " + c.url).join("\n");
-  $("#g_repo").value = G.repo || ""; $("#g_rid").value = G.repoId || ""; $("#g_cat").value = G.category || ""; $("#g_cid").value = G.categoryId || ""; $("#w_url").value = S.url || ""; $("#b_rep").value = S.report || ""; $("#gc_code").value = S.gc || ""; $("#sb_url").value = (S.sb || {}).url || ""; $("#sb_key").value = (S.sb || {}).key || ""; $("#st_rules").value = S.rules || "";
+  $("#g_repo").value = G.repo || ""; $("#g_rid").value = G.repoId || ""; $("#g_cat").value = G.category || ""; $("#g_cid").value = G.categoryId || ""; $("#w_url").value = S.url || ""; $("#b_rep").value = S.report || ""; $("#gc_code").value = S.gc || ""; $("#sb_url").value = (S.sb || {}).url || ""; $("#sb_key").value = (S.sb || {}).key || ""; $("#st_rules").value = S.rules || ""; $("#cm_mode").value = S.cmt || "anon"; $("#gp_key").value = S.giphy || ""; $("#st_on").checked = S.st === true; try { $("#cm_pw").value = localStorage.getItem("cmtMod") || "" } catch (e) {} stkRender();
 }
 $("#p-site").onsubmit = e => { e.preventDefault(); run(async () => {
   const t = id => $("#" + id).value.trim(), ok = v => !v || /^https?:\/\//.test(v);
   if (/service_role|sb_secret_/.test(t("sb_key")) || (t("sb_key").split(".").length === 3 && /service_role/.test((() => { try { return atob((t("sb_key").split(".")[1] || "").replace(/-/g, "+").replace(/_/g, "/")) } catch (e) { return "" } })()))) throw new Error("Đây là key bí mật (secret/service_role). Hãy dùng publishable key hoặc anon key.");
   if (t("sb_url") && !/^https:\/\/[a-z0-9-]+\.supabase\.(co|in)\/?$/i.test(t("sb_url"))) throw new Error("Project URL Supabase có dạng https://xxxx.supabase.co");
   if (!ok(t("b_dc")) || !ok(t("a_url")) || !ok(t("w_url")) || !ok(t("b_rep"))) throw new Error("Link phải bắt đầu bằng https://");
-  data.site = { announce: { text: t("a_text"), url: t("a_url") }, about: { name: t("b_name"), intro: t("b_intro"), discord: t("b_dc"), contacts: $("#b_ct").value.split("\n").map(l => { const [x, ...y] = l.split("|"); return { label: (x || "").trim(), url: y.join("|").trim() } }).filter(c => c.label) }, giscus: { repo: t("g_repo"), repoId: t("g_rid"), category: t("g_cat"), categoryId: t("g_cid") }, url: t("w_url"), report: t("b_rep"), sb: { url: t("sb_url").replace(/\/+$/, ""), key: t("sb_key") }, rules: $("#st_rules").value.trim(), gc: t("gc_code").replace(/^https?:\/\//, "").replace(/\.goatcounter\.com.*$/, "") };
+  data.site = { announce: { text: t("a_text"), url: t("a_url") }, about: { name: t("b_name"), intro: t("b_intro"), discord: t("b_dc"), contacts: $("#b_ct").value.split("\n").map(l => { const [x, ...y] = l.split("|"); return { label: (x || "").trim(), url: y.join("|").trim() } }).filter(c => c.label) }, giscus: { repo: t("g_repo"), repoId: t("g_rid"), category: t("g_cat"), categoryId: t("g_cid") }, url: t("w_url"), report: t("b_rep"), sb: { url: t("sb_url").replace(/\/+$/, ""), key: t("sb_key") }, rules: $("#st_rules").value.trim(), cmt: $("#cm_mode").value, giphy: t("gp_key"), st: $("#st_on").checked, stickers: data.site.stickers || [], gc: t("gc_code").replace(/^https?:\/\//, "").replace(/\.goatcounter\.com.*$/, "") };
   await save("Cập nhật cài đặt trang web"); done("✅ Đã lưu cài đặt. Web cập nhật sau 1–2 phút.");
 }) };
+/* ===== Kiểm duyệt bình luận và nhãn dán ===== */
+$("#cm_pwgo").onclick = () => run(async () => {
+  const pw = $("#cm_pw").value, u = $("#sb_url").value.trim().replace(/\/+$/, ""), k = $("#sb_key").value.trim();
+  if (!pw) throw new Error("Hãy nhập mật khẩu kiểm duyệt"); if (!u || !k) throw new Error("Hãy điền Project URL và key Supabase trước");
+  const r = await fetch(u + "/rest/v1/rpc/mod_check", { method: "POST", headers: { apikey: k, "Content-Type": "application/json" }, body: JSON.stringify({ p: pw }) });
+  if (r.status === 404) throw new Error("Chưa có bình luận trên Supabase. Hãy chạy file binh-luan.sql trước.");
+  if (!r.ok) throw new Error("Supabase báo lỗi " + r.status + ". Kiểm tra lại URL và key.");
+  if (!(await r.json())) throw new Error("Sai mật khẩu kiểm duyệt, hoặc bạn chưa đặt mật khẩu bằng set_comment_password trong SQL Editor.");
+  localStorage.setItem("cmtMod", pw); log("✅ Mật khẩu đúng và đã lưu trên máy này. Trên web bạn sẽ thấy nút kiểm duyệt dưới mỗi bình luận.");
+});
+$("#cm_pwx").onclick = () => { try { localStorage.removeItem("cmtMod") } catch (e) {} $("#cm_pw").value = ""; log("✅ Đã xóa mật khẩu kiểm duyệt khỏi máy này.") };
+function stkRender() { const L = data.site.stickers || []; $("#stk_list").innerHTML = L.map((x, i) => `<div class="stki" title="${esc(x.n || "")}"><img src="${esc(x.p)}" alt="${esc(x.n || "")}" loading="lazy"><button type="button" class="dng" data-stx="${i}" title="Gỡ nhãn dán" aria-label="Gỡ nhãn dán">✕</button></div>`).join("") || '<p class="mu" style="margin:0">Chưa có nhãn dán nào. Người đọc vẫn dùng được biểu cảm và GIF.</p>' }
+$("#stk_in").onchange = e => { const fs = [...e.target.files]; e.target.value = ""; if (!fs.length) return; run(async () => {
+  const L = data.site.stickers = data.site.stickers || []; let n = 0;
+  try {
+    for (const f of fs) {
+      if (f.size > 1.5e6) { log(`Bỏ qua ${f.name}: lớn hơn 1,5 MB`); continue }
+      n++; log(`Đang tải nhãn dán ${n}/${fs.length}...`);
+      let b64 = null, ext = (f.name.split(".").pop() || "png").toLowerCase().replace("jpeg", "jpg"); const r = await squeeze(f, 160, .9); if (r) { b64 = r.b64; ext = r.ext } if (!b64) b64 = await fileB64(f);
+      const nm = (slugify(f.name.replace(/\.[^.]+$/, "")) || "nhan").slice(0, 30), p = `stickers/${nm}-${rid()}.${ext}`; await put(p, b64, "Nhãn dán: " + nm); L.push({ p, n: nm });
+    }
+  } finally { if (n) { await save("Thêm nhãn dán bình luận"); stkRender() } }
+  done(`✅ Đã thêm ${n} nhãn dán. Web cập nhật sau 1–2 phút.`);
+}) };
+$("#stk_list").onclick = e => { const b = e.target.closest("[data-stx]"); if (!b || !confirm("Gỡ nhãn dán này? Bình luận cũ đã dùng nó sẽ không hiện ảnh nữa.")) return; run(async () => { data.site.stickers.splice(+b.dataset.stx, 1); await save("Gỡ nhãn dán bình luận"); stkRender(); done("✅ Đã gỡ nhãn dán.") }) };
 let ve = null;
 $("#manage").addEventListener("click", e => {
   const b = e.target.closest("button[data-v]"); if (!b) return; const [k, i] = b.dataset.v.split("|"); ve = { k, i: +i }; const s = data[k][+i];

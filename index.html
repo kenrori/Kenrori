@@ -290,6 +290,7 @@ iframe.ytf{width:100%;aspect-ratio:16/9;margin:0;border-radius:8px}
 .vmini{display:none}.vhd b{flex:1}
 @media(max-width:700px){.vbd{grid-template-columns:minmax(0,1fr);padding:10px}.vcv{display:none}.vhd{align-items:center}.vmini{display:block;width:34px;aspect-ratio:7/10;object-fit:cover;border-radius:3px}}
 .st.soon{color:#0d9488}
+.tpl .cmw.cmside{max-width:none;margin:36px 0 0}
 .hcta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.hsec{background:#0008;color:#fff}.hsec:hover{background:#000b}
 .sch{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
 .sci{display:flex;gap:12px;align-items:center;background:var(--s1);border-radius:6px;padding:10px}.sci:hover{background:var(--s2)}.sci .th{width:46px}
@@ -647,7 +648,9 @@ function detail(kind, s) {
   $("#cq").oninput = draw; $("#cs").onclick = e => { desc = !desc; ls.set("cdesc", desc ? 1 : 0); e.target.textContent = desc ? "Mới nhất trước" : "Từ chương đầu"; draw() };
   if (nv) $("#cx").onclick = e => { allOpen = !allOpen; e.target.textContent = allOpen ? "Thu gọn danh sách" : "Hiện tất cả chương"; draw() };
   draw();
+  if (cmtMode() === "anon") { const bx = document.createElement("section"); bx.className = "cmside"; $(".tpl").appendChild(bx); CMT.mount(bx, `${kind}/${s.slug}`, "Bình luận về bộ truyện") }
 }
+const cmtMode = () => { const ok = !!(window.CMT && CMT.enabled()), m = DATA.site.cmt || (ok ? "anon" : "giscus"); return m === "anon" ? (ok ? "anon" : "") : m };
 async function read(kind, s, i) {
   const c = s.chapters[i]; if (!c) { location.hash = `#${kind}/${s.slug}`; return }
   ls.set(kind + ":" + s.slug, i); ls.set("t:" + kind + ":" + s.slug, Date.now()); const rs = rdSet(kind, s); if (!rs.includes(i)) { rs.push(i); ls.set("r:" + kind + ":" + s.slug, JSON.stringify(rs)) }
@@ -678,8 +681,9 @@ ${isImgCh(c) ? "" : `<button class="fab" id="rsb" title="Tùy chỉnh đọc" ar
       RDKEY = step; if (pg.length) show();
     } else rd.innerHTML = pg.map(u => `<img src="${esc(u)}" alt="" loading="lazy">`).join("");
   }
+  if (cmtMode() === "anon" && rd.isConnected) { const bx = document.createElement("section"); app.appendChild(bx); CMT.mount(bx, `${kind}/${s.slug}/${c.file || (c.pages && c.pages[0]) || c.t}`) }
   const G = DATA.site.giscus;
-  if (G && G.repo && G.repoId && G.category && G.categoryId && rd.isConnected) {
+  if (cmtMode() === "giscus" && G && G.repo && G.repoId && G.category && G.categoryId && rd.isConnected) {
     const box = document.createElement("section"); box.className = "sec rh"; box.innerHTML = '<div class="sh"><h2>Bình luận</h2></div>'; app.appendChild(box);
     const sc = document.createElement("script"); sc.src = "https://giscus.app/client.js";
     Object.entries({ "data-repo": G.repo, "data-repo-id": G.repoId, "data-category": G.category, "data-category-id": G.categoryId, "data-mapping": "specific", "data-term": `${kind}/${s.slug}/${c.file || (c.pages && c.pages[0]) || c.t}`, "data-strict": "0", "data-reactions-enabled": "1", "data-emit-metadata": "0", "data-input-position": "top", "data-theme": "preferred_color_scheme", "data-lang": "vi", crossorigin: "anonymous" }).forEach(([k, v]) => sc.setAttribute(k, v));
@@ -696,6 +700,7 @@ addEventListener("resize", sideMode);
 function route() {
   RDKEY = null; clearInterval(HT); HI = 0; document.body.classList.remove("so");
   const [a, b, c] = decodeURIComponent(location.hash.slice(1)).split("/");
+  if (!window.ST && ["sang-tac", "viet", "st", "tg", "noi-quy", "kiem-duyet"].includes(a)) { app.innerHTML = `<section class="sec"><p class="empty">Chưa tải được file sangtac.js. Hãy tải file sangtac.js lên GitHub, đặt cùng thư mục với index.html, rồi tải lại trang.</p></section>`; return }
   if (window.ST && ST.handles(a)) {
     reading_ = a === "st" && !!c; sideMode(); document.body.classList.toggle("rdg", reading_);
     document.querySelectorAll("#nv a").forEach(x => x.classList.toggle("on", x.dataset.k === "sang-tac" && (a === "sang-tac" || a === "st")));
