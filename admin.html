@@ -272,11 +272,12 @@ details.ms>summary::-webkit-details-marker{display:none}
 <div><label for="i_date">Ngày đăng</label><input id="i_date" type="date"></div>
 <div class="full"><label for="i_kw">Từ khóa mở đầu chương <small>(cách nhau bằng dấu phẩy)</small></label><input id="i_kw" value="Chương, Chapter, Chap, Hồi, Phần, Mở đầu, Lời mở đầu, Prologue, Epilogue, Vĩ thanh, Lời bạt, Lời tác giả, Afterword, Ngoại truyện, Phụ lục, Minh họa, Illustrations"></div>
 <div class="full"><label for="i_vkw">Từ khóa tập <small>(dòng như "Tập 2" sẽ được dùng làm tên tập, không thành chương)</small></label><input id="i_vkw" value="Tập, Volume, Vol, Quyển"></div></div>
+<label class="ck"><input type="checkbox" id="i_resort"> Sau khi đăng, tự sắp xếp lại toàn bộ chương của bộ (Minh họa, Mở đầu, Chương 1, 2...)</label>
 <label class="ck"><input type="checkbox" id="i_dup" checked> Bỏ qua chương trùng tên (và trùng tập) đã có trong bộ</label>
 <label class="ck"><input type="checkbox" id="i_cz" checked> Nén ảnh minh họa trong file trước khi đăng</label></details>
 <div class="acts"><button type="button" id="i_go">Đọc và chia chương</button></div>
 <div id="i_res" hidden><h4 id="i_sum"></h4><p class="mu" id="i_note"></p>
-<div class="acts" style="margin-top:6px"><button type="button" class="sec sm" id="i_all">Chọn tất cả</button><button type="button" class="sec sm" id="i_none">Bỏ chọn tất cả</button></div>
+<div class="acts" style="margin-top:6px"><button type="button" class="sec sm" id="i_all">Chọn tất cả</button><button type="button" class="sec sm" id="i_none">Bỏ chọn tất cả</button><button type="button" class="sec sm" id="i_sort" title="Minh họa, Mở đầu, Chương 1, 2, 3..., Vĩ thanh, Lời bạt">Sắp xếp</button></div>
 <div id="i_list" class="ilist"></div>
 <div class="acts"><button type="button" id="i_pub">Đăng các chương đã chọn</button></div></div></div>
 
@@ -534,11 +535,40 @@ $("#p-vid").onsubmit = e => { e.preventDefault(); run(async () => {
 
 const hueOf = t => [...String(t)].reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
 const thumb = s => `<span class="mth" style="--h:${hueOf(s.title)}">${s.cover ? `<img src="${esc(s.cover)}" alt="" loading="lazy" onerror="this.remove()">` : ""}</span>`;
+// ---------- Tự sắp xếp chương ----------
+const ROM = t => { const v = { I: 1, V: 5, X: 10, L: 50, C: 100 }; let n = 0; t = t.toUpperCase(); for (let i = 0; i < t.length; i++) { const a = v[t[i]], b = v[t[i + 1]] || 0; n += a < b ? -a : a } return n };
+const numOf = x => /^[IVXLC]+$/i.test(x) ? ROM(x) : parseFloat(x.replace(",", "."));
+const NUM = "(\\d+(?:[.,]\\d+)?|[IVXLC]+(?![\\p{L}]))";
+const CK = [
+  [0, /^(minh h(ọa|oạ)|tranh minh h(ọa|oạ)|ảnh minh h(ọa|oạ)|ảnh màu|illustrations?|colou?r (pages|illustrations?))/i],
+  [1, /^(lời mở đầu|mở đầu|mở màn|khúc dạo đầu|dạo đầu|prologue|lời dẫn|tự chương|序章|プロローグ)/i],
+  [3, /^(vĩ thanh|epilogue|lời kết|hồi kết|kết thúc|chương cuối|終章|エピローグ)/i],
+  [4, /^(ngoại truyện|side ?story|extra|bonus|phụ lục|phiên ngoại|short story|truyện ngắn|ss(?![\p{L}])|番外)/iu],
+  [5, /^(lời bạt|lời tác giả|lời người dịch|lời nhóm dịch|lời cảm ơn|afterword|postscript|tái bút|あとがき)/i]];
+const CHN = new RegExp(`(?:^|[\\s:\\-–—(\\[,])(?:chương|chapter|chap|ch\\.?|hồi|phần|tiết|episode|ep\\.?|part|act|第)\\s*${NUM}`, "iu"), LEAD = new RegExp(`^${NUM}\\s*[.:\\-–—)]`, "iu");
+function chKey(c) {
+  const t = (c.t || "").normalize("NFC").trim(), num = (m => m ? numOf(m[1]) : null)(CHN.exec(t) || LEAD.exec(t));
+  for (const [r, re] of CK) if (re.test(t)) { const m = /(\d+(?:[.,]\d+)?)/.exec(t.replace(re, "")); return [r, m ? numOf(m[1]) : 0] }
+  if (num != null && !isNaN(num)) return [2, num];
+  return null;
+}
+const volNum = v => { const m = new RegExp(`(?:tập|volume|vol\\.?|quyển|book|arc|phần)\\s*${NUM}`, "iu").exec(v || "") || new RegExp(`^${NUM}(?![\\p{L}\\d])`, "u").exec((v || "").trim()); return m ? numOf(m[1]) : null };
+function chSort(list) {
+  // Giữ các tập theo số tập (tập không có số đứng sau tập trước nó), trong mỗi tập xếp theo loại rồi theo số chương.
+  const groups = []; const by = new Map();
+  list.forEach((c, i) => { const v = (c.vol || "").trim(); if (!by.has(v)) { const g = { v, first: i, items: [] }; by.set(v, g); groups.push(g) } by.get(v).items.push({ c, i }) });
+  let prev = -Infinity; groups.forEach(g => { const n = volNum(g.v); g.n = n != null ? n : (g.v ? prev + 0.001 : -1); if (n != null) prev = n; else if (g.v) prev = g.n });
+  groups.sort((a, b) => a.n - b.n || a.first - b.first);
+  const isImgCh = c => c.type === "img" || (!!c.pages && !c.file && !c.text);
+  return groups.flatMap(g => { let last = [0.5, 0];
+    const K = g.items.map(({ c, i }) => { let k = chKey(c); if (!k && isImgCh(c) && !/\d/.test(c.t || "")) k = [0, 0]; if (k) last = k; return { c, i, k: k || last } });
+    return K.sort((a, b) => a.k[0] - b.k[0] || a.k[1] - b.k[1] || a.i - b.i).map(x => x.c) });
+}
 function manage() {
   const q = ($("#m_q")?.value || "").trim().toLowerCase(), hit = o => !q || JSON.stringify(o).toLowerCase().includes(q), out = [];
   for (const k of ["novels", "manga"]) data[k].forEach((s, i) => {
     if (!hit([s.title, s.orig, s.alts, s.author])) return;
-    out.push(`<details class="ms"><summary>${thumb(s)}<span class="mti"><b>${esc(s.title)}</b><small>${k === "novels" ? (s.format || "Light Novel") : "Manga"}${s.author ? ", " + esc(s.author) : ""}, ${s.chapters.length} chương${s.status ? ", " + esc(s.status) : ""}</small></span><span class="mact"><button type="button" class="sec sm" data-s="${k}|${i}">Sửa bộ</button><button type="button" class="sec sm" data-v="${k}|${i}">Tập và bìa</button><button type="button" class="dng sm" data-d="${k}|${i}">Gỡ bộ</button></span></summary><div class="mch">${s.chapters.map((c, j) => `<div class="mc"><span class="mcn">${j + 1}</span><span class="mct">${c.vol ? `<em>${esc(c.vol)}, </em>` : ""}${esc(c.t)}${c.type === "img" ? ` <em>(${c.pages.length} ảnh)</em>` : ""}</span><small>${c.date || ""}</small><span class="mca"><button type="button" data-e="${k}|${i}|${j}">Sửa</button><button type="button" data-m="${k}|${i}|${j}|-1" title="Chuyển lên"${j ? "" : " disabled"}>↑</button><button type="button" data-m="${k}|${i}|${j}|1" title="Chuyển xuống"${j < s.chapters.length - 1 ? "" : " disabled"}>↓</button><button type="button" class="dng" data-d="${k}|${i}|${j}" title="Gỡ chương">✕</button></span></div>`).join("") || '<p class="mu">Chưa có chương nào.</p>'}</div></details>`);
+    out.push(`<details class="ms"><summary>${thumb(s)}<span class="mti"><b>${esc(s.title)}</b><small>${k === "novels" ? (s.format || "Light Novel") : "Manga"}${s.author ? ", " + esc(s.author) : ""}, ${s.chapters.length} chương${s.status ? ", " + esc(s.status) : ""}</small></span><span class="mact"><button type="button" class="sec sm" data-s="${k}|${i}">Sửa bộ</button><button type="button" class="sec sm" data-v="${k}|${i}">Tập và bìa</button>${s.chapters.length > 1 ? `<button type="button" class="sec sm" data-o="${k}|${i}" title="Tự xếp: Minh họa, Mở đầu, Chương 1, 2, 3..., Vĩ thanh, Lời bạt">Sắp xếp chương</button>` : ""}<button type="button" class="dng sm" data-d="${k}|${i}">Gỡ bộ</button></span></summary><div class="mch">${s.chapters.map((c, j) => `<div class="mc"><span class="mcn">${j + 1}</span><span class="mct">${c.vol ? `<em>${esc(c.vol)}, </em>` : ""}${esc(c.t)}${c.type === "img" ? ` <em>(${c.pages.length} ảnh)</em>` : ""}</span><small>${c.date || ""}</small><span class="mca"><button type="button" data-e="${k}|${i}|${j}">Sửa</button><button type="button" data-m="${k}|${i}|${j}|-1" title="Chuyển lên"${j ? "" : " disabled"}>↑</button><button type="button" data-m="${k}|${i}|${j}|1" title="Chuyển xuống"${j < s.chapters.length - 1 ? "" : " disabled"}>↓</button><button type="button" class="dng" data-d="${k}|${i}|${j}" title="Gỡ chương">✕</button></span></div>`).join("") || '<p class="mu">Chưa có chương nào.</p>'}</div></details>`);
   });
   const grp = [];
   for (const [k, l] of [["projects", "Dự án"], ["tips", "Mẹo game"], ["links", "Liên kết"], ["videos", "Video"]]) {
@@ -557,8 +587,14 @@ async function getText(p) {
 }
 let ed = null;
 $("#manage").addEventListener("click", e => {
-  const bs = e.target.closest("button[data-s]"), bm = e.target.closest("button[data-m]"), be = e.target.closest("button[data-e]");
-  if (bs) {
+  const bs = e.target.closest("button[data-s]"), bm = e.target.closest("button[data-m]"), be = e.target.closest("button[data-e]"), bo = e.target.closest("button[data-o]");
+  if (bo) {
+    e.preventDefault(); const [k, i] = bo.dataset.o.split("|"), s = data[k][+i], L = chSort(s.chapters);
+    if (L.every((c, j) => c === s.chapters[j])) return log("✅ Các chương của " + s.title + " đã đúng thứ tự, không cần sắp xếp.");
+    const moved = L.filter((c, j) => c !== s.chapters[j]).length, show = L.slice(0, 25).map((c, j) => `${j + 1}. ${c.vol ? c.vol + ", " : ""}${c.t}`).join("\n");
+    if (!confirm(`Sắp xếp lại ${s.chapters.length} chương của "${s.title}" (${moved} chương đổi vị trí)?\n\nThứ tự mới:\n${show}${L.length > 25 ? "\n..." : ""}`)) return;
+    s.chapters = L; run(async () => { await save("Sắp xếp chương: " + s.title); done("✅ Đã sắp xếp chương của " + s.title + ".") });
+  } else if (bs) {
     const [k, i] = bs.dataset.s.split("|"), s = data[k][+i];
     $("#s_kind").value = k === "novels" ? (s.format === "Web Novel" ? "webnovel" : "novel") : "manga"; $("#s_src").value = s.src || ""; $("#s_team").value = (s.team || []).map(t => t.r ? t.r + " | " + t.n : t.n).join("\n"); $("#s_prog").value = s.prog || ""; $("#s_feat").checked = !!s.feat; $("#s_sched").value = s.sched || ""; $("#s_title").value = s.title; $("#s_slug").value = s.slug; $("#s_author").value = s.author || ""; $("#s_orig").value = s.orig || ""; $("#s_alts").value = (s.alts || []).join("\n"); $("#s_artist").value = s.artist || "";
     $("#s_status").value = s.status || "Đang dịch"; $("#s_desc").value = s.desc || ""; $("#s_genres").value = (s.genres || []).join(", "); gChips(); $("#s_cover").value = ""; cvPrev(s.cover); tab("series"); $("#ptitle").textContent = "Sửa bộ: " + s.title; log("Đang sửa bộ " + s.title + ". Chọn ảnh bìa mới nếu muốn đổi.");
@@ -1074,6 +1110,7 @@ $("#i_go").onclick = () => run(async () => {
 $("#i_list").addEventListener("input", e => { const t = e.target; if (t.dataset.it != null) IMP[+t.dataset.it].t = t.value; if (t.dataset.ivol != null) IMP[+t.dataset.ivol].vol = t.value });
 $("#i_list").addEventListener("change", e => { const t = e.target; if (t.dataset.ion != null) { IMP[+t.dataset.ion].on = t.checked; t.closest(".irow").classList.toggle("off", !t.checked); $("#i_sum").textContent = `Tìm thấy ${IMP.length} phần, đã chọn ${IMP.filter(x => x.on).length} để đăng` } });
 $("#i_list").addEventListener("click", e => { const b = e.target.closest("button[data-ipv]"); if (!b) return; const x = IMP[+b.dataset.ipv]; x.type === "img" ? preview({ title: x.t, vol: x.vol, imgs: x.imgs }) : preview({ title: x.t, vol: x.vol, text: x.body.join("\n") }) });
+$("#i_sort").onclick = () => { const L = chSort(IMP.map(x => ({ ...x, c0: x }))).map(x => x.c0); const same = L.every((x, j) => x === IMP[j]); IMP = L; impRender(); log(same ? "✅ Danh sách đã đúng thứ tự." : "✅ Đã sắp xếp lại danh sách. Kiểm tra rồi bấm Đăng.") };
 $("#i_all").onclick = () => { IMP.forEach(x => x.on = true); impRender() }; $("#i_none").onclick = () => { IMP.forEach(x => x.on = false); impRender() };
 $("#i_pub").onclick = () => {
   const s = data.novels[+$("#i_ser").value]; if (!s) return log("❌ Hãy chọn bộ truyện");
@@ -1101,7 +1138,7 @@ $("#i_pub").onclick = () => {
         }
         s.chapters.push(ch); added++; x.on = false;
       }
-    } finally { if (added) { log("Đang lưu danh sách chương..."); await save(`Nhập ${added} chương: ${s.title}`); impFill() } }
+    } finally { if (added) { if ($("#i_resort").checked) s.chapters = chSort(s.chapters); log("Đang lưu danh sách chương..."); await save(`Nhập ${added} chương: ${s.title}`); impFill() } }
     impRender(); done(`✅ Đã đăng ${L.length} chương vào "${s.title}". Web cập nhật sau 1–2 phút.`);
   });
 };
