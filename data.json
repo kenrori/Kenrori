@@ -59,7 +59,35 @@
   },
   {
    "slug": "cubexcursedxcurious",
-   "chapters": [],
+   "chapters": [
+    {
+     "t": "Minh Họa",
+     "date": "2026-11-26",
+     "vol": "Tập 1",
+     "pages": [
+      "novels/cubexcursedxcurious/c1_mwxgay8l/001.webp",
+      "novels/cubexcursedxcurious/c1_mwxgay8l/002.webp",
+      "novels/cubexcursedxcurious/c1_mwxgay8l/003.webp",
+      "novels/cubexcursedxcurious/c1_mwxgay8l/004.webp",
+      "novels/cubexcursedxcurious/c1_mwxgay8l/005.webp",
+      "novels/cubexcursedxcurious/c1_mwxgay8l/006.webp",
+      "novels/cubexcursedxcurious/c1_mwxgay8l/007.webp",
+      "novels/cubexcursedxcurious/c1_mwxgay8l/008.webp",
+      "novels/cubexcursedxcurious/c1_mwxgay8l/009.webp",
+      "novels/cubexcursedxcurious/c1_mwxgay8l/010.webp",
+      "novels/cubexcursedxcurious/c1_mwxgay8l/011.webp",
+      "novels/cubexcursedxcurious/c1_mwxgay8l/012.webp",
+      "novels/cubexcursedxcurious/c1_mwxgay8l/013.webp",
+      "novels/cubexcursedxcurious/c1_mwxgay8l/014.webp",
+      "novels/cubexcursedxcurious/c1_mwxgay8l/015.webp",
+      "novels/cubexcursedxcurious/c1_mwxgay8l/016.webp",
+      "novels/cubexcursedxcurious/c1_mwxgay8l/017.webp",
+      "novels/cubexcursedxcurious/c1_mwxgay8l/018.webp",
+      "novels/cubexcursedxcurious/c1_mwxgay8l/019.webp"
+     ],
+     "type": "img"
+    }
+   ],
    "title": "CubexCursedxCurious",
    "orig": "シーキューブ",
    "alts": [
