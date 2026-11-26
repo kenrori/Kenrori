@@ -3,546 +3,501 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex">
-<title>Quản trị · Kenrori</title>
+<title>Kenrori</title>
+<link rel="alternate" type="application/rss+xml" title="Kenrori" href="feed.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f4f5fb;--card:#fff;--tx:#1b2033;--mu:#6a7288;--ac:#6558f5;--ac2:#b05cf5;--bd:#e4e7f1}
-@media(prefers-color-scheme:dark){:root{--bg:#0f1117;--card:#1a1d29;--tx:#e8eaf2;--mu:#9aa2b8;--ac:#8b84ff;--ac2:#c47dff;--bd:#2b3042}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-header{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;padding:18px 16px}header div,main{max-width:760px;margin:auto}
-header h1{margin:0;font-size:1.3rem}header a{color:#fff}
-main{padding:14px 16px 80px}
-details,.panel{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:14px}
-summary{font-weight:600;cursor:pointer}
-label{display:block;margin:12px 0 4px;font-weight:600;font-size:.9rem}
-input,select,textarea{width:100%;font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:9px 12px}
-textarea{min-height:110px}
-button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:10px 18px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;margin-top:14px}
-button:disabled{opacity:.5}
-.tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px}.tabs button{margin:0;background:var(--card);color:var(--tx);border:1px solid var(--bd);white-space:nowrap;flex:none}
-.tabs button.on{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent}
-.panel{display:none}.panel.on{display:block}
-.mu{color:var(--mu);font-size:.88rem}
-#log{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--bd);padding:10px 16px;font-size:.92rem;z-index:9}
-.row{padding:8px 0;border-bottom:1px solid var(--bd)}.row button,.sub button{margin:0 0 0 8px;padding:2px 10px;background:#d33}.sub{margin-left:20px;color:var(--mu);font-size:.9rem;padding:2px 0}
-.row button.ok,.sub button.ok{background:var(--ac)}
-button.chip{background:var(--bg);color:var(--tx);border:1px solid var(--bd);padding:3px 11px;margin:0 6px 6px 0;border-radius:999px;font-size:.85rem}button.chip.on{background:var(--ac);color:#fff;border-color:var(--ac)}
-.vc{margin:2px 0;font-weight:400}#p-vol .vc input{width:auto;margin-right:6px}h4{margin:20px 0 0}
-main.wide{max-width:1180px}.trrow{display:grid;grid-template-columns:2fr 2fr 1fr 1fr;gap:10px}.trgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}.trta{min-height:440px;font-size:15px;line-height:1.7}.trbar button{margin:10px 6px 0 0}
-@media(max-width:800px){.trrow,.trgrid{grid-template-columns:1fr}.trta{min-height:300px}}
+:root{--bg:#fff;--s1:#f0f1f2;--s2:#e4e5e8;--tx:#121316;--mu:#6b6e75;--ac:#ff6740;--ach:#ff4f1f;--acs:#ffe3da;--bd:#e2e3e6;--on:#04a74b;--done:#2f7de1;--pause:#e89a00;--side:256px;--top:56px}
+:root[data-theme=dark]{--bg:#191a1c;--s1:#2c2d30;--s2:#3a3b3f;--tx:#f2f2f3;--mu:#a3a6ad;--acs:#4a2a20;--bd:#34353a}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#191a1c;--s1:#2c2d30;--s2:#3a3b3f;--tx:#f2f2f3;--mu:#a3a6ad;--acs:#4a2a20;--bd:#34353a}}
+*{box-sizing:border-box}
 [hidden]{display:none!important}
-.rvh{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:10px 0}
-.rv{display:grid;grid-template-columns:34px 1fr 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd);align-items:start}
-.rn{color:var(--mu);font-size:.8rem;padding-top:7px;text-align:right}.rs{white-space:pre-wrap;font-size:.95rem;line-height:1.7;background:var(--bg);border-radius:8px;padding:8px 10px}
-.ro{position:relative}.ro textarea{min-height:0;margin:0;font-size:.95rem;line-height:1.7;padding-right:86px;resize:vertical}
-.ra{position:absolute;top:4px;right:4px;display:flex;gap:2px}.ra button{margin:0;padding:0 7px;font-size:.85rem;background:var(--card);color:var(--tx);border:1px solid var(--bd)}
-.rv.miss .ro textarea{border-color:#d33;background:color-mix(in srgb,#d33 8%,var(--bg))}.rv.cjk .ro textarea{border-color:#e69500;background:color-mix(in srgb,#e69500 10%,var(--bg))}
-#t_rows.only .rv:not(.miss):not(.cjk){display:none}
-@media(max-width:800px){.rv{grid-template-columns:1fr}.rn{text-align:left;padding:0}}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.6 "Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;overflow-wrap:break-word}
+a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit;color:var(--tx)}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+::selection{background:var(--ac);color:#fff}
+svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- Sidebar ---------- */
+#side{position:fixed;inset:0 auto 0 0;width:var(--side);background:var(--s1);padding:12px 12px 20px;overflow-y:auto;z-index:60;display:flex;flex-direction:column;transition:transform .25s ease}
+.sl{display:flex;align-items:center;justify-content:space-between;height:40px;padding:0 6px;margin-bottom:10px}
+.logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:1.25rem;letter-spacing:-.02em}
+.logo i{width:30px;height:30px;border-radius:8px;background:var(--ac);color:#fff;display:grid;place-items:center;font-style:normal;font-size:1rem}
+#sx{display:none;border:0;background:none;padding:6px;border-radius:6px}#sx:hover{background:var(--s2)}
+#nv{display:flex;flex-direction:column;gap:2px}
+#nv .sg{display:flex;align-items:center;gap:10px;font-weight:700;padding:14px 10px 4px}
+#nv a{display:flex;align-items:center;gap:10px;padding:6px 10px 6px 40px;border-radius:6px;font-weight:500}
+#nv a.top{padding-left:10px;font-weight:700}
+#nv a:hover{background:var(--s2)}#nv a.on{background:var(--ac);color:#fff}
+.sfoot{margin-top:auto;padding:18px 10px 0;display:flex;flex-direction:column;gap:6px;font-size:.88rem;color:var(--mu)}
+.sfoot a:hover{color:var(--ac)}
+.dcb{display:flex;align-items:center;justify-content:center;gap:8px;background:#5865f2;color:#fff!important;border-radius:6px;padding:8px;font-weight:600;margin-bottom:8px}
+#scrim{display:none;position:fixed;inset:0;background:#0007;z-index:55}
+#main{margin-left:var(--side);min-height:100vh;display:flex;flex-direction:column}
+body.ov #side{transform:translateX(-100%)}body.ov #main{margin-left:0}
+body.ov.so #side{transform:none;box-shadow:0 0 40px #0005}body.ov.so #scrim{display:block}body.ov #sx{display:block}
+
+/* ---------- Top bar ---------- */
+#top{position:sticky;top:0;z-index:50;height:var(--top);display:flex;align-items:center;gap:10px;padding:0 24px;background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--bd);transition:background .2s,border-color .2s,color .2s}
+#top .logo{display:none;font-size:1.1rem}body.ov #top .logo{display:flex}
+.ib{border:0;background:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:inherit}.ib:hover{background:color-mix(in srgb,currentColor 12%,transparent)}
+.srch{margin-left:auto;position:relative;width:min(340px,100%)}
+.srch svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--mu);pointer-events:none}
+#q{width:100%;border:0;background:var(--s1);border-radius:8px;padding:8px 12px 8px 36px;outline:none}
+#q:focus{box-shadow:0 0 0 2px var(--ac)}
+body.clear #top{background:transparent;border-color:transparent;color:#fff;-webkit-backdrop-filter:none;backdrop-filter:none}
+body.clear #q{background:#ffffff26;color:#fff}body.clear #q::placeholder{color:#ffffffb0}body.clear .srch svg{color:#fffc}
+#ann{background:var(--ac);color:#fff;text-align:center;padding:7px 44px 7px 14px;position:relative;font-size:.9rem;font-weight:500}
+#ann a{text-decoration:underline}#ann button{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;color:#fff;font-size:1.1rem}
+
+/* ---------- Layout ---------- */
+#app{flex:1;padding:0 24px 56px;width:100%;max-width:1440px;margin:0 auto}
+.sec{margin:30px 0}
+.sh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.sh h2{margin:0;font-size:1.3rem;font-weight:700;letter-spacing:-.01em}
+.more{width:36px;height:36px;border-radius:50%;background:var(--s1);display:grid;place-items:center}.more:hover{background:var(--s2)}
+.lead{color:var(--mu);margin:-6px 0 14px}
+.empty{color:var(--mu);padding:26px 0;text-align:center}
+footer{padding:22px 24px 30px;color:var(--mu);font-size:.85rem;border-top:1px solid var(--bd);display:flex;gap:16px;flex-wrap:wrap}
+footer a:hover{color:var(--ac)}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;height:440px;margin:calc(-1 * var(--top)) -24px 8px;overflow:hidden;background:#111}
+.hs{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .7s,visibility .7s}.hs.on{opacity:1;visibility:visible}
+.hb{position:absolute;inset:0;background:linear-gradient(160deg,hsl(var(--h) 55% 42%),hsl(calc(var(--h) + 50) 55% 20%));background-size:cover;background-position:center 25%;filter:blur(4px);transform:scale(1.08)}
+.hs::after,.tpb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#000b 0%,#0008 55%,color-mix(in srgb,var(--bg) 60%,#0008) 82%,var(--bg) 100%)}
+.hw{position:relative;z-index:1;display:flex;gap:28px;align-items:flex-start;height:100%;padding:calc(var(--top) + 28px) 32px 64px;color:#fff;max-width:1440px;margin:0 auto}
+.hw .cover{width:200px;flex:none;box-shadow:0 10px 30px #0008}
+.hi{min-width:0;display:flex;flex-direction:column}
+.hi h2{margin:0 0 12px;font-size:clamp(1.5rem,3.2vw,2.6rem);font-weight:800;line-height:1.1;letter-spacing:-.02em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.htg{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}.htg span{font-size:.75rem;font-weight:600;background:#ffffff24;padding:2px 9px;border-radius:5px}
+.hi p{margin:0;max-width:72ch;color:#ffffffd9;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.hau{margin-top:14px;font-style:italic;color:#ffffffcc}
+.hn{position:absolute;right:32px;bottom:20px;z-index:2;display:flex;gap:8px;align-items:center}
+.hn span{font-weight:700;margin-right:6px}
+.hn button{width:38px;height:38px;border-radius:50%;border:0;background:var(--s1);display:grid;place-items:center}.hn button:hover{background:var(--ac);color:#fff}
+
+/* ---------- Covers & cards ---------- */
+.cover{position:relative;aspect-ratio:7/10;border-radius:6px;overflow:hidden;background:linear-gradient(160deg,hsl(var(--h) 55% 48%),hsl(calc(var(--h) + 50) 55% 26%))}
+.cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cover b{position:absolute;inset:auto 0 0;padding:28px 9px 9px;color:#fff;font-size:.85rem;line-height:1.25;background:linear-gradient(transparent,#000d)}
+.cover img~b{display:none}
+.kd{position:absolute;top:6px;left:6px;font-style:normal;font-size:.68rem;font-weight:700;background:#000b;color:#fff;padding:1px 7px;border-radius:4px}
+.series{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:22px 16px}
+.shelf{display:grid;grid-auto-flow:column;grid-auto-columns:158px;gap:16px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x proximity;scrollbar-width:thin}
+.shelf>*{scroll-snap-align:start}
+.sc{display:block}.sc:hover .ct{color:var(--ac)}
+.ct{margin-top:8px;font-weight:600;font-size:.9rem;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sc small{display:flex;gap:8px;align-items:center;margin-top:3px;color:var(--mu);font-size:.8rem}
+.st{display:inline-flex;align-items:center;gap:5px;font-weight:600;color:var(--on)}.st::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.st.done{color:var(--done)}.st.pause{color:var(--pause)}
+.pb{display:block;height:3px;background:var(--s2);border-radius:3px;margin-top:6px;overflow:hidden}.pb i{display:block;height:100%;background:var(--ac)}
+.rcs{position:relative}.fg{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;border:0;background:#000b;color:#fff;display:none;font-size:.8rem}
+.rcs:hover .fg{display:block}@media(hover:none){.fg{display:block}}
+.nwb{position:absolute;bottom:6px;right:6px;font-style:normal;font-size:.72rem;font-weight:700;background:var(--ac);color:#fff;padding:1px 7px;border-radius:4px}
+
+/* ---------- Latest updates ---------- */
+.lu{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:12px}
+.lui{min-width:0;display:flex;gap:12px;background:var(--s1);border-radius:6px;padding:10px}
+.th{position:relative;flex:none;width:60px;aspect-ratio:7/10;border-radius:4px;overflow:hidden;background:linear-gradient(160deg,hsl(var(--h) 55% 48%),hsl(calc(var(--h) + 50) 55% 26%))}
+.th img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.lub{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
+.lut{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}.lut:hover{color:var(--ac)}
+.luc{display:flex;justify-content:space-between;gap:10px;font-size:.87rem;border-radius:4px;padding:1px 4px;margin:0 -4px}
+.luc span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.luc small{color:var(--mu);white-space:nowrap}
+.luc:hover{background:var(--s2)}.luc.rd span{color:var(--mu)}
+
+/* ---------- Buttons, pills ---------- */
+.btn,.tb button{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:6px;padding:9px 16px;font-weight:600;background:var(--s1);color:var(--tx)}
+.btn:hover,.tb button:hover{background:var(--s2)}
+.btn.pri,.tb button:first-of-type{background:var(--ac);color:#fff}.btn.pri:hover,.tb button:first-of-type:hover{background:var(--ach)}
+.btn.on{background:var(--acs);color:var(--ac)}
+.btn.dc{background:#5865f2;color:#fff}
+[disabled]{opacity:.35;pointer-events:none}
+.acts{display:flex;flex-wrap:wrap;gap:8px}
+.pill,.tag{display:inline-block;font-size:.78rem;font-weight:600;background:var(--s1);border-radius:5px;padding:2px 9px;color:var(--tx)}
+a.pill:hover,a.tag:hover{background:var(--ac);color:#fff}
+.tag small{color:var(--mu);margin-left:3px}a.tag:hover small{color:#fffc}
+.gc{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.lnk{border:0;background:none;color:var(--ac);font-weight:600;padding:0}
+
+/* ---------- Title page ---------- */
+.tpb{position:relative;height:330px;margin:calc(-1 * var(--top)) -24px -274px;overflow:hidden;background:#111}
+.tp{position:relative;z-index:1}
+.tph{display:grid;grid-template-columns:210px minmax(0,1fr);grid-template-areas:"cv t" "cv m";column-gap:26px;padding-top:24px}
+.tpcv{grid-area:cv;align-self:start;box-shadow:0 10px 30px #0006}
+.tpt{grid-area:t;min-height:162px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;padding-bottom:14px;text-shadow:0 1px 12px #0008}
+.tpt h1{margin:0;font-size:clamp(1.5rem,3.4vw,3rem);font-weight:800;line-height:1.08;letter-spacing:-.025em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-wrap:balance}
+.tpa{margin-top:8px;color:#ffffffd0}
+.tpm{grid-area:m;padding-top:14px;display:flex;flex-direction:column;gap:12px}
+.tptg{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tptg .st{margin-right:6px;font-size:.85rem}
+.tpd{margin:24px 0 8px;max-width:90ch}
+.sum{white-space:pre-line;margin:0}
+.clamp{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.tpc{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:28px;margin-top:22px}
+.tpx{display:flex;flex-direction:column;gap:16px}
+.tpx h4{margin:0 0 4px;font-size:.95rem}.tpx .ibx div{color:var(--mu)}.tpx .ibx .pill{margin:0 4px 4px 0}
+.bar2{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.bar2 input{flex:1;min-width:160px;border:0;background:var(--s1);border-radius:6px;padding:8px 12px;outline:none}.bar2 input:focus{box-shadow:0 0 0 2px var(--ac)}
+.bar2 button{border:0;background:var(--s1);border-radius:6px;padding:8px 12px;font-weight:600}.bar2 button:hover{background:var(--s2)}
+details.vol{margin-bottom:10px}
+.vol>summary{display:flex;align-items:center;gap:12px;padding:6px 2px;cursor:pointer;list-style:none;font-weight:700}
+.vol>summary::-webkit-details-marker{display:none}
+.vol>summary .vc{color:var(--mu);font-weight:500;font-size:.88rem;margin-left:auto}
+.vol>summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--mu);border-bottom:2px solid var(--mu);transform:rotate(45deg);margin:-4px 6px 0 0;transition:transform .2s}
+.vol[open]>summary::after{transform:rotate(-135deg);margin-top:4px}
+.chr{display:flex;gap:4px;margin-bottom:4px}
+.ch{flex:1;min-width:0;display:grid;grid-template-columns:16px minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:7px 12px;background:var(--s1);border-left:3px solid var(--ac);border-radius:4px}
+.ch:hover{background:var(--s2)}
+.ch .eye{width:9px;height:9px;border-radius:50%;border:2px solid var(--ac)}
+.ch.done{border-left-color:var(--s2)}.ch.done .eye{border-color:var(--mu);background:var(--mu)}.ch.done .cht{color:var(--mu)}
+.ch.cur .cht{font-weight:700}
+.cht{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch small{color:var(--mu);white-space:nowrap;font-size:.82rem}
+.ed{display:grid;place-items:center;width:36px;background:var(--s1);border-radius:4px;color:var(--mu)}.ed:hover{color:var(--ac)}
+
+/* ---------- Reader ---------- */
+.rbar{position:sticky;top:var(--top);z-index:20;display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--bd);margin-bottom:14px}
+.rbar .t{font-weight:700;flex:1;min-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rbar .t:hover{color:var(--ac)}
+.rbar select,.rbar button,#rp button{border:0;background:var(--s1);border-radius:6px;padding:7px 12px;max-width:240px}
+.rbar button:hover,#rp button:hover{background:var(--s2)}
+#rp{display:flex;gap:6px;align-items:center;flex-wrap:wrap;background:var(--s1);border-radius:8px;padding:10px 12px;margin-bottom:14px}#rp[hidden]{display:none}
+#rp button{background:var(--bg)}#rp span{color:var(--mu);margin-left:10px}
+.rh{max-width:760px;margin:0 auto}.rh h1{font-size:1.6rem;margin:6px 0 2px;line-height:1.25}.rh p{color:var(--mu);margin:0}
+.nv{display:flex;gap:8px;justify-content:space-between;max-width:760px;margin:16px auto}
+.rd.novel{font-size:var(--fs);line-height:var(--lh);max-width:760px;margin:0 auto;padding:8px 2px}
+.rd.novel p{margin:0 0 1em}
+.rd.serif{font-family:"Noto Serif",Georgia,serif}
+.rd.sepia{background:#f4ecd8;color:#3b3226;padding:24px;border-radius:8px}.rd.night{background:#000;color:#c9cdd9;padding:24px;border-radius:8px}
+.rd.manga{max-width:860px;margin:0 auto}.rd.manga img{display:block;width:100%;min-height:200px}
+.pgv{position:relative;cursor:pointer;user-select:none}.pgv img{display:block;width:100%;max-height:calc(100vh - 140px);object-fit:contain;background:#000;border-radius:6px}
+.pgn{text-align:center;color:var(--mu);font-size:.85rem;margin-top:6px}
+#pg{position:fixed;top:0;left:0;height:3px;width:0;background:var(--ac);z-index:70;opacity:0}
+
+/* ---------- Misc content ---------- */
+details.it{background:var(--s1);border-radius:6px;padding:12px 14px;margin-bottom:8px}
+details.it>summary{cursor:pointer;font-weight:600}
+details.it p{color:var(--mu);margin:8px 0;font-size:.93rem}details.it img{max-width:100%;border-radius:6px;margin-top:8px;cursor:zoom-in}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.card{background:var(--s1);border-radius:6px;padding:16px}.card h3{margin:0 0 4px;font-size:1.02rem}.card h3 a:hover{color:var(--ac)}.card p{color:var(--mu);margin:6px 0;font-size:.92rem}
+.pj .pi{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:4px;margin-bottom:10px}
+.pj .meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;color:var(--mu);font-size:.82rem;margin:4px 0 6px}
+.pj details{margin-top:10px}.pj summary{cursor:pointer;font-weight:600}
+iframe,video{width:100%;border:0;border-radius:6px;background:#000;aspect-ratio:16/9;margin-top:8px}iframe.tool{aspect-ratio:auto;height:480px;background:var(--bg)}
+textarea{width:100%;min-height:80px;margin-top:8px;border:0;border-radius:6px;padding:10px;background:var(--bg)}
+.tb button{margin:8px 6px 0 0}
+#lb{display:none;position:fixed;inset:0;background:#000d;z-index:80;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}#lb img{max-width:100%;max-height:100%}
+#up{position:fixed;right:18px;bottom:18px;width:44px;height:44px;border-radius:50%;border:0;background:var(--ac);color:#fff;display:grid;place-items:center;z-index:40;box-shadow:0 6px 18px #0003}
+.about h3{margin:22px 0 8px}
+
+@media(max-width:700px){
+  #top{padding:0 12px;gap:6px}#app{padding:0 14px 48px}
+  .hero{margin:calc(-1 * var(--top)) -14px 8px;height:380px}
+  .hw{gap:16px;padding:calc(var(--top) + 18px) 16px 60px}.hw .cover{width:118px}.hi p{-webkit-line-clamp:3}.hau{margin-top:10px}
+  .hn{right:16px}
+  .tpb{margin:calc(-1 * var(--top)) -14px -224px;height:280px}
+  .tph{grid-template-columns:118px minmax(0,1fr);grid-template-areas:"cv t" "m m";column-gap:16px;padding-top:16px}
+  .tpt{min-height:150px}.tpt h1{-webkit-line-clamp:3}
+  .tpc{grid-template-columns:1fr}.tpx{order:-1;flex-direction:row;flex-wrap:wrap;gap:14px 24px}
+  .ch{grid-template-columns:16px minmax(0,1fr) auto}.ch .cw{display:none}
+  .lu{grid-template-columns:1fr}
+  .series{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:18px 12px}
+  .shelf{grid-auto-columns:128px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
-<header><div><h1>🛠️ Trang quản trị</h1><span class="mu" style="color:#ffffffcc">Thêm truyện, chương, mẹo... không cần sửa code · <a href="index.html">← Về trang chính</a></span></div></header>
-<main>
-<div class="panel on" id="login" hidden><h3>🔐 Đăng nhập quản trị</h3>
-<label>Mã PIN</label><input id="l_pin" type="password" autocomplete="current-password">
-<button id="l_go">Đăng nhập</button> <button type="button" id="l_new" style="background:#888">Đổi tài khoản / quên PIN</button></div>
-<details id="setup" open><summary>🔑 Thiết lập lần đầu (chỉ làm một lần trên mỗi thiết bị)</summary>
-<p class="mu">Token và mã PIN: token được mã hóa bằng PIN rồi lưu trong trình duyệt này. Lần sau chỉ cần nhập PIN. Token tạo giới hạn cho đúng repo này (quyền Contents: Read and write).</p>
-<label>Tên người dùng GitHub</label><input id="g_u" placeholder="username">
-<label>Tên repo</label><input id="g_r" placeholder="kho-game">
-<label>Nhánh</label><input id="g_b" value="main">
-<label>Token (github_pat_...)</label><input id="g_t" type="password" autocomplete="off">
-<label>Đặt mã PIN (ít nhất 6 ký tự, nên dài hơn)</label><input id="g_p" type="password" autocomplete="new-password">
-<button id="g_go">Lưu & đăng nhập</button></details>
-<div id="bye" hidden style="text-align:right"><button id="l_out" style="background:#888;margin:0 0 10px">Đăng xuất</button></div>
-
-<div id="app" hidden>
-<div class="tabs" id="tabs"></div>
-
-<form class="panel" id="p-series"><h3>Thêm / sửa bộ truyện</h3><p class="mu">Nhập trùng đường dẫn (slug) của bộ có sẵn thì sẽ sửa bộ đó.</p>
-<label>Loại</label><select id="s_kind"><option value="novel">📖 Novel</option><option value="manga">🖼️ Manga</option></select>
-<label>Tên truyện</label><input id="s_title">
-<label>Slug (tên thư mục, để trống sẽ tự tạo)</label><input id="s_slug">
-<label>Tác giả</label><input id="s_author">
-<label>Thể loại (bấm để chọn, hoặc gõ thêm, cách nhau bằng dấu phẩy)</label><div id="g_chips"></div><input id="s_genres">
-<label>Trạng thái</label><select id="s_status"><option>Đang dịch</option><option>Hoàn thành</option><option>Tạm ngưng</option></select>
-<label>Mô tả</label><textarea id="s_desc"></textarea>
-<label>Ảnh bìa (tự thu nhỏ)</label><input id="s_cover" type="file" accept="image/*">
-<button>Lưu bộ truyện</button></form>
-
-<form class="panel" id="p-chap"><h3>Thêm chương mới</h3>
-<label>Chọn bộ</label><select id="c_ser"></select>
-<label>Tên chương</label><input id="c_title" placeholder="Chương 12: ...">
-<label>Tập (không bắt buộc, ví dụ: Tập 1)</label><input id="c_vol" list="c_vols" placeholder="Để trống nếu không chia tập"><datalist id="c_vols"></datalist>
-<label>Ngày cập nhật</label><input id="c_date" type="date">
-<div id="c_novel"><label>Nội dung (dán vào) — hoặc chọn file .txt bên dưới</label><textarea id="c_text" style="min-height:200px"></textarea><input id="c_file" type="file" accept=".txt"></div>
-<div id="c_manga"><label>Ảnh các trang (chọn nhiều ảnh, tự xếp theo tên file)</label><input id="c_imgs" type="file" accept="image/*" multiple></div>
-<button>Đăng chương</button></form>
-
-<form class="panel" id="p-tip"><h3>Thêm mẹo game</h3>
-<label>Tiêu đề</label><input id="t_title"><label>Game</label><input id="t_game"><label>Nội dung</label><textarea id="t_text"></textarea>
-<label>Ảnh minh họa (không bắt buộc)</label><input id="t_img" type="file" accept="image/*"><button>Thêm mẹo</button></form>
-
-<form class="panel" id="p-link"><h3>Thêm liên kết</h3>
-<label>Tên</label><input id="l_title"><label>Địa chỉ (https://...)</label><input id="l_url"><label>Mô tả</label><input id="l_desc"><label>Nhãn (cách nhau bằng dấu phẩy)</label><input id="l_tags"><button>Thêm liên kết</button></form>
-
-<form class="panel" id="p-vid"><h3>Thêm video YouTube</h3>
-<label>Tên bài</label><input id="v_title"><label>Link hoặc ID YouTube</label><input id="v_yt"><label>Mô tả</label><input id="v_desc"><button>Thêm video</button></form>
-
-<form class="panel" id="p-proj"><h3>Thêm / sửa dự án</h3>
-<label>Tên dự án</label><input id="j_title">
-<label>Loại</label><input id="j_type" list="j_types" placeholder="Userscript, Mod, Công cụ..."><datalist id="j_types"><option>Userscript</option><option>Mod</option><option>Công cụ</option><option>Bản dịch game</option></datalist>
-<label>Trạng thái</label><select id="j_status"><option>Đang phát triển</option><option>Ổn định</option><option>Tạm dừng</option></select>
-<label>Phiên bản</label><input id="j_ver" placeholder="1.0.0">
-<label>Ngày cập nhật</label><input id="j_date" type="date">
-<label>Mô tả</label><textarea id="j_desc"></textarea>
-<label>Nút liên kết (mỗi dòng: Tên nút | https://link)</label><textarea id="j_links" placeholder="Cài đặt | https://greasyfork.org/..."></textarea>
-<label>Hướng dẫn sử dụng (không bắt buộc)</label><textarea id="j_how"></textarea>
-<label>Ảnh minh họa (không bắt buộc)</label><input id="j_img" type="file" accept="image/*">
-<button>Lưu dự án</button></form>
-
-<div class="panel" id="p-tr"><h3>🈯 Công cụ dịch Light Novel</h3>
-<p class="mu">Dán bản gốc bên trái, dịch tay hoặc dịch tự động (Gemini) sang bên phải, chỉnh sửa rồi đăng thẳng lên web. Bản nháp tự lưu trên máy này.</p>
-<div class="trrow"><div><label>Bộ truyện (Novel)</label><select id="t_ser"></select></div><div><label>Tên chương</label><input id="t_title" placeholder="Chương 1: ..."></div>
-<div><label>Tập (nếu có)</label><input id="t_vol" list="t_vols"><datalist id="t_vols"></datalist></div><div><label>Ngày</label><input id="t_date" type="date"></div></div>
-<details id="t_set"><summary>⚙️ Cài đặt dịch tự động và bảng tên riêng</summary>
-<div class="trrow"><div><label>Ngôn ngữ gốc</label><select id="t_src"><option>tiếng Nhật</option><option>tiếng Anh</option><option>tiếng Trung</option><option>tiếng Hàn</option></select></div>
-<div style="grid-column:span 3"><label>Văn phong</label><input id="t_style" value="tự nhiên, mượt mà, đúng chất light novel"></div></div>
-<label>Gemini API key (lưu mã hóa bằng PIN trên máy này)</label><input id="t_key" type="password" autocomplete="off" placeholder="Dán key lấy từ aistudio.google.com/apikey">
-<label>Tên model (có thể đổi nếu Google đổi tên)</label><input id="t_model">
-<button type="button" id="t_keysave" class="trb">Lưu key</button> <button type="button" id="t_keydel" style="background:#888">Xóa key</button>
-<label>Bảng tên riêng của bộ này (mỗi dòng: gốc = bản dịch)</label><textarea id="t_gl" placeholder="アリス = Alice&#10;魔王 = Ma Vương"></textarea>
-<button type="button" id="gl_push">☁️ Lưu bảng tên lên repo</button> <button type="button" id="gl_pull" style="background:#888">⬇ Lấy từ repo</button>
-<p class="mu">Bảng tên lưu trong file glossary.json của repo, dùng chung giữa các máy. Repo công khai thì file này cũng công khai như mọi file khác.</p></details>
-<div class="trgrid"><div><label>Bản gốc <span class="mu" id="t_sc"></span></label><textarea id="t_in" class="trta" placeholder="Dán nội dung gốc, mỗi đoạn một dòng..."></textarea></div>
-<div><label>Bản dịch <span class="mu" id="t_oc"></span></label><textarea id="t_out" class="trta" placeholder="Bản dịch tiếng Việt..."></textarea></div></div>
-<div id="t_rv" hidden><div class="rvh"><span id="t_rvs" class="mu"></span><label style="margin:0;font-weight:400"><input type="checkbox" id="t_only" style="width:auto"> Chỉ hiện dòng cần chú ý (thiếu bản dịch hoặc còn chữ gốc)</label></div><div id="t_rows"></div></div>
-<div class="trbar"><button type="button" id="t_all" class="trb">🤖 Dịch tất cả</button><button type="button" id="t_resume" class="trb">▶ Dịch tiếp</button><button type="button" id="t_sel" class="trb">🎯 Dịch đoạn bôi đen</button><button type="button" id="t_view" class="trb" style="background:#2b8a6e">👁 Đối chiếu</button><button type="button" id="t_stop" hidden style="background:#d33">⏹ Dừng</button>
-<button type="button" id="t_join" class="trb" style="background:#888">🧹 Nối dòng gốc</button><button type="button" id="t_apply" class="trb" style="background:#888">🔁 Áp dụng bảng tên</button><button type="button" id="t_clear" class="trb" style="background:#888">🗑 Xóa nháp</button></div>
-<p class="mu" id="t_prog"></p><button type="button" id="t_pub" class="trb">🚀 Đăng chương lên web</button></div>
-
-<form class="panel" id="p-site"><h3>⚙️ Cài đặt trang web</h3>
-<h4>📢 Thông báo đầu trang</h4><p class="mu">Để trống nội dung để tắt thông báo.</p>
-<label>Nội dung</label><input id="a_text" placeholder="Ví dụ: Đã ra Tập 3!"><label>Link (không bắt buộc)</label><input id="a_url" placeholder="https://...">
-<h4>ℹ️ Giới thiệu & liên hệ</h4>
-<label>Tên nhóm dịch</label><input id="b_name"><label>Giới thiệu nhóm</label><textarea id="b_intro"></textarea>
-<label>Link Discord</label><input id="b_dc" placeholder="https://discord.gg/...">
-<label>Nguồn liên hệ (mỗi dòng: Tên | link hoặc email)</label><textarea id="b_ct" placeholder="Facebook | https://facebook.com/...&#10;Email | ten@mail.com"></textarea>
-<h4>💬 Bình luận (Giscus)</h4><p class="mu">Lấy 4 giá trị dưới đây tại giscus.app. Để trống để tắt bình luận.</p>
-<label>Repo (tên-người-dùng/tên-repo)</label><input id="g_repo"><label>Repo ID</label><input id="g_rid"><label>Tên danh mục (Category)</label><input id="g_cat"><label>Category ID</label><input id="g_cid">
-<h4>🔗 Địa chỉ web (cho RSS)</h4><label>Để trống nếu dùng địa chỉ github.io mặc định</label><input id="w_url" placeholder="https://username.github.io/kho-game/">
-<button>Lưu cài đặt</button></form>
-
-<form class="panel" id="p-vol"><h3>📦 Gán tập hàng loạt</h3><p class="mu" id="v_info"></p>
-<label>Tên tập (để trống = bỏ chương khỏi tập)</label><input id="v_name" placeholder="Tập 1">
-<div style="margin:12px 0">Từ chương số <input id="v_from" type="number" min="1" style="width:80px;display:inline-block"> đến <input id="v_to" type="number" min="1" style="width:80px;display:inline-block">
-<button type="button" id="v_range" style="margin-top:0">Chọn khoảng</button> <button type="button" id="v_all" style="margin-top:0">Chọn tất cả</button> <button type="button" id="v_none" style="margin-top:0;background:#888">Bỏ chọn</button></div>
-<div id="v_list"></div><button>Áp dụng</button> <button type="button" id="v_cancel" style="background:#888">Hủy</button></form>
-
-<form class="panel" id="p-edit"><h3>Sửa chương</h3><p class="mu" id="e_info"></p>
-<label>Tên chương</label><input id="e_title"><label>Tập (để trống nếu không chia tập)</label><input id="e_vol"><label>Ngày cập nhật</label><input id="e_date" type="date">
-<div id="e_novel"><label>Nội dung</label><textarea id="e_text" style="min-height:280px"></textarea></div>
-<p class="mu" id="e_mn" hidden>Với manga, ở đây sửa được tên chương và ngày. Muốn đổi ảnh thì xóa chương rồi đăng lại.</p>
-<button>Lưu thay đổi</button> <button type="button" id="e_cancel" style="background:#888">Hủy</button></form>
-
-<div class="panel" id="p-man"><h3>Quản lý / xóa</h3><p class="mu">Xóa chỉ gỡ khỏi web; file ảnh và chương vẫn còn trong repo.</p><div id="manage"></div></div>
+<aside id="side"><div class="sl"><a class="logo" href="#home"><i>K</i>Kenrori</a><button id="sx" title="Đóng menu"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><nav id="nv"></nav><div class="sfoot" id="sfoot"></div></aside>
+<div id="scrim"></div>
+<div id="main">
+<div id="ann" hidden></div>
+<header id="top"><button class="ib" id="hb" title="Menu"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><a class="logo" href="#home"><i>K</i>Kenrori</a>
+<label class="srch"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Tìm truyện, dự án, mẹo..." aria-label="Tìm kiếm"></label>
+<button class="ib" id="th" title="Đổi sáng/tối"><svg class="i" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button></header>
+<main id="app"></main>
+<footer><span>© Kenrori. Dịch phi lợi nhuận.</span><a href="#about">Giới thiệu</a><a href="feed.xml">RSS</a><a href="admin.html">Quản trị</a></footer>
 </div>
-</main>
-<div id="log">Đang chờ đăng nhập.</div>
+<div id="pg"></div><button id="up" hidden title="Lên đầu trang"><svg class="i" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg></button>
+<div id="lb"><img alt=""></div>
 <script>
-const $ = s => document.querySelector(s), esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+/* ============ DATA: CHỈ CẦN SỬA PHẦN NÀY ============ */
+const DATA = {
+  tips: [
+    { title: "Cách farm Raid nhanh (ví dụ)", game: "Granblue Fantasy", text: "Viết mẹo ở đây. Bấm vào ảnh để phóng to.", img: "images/vi-du-1.png" }
+  ],
+  links: [
+    { title: "Greasyfork", url: "https://greasyfork.org/", desc: "Kho userscript.", tags: ["script"] },
+    { title: "NovelUpdates", url: "https://www.novelupdates.com/", desc: "Tra cứu novel.", tags: ["novel"] },
+    { title: "Nexus Mods", url: "https://www.nexusmods.com/", desc: "Kho mod game.", tags: ["mod"] }
+  ],
+  guides: [ /* giải thích công cụ bằng ảnh; embed: "https://..." để nhúng công cụ web */
+    { title: "Hướng dẫn cài userscript (ví dụ)", text: "Cài Tampermonkey → mở link script → bấm Install.", img: "images/tool-1.png", embed: "" }
+  ],
+  novels: [ /* chương: dùng file: "novels/ten/c1.txt" (mỗi dòng = 1 đoạn) hoặc text: "..." */
+    { slug: "vi-du-novel", title: "Tên Light Novel (ví dụ)", author: "Tác giả", status: "Đang dịch", cover: "images/bia-1.jpg",
+      desc: "Giới thiệu ngắn về bộ truyện.",
+      chapters: [
+        { t: "Chương 1: Khởi đầu", date: "2026-11-01", text: "Đây là đoạn mở đầu.\nĐoạn thứ hai của chương 1." },
+        { t: "Chương 2: Gặp gỡ", date: "2026-11-05", text: "Nội dung chương 2.\nThêm một đoạn nữa." },
+        { t: "Chương 3: Hành trình", date: "2026-11-12", file: "novels/vi-du-novel/c3.txt", words: 3200 }
+      ] }
+  ],
+  manga: [ /* trang: pages:[url,...] hoặc dir + n (+ pad, ext) → dir/01.jpg ... */
+    { slug: "vi-du-manga", title: "Tên Manga (ví dụ)", author: "Tác giả", status: "Hoàn thành", cover: "images/bia-2.jpg",
+      desc: "Giới thiệu ngắn.",
+      chapters: [
+        { t: "Chương 1", date: "2026-11-02", dir: "manga/vi-du-manga/c1/", n: 20, pad: 2, ext: "jpg" },
+        { t: "Chương 2", date: "2026-11-09", dir: "manga/vi-du-manga/c2/", n: 18, pad: 2, ext: "jpg" }
+      ] }
+  ],
+  videos: [
+    { title: "Bài hát Vietsub (YouTube)", youtube: "dQw4w9WgXcQ", desc: "Thay ID bằng video của bạn." },
+    { title: "Bài hát Vietsub (file trong repo)", mp4: "videos/bai-hat.mp4", vtt: "videos/bai-hat.vi.vtt", desc: "Phụ đề .vtt hiện trong trình phát." }
+  ]
+};
+/* ============ CÔNG CỤ TÍCH HỢP ============ */
+const W = x => x.trim() ? x.trim().split(/\s+/).length : 0;
+const TOOLS = [
+ { t: "Sửa lỗi chữ tách dấu tiếng Việt", h: "Chuẩn hóa dấu về dạng chuẩn (NFC), xóa ký tự vô hình và khoảng trắng lạ.", fn: x => x.normalize("NFC").replace(/[\u200B-\u200D\uFEFF]/g, "").replace(/\u00A0/g, " ") },
+ { t: "Đếm chữ & ký tự", fn: x => `${W(x)} chữ · ${x.length} ký tự · ${x.split("\n").filter(l => l.trim()).length} đoạn` },
+ { t: "Dọn văn bản", h: "Xóa khoảng trắng thừa, gộp dòng trống.", fn: x => x.replace(/\r/g, "").replace(/[ \t]+/g, " ").replace(/ ?\n ?/g, "\n").replace(/\n{3,}/g, "\n\n").trim() },
+ { t: "Nối dòng bị ngắt (PDF/OCR)", h: "Nối các dòng bị ngắt giữa câu, giữ dòng trống giữa đoạn.", fn: x => x.replace(/\r/g, "").replace(/([^\n])\n(?!\n)/g, "$1 ") },
+ { t: "Tìm & thay hàng loạt (tên riêng)", h: "Ô dưới: mỗi dòng một cặp từ cũ=từ mới.", x: "từ cũ=từ mới", fn: (x, g) => g.split("\n").filter(l => l.includes("=")).reduce((s, l) => { const [a, ...b] = l.split("="); return a.trim() ? s.split(a.trim()).join(b.join("=").trim()) : s }, x) },
+ { t: "Bỏ dấu & tạo slug", h: "Dùng đặt tên thư mục/file.", fn: x => x.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") },
+ { t: "SRT → VTT (phụ đề Vietsub)", h: "Chuyển phụ đề .srt sang .vtt để dùng với video HTML.", fn: x => "WEBVTT\n\n" + x.replace(/\r/g, "").replace(/(\d\d:\d\d:\d\d),(\d{3})/g, "$1.$2").trim() },
+ { t: "Tách chương → JSON", h: "Dán cả truyện; dòng bắt đầu bằng từ khóa (ô dưới, mặc định “Chương”) là chương mới. Kết quả dán vào chapters:[...].", x: "Chương", fn: (x, k) => { k = k.trim() || "Chương"; const d = new Date().toISOString().slice(0, 10), o = []; let c; x.replace(/\r/g, "").split("\n").forEach(l => { if (l.trim().startsWith(k)) { c = { t: l.trim(), date: d, w: [] }; o.push(c) } else if (c) c.w.push(l) }); return JSON.stringify(o.map(c => { const tx = c.w.join("\n").trim(); return { t: c.t, date: c.date, words: W(tx), text: tx } }), null, 1) } },
+ { t: "Tạo danh sách trang manga", h: "Ô trên để trống. Ô dưới: thư mục|số trang|đuôi file", x: "manga/ten/c1/|20|jpg", fn: (_, p) => { const [d, n, e] = p.split("|").map(s => s.trim()); return JSON.stringify(Array.from({ length: +n }, (_, i) => d + String(i + 1).padStart(2, "0") + "." + (e || "jpg")), null, 1) } }
+];
+/* ============ CODE ============ */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? "").normalize("NFC").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmtD = d => d ? d.split("-").reverse().join("/") : "";
+const fmtN = n => n ? Number(n).toLocaleString("vi-VN") + " chữ" : "";
+const hue = t => [...t].reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
 const ls = { get: k => { try { return localStorage.getItem(k) } catch (e) {} }, set: (k, v) => { try { localStorage.setItem(k, v) } catch (e) {} }, del: k => { try { localStorage.removeItem(k) } catch (e) {} } };
-const KEYS = { novel: "novels", manga: "manga" }, log = m => $("#log").textContent = m;
-const slugify = x => x.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-const b64t = t => { const b = new TextEncoder().encode(String(t).normalize("NFC")); let s = ""; for (let i = 0; i < b.length; i += 8192) s += String.fromCharCode(...b.subarray(i, i + 8192)); return btoa(s) };
-const t64 = b => new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\n/g, "")), c => c.charCodeAt(0)));
-const fileB64 = f => new Promise(r => { const x = new FileReader(); x.onload = () => r(x.result.split(",")[1]); x.readAsDataURL(f) });
-const resize = (f, w = 600) => new Promise(r => { const im = new Image(); im.onload = () => { const k = Math.min(1, w / im.width), c = document.createElement("canvas"); c.width = im.width * k; c.height = im.height * k; c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); r(c.toDataURL("image/jpeg", .85).split(",")[1]) }; im.src = URL.createObjectURL(f) });
-const rid = () => Date.now().toString(36);
-let cfg = {}, data = null;
-
-const api = (p, o = {}) => fetch(`https://api.github.com/repos/${cfg.u}/${cfg.r}/contents/${p}` + (o.q ? o.q + "&_=" + Date.now() : ""), { method: o.m || "GET", cache: "no-store", headers: { Authorization: "Bearer " + cfg.t, Accept: "application/vnd.github+json" }, body: o.body && JSON.stringify(o.body) });
-async function put(path, content, msg) {
-  for (let t = 0; t < 3; t++) {
-    let sha; const g = await api(path, { q: "?ref=" + cfg.b });
-    if (g.ok) sha = (await g.json()).sha; else if (g.status !== 404) throw new Error("Không đọc được " + path + " (" + g.status + ")");
-    const r = await api(path, { m: "PUT", body: { message: msg, content, branch: cfg.b, sha } });
-    if (r.ok) return;
-    const j = await r.json().catch(() => ({}));
-    if (r.status === 409 && t < 2) { await new Promise(res => setTimeout(res, 800)); continue }
-    throw new Error(j.message || "Lỗi " + r.status);
-  }
-}
-const feedXml = () => {
-  const S = data.site || {}; let base = (S.url || "").trim();
-  if (!base) base = cfg.r.toLowerCase() === (cfg.u + ".github.io").toLowerCase() ? `https://${cfg.u}.github.io/` : `https://${cfg.u}.github.io/${cfg.r}/`;
-  if (!base.endsWith("/")) base += "/";
-  const x = t => String(t ?? "").replace(/[<>&"']/g, c => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&apos;" }[c]));
-  const items = []; for (const k of ["novel", "manga"]) data[KEYS[k]].forEach(s => s.chapters.forEach((c, i) => items.push({ k, s, c, i })));
-  items.sort((p, q) => (q.c.date || "").localeCompare(p.c.date || "") || q.i - p.i);
-  const it = items.slice(0, 30).map(({ k, s, c, i }) => `<item><title>${x(s.title)} – ${x((c.vol ? c.vol + " · " : "") + c.t)}</title><link>${x(base + "#" + k + "/" + s.slug + "/" + i)}</link><guid isPermaLink="false">${x(k + ":" + s.slug + ":" + (c.file || (c.pages && c.pages[0]) || c.t))}</guid>${c.date ? `<pubDate>${new Date(c.date + "T00:00:00Z").toUTCString()}</pubDate>` : ""}</item>`).join("");
-  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Kenrori</title><link>${x(base)}</link><description>Chương mới cập nhật</description><language>vi</language>${it}</channel></rss>`;
+const ADM = !!ls.get("cfg2");
+const imgTag = s => s ? `<img src="${esc(s)}" alt="" loading="lazy" onerror="this.remove()">` : "";
+const ic = p => `<svg class="i" viewBox="0 0 24 24">${p}</svg>`;
+const I = {
+  home: '<path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  book: '<path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2.5zM20 19v3H6"/>',
+  game: '<rect x="2" y="7" width="20" height="12" rx="4"/><path d="M7 11v4M5 13h4M15 12h.01M18 14h.01"/>',
+  more: '<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',
+  next: '<path d="m9 18 6-6-6-6"/>', prev: '<path d="m15 18-6-6 6-6"/>',
+  star: '<path d="m12 3 2.8 5.8 6.2.9-4.5 4.4 1 6.2L12 17.4 6.5 20.3l1-6.2L3 9.7l6.2-.9z"/>',
+  play: '<path d="M7 4v16l13-8z"/>', edit: '<path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/>', plus: '<path d="M12 5v14M5 12h14"/>'
 };
-async function save(msg) {
-  await put("data.json", b64t(JSON.stringify(data, null, 1)), msg);
-  try { await put("feed.xml", b64t(feedXml()), "Cập nhật RSS") } catch (e) { log("Đã lưu, nhưng chưa cập nhật được RSS: " + e.message) }
+DATA.projects ??= [{ title: "Tên dự án (ví dụ)", type: "Userscript", status: "Đang phát triển", version: "1.0.0", date: "2026-11-01", desc: "Mô tả ngắn về dự án.", links: [{ label: "Cài đặt", url: "https://greasyfork.org/" }], howto: "Bước 1: ...\nBước 2: ...", img: "" }];
+DATA.site ??= {};
+const KEY = { novel: "novels", manga: "manga" }, app = $("#app"), EMPTY = '<p class="empty">Chưa có nội dung.</p>';
+const NAV = [["home", "home", "Trang chủ"], ["—", "book", "Truyện"], ["novels", "", "Light Novel"], ["manga", "", "Manga"], ["the-loai", "", "Thể loại"], ["library", "", "Thư viện của tôi"], ["—", "game", "Game & công cụ"], ["projects", "", "Dự án"], ["tips", "", "Mẹo game"], ["tools", "", "Công cụ"], ["—", "more", "Khác"], ["videos", "", "Video Vietsub"], ["links", "", "Liên kết"], ["about", "", "Giới thiệu"]];
+function renderSide() {
+  $("#nv").innerHTML = NAV.map(([k, icn, l]) => k === "—" ? `<div class="sg">${ic(I[icn])}${l}</div>` : `<a href="#${k}" data-k="${k}"${icn ? ' class="top"' : ""}>${icn ? ic(I[icn]) : ""}${l}</a>`).join("");
+  const dc = (DATA.site.about || {}).discord;
+  $("#sfoot").innerHTML = (/^https?:\/\//.test(dc || "") ? `<a class="dcb" href="${esc(dc)}" target="_blank" rel="noopener">Tham gia Discord</a>` : "") + `<a href="feed.xml">Theo dõi qua RSS</a><a href="admin.html">Quản trị</a><span>© Kenrori</span>`;
 }
-async function run(fn) { const bs = [...document.querySelectorAll("button")]; bs.forEach(b => b.disabled = true); try { await fn() } catch (e) { log("❌ " + e.message) } bs.forEach(b => b.disabled = false) }
-const done = m => { log(m); fillSel(); manage() };
-
-const needHttps = () => { if (!window.crypto?.subtle) throw new Error("Cần mở bằng địa chỉ https (GitHub Pages) để dùng đăng nhập bảo mật.") };
-const enc = new TextEncoder(), toB = u => btoa(String.fromCharCode(...u)), fromB = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
-async function pkey(pin, salt) { const k = await crypto.subtle.importKey("raw", enc.encode(pin), "PBKDF2", false, ["deriveKey"]); return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: 250000, hash: "SHA-256" }, k, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]) }
-async function seal(pin, text) { const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12)); const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, await pkey(pin, salt), enc.encode(text))); return { salt: toB(salt), iv: toB(iv), ct: toB(ct) } }
-async function unseal(pin, o) { return new TextDecoder().decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: fromB(o.iv) }, await pkey(pin, fromB(o.salt)), fromB(o.ct))) }
-async function connect(c, after) {
-  cfg = c;
-  await run(async () => {
-    log("Đang kết nối...");
-    const rp = await fetch(`https://api.github.com/repos/${cfg.u}/${cfg.r}`, { headers: { Authorization: "Bearer " + cfg.t } });
-    if (!rp.ok) throw new Error("Không vào được repo (" + rp.status + "). Kiểm tra tên người dùng, tên repo và token.");
-    const r = await api("data.json", { q: "?ref=" + cfg.b });
-    if (r.status === 404) data = {}; else if (r.ok) data = JSON.parse(t64((await r.json()).content)); else throw new Error("Không đọc được data.json (" + r.status + ")");
-    for (const k of ["tips", "links", "novels", "manga", "videos", "projects"]) data[k] ??= []; data.site ??= {};
-    if (after) await after();
-    $("#login").hidden = $("#setup").hidden = true; $("#bye").hidden = false; $("#app").hidden = false; $("#c_date").value = $("#j_date").value = $("#t_date").value = new Date().toISOString().slice(0, 10);
-    fillSel(); manage(); siteLoad(); trLoadKey(); glLoad(); log("✅ Đã đăng nhập. Chọn mục cần thêm."); deepLink();
-  });
+const STC = t => /hoàn/i.test(t || "") ? "done" : /tạm|ngưng|dừng|drop/i.test(t || "") ? "pause" : "on";
+const stDot = s => s.status ? `<span class="st ${STC(s.status)}">${esc(s.status)}</span>` : "";
+const ago = d => { if (!d) return ""; const t = new Date(), n = Math.round((Date.UTC(t.getFullYear(), t.getMonth(), t.getDate()) - Date.parse(d)) / 864e5); return n <= 0 ? "Hôm nay" : n === 1 ? "Hôm qua" : n < 7 ? n + " ngày trước" : n < 30 ? Math.floor(n / 7) + " tuần trước" : fmtD(d) };
+const bgStyle = s => `style="--h:${hue(s.title)}${s.cover ? `;background-image:url(&quot;${esc(s.cover)}&quot;)` : ""}"`;
+const allG = (k = "all") => { const m = new Map(); for (const x of (k === "all" ? ["novel", "manga"] : [k])) DATA[KEY[x]].forEach(s => (s.genres || []).forEach(g => m.set(g, (m.get(g) || 0) + 1))); return [...m].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "vi")) };
+const gHref = (g, k = "all") => `#the-loai/${k}/${encodeURIComponent(g)}`;
+const gChips = k => { const a = allG(k); return a.length ? `<div class="gc">${a.map(([g, n]) => `<a class="tag" href="${gHref(g, k)}">${esc(g)}<small>${n}</small></a>`).join("")}</div>` : "" };
+const latest = s => s.chapters.map(c => c.date || "").sort().pop() || "";
+const first = s => s.chapters.map(c => c.date || "").filter(Boolean).sort()[0] || "";
+const sum = s => s.chapters.reduce((a, c) => a + (c.words || (c.text ? W(c.text) : 0)), 0);
+const allS = () => [...DATA.novels.map(s => ({ k: "novel", s })), ...DATA.manga.map(s => ({ k: "manga", s }))];
+const byNew = a => [...a].sort((x, y) => latest(y.s || y).localeCompare(latest(x.s || x)));
+const sec = (t, more, body) => `<section class="sec"><div class="sh"><h2>${t}</h2>${more ? `<a class="more" href="#${more}" title="Xem tất cả">${ic(I.next)}</a>` : ""}</div>${body}</section>`;
+const card = (k, s) => `<a class="sc" href="#${k}/${s.slug}"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b><i class="kd">${k === "novel" ? "Novel" : "Manga"}</i></div><div class="ct" title="${esc(s.title)}">${esc(s.title)}</div><small>${stDot(s)}<span>${s.chapters.length} chương</span></small></a>`;
+const gridOf = (k, a) => a.length ? `<div class="series">${byNew(a).map(s => card(k, s)).join("")}</div>` : EMPTY;
+const recent = n => { const a = []; for (const { k, s } of allS()) s.chapters.forEach((c, i) => a.push({ k, s, c, i })); return a.sort((x, y) => (y.c.date || "").localeCompare(x.c.date || "") || y.i - x.i).slice(0, n) };
+const rdSet = (k, s) => { try { return JSON.parse(ls.get("r:" + k + ":" + s.slug) || "[]") } catch (e) { return [] } };
+function latestUpdates() {
+  const m = new Map();
+  for (const r of recent(80)) { const id = r.k + ":" + r.s.slug; if (!m.has(id)) m.set(id, { k: r.k, s: r.s, c: [] }); const g = m.get(id); if (g.c.length < 3) g.c.push(r) }
+  const G = [...m.values()].slice(0, 12); if (!G.length) return EMPTY;
+  return `<div class="lu">${G.map(g => { const rs = rdSet(g.k, g.s); return `<div class="lui"><a class="th" href="#${g.k}/${g.s.slug}" style="--h:${hue(g.s.title)}">${imgTag(g.s.cover)}</a><div class="lub"><a class="lut" href="#${g.k}/${g.s.slug}" title="${esc(g.s.title)}">${esc(g.s.title)}</a>${g.c.map(r => `<a class="luc${rs.includes(r.i) ? " rd" : ""}" href="#${r.k}/${r.s.slug}/${r.i}"><span>${r.c.vol ? esc(r.c.vol) + ", " : ""}${esc(r.c.t)}</span><small>${ago(r.c.date)}</small></a>`).join("")}</div></div>` }).join("")}</div>`;
 }
-let sealed = null; try { sealed = JSON.parse(ls.get("cfg2") || "null") } catch (e) {}
-const oldCfg = ls.get("cfg"); if (oldCfg) { try { const c = JSON.parse(oldCfg); $("#g_u").value = c.u; $("#g_r").value = c.r; $("#g_b").value = c.b; $("#g_t").value = c.t } catch (e) {} ls.del("cfg") }
-if (sealed) { $("#login").hidden = false; $("#setup").hidden = true; $("#g_u").value = sealed.u; $("#g_r").value = sealed.r; $("#g_b").value = sealed.b; log("Nhập mã PIN để đăng nhập.") }
-$("#l_go").onclick = async () => {
-  try { needHttps(); let t; try { t = await unseal($("#l_pin").value, sealed) } catch (e) { throw new Error("Sai mã PIN") } sessionPin = $("#l_pin").value; await connect({ u: sealed.u, r: sealed.r, b: sealed.b, t }) } catch (e) { log("❌ " + e.message) }
+let HI = 0, HT = null;
+function heroHtml() {
+  const L = allS().sort((x, y) => latest(y.s).localeCompare(latest(x.s))).slice(0, 5); if (!L.length) return "";
+  return `<section class="hero" id="hero" aria-label="Truyện mới cập nhật">${L.map(({ k, s }, i) => `<div class="hs${i ? "" : " on"}"><div class="hb" ${bgStyle(s)}></div><div class="hw"><a class="cover" href="#${k}/${s.slug}" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></a><div class="hi"><a href="#${k}/${s.slug}"><h2>${esc(s.title)}</h2></a><div class="htg">${(s.genres || []).slice(0, 6).map(g => `<span>${esc(g)}</span>`).join("")}</div><p>${esc(s.desc)}</p><div class="hau">${esc(s.author || "")}</div></div></div></div>`).join("")}${L.length > 1 ? `<div class="hn"><span id="hno">Số 1</span><button onclick="heroGo(-1)" title="Trước">${ic(I.prev)}</button><button onclick="heroGo(1)" title="Sau">${ic(I.next)}</button></div>` : ""}</section>`;
+}
+function heroGo(d) { const ss = document.querySelectorAll(".hs"); if (ss.length < 2) return; ss[HI].classList.remove("on"); HI = (HI + d + ss.length) % ss.length; ss[HI].classList.add("on"); $("#hno").textContent = "Số " + (HI + 1); clearInterval(HT); HT = setInterval(() => heroGo(1), 8000) }
+const projCard = d => `<div class="card pj">${d.img ? `<img class="pi" src="${esc(d.img)}" alt="" loading="lazy" onerror="this.remove()">` : ""}<h3>${esc(d.title)}</h3><div class="meta">${d.status ? `<span class="st ${STC(d.status)}">${esc(d.status)}</span>` : ""}${d.type ? `<span class="pill">${esc(d.type)}</span>` : ""}${d.version ? `<span>v${esc(d.version)}</span>` : ""}${d.date ? `<span>Cập nhật ${fmtD(d.date)}</span>` : ""}</div><p>${esc(d.desc)}</p><div class="acts">${(d.links || []).filter(l => /^https?:\/\//.test(l.url)).map((l, i) => `<a class="btn${i ? "" : " pri"}" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join("")}</div>${d.howto ? `<details><summary>Hướng dẫn sử dụng</summary><p class="sum">${esc(d.howto)}</p></details>` : ""}</div>`;
+const reading = (n = 8) => { const a = []; for (const { k, s } of allS()) { const l = ls.get(k + ":" + s.slug); if (l != null && s.chapters[+l]) a.push({ k, s, l: +l, t: +(ls.get("t:" + k + ":" + s.slug) || 0) }) } return a.sort((x, y) => y.t - x.t).slice(0, n) };
+const rdCard = r => { const n = r.s.chapters.length, nw = n - 1 - r.l, pct = Math.round(rdSet(r.k, r.s).length / n * 100); return `<div class="rcs"><a class="sc" href="#${r.k}/${r.s.slug}/${r.l}"><div class="cover" style="--h:${hue(r.s.title)}">${imgTag(r.s.cover)}<b>${esc(r.s.title)}</b>${nw > 0 ? `<i class="nwb">+${nw} chương</i>` : ""}</div><div class="ct">${esc(r.s.title)}</div><small><span>${esc(r.s.chapters[r.l].t)}</span></small><i class="pb"><i style="width:${pct}%"></i></i></a><button class="fg" title="Bỏ khỏi danh sách đang đọc" onclick="forget('${r.k}','${esc(r.s.slug)}')">✕</button></div>` };
+function forget(k, slug) { ["", "t:", "r:"].forEach(p => ls.del(p + k + ":" + slug)); route() }
+let RDKEY = null;
+const favs = () => { try { return JSON.parse(ls.get("favs") || "[]") } catch (e) { return [] } };
+const isFav = (k, slug) => favs().includes(k + ":" + slug);
+const favLabel = on => on ? `${ic(I.star)}Trong thư viện` : `${ic(I.star)}Thêm vào thư viện`;
+function toggleFav(k, slug) { const f = favs(), id = k + ":" + slug, n = f.includes(id) ? f.filter(x => x !== id) : [...f, id]; ls.set("favs", JSON.stringify(n)); const b = $("#fvb"); if (b) { const on = n.includes(id); b.innerHTML = favLabel(on); b.classList.toggle("on", on); b.classList.toggle("pri", !on) } }
+const favList = () => favs().map(id => { const [k, slug] = id.split(":"); const s = (DATA[KEY[k]] || []).find(x => x.slug === slug); return s && { k, s } }).filter(Boolean);
+const favGrid = a => `<div class="series">${a.map(({ k, s }) => card(k, s)).join("")}</div>`;
+function renderAnn() {
+  const a = DATA.site.announce, el = $("#ann"); if (!a || !a.text) { el.hidden = true; return }
+  const key = "ann:" + a.text; if (ls.get(key)) { el.hidden = true; return }
+  el.hidden = false; el.innerHTML = `${esc(a.text)}${/^https?:\/\//.test(a.url || "") ? ` <a href="${esc(a.url)}" target="_blank" rel="noopener">Xem thêm</a>` : ""}<button title="Đóng thông báo">✕</button>`;
+  el.querySelector("button").onclick = () => { ls.set(key, "1"); el.hidden = true };
+}
+const R = {
+  tips: d => `<details class="it"><summary>${esc(d.title)} <span class="pill">${esc(d.game)}</span></summary><p>${esc(d.text)}</p>${imgTag(d.img)}</details>`,
+  links: d => `<div class="card"><h3><a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.title)}</a></h3><p>${esc(d.desc)}</p><div class="acts">${(d.tags || []).map(t => `<span class="pill">${esc(t)}</span>`).join("")}</div></div>`,
+  guides: d => `<details class="it"><summary>${esc(d.title)}</summary><p>${esc(d.text)}</p>${imgTag(d.img)}${d.embed ? `<iframe class="tool" src="${esc(d.embed)}" loading="lazy"></iframe>` : ""}</details>`,
+  videos: d => `<div class="card"><h3>${esc(d.title)}</h3><p>${esc(d.desc)}</p>` + (d.youtube ? `<iframe src="https://www.youtube-nocookie.com/embed/${esc(d.youtube)}" allowfullscreen loading="lazy"></iframe>` : `<video controls preload="none" src="${esc(d.mp4)}">${d.vtt ? `<track kind="subtitles" srclang="vi" label="Tiếng Việt" src="${esc(d.vtt)}" default>` : ""}</video>`) + `</div>`
 };
-$("#l_pin").addEventListener("keydown", e => { if (e.key === "Enter") $("#l_go").click() });
-$("#l_new").onclick = () => { $("#login").hidden = true; $("#setup").hidden = false; $("#setup").open = true; log("Nhập lại thông tin và đặt PIN mới.") };
-$("#g_go").onclick = async () => {
-  try {
-    needHttps(); const c = { u: $("#g_u").value.trim(), r: $("#g_r").value.trim(), b: $("#g_b").value.trim() || "main", t: $("#g_t").value.trim() }, pin = $("#g_p").value;
-    if (!c.u || !c.r || !c.t) throw new Error("Hãy điền đủ tên người dùng, repo và token"); if (pin.length < 6) throw new Error("PIN cần ít nhất 6 ký tự");
-    sessionPin = pin; await connect(c, async () => { ls.set("cfg2", JSON.stringify({ u: c.u, r: c.r, b: c.b, ...await seal(pin, c.t) })) });
-  } catch (e) { log("❌ " + e.message) }
+const toolUI = (t, i) => `<details class="it tb"><summary>${esc(t.t)}</summary>${t.h ? `<p>${esc(t.h)}</p>` : ""}<textarea class="i" placeholder="Dán nội dung vào đây"></textarea>${t.x ? `<textarea class="x" placeholder="${esc(t.x)}"></textarea>` : ""}<button onclick="runTool(${i},this)">Chạy</button><button onclick="copyOut(this)">Sao chép kết quả</button><textarea class="o" readonly placeholder="Kết quả"></textarea></details>`;
+function runTool(i, b) { const d = b.closest(".tb"), o = $(".o", d); try { o.value = TOOLS[i].fn($(".i", d).value, $(".x", d)?.value || "") } catch (e) { o.value = "Lỗi: " + e.message } }
+function copyOut(b) { const o = $(".o", b.closest(".tb")); o.select(); navigator.clipboard?.writeText(o.value) }
+const P = {
+  home: () => {
+    const rd = reading(), fv = favList(), news = allS().filter(x => x.s.chapters.length).sort((x, y) => first(y.s).localeCompare(first(x.s))).slice(0, 15);
+    return heroHtml()
+      + (rd.length ? sec("Đọc tiếp", "library", `<div class="shelf">${rd.map(rdCard).join("")}</div>`) : "")
+      + sec("Mới cập nhật", null, latestUpdates())
+      + (fv.length ? sec("Thư viện của bạn", "library", `<div class="shelf">${fv.slice(0, 15).map(({ k, s }) => card(k, s)).join("")}</div>`) : "")
+      + (news.length ? sec("Mới thêm", null, `<div class="shelf">${news.map(({ k, s }) => card(k, s)).join("")}</div>`) : "")
+      + (DATA.projects.length ? sec("Dự án", "projects", `<div class="grid">${DATA.projects.slice(0, 3).map(projCard).join("")}</div>`) : "")
+      + (allG().length ? sec("Thể loại", "the-loai", gChips("all")) : "");
+  },
+  novels: () => sec("Light Novel", null, gChips("novel") + gridOf("novel", DATA.novels)),
+  manga: () => sec("Manga", null, gChips("manga") + gridOf("manga", DATA.manga)),
+  library: () => { const rd = reading(100), fv = favList(); return sec("Đang đọc", null, rd.length ? `<div class="series">${rd.map(rdCard).join("")}</div>` : '<p class="empty">Bạn chưa đọc bộ nào. Chọn một bộ ở trang chủ để bắt đầu.</p>') + sec("Yêu thích", null, fv.length ? favGrid(fv) : '<p class="empty">Chưa có bộ nào. Mở trang truyện và bấm Thêm vào thư viện.</p>') + `<p class="lead">Thư viện lưu trên trình duyệt này.</p>` },
+  tips: () => sec("Mẹo game", null, DATA.tips.map(R.tips).join("") || EMPTY),
+  links: () => sec("Liên kết hữu ích", null, DATA.links.length ? `<div class="grid">${DATA.links.map(R.links).join("")}</div>` : EMPTY),
+  videos: () => sec("Video nhạc Vietsub", null, DATA.videos.length ? `<div class="grid">${DATA.videos.map(R.videos).join("")}</div>` : EMPTY),
+  projects: () => sec("Dự án", null, `<p class="lead">Script, mod và công cụ do Kenrori làm.</p>` + (DATA.projects.length ? `<div class="grid">${DATA.projects.map(projCard).join("")}</div>` : EMPTY)),
+  about: () => {
+    const A = DATA.site.about || {}, isU = u => /^https?:\/\//.test(u || "");
+    const ct = (A.contacts || []).map(c => { const u = c.url || "", href = isU(u) ? u : (/@/.test(u) && !/\s/.test(u) ? "mailto:" + u : ""); return href ? `<a class="btn" href="${esc(href)}" target="_blank" rel="noopener">${esc(c.label)}</a>` : `<span class="pill">${esc(c.label)}${u ? ": " + esc(u) : ""}</span>` }).join("");
+    const dc = isU(A.discord) ? `<a class="btn dc" href="${esc(A.discord)}" target="_blank" rel="noopener">Tham gia Discord</a>` : "";
+    return sec(esc(A.name || "Giới thiệu"), null, (A.name || A.intro || dc || ct) ? `<div class="about"><p class="sum" style="max-width:72ch">${esc(A.intro)}</p>${dc ? `<div class="acts" style="margin-top:16px">${dc}</div>` : ""}${ct ? `<h3>Liên hệ</h3><div class="acts">${ct}</div>` : ""}</div>` : '<p class="empty">Chưa có thông tin giới thiệu. Điền trong trang quản trị, mục Trang web.</p>');
+  },
+  genre: (k, g) => {
+    if (!g) return sec("Thể loại", null, gChips("all") || '<p class="empty">Chưa có thể loại nào. Thêm thể loại cho truyện trong trang quản trị.</p>');
+    const items = (k === "novel" || k === "manga" ? [k] : ["novel", "manga"]).flatMap(x => DATA[KEY[x]].filter(s => (s.genres || []).includes(g)).map(s => card(x, s)));
+    return sec(`Thể loại: ${esc(g)}`, "the-loai", items.length ? `<div class="series">${items.join("")}</div>` : EMPTY);
+  },
+  tools: () => sec("Công cụ", null, `<p class="lead">Dán nội dung, bấm Chạy rồi sao chép kết quả.</p>` + DATA.guides.map(R.guides).join("") + TOOLS.map(toolUI).join(""))
 };
-$("#l_out").onclick = () => location.reload();
-
-const TABS = [["series", "📚 Bộ truyện"], ["chap", "➕ Chương"], ["tr", "🈯 Dịch"], ["tip", "💡 Mẹo"], ["link", "🔗 Liên kết"], ["vid", "🎵 Video"], ["proj", "🧩 Dự án"], ["site", "⚙️ Trang web"], ["man", "🗂️ Quản lý"]];
-$("#tabs").innerHTML = TABS.map(([k, l]) => `<button type="button" data-k="${k}">${l}</button>`).join("");
-const tab = k => { document.querySelector("main").classList.toggle("wide", k === "tr"); [...TABS.map(x => x[0]), "edit", "vol"].forEach(t => $("#p-" + t).classList.toggle("on", t === k)); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)) };
-$("#tabs").onclick = e => { const b = e.target.closest("button"); if (b) tab(b.dataset.k) }; tab("series");
-
-function fillSel() {
-  const o = []; for (const k of ["novel", "manga"]) data[KEYS[k]].forEach((s, i) => o.push(`<option value="${k}|${i}">${k === "novel" ? "📖" : "🖼️"} ${esc(s.title)}</option>`));
-  $("#c_ser").innerHTML = o.join("") || "<option value=''>(chưa có bộ nào)</option>"; chapUI(); gChips(); trFill();
+let RS = { fs: 18, lh: 1.9, ff: "sans", bg: "" }; try { Object.assign(RS, JSON.parse(ls.get("rs") || "{}")) } catch (e) {}
+function applyRS() { const st = document.documentElement.style; st.setProperty("--fs", RS.fs + "px"); st.setProperty("--lh", RS.lh); const r = $("#rd.novel"); if (r) r.className = `rd novel ${RS.ff} ${RS.bg}`; ls.set("rs", JSON.stringify(RS)) }
+function rset(k, d) {
+  if (k === "fs") RS.fs = Math.min(32, Math.max(14, RS.fs + d * 2));
+  if (k === "lh") RS.lh = Math.min(2.4, Math.max(1.4, +(RS.lh + d * .1).toFixed(1)));
+  if (k === "ff") RS.ff = RS.ff === "sans" ? "serif" : "sans";
+  if (k === "bg") { const o = ["", "sepia", "night"]; RS.bg = o[(o.indexOf(RS.bg) + 1) % 3] }
+  applyRS();
 }
-function chapUI() { const k = $("#c_ser").value.split("|")[0]; $("#c_novel").hidden = k !== "novel"; $("#c_manga").hidden = k !== "manga"; volList() }
-function volList() {
-  const [k, i] = $("#c_ser").value.split("|"), s = data[KEYS[k]]?.[i], vs = [...new Set((s?.chapters || []).map(c => (c.vol || "").trim()).filter(Boolean))];
-  $("#c_vols").innerHTML = vs.map(v => `<option value="${esc(v)}">`).join(""); $("#c_vol").value = vs.length ? (s.chapters[s.chapters.length - 1].vol || "") : "";
+function detail(kind, s) {
+  const last = ls.get(kind + ":" + s.slug), rs = rdSet(kind, s), n = s.chapters.length, nv = new Set(s.chapters.map(c => (c.vol || "").trim()).filter(Boolean)).size; let desc = true;
+  const tags = (s.genres || []).map(g => `<a class="pill" href="${gHref(g)}">${esc(g)}</a>`).join("");
+  const info = [["Tác giả", esc(s.author || "Chưa rõ")], ["Loại", kind === "novel" ? "Light Novel" : "Manga"], ["Tình trạng", stDot(s) || "Chưa rõ"], ["Số chương", n], nv ? ["Số tập", nv] : null, kind === "novel" ? ["Tổng số chữ", fmtN(sum(s)) || "Chưa rõ"] : null, ["Cập nhật", fmtD(latest(s)) || "Chưa có"]].filter(Boolean);
+  const fav = isFav(kind, s.slug);
+  app.innerHTML = `<div class="tpb"><div class="hb" ${bgStyle(s)}></div></div>
+<div class="tp"><div class="tph"><div class="cover tpcv" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></div>
+<div class="tpt"><h1>${esc(s.title)}</h1>${s.author ? `<div class="tpa">${esc(s.author)}</div>` : ""}</div>
+<div class="tpm"><div class="acts"><button class="btn ${fav ? "on" : "pri"}" id="fvb" onclick="toggleFav('${kind}','${esc(s.slug)}')">${favLabel(fav)}</button>${n ? (last != null ? `<a class="btn" href="#${kind}/${s.slug}/${last}">${ic(I.play)}Đọc tiếp</a><a class="btn" href="#${kind}/${s.slug}/0">Đọc từ đầu</a>` : `<a class="btn" href="#${kind}/${s.slug}/0">${ic(I.play)}Đọc từ đầu</a>`) + `<a class="btn" href="#${kind}/${s.slug}/${n - 1}">Chương mới nhất</a>` : ""}${ADM ? `<a class="btn" href="admin.html#chap/${kind}/${s.slug}">${ic(I.plus)}Thêm chương</a><a class="btn" href="admin.html#series/${kind}/${s.slug}">${ic(I.edit)}Sửa bộ</a>` : ""}</div><div class="tptg">${stDot(s)}${tags}</div></div></div>
+<div class="tpd"><p class="sum clamp" id="dsc">${esc(s.desc) || "Chưa có tóm tắt."}</p><button class="lnk" id="dmore" hidden>Xem thêm</button></div>
+<div class="tpc"><div class="tpl"><div class="sh"><h2>Danh sách chương</h2></div><div class="bar2"><input id="cq" type="search" placeholder="Tìm chương theo tên hoặc số"><button id="cs">Mới nhất trước</button>${nv ? `<button id="cx">Mở tất cả tập</button>` : ""}</div><div id="cl"></div></div>
+<aside class="tpx">${info.map(([a, b]) => `<div class="ibx"><h4>${a}</h4><div>${b}</div></div>`).join("")}</aside></div></div>`;
+  const dsc = $("#dsc"); if (dsc.scrollHeight > dsc.clientHeight + 2) { $("#dmore").hidden = false; $("#dmore").onclick = e => { const c = dsc.classList.toggle("clamp"); e.target.textContent = c ? "Xem thêm" : "Thu gọn" } }
+  const volOf = c => (c.vol || "").trim();
+  const rowHtml = ({ c, i }) => { const w = kind === "novel" ? fmtN(c.words || (c.text ? W(c.text) : 0)) : (c.pages ? c.pages.length : c.n) + " trang"; return `<div class="chr"><a class="ch${rs.includes(i) ? " done" : ""}${i == last ? " cur" : ""}" href="#${kind}/${s.slug}/${i}" title="${rs.includes(i) ? "Đã đọc" : "Chưa đọc"}"><span class="eye"></span><span class="cht">${esc(c.t)}</span><small class="cw">${w || ""}</small><small>${ago(c.date)}</small></a>${ADM ? `<a class="ed" href="admin.html#editchap/${kind}/${s.slug}/${i}" title="Sửa chương">${ic(I.edit)}</a>` : ""}</div>` };
+  const draw = () => {
+    const q = $("#cq").value.trim().toLowerCase(), L = s.chapters.map((c, i) => ({ c, i })).filter(({ c }) => !q || c.t.toLowerCase().includes(q) || volOf(c).toLowerCase().includes(q));
+    let h;
+    if (!nv) h = (desc ? [...L].reverse() : L).map(rowHtml).join("");
+    else {
+      const g = new Map(); L.forEach(x => { const v = volOf(x.c) || "Chương lẻ"; if (!g.has(v)) g.set(v, []); g.get(v).push(x) });
+      const G = [...g]; if (desc) G.reverse();
+      h = G.map(([v, a], gi) => { if (desc) a = [...a].reverse(); const open = !!q || a.some(x => x.i == last) || (last == null && gi === 0); return `<details class="vol"${open ? " open" : ""}><summary>${esc(v)}<span class="vc">${a.length} chương</span></summary>${a.map(rowHtml).join("")}</details>` }).join("");
+    }
+    $("#cl").innerHTML = h || `<p class="empty">Không có chương nào khớp với từ khóa.</p>`;
+  };
+  $("#cq").oninput = draw; $("#cs").onclick = e => { desc = !desc; e.target.textContent = desc ? "Mới nhất trước" : "Cũ nhất trước"; draw() };
+  if (nv) $("#cx").onclick = e => { const ds = document.querySelectorAll("#cl details.vol"), open = [...ds].some(d => !d.open); ds.forEach(d => d.open = open); e.target.textContent = open ? "Thu gọn tất cả tập" : "Mở tất cả tập" };
+  draw();
 }
-$("#c_ser").onchange = chapUI;
-
-$("#p-series").onsubmit = e => { e.preventDefault(); run(async () => {
-  const kind = $("#s_kind").value, title = $("#s_title").value.trim(); if (!title) throw new Error("Hãy nhập tên truyện");
-  const slug = slugify($("#s_slug").value || title), list = data[KEYS[kind]]; let s = list.find(x => x.slug === slug);
-  if (!s) { s = { slug, chapters: [] }; list.push(s) }
-  Object.assign(s, { title, author: $("#s_author").value.trim(), status: $("#s_status").value, genres: $("#s_genres").value.split(",").map(x => x.trim()).filter(Boolean), desc: $("#s_desc").value.trim() });
-  const f = $("#s_cover").files[0];
-  if (f) { log("Đang tải ảnh bìa..."); const p = `images/${slug}-bia.jpg`; await put(p, await resize(f), "Bìa: " + title); s.cover = p }
-  await save("Thêm/sửa truyện: " + title); done("✅ Đã lưu bộ truyện. Web cập nhật sau 1–2 phút.");
-}) };
-
-$("#p-chap").onsubmit = e => { e.preventDefault(); run(async () => {
-  const [kind, i] = $("#c_ser").value.split("|"), s = data[KEYS[kind]]?.[i]; if (!s) throw new Error("Hãy tạo/chọn bộ truyện trước");
-  const t = $("#c_title").value.trim(); if (!t) throw new Error("Hãy nhập tên chương");
-  const id = `c${s.chapters.length + 1}_${rid()}`, ch = { t, date: $("#c_date").value }; if ($("#c_vol").value.trim()) ch.vol = $("#c_vol").value.trim();
+async function read(kind, s, i) {
+  const c = s.chapters[i]; if (!c) { location.hash = `#${kind}/${s.slug}`; return }
+  ls.set(kind + ":" + s.slug, i); ls.set("t:" + kind + ":" + s.slug, Date.now()); const rs = rdSet(kind, s); if (!rs.includes(i)) { rs.push(i); ls.set("r:" + kind + ":" + s.slug, JSON.stringify(rs)) }
+  const base = `#${kind}/${s.slug}`, n = s.chapters.length;
+  const goto = j => { if (j >= 0 && j < n) location.hash = `${base}/${j}` }; RDKEY = d => goto(i + d);
+  const nav = `<div class="nv"><a class="btn" ${i > 0 ? `href="${base}/${i - 1}"` : "disabled"}>${ic(I.prev)}Chương trước</a><a class="btn pri" ${i < n - 1 ? `href="${base}/${i + 1}"` : "disabled"}>Chương sau${ic(I.next)}</a></div>`;
+  const opts = (() => { const o = j => `<option value="${j}" ${j == i ? "selected" : ""}>${esc(s.chapters[j].t)}</option>`; if (!s.chapters.some(x => (x.vol || "").trim())) return s.chapters.map((_, j) => o(j)).join(""); const g = new Map(); s.chapters.forEach((x, j) => { const v = (x.vol || "").trim() || "Chương lẻ"; if (!g.has(v)) g.set(v, []); g.get(v).push(j) }); return [...g].map(([v, a]) => `<optgroup label="${esc(v)}">${a.map(o).join("")}</optgroup>`).join("") })();
+  app.innerHTML = `<div class="rbar"><a class="t" href="${base}" title="Về trang truyện">${esc(s.title)}</a><select aria-label="Chọn chương" onchange="location.hash='${base}/'+this.value">${opts}</select>${kind === "novel" ? `<button onclick="$('#rp').hidden=!$('#rp').hidden">Tùy chỉnh đọc</button>` : `<button onclick="ls.set('mm', ls.get('mm') === 'page' ? 'scroll' : 'page'); route()">${ls.get("mm") === "page" ? "Chuyển sang cuộn dọc" : "Chuyển sang lật trang"}</button>`}${ADM ? `<a class="btn" href="admin.html#editchap/${kind}/${s.slug}/${i}">${ic(I.edit)}Sửa</a>` : ""}</div>
+<div id="rp" hidden><button onclick="rset('fs',-1)">A−</button><button onclick="rset('fs',1)">A+</button><span>Giãn dòng</span><button onclick="rset('lh',-1)">−</button><button onclick="rset('lh',1)">+</button><span>Font</span><button onclick="rset('ff')">Đổi font</button><span>Nền</span><button onclick="rset('bg')">Đổi nền</button></div>
+<div class="rh"><h1>${esc(c.t)}</h1><p id="meta">${c.vol ? esc(c.vol) + ", " : ""}${fmtD(c.date)}</p></div>${nav}<article id="rd" class="rd ${kind} ${kind === "novel" ? RS.ff + " " + RS.bg : ""}"></article>${nav}`;
+  const rd = $("#rd");
   if (kind === "novel") {
-    let text = $("#c_text").value; const f = $("#c_file").files[0]; if (!text.trim() && f) text = await f.text();
-    if (!text.trim()) throw new Error("Hãy dán nội dung hoặc chọn file .txt");
-    const p = `novels/${s.slug}/${id}.txt`; log("Đang tải chương..."); await put(p, b64t(text), "Chương: " + t); ch.file = p; ch.words = text.trim().split(/\s+/).length;
+    let t = c.text; if (t == null) { rd.textContent = "Đang tải chương..."; try { const r = await fetch(c.file); if (!r.ok) throw 0; t = await r.text() } catch (e) { rd.innerHTML = "<p>Không tải được chương. Hãy mở web qua GitHub Pages (không mở file trực tiếp từ máy).</p>"; return } }
+    rd.innerHTML = t.split(/\n+/).filter(l => l.trim()).map(l => `<p>${esc(l)}</p>`).join(""); $("#meta").textContent += ", " + fmtN(c.words || W(t));
   } else {
-    const fs = [...$("#c_imgs").files].sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })); if (!fs.length) throw new Error("Hãy chọn ảnh các trang");
-    ch.pages = [];
-    for (let j = 0; j < fs.length; j++) { const ext = (fs[j].name.split(".").pop() || "jpg").toLowerCase(), p = `manga/${s.slug}/${id}/${String(j + 1).padStart(3, "0")}.${ext}`; log(`Đang tải trang ${j + 1}/${fs.length}...`); await put(p, await fileB64(fs[j]), `${s.title} ${t} tr.${j + 1}`); ch.pages.push(p) }
+    const pg = c.pages || Array.from({ length: c.n }, (_, k) => c.dir + String(k + 1).padStart(c.pad || 2, "0") + "." + (c.ext || "jpg"));
+    if (ls.get("mm") === "page") {
+      let pi = 0; rd.innerHTML = `<div class="pgv"><img id="pgimg" alt=""><div class="pgn"></div></div>`;
+      const show = () => { $("#pgimg").src = pg[pi]; $(".pgn").textContent = `Trang ${pi + 1} / ${pg.length}`; if (pg[pi + 1]) new Image().src = pg[pi + 1]; scrollTo({ top: Math.max(0, rd.offsetTop - 120) }) };
+      const step = d => { const x = pi + d; if (x < 0) goto(i - 1); else if (x >= pg.length) goto(i + 1); else { pi = x; show() } };
+      $(".pgv").onclick = e => { const r = e.currentTarget.getBoundingClientRect(); step(e.clientX < r.left + r.width / 2 ? -1 : 1) };
+      RDKEY = step; if (pg.length) show();
+    } else rd.innerHTML = pg.map(u => `<img src="${esc(u)}" alt="" loading="lazy">`).join("");
   }
-  if (ch.vol) { const at = s.chapters.map(c => (c.vol || "").trim()).lastIndexOf(ch.vol); if (at >= 0) s.chapters.splice(at + 1, 0, ch); else s.chapters.push(ch) } else s.chapters.push(ch);
-  await save("Thêm chương: " + s.title + " - " + t);
-  ["c_title", "c_text"].forEach(x => $("#" + x).value = ""); $("#c_file").value = $("#c_imgs").value = ""; done("✅ Đã đăng chương. Web cập nhật sau 1–2 phút.");
-}) };
-
-$("#p-tip").onsubmit = e => { e.preventDefault(); run(async () => {
-  const title = $("#t_title").value.trim(); if (!title) throw new Error("Hãy nhập tiêu đề");
-  const d = { title, game: $("#t_game").value.trim(), text: $("#t_text").value.trim(), img: "" }, f = $("#t_img").files[0];
-  if (f) { const p = `images/tips/${slugify(title)}-${rid()}.${(f.name.split(".").pop() || "jpg").toLowerCase()}`; log("Đang tải ảnh..."); await put(p, await fileB64(f), "Ảnh mẹo: " + title); d.img = p }
-  data.tips.unshift(d); await save("Thêm mẹo: " + title); e.target.reset(); done("✅ Đã thêm mẹo.");
-}) };
-$("#p-link").onsubmit = e => { e.preventDefault(); run(async () => {
-  const title = $("#l_title").value.trim(), url = $("#l_url").value.trim(); if (!title || !/^https?:\/\//.test(url)) throw new Error("Cần tên và địa chỉ bắt đầu bằng https://");
-  data.links.push({ title, url, desc: $("#l_desc").value.trim(), tags: $("#l_tags").value.split(",").map(x => x.trim()).filter(Boolean) });
-  await save("Thêm liên kết: " + title); e.target.reset(); done("✅ Đã thêm liên kết.");
-}) };
-$("#p-vid").onsubmit = e => { e.preventDefault(); run(async () => {
-  const title = $("#v_title").value.trim(), v = $("#v_yt").value.trim(); if (!title || !v) throw new Error("Cần tên bài và link/ID YouTube");
-  const m = v.match(/(?:v=|youtu\.be\/|embed\/)([\w-]{11})/);
-  data.videos.push({ title, youtube: m ? m[1] : v, desc: $("#v_desc").value.trim() }); await save("Thêm video: " + title); e.target.reset(); done("✅ Đã thêm video.");
-}) };
-
-function manage() {
-  const out = [];
-  for (const k of ["novels", "manga"]) data[k].forEach((s, i) => out.push(`<div class="row"><b>${k === "novels" ? "📖" : "🖼️"} ${esc(s.title)}</b><button class="ok" data-v="${k}|${i}">📦 Gán tập</button><button class="ok" data-s="${k}|${i}">✎ Sửa bộ</button><button data-d="${k}|${i}">✕ Xóa bộ</button>${s.chapters.map((c, j) => `<div class="sub">${c.vol ? "<b>" + esc(c.vol) + "</b> · " : ""}${esc(c.t)} <span class="mu">${c.date ? "· " + c.date : ""}</span><button class="ok" data-e="${k}|${i}|${j}">✎ Sửa</button><button class="ok" data-m="${k}|${i}|${j}|-1">↑</button><button class="ok" data-m="${k}|${i}|${j}|1">↓</button><button data-d="${k}|${i}|${j}">✕</button></div>`).join("")}</div>`));
-  for (const [k, l] of [["tips", "💡"], ["links", "🔗"], ["videos", "🎵"], ["projects", "🧩"]]) data[k].forEach((d, i) => out.push(`<div class="row">${l} ${esc(d.title)}${k === "projects" ? `<button class="ok" data-p="${i}">✎ Sửa</button>` : ""}<button data-d="${k}|${i}">✕</button></div>`));
-  $("#manage").innerHTML = out.join("") || "<p class='mu'>Chưa có gì.</p>";
-}
-$("#manage").onclick = e => { const b = e.target.closest("button[data-d]"); if (!b) return; const [k, i, j] = b.dataset.d.split("|"); if (!confirm("Gỡ mục này khỏi web?")) return;
-  run(async () => { j === undefined ? data[k].splice(+i, 1) : data[k][+i].chapters.splice(+j, 1); await save("Xóa mục"); done("✅ Đã gỡ.") }) };
-
-async function getText(p) {
-  const r = await fetch(`https://api.github.com/repos/${cfg.u}/${cfg.r}/contents/${p}?ref=${cfg.b}&_=${Date.now()}`, { cache: "no-store", headers: { Authorization: "Bearer " + cfg.t, Accept: "application/vnd.github.raw+json" } });
-  if (!r.ok) throw new Error("Không tải được " + p + " (" + r.status + ")"); return r.text();
-}
-let ed = null;
-$("#manage").addEventListener("click", e => {
-  const bs = e.target.closest("button[data-s]"), bm = e.target.closest("button[data-m]"), be = e.target.closest("button[data-e]");
-  if (bs) {
-    const [k, i] = bs.dataset.s.split("|"), s = data[k][+i];
-    $("#s_kind").value = k === "novels" ? "novel" : "manga"; $("#s_title").value = s.title; $("#s_slug").value = s.slug; $("#s_author").value = s.author || "";
-    $("#s_status").value = s.status || "Đang dịch"; $("#s_desc").value = s.desc || ""; $("#s_genres").value = (s.genres || []).join(", "); gChips(); $("#s_cover").value = ""; tab("series"); log("Đang sửa bộ: " + s.title + " (chọn ảnh bìa mới nếu muốn đổi)");
-  } else if (bm) {
-    const [k, i, j, d] = bm.dataset.m.split("|"), a = data[k][+i].chapters, x = +j, y = x + +d; if (y < 0 || y >= a.length) return;
-    [a[x], a[y]] = [a[y], a[x]]; run(async () => { await save("Đổi thứ tự chương"); done("✅ Đã đổi thứ tự chương.") });
-  } else if (be) {
-    const [k, i, j] = be.dataset.e.split("|"), s = data[k][+i], c = s.chapters[+j]; ed = { k, i: +i, j: +j };
-    run(async () => {
-      $("#e_info").textContent = s.title; $("#e_title").value = c.t; $("#e_date").value = c.date || ""; $("#e_vol").value = c.vol || ""; $("#e_novel").hidden = k !== "novels"; $("#e_mn").hidden = k === "novels";
-      if (k === "novels") { log("Đang tải nội dung chương..."); $("#e_text").value = c.text ?? await getText(c.file) }
-      tab("edit"); log("Đang sửa: " + c.t);
-    });
-  }
-});
-$("#p-edit").onsubmit = e => { e.preventDefault(); run(async () => {
-  if (!ed) throw new Error("Chưa chọn chương nào"); const s = data[ed.k][ed.i], c = s.chapters[ed.j], t = $("#e_title").value.trim(); if (!t) throw new Error("Hãy nhập tên chương");
-  c.t = t; c.date = $("#e_date").value; const ev = $("#e_vol").value.trim(); if (ev) c.vol = ev; else delete c.vol;
-  if (ed.k === "novels") {
-    const text = $("#e_text").value; if (!text.trim()) throw new Error("Nội dung đang trống");
-    c.words = text.trim().split(/\s+/).length;
-    if (c.text !== undefined) c.text = text; else { log("Đang lưu nội dung..."); await put(c.file, b64t(text), "Sửa chương: " + t) }
-  }
-  await save("Sửa chương: " + s.title + " - " + t); ed = null; done("✅ Đã lưu chỉnh sửa. Web cập nhật sau 1–2 phút."); tab("man");
-}) };
-$("#e_cancel").onclick = () => { ed = null; tab("man") };
-
-function deepLink() {
-  const [a, k, slug, j] = decodeURIComponent(location.hash.slice(1)).split("/"); if (!a || !KEYS[k]) return;
-  const key = KEYS[k], i = data[key].findIndex(x => x.slug === slug); if (i < 0) { log("Không tìm thấy bộ truyện này trong dữ liệu."); return }
-  if (a === "chap") { $("#c_ser").value = k + "|" + i; chapUI(); tab("chap"); $("#c_title").focus(); log("Thêm chương cho: " + data[key][i].title) }
-  else if (a === "series") $(`#manage button[data-s="${key}|${i}"]`)?.click();
-  else if (a === "editchap") $(`#manage button[data-e="${key}|${i}|${j}"]`)?.click();
-}
-
-const GENRES = ["Hành động", "Phiêu lưu", "Lãng mạn", "Học đường", "Fantasy", "Isekai", "Hài hước", "Kinh dị", "Slice of Life", "Harem", "Drama", "Sci-fi", "Võ thuật", "Tu tiên", "Game", "Trinh thám"];
-const curG = () => $("#s_genres").value.split(",").map(x => x.trim()).filter(Boolean);
-function gChips() {
-  const ex = new Set(GENRES); ["novels", "manga"].forEach(k => data[k].forEach(s => (s.genres || []).forEach(g => ex.add(g))));
-  const cur = curG(); $("#g_chips").innerHTML = [...ex].map(g => `<button type="button" class="chip${cur.includes(g) ? " on" : ""}" data-g="${esc(g)}">${esc(g)}</button>`).join("");
-}
-$("#g_chips").onclick = e => { const b = e.target.closest("button[data-g]"); if (!b) return; const g = b.dataset.g, c = curG(); $("#s_genres").value = (c.includes(g) ? c.filter(x => x !== g) : [...c, g]).join(", "); gChips() };
-$("#s_genres").addEventListener("input", () => gChips());
-
-let pe = null;
-$("#p-proj").onsubmit = e => { e.preventDefault(); run(async () => {
-  const title = $("#j_title").value.trim(); if (!title) throw new Error("Hãy nhập tên dự án");
-  const links = $("#j_links").value.split("\n").map(l => l.split("|").map(x => x.trim())).filter(([a, b]) => a && /^https?:\/\//.test(b || "")).map(([label, url]) => ({ label, url }));
-  const d = { title, type: $("#j_type").value.trim(), status: $("#j_status").value, version: $("#j_ver").value.trim(), date: $("#j_date").value, desc: $("#j_desc").value.trim(), links, howto: $("#j_how").value.trim(), img: pe != null ? (data.projects[pe].img || "") : "" };
-  const f = $("#j_img").files[0];
-  if (f) { const p = `images/projects/${slugify(title)}-${rid()}.${(f.name.split(".").pop() || "jpg").toLowerCase()}`; log("Đang tải ảnh..."); await put(p, await fileB64(f), "Ảnh dự án: " + title); d.img = p }
-  if (pe != null) data.projects[pe] = d; else data.projects.unshift(d);
-  await save("Dự án: " + title); pe = null; e.target.reset(); $("#j_date").value = new Date().toISOString().slice(0, 10); done("✅ Đã lưu dự án. Web cập nhật sau 1–2 phút.");
-}) };
-$("#manage").addEventListener("click", e => {
-  const b = e.target.closest("button[data-p]"); if (!b) return; pe = +b.dataset.p; const d = data.projects[pe];
-  $("#j_title").value = d.title; $("#j_type").value = d.type || ""; $("#j_status").value = d.status || "Đang phát triển"; $("#j_ver").value = d.version || ""; $("#j_date").value = d.date || "";
-  $("#j_desc").value = d.desc || ""; $("#j_links").value = (d.links || []).map(l => l.label + " | " + l.url).join("\n"); $("#j_how").value = d.howto || ""; $("#j_img").value = "";
-  tab("proj"); log("Đang sửa dự án: " + d.title + " (chọn ảnh mới nếu muốn đổi)");
-});
-
-function siteLoad() {
-  const S = data.site, A = S.about || {}, G = S.giscus || {};
-  $("#a_text").value = S.announce?.text || ""; $("#a_url").value = S.announce?.url || ""; $("#b_name").value = A.name || ""; $("#b_intro").value = A.intro || ""; $("#b_dc").value = A.discord || "";
-  $("#b_ct").value = (A.contacts || []).map(c => c.label + " | " + c.url).join("\n");
-  $("#g_repo").value = G.repo || ""; $("#g_rid").value = G.repoId || ""; $("#g_cat").value = G.category || ""; $("#g_cid").value = G.categoryId || ""; $("#w_url").value = S.url || "";
-}
-$("#p-site").onsubmit = e => { e.preventDefault(); run(async () => {
-  const t = id => $("#" + id).value.trim(), ok = v => !v || /^https?:\/\//.test(v);
-  if (!ok(t("b_dc")) || !ok(t("a_url")) || !ok(t("w_url"))) throw new Error("Link phải bắt đầu bằng https://");
-  data.site = { announce: { text: t("a_text"), url: t("a_url") }, about: { name: t("b_name"), intro: t("b_intro"), discord: t("b_dc"), contacts: $("#b_ct").value.split("\n").map(l => { const [x, ...y] = l.split("|"); return { label: (x || "").trim(), url: y.join("|").trim() } }).filter(c => c.label) }, giscus: { repo: t("g_repo"), repoId: t("g_rid"), category: t("g_cat"), categoryId: t("g_cid") }, url: t("w_url") };
-  await save("Cập nhật cài đặt trang web"); done("✅ Đã lưu cài đặt. Web cập nhật sau 1–2 phút.");
-}) };
-let ve = null;
-$("#manage").addEventListener("click", e => {
-  const b = e.target.closest("button[data-v]"); if (!b) return; const [k, i] = b.dataset.v.split("|"); ve = { k, i: +i }; const s = data[k][+i];
-  $("#v_info").textContent = s.title + " · " + s.chapters.length + " chương"; $("#v_name").value = ""; $("#v_from").value = $("#v_to").value = "";
-  $("#v_list").innerHTML = s.chapters.map((c, j) => `<label class="vc"><input type="checkbox" value="${j}"> ${j + 1}. ${c.vol ? "<b>" + esc(c.vol) + "</b> · " : ""}${esc(c.t)}</label>`).join(""); tab("vol");
-});
-const vbox = f => document.querySelectorAll("#v_list input").forEach((c, j) => c.checked = f(j));
-$("#v_all").onclick = () => vbox(() => true); $("#v_none").onclick = () => vbox(() => false);
-$("#v_range").onclick = () => { const x = +$("#v_from").value, y = +$("#v_to").value || x; vbox(j => j + 1 >= x && j + 1 <= y) };
-$("#v_cancel").onclick = () => { ve = null; tab("man") };
-$("#p-vol").onsubmit = e => { e.preventDefault(); run(async () => {
-  if (!ve) throw new Error("Chưa chọn bộ truyện"); const s = data[ve.k][ve.i], v = $("#v_name").value.trim(), sel = [...document.querySelectorAll("#v_list input:checked")].map(c => +c.value);
-  if (!sel.length) throw new Error("Hãy chọn ít nhất một chương");
-  sel.forEach(j => { if (v) s.chapters[j].vol = v; else delete s.chapters[j].vol });
-  await save("Gán tập: " + s.title); ve = null; done("✅ Đã gán " + (v || "không tập") + " cho " + sel.length + " chương."); tab("man");
-}) };
-
-/* ===== Công cụ dịch ===== */
-let sessionPin = "", trKey = "", trSlug = null, trTimer = null, trStop = false, trNext = 0;
-const trWords = t => t.trim() ? t.trim().split(/\s+/).length : 0;
-const trGl = () => $("#t_gl").value.split("\n").map(l => l.split("=")).filter(p => p.length >= 2 && p[0].trim()).map(([x, ...y]) => [x.trim(), y.join("=").trim()]);
-const trCount = () => { $("#t_sc").textContent = "· " + $("#t_in").value.replace(/\s/g, "").length.toLocaleString("vi-VN") + " ký tự"; $("#t_oc").textContent = "· " + trWords($("#t_out").value).toLocaleString("vi-VN") + " chữ" };
-const trBusy = on => document.querySelectorAll(".trb").forEach(b => b.disabled = on);
-const trDraft = () => { if (trSlug) ls.set("dr:" + trSlug, JSON.stringify({ t: $("#t_title").value, v: $("#t_vol").value, i: $("#t_in").value, o: $("#t_out").value, n: trNext })) };
-function trFill() {
-  const cur = $("#t_ser").value;
-  $("#t_ser").innerHTML = data.novels.map((s, i) => `<option value="${i}">${esc(s.title)}</option>`).join("") || "<option value=''>(chưa có novel, hãy tạo ở tab Bộ truyện)</option>";
-  if (cur && data.novels[+cur]) $("#t_ser").value = cur; trSer();
-}
-function trSer() {
-  if (trSlug) trDraft(); const s = data.novels[+$("#t_ser").value]; trSlug = s ? s.slug : null; if (!s) return;
-  let d = {}; try { d = JSON.parse(ls.get("dr:" + s.slug) || "{}") } catch (e) {}
-  const vs = [...new Set(s.chapters.map(c => (c.vol || "").trim()).filter(Boolean))]; $("#t_vols").innerHTML = vs.map(v => `<option value="${esc(v)}">`).join("");
-  $("#t_title").value = d.t || ""; $("#t_vol").value = d.v ?? (s.chapters.length ? (s.chapters[s.chapters.length - 1].vol || "") : "");
-  $("#t_in").value = d.i || ""; $("#t_out").value = d.o || ""; trNext = d.n || 0; $("#t_gl").value = ls.get("gl:" + s.slug) || GL[s.slug] || ""; trCount();
-  $("#t_prog").textContent = d.i ? "Đã khôi phục bản nháp." : "";
-}
-$("#t_ser").onchange = () => { trExitRV(); trSer() };
-$("#t_gl").addEventListener("input", () => { if (trSlug) ls.set("gl:" + trSlug, $("#t_gl").value) });
-["t_in", "t_out", "t_title", "t_vol"].forEach(id => $("#" + id).addEventListener("input", () => { trCount(); clearTimeout(trTimer); trTimer = setTimeout(trDraft, 600) }));
-(function () { let S = {}; try { S = JSON.parse(ls.get("trset") || "{}") } catch (e) {} if (S.src) $("#t_src").value = S.src; if (S.style) $("#t_style").value = S.style; $("#t_model").value = ls.get("gmodel") || "gemini-3.6-flash" })();
-["t_src", "t_style"].forEach(id => $("#" + id).addEventListener("change", () => ls.set("trset", JSON.stringify({ src: $("#t_src").value, style: $("#t_style").value }))));
-$("#t_model").addEventListener("change", () => ls.set("gmodel", $("#t_model").value.trim()));
-async function trLoadKey() { try { const o = JSON.parse(ls.get("gem2") || "null"); if (o && sessionPin) { trKey = await unseal(sessionPin, o); $("#t_key").value = "••••••••" } } catch (e) {} }
-$("#t_keysave").onclick = async () => {
-  const k = $("#t_key").value.trim(); if (!k || /^•+$/.test(k)) return log("Hãy dán API key vào ô trước");
-  if (!sessionPin) return log("Hãy đăng nhập lại bằng PIN để lưu key");
-  try { needHttps(); ls.set("gem2", JSON.stringify(await seal(sessionPin, k))); trKey = k; $("#t_key").value = "••••••••"; log("✅ Đã lưu key (mã hóa bằng PIN).") } catch (e) { log("❌ " + e.message) }
-};
-$("#t_keydel").onclick = () => { ls.del("gem2"); trKey = ""; $("#t_key").value = ""; log("Đã xóa key.") };
-const trPrompt = txt => `Bạn là dịch giả light novel chuyên nghiệp. Hãy dịch đoạn văn ${$("#t_src").value} dưới đây sang tiếng Việt.
-Yêu cầu:
-- Văn phong: ${$("#t_style").value}.
-- Giữ nguyên cấu trúc đoạn: mỗi đoạn gốc tương ứng một đoạn dịch, cách nhau bằng một dòng trống. Không gộp hay tách đoạn, không bỏ sót câu nào.
-- Giữ lời thoại trong dấu ngoặc kép.
-${trGl().length ? "- Dùng đúng bảng tên riêng sau, xưng hô nhất quán:\n" + trGl().map(([x, y]) => x + " = " + y).join("\n") + "\n" : ""}- Chỉ trả về bản dịch, không giải thích, không ghi chú, không thêm tiêu đề.
-
-Đoạn cần dịch:
-"""
-${txt}
-"""`;
-async function gem(prompt) {
-  if (!trKey) throw new Error("Chưa có Gemini API key. Mở ⚙️ Cài đặt dịch tự động để nhập.");
-  const model = $("#t_model").value.trim() || "gemini-3.6-flash";
-  for (let a = 0; a < 3; a++) {
-    let r, j;
-    try {
-      r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": trKey }, body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { temperature: 0.4 } }) });
-      j = await r.json().catch(() => ({}));
-    } catch (e) { throw new Error("Không kết nối được tới Gemini. Kiểm tra mạng hoặc tắt trình chặn quảng cáo/VPN rồi thử lại.") }
-    if (r.status === 429 && a < 2) { for (let s = 25; s > 0 && !trStop; s--) { $("#t_prog").textContent = `Hết hạn mức tạm thời, chờ ${s}s rồi thử lại...`; await new Promise(z => setTimeout(z, 1000)) } continue }
-    if (!r.ok) throw new Error(j.error?.message || "Lỗi " + r.status);
-    const t = (j.candidates?.[0]?.content?.parts || []).map(p => p.text || "").join("").trim();
-    if (!t) throw new Error("Model không trả về nội dung (có thể bị bộ lọc chặn). Thử chia nhỏ đoạn hoặc đổi model.");
-    return t;
+  const G = DATA.site.giscus;
+  if (G && G.repo && G.repoId && G.category && G.categoryId && rd.isConnected) {
+    const box = document.createElement("section"); box.className = "sec rh"; box.innerHTML = '<div class="sh"><h2>Bình luận</h2></div>'; app.appendChild(box);
+    const sc = document.createElement("script"); sc.src = "https://giscus.app/client.js";
+    Object.entries({ "data-repo": G.repo, "data-repo-id": G.repoId, "data-category": G.category, "data-category-id": G.categoryId, "data-mapping": "specific", "data-term": `${kind}/${s.slug}/${c.file || (c.pages && c.pages[0]) || c.t}`, "data-strict": "0", "data-reactions-enabled": "1", "data-emit-metadata": "0", "data-input-position": "top", "data-theme": "preferred_color_scheme", "data-lang": "vi", crossorigin: "anonymous" }).forEach(([k, v]) => sc.setAttribute(k, v));
+    sc.async = true; box.appendChild(sc);
   }
 }
-const chunks = txt => { const ps = txt.replace(/\r/g, "").split(/\n+/).map(x => x.trim()).filter(Boolean), out = []; let cur = ""; for (const p of ps) { if (cur && cur.length + p.length > 1800) { out.push(cur); cur = "" } cur += (cur ? "\n" : "") + p } if (cur) out.push(cur); return out };
-async function trRun(from) {
-  const src = $("#t_in").value; if (!src.trim()) throw new Error("Hãy dán bản gốc vào ô bên trái");
-  const cs = chunks(src); trStop = false; if (from === 0 || from >= cs.length) { from = 0; $("#t_out").value = "" }
-  for (let k = from; k < cs.length; k++) {
-    if (trStop) { trNext = k; trDraft(); $("#t_prog").textContent = `⏹ Đã dừng ở đoạn ${k}/${cs.length}. Bấm ▶ Dịch tiếp để tiếp tục.`; return }
-    $("#t_prog").textContent = `Đang dịch ${k + 1}/${cs.length}...`;
-    let t; try { t = await gem(trPrompt(cs[k])) } catch (e) { trNext = k; trDraft(); throw new Error(`Lỗi ở đoạn ${k + 1}/${cs.length}: ${e.message} (bấm ▶ Dịch tiếp để thử lại từ đoạn này)`) }
-    const o = $("#t_out"); o.value += (o.value.trim() ? "\n\n" : "") + t.split(/\n+/).map(x => x.trim()).filter(Boolean).join("\n\n"); trNext = k + 1; trDraft(); trCount();
-  }
-  trNext = 0; trDraft(); $("#t_prog").textContent = `✅ Đã dịch xong ${cs.length} đoạn. Hãy đọc lại và chỉnh sửa trước khi đăng.`;
+/* ---------- Sidebar mode & top bar ---------- */
+let reading_ = false;
+function sideMode() { const ov = innerWidth < 1100 || reading_ || ls.get("sc") === "1"; document.body.classList.toggle("ov", ov); if (!ov) document.body.classList.remove("so") }
+function setClear() { document.body.classList.toggle("clear", !!$("#hero, .tpb") && scrollY < 40) }
+$("#hb").onclick = () => { if (innerWidth >= 1100 && !reading_) { ls.set("sc", ls.get("sc") === "1" ? "0" : "1"); sideMode() } else document.body.classList.toggle("so") };
+$("#sx").onclick = $("#scrim").onclick = () => document.body.classList.remove("so");
+addEventListener("resize", sideMode);
+function route() {
+  RDKEY = null; clearInterval(HT); HI = 0; document.body.classList.remove("so");
+  const [a, b, c] = decodeURIComponent(location.hash.slice(1)).split("/");
+  const k = a === "novel" ? "novels" : a === "fav" ? "library" : a || "home";
+  document.querySelectorAll("#nv a").forEach(x => x.classList.toggle("on", x.dataset.k === k));
+  const s = b && ({ novel: DATA.novels, manga: DATA.manga }[a] || []).find(x => x.slug === b);
+  reading_ = !!s && c !== undefined; sideMode();
+  if (a === "the-loai") app.innerHTML = P.genre(b, c);
+  else if (s) c !== undefined ? read(a, s, +c) : detail(a, s);
+  else app.innerHTML = (P[k] || P.home)();
+  scrollTo(0, 0); setClear();
+  if (document.querySelectorAll(".hs").length > 1) HT = setInterval(() => heroGo(1), 8000);
 }
-async function trGo(from) { trBusy(true); $("#t_stop").hidden = false; try { await trRun(from) } catch (e) { $("#t_prog").textContent = "❌ " + e.message; log("❌ " + e.message) } trBusy(false); $("#t_stop").hidden = true }
-$("#t_all").onclick = () => { if ($("#t_out").value.trim() && !confirm("Ô bản dịch đang có nội dung, dịch lại từ đầu sẽ ghi đè. Tiếp tục?")) return; trGo(0) };
-$("#t_resume").onclick = () => trGo(trNext);
-$("#t_stop").onclick = () => { trStop = true; $("#t_prog").textContent = "Đang dừng sau khi xong đoạn hiện tại..." };
-$("#t_sel").onclick = async () => {
-  const ta = $("#t_in"), sel = ta.value.slice(ta.selectionStart, ta.selectionEnd).trim(); if (!sel) return log("Hãy bôi đen đoạn gốc cần dịch ở ô bên trái");
-  trBusy(true); try { log("Đang dịch đoạn đã chọn..."); const t = await gem(trPrompt(sel)), o = $("#t_out"), p = o.selectionStart ?? o.value.length; o.value = o.value.slice(0, p) + t + o.value.slice(p); trDraft(); trCount(); log("✅ Đã chèn bản dịch tại vị trí con trỏ trong ô bên phải.") } catch (e) { log("❌ " + e.message) } trBusy(false);
-};
-$("#t_join").onclick = () => { const sp = /Nhật|Trung|Hàn/.test($("#t_src").value) ? "" : " "; $("#t_in").value = $("#t_in").value.replace(/\r/g, "").replace(/([^\n])\n(?!\n)/g, "$1" + sp); trCount(); trDraft() };
-$("#t_apply").onclick = () => { let t = $("#t_out").value; trGl().forEach(([x, y]) => t = t.split(x).join(y)); $("#t_out").value = t; trDraft(); log("✅ Đã áp dụng bảng tên riêng cho bản dịch.") };
-$("#t_clear").onclick = () => { if (!confirm("Xóa bản gốc, bản dịch và tên chương đang soạn?")) return; ["t_in", "t_out", "t_title"].forEach(id => $("#" + id).value = ""); trNext = 0; trDraft(); trCount(); $("#t_prog").textContent = "" };
-$("#t_pub").onclick = () => run(async () => {
-  if (trRV) trSync();
-  const s = data.novels[+$("#t_ser").value]; if (!s) throw new Error("Hãy chọn bộ truyện (novel)");
-  const t = $("#t_title").value.trim(), text = $("#t_out").value.trim(); if (!t) throw new Error("Hãy nhập tên chương"); if (!text) throw new Error("Chưa có bản dịch để đăng");
-  if (!confirm(`Đăng "${t}" (${trWords(text)} chữ) lên bộ "${s.title}"?`)) return;
-  const ch = { t, date: $("#t_date").value }, vol = $("#t_vol").value.trim(); if (vol) ch.vol = vol;
-  const id = `c${s.chapters.length + 1}_${rid()}`, p = `novels/${s.slug}/${id}.txt`, body = text.split(/\n+/).map(x => x.trim()).filter(Boolean).join("\n");
-  log("Đang tải chương lên..."); await put(p, b64t(body), "Chương: " + t); ch.file = p; ch.words = trWords(body);
-  if (vol) { const at = s.chapters.map(c => (c.vol || "").trim()).lastIndexOf(vol); if (at >= 0) s.chapters.splice(at + 1, 0, ch); else s.chapters.push(ch) } else s.chapters.push(ch);
-  await save("Thêm chương: " + s.title + " - " + t);
-  ["t_in", "t_out", "t_title"].forEach(x => $("#" + x).value = ""); trNext = 0; trDraft(); $("#t_prog").textContent = "";
-  done("✅ Đã đăng chương. Web cập nhật sau 1–2 phút.");
+$("#q").addEventListener("input", e => {
+  const f = e.target.value.trim().toLowerCase(); if (!f) return route();
+  clearInterval(HT); reading_ = false; sideMode();
+  const m = d => JSON.stringify(d).toLowerCase().includes(f);
+  const ss = allS().filter(x => m(x.s)).map(({ k, s }) => card(k, s)), pj = DATA.projects.filter(m).map(projCard), oth = [...DATA.links.filter(m).map(R.links), ...DATA.videos.filter(m).map(R.videos)];
+  const tl = DATA.tips.filter(m).map(R.tips).join("") + TOOLS.map((t, i) => [t, i]).filter(([t]) => t.t.toLowerCase().includes(f)).map(([t, i]) => toolUI(t, i)).join("");
+  const body = (ss.length ? sec("Truyện", null, `<div class="series">${ss.join("")}</div>`) : "") + (pj.length ? sec("Dự án", null, `<div class="grid">${pj.join("")}</div>`) : "") + (tl ? sec("Mẹo và công cụ", null, tl) : "") + (oth.length ? sec("Liên kết và video", null, `<div class="grid">${oth.join("")}</div>`) : "");
+  app.innerHTML = `<section class="sec"><div class="sh"><h2>Kết quả cho “${esc(e.target.value)}”</h2></div></section>` + (body || '<p class="empty">Không tìm thấy kết quả. Thử từ khóa ngắn hơn hoặc tên khác của bộ truyện.</p>');
+  setClear();
 });
-
-/* ===== Bảng tên trên repo ===== */
-let GL = {};
-async function glFetch() { const r = await api("glossary.json", { q: "?ref=" + cfg.b }); if (r.status === 404) return {}; if (!r.ok) throw new Error("Không đọc được glossary.json (" + r.status + ")"); return JSON.parse(t64((await r.json()).content)) }
-async function glLoad() { try { GL = await glFetch(); if (trSlug && !$("#t_gl").value.trim() && GL[trSlug]) { $("#t_gl").value = GL[trSlug]; ls.set("gl:" + trSlug, GL[trSlug]) } } catch (e) { GL = {} } }
-$("#gl_push").onclick = () => run(async () => {
-  if (!trSlug) throw new Error("Hãy chọn bộ truyện"); log("Đang lưu bảng tên lên repo...");
-  const cur = await glFetch(), t = $("#t_gl").value; if (t.trim()) cur[trSlug] = t; else delete cur[trSlug];
-  await put("glossary.json", b64t(JSON.stringify(cur, null, 1)), "Bảng tên riêng: " + trSlug); GL = cur; log("✅ Đã lưu bảng tên của bộ này lên repo.");
-});
-$("#gl_pull").onclick = () => run(async () => {
-  if (!trSlug) throw new Error("Hãy chọn bộ truyện"); GL = await glFetch(); const t = GL[trSlug]; if (!t) throw new Error("Repo chưa có bảng tên cho bộ này");
-  if ($("#t_gl").value.trim() && !confirm("Ghi đè bảng tên đang có trên máy này bằng bản trên repo?")) return;
-  $("#t_gl").value = t; ls.set("gl:" + trSlug, t); log("✅ Đã lấy bảng tên từ repo.");
-});
-
-/* ===== Chế độ đối chiếu ===== */
-let trRV = false, trS = [], trO = [], trTimer2 = null;
-const trParas = t => t.replace(/\r/g, "").split(/\n+/).map(x => x.trim()).filter(Boolean);
-const trFlag = v => !v.trim() ? "miss" : (/Nhật|Trung|Hàn/.test($("#t_src").value) && /[\u3040-\u30ff\u4e00-\u9fff\uac00-\ud7af]/.test(v) ? "cjk" : "");
-const autosize = t => { t.style.height = "auto"; t.style.height = t.scrollHeight + "px" };
-const trSync = () => { $("#t_out").value = trO.filter(x => x && x.trim()).join("\n\n"); trCount(); trDraft() };
-function trRender(fresh) {
-  trS = trParas($("#t_in").value); if (fresh) trO = trParas($("#t_out").value);
-  const n = Math.max(trS.length, trO.length), cnt = trO.filter(x => x && x.trim()).length;
-  $("#t_rvs").textContent = trS.length === cnt ? `✅ ${trS.length} đoạn gốc – ${cnt} đoạn dịch (khớp nhau).` : `⚠️ ${trS.length} đoạn gốc – ${cnt} đoạn dịch. Dùng ＋ / − để căn lại cho khớp.`;
-  $("#t_rows").innerHTML = Array.from({ length: n }, (_, i) => { const o = trO[i] || ""; return `<div class="rv ${trFlag(o)}"><div class="rn">${i + 1}</div><div class="rs">${esc(trS[i] || "")}</div><div class="ro"><textarea data-i="${i}" rows="2">${esc(o)}</textarea><div class="ra"><button type="button" data-a="re" data-i="${i}" title="Dịch lại đoạn này">↻</button><button type="button" data-a="ins" data-i="${i}" title="Chèn dòng trống phía trên (đẩy bản dịch xuống)">＋</button><button type="button" data-a="del" data-i="${i}" title="Xóa dòng bản dịch này (kéo bản dịch lên)">−</button></div></div></div>` }).join("");
-  document.querySelectorAll("#t_rows textarea").forEach(autosize);
-}
-function trExitRV() { if (trRV) $("#t_view").click() }
-$("#t_view").onclick = () => {
-  trRV = !trRV; $(".trgrid").hidden = trRV; $("#t_rv").hidden = !trRV; $("#t_view").textContent = trRV ? "✏️ Về soạn thảo" : "👁 Đối chiếu";
-  if (trRV) trRender(true); else trSync();
-};
-$(".trbar").addEventListener("click", e => { const b = e.target.closest("button"); if (b && trRV && b.id !== "t_view" && b.id !== "t_stop") trExitRV() }, true);
-$("#t_only").onchange = e => $("#t_rows").classList.toggle("only", e.target.checked);
-$("#t_rows").addEventListener("input", e => {
-  const ta = e.target.closest("textarea"); if (!ta) return; trO[+ta.dataset.i] = ta.value; autosize(ta);
-  clearTimeout(trTimer2); trTimer2 = setTimeout(trSync, 400);
-});
-$("#t_rows").addEventListener("change", e => { const ta = e.target.closest("textarea"); if (ta) ta.closest(".rv").className = "rv " + trFlag(ta.value) });
-$("#t_rows").addEventListener("click", async e => {
-  const b = e.target.closest("button[data-a]"); if (!b) return; const i = +b.dataset.i, act = b.dataset.a;
-  if (act === "ins") { trO.splice(i, 0, ""); trRender(); trSync() }
-  else if (act === "del") { trO.splice(i, 1); trRender(); trSync() }
-  else if (act === "re") {
-    if (!trS[i]) return log("Dòng này không có bản gốc để dịch lại.");
-    b.disabled = true; log("Đang dịch lại đoạn " + (i + 1) + "...");
-    try { const t = (await gem(trPrompt(trS[i]))).split(/\n+/).map(x => x.trim()).filter(Boolean).join(" "), ta = $(`#t_rows textarea[data-i="${i}"]`); trO[i] = t; if (ta) { ta.value = t; autosize(ta); ta.closest(".rv").className = "rv " + trFlag(t) } trSync(); log("✅ Đã dịch lại đoạn " + (i + 1) + ".") } catch (err) { log("❌ " + err.message) }
-    b.disabled = false;
-  }
-});
+app.addEventListener("click", e => { if (e.target.matches("details img")) { $("#lb img").src = e.target.src; $("#lb").style.display = "flex" } });
+$("#lb").onclick = () => $("#lb").style.display = "none";
+const root = document.documentElement; if (ls.get("theme")) root.dataset.theme = ls.get("theme");
+$("#th").onclick = () => { const cur = root.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"), n = cur === "dark" ? "light" : "dark"; root.dataset.theme = n; ls.set("theme", n) };
+addEventListener("scroll", () => { const h = document.documentElement.scrollHeight - innerHeight; $("#pg").style.width = (h > 0 ? scrollY / h * 100 : 0) + "%"; $("#pg").style.opacity = $("#rd") ? 1 : 0; $("#up").hidden = scrollY < 600; setClear() }, { passive: true });
+$("#up").onclick = () => scrollTo({ top: 0, behavior: "smooth" });
+addEventListener("keydown", e => { if (!RDKEY || e.altKey || e.ctrlKey || e.metaKey || /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "")) return; if (e.key === "ArrowRight") RDKEY(1); else if (e.key === "ArrowLeft") RDKEY(-1) });
+addEventListener("hashchange", () => { $("#q").value = ""; route() });
+applyRS(); renderSide(); sideMode();
+(async () => { try { const r = await fetch("data.json?v=" + Date.now()); if (r.ok) Object.assign(DATA, await r.json()) } catch (e) {} DATA.site ??= {}; DATA.projects ??= []; renderSide(); renderAnn(); route() })();
 </script>
 </body>
 </html>

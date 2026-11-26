@@ -6,135 +6,223 @@
 <title>Kenrori</title>
 <link rel="alternate" type="application/rss+xml" title="Kenrori" href="feed.xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#eceff3;--card:#fff;--tx:#232a35;--mu:#717b8c;--ac:#13919b;--ac2:#f08c00;--bd:#dfe3ea;--sh:0 4px 16px #1d26331a}
-:root[data-theme=dark]{--bg:#13151a;--card:#1e2128;--tx:#e6e9f0;--mu:#97a0b3;--ac:#2cc3cf;--ac2:#ffb020;--bd:#2d323d;--sh:0 4px 16px #0007}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#13151a;--card:#1e2128;--tx:#e6e9f0;--mu:#97a0b3;--ac:#2cc3cf;--ac2:#ffb020;--bd:#2d323d;--sh:0 4px 16px #0007}}
+:root{--bg:#fff;--s1:#f0f1f2;--s2:#e4e5e8;--tx:#121316;--mu:#6b6e75;--ac:#ff6740;--ach:#ff4f1f;--acs:#ffe3da;--bd:#e2e3e6;--on:#04a74b;--done:#2f7de1;--pause:#e89a00;--side:256px;--top:56px}
+:root[data-theme=dark]{--bg:#191a1c;--s1:#2c2d30;--s2:#3a3b3f;--tx:#f2f2f3;--mu:#a3a6ad;--acs:#4a2a20;--bd:#34353a}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#191a1c;--s1:#2c2d30;--s2:#3a3b3f;--tx:#f2f2f3;--mu:#a3a6ad;--acs:#4a2a20;--bd:#34353a}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:15.5px/1.6 "Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;font-kerning:normal;word-break:normal;overflow-wrap:break-word;hyphens:manual;letter-spacing:0}
-a{color:var(--ac);text-decoration:none}button,input,select,textarea{font:inherit;color:var(--tx)}
-.w{max-width:1040px;margin:auto;padding:0 14px}
-.nav{background:var(--card);border-bottom:1px solid var(--bd);box-shadow:0 2px 8px #0000000d;z-index:20}
-@media(min-width:700px){.nav{position:sticky;top:0}}
-.nav .w{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}
-.logo{font-size:1.2rem;color:var(--tx);font-weight:700;white-space:nowrap}.logo b{color:var(--ac)}
-#nv{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
-#nv a{color:var(--tx);padding:8px 12px;border-radius:8px;white-space:nowrap;font-size:.93rem}
-#nv a:hover{background:var(--bg)}#nv a.on{color:#fff;background:var(--ac)}
-#q{border:1px solid var(--bd);background:var(--bg);border-radius:999px;padding:7px 14px;width:200px;outline:none}#q:focus{border-color:var(--ac)}
-#th{border:1px solid var(--bd);background:var(--bg);border-radius:50%;width:36px;height:36px;cursor:pointer}
-@media(max-width:699px){#nv{order:3;flex-basis:100%}#q{flex:1;width:auto}}
-main{padding-top:16px;padding-bottom:70px;min-height:70vh}
-.sec{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px 16px;margin-bottom:16px}
-.sh{display:flex;justify-content:space-between;align-items:center;gap:10px;border-left:4px solid var(--ac);padding-left:10px;margin-bottom:14px}
-.sh h2{margin:0;font-size:1.1rem}.sh a{font-size:.85rem}
-.ups{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:0 20px}
-.up{display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px dashed var(--bd);color:var(--tx)}
-.up:hover .ut b{color:var(--ac)}.th{position:relative;flex:none;width:46px;height:64px;border-radius:6px;overflow:hidden;background:linear-gradient(160deg,hsl(var(--h) 60% 48%),hsl(calc(var(--h) + 50) 60% 26%))}
-.th img,.cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.ut{flex:1;min-width:0}.ut b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ut span{color:var(--mu);font-size:.88rem}.up small{color:var(--mu);white-space:nowrap}
-.series{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:16px}
-.sc{color:var(--tx)}.sc small{display:block;margin-top:5px;color:var(--mu);font-size:.8rem}
-.cover{position:relative;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:linear-gradient(160deg,hsl(var(--h) 60% 48%),hsl(calc(var(--h) + 50) 60% 26%));box-shadow:0 4px 12px #0003;transition:.2s}
-.sc:hover .cover{transform:translateY(-4px);box-shadow:0 10px 22px #0004}
-.cover b{position:absolute;left:0;right:0;bottom:0;padding:34px 9px 9px;color:#fff;font-size:.98rem;line-height:1.25;text-shadow:0 1px 3px #000a;background:linear-gradient(transparent,#000e)}
-.cover em{position:absolute;top:7px;left:7px;background:var(--ac2);color:#fff;font-style:normal;font-size:.7rem;font-weight:600;padding:2px 8px;border-radius:4px}
-.crumb{color:var(--mu);font-size:.85rem;margin-bottom:10px}
-.sp{display:flex;gap:20px;flex-wrap:wrap;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:18px;margin-bottom:16px}
-.sp .cover{width:200px;flex:none}.si{flex:1;min-width:240px}.si h1{margin:0 0 10px;font-size:1.5rem;line-height:1.3}
-dl{display:grid;grid-template-columns:110px 1fr;gap:5px 10px;margin:0 0 10px}dt{color:var(--mu)}dd{margin:0;font-weight:500}
-.tag{display:inline-block;font-size:.78rem;background:var(--bg);border:1px solid var(--bd);border-radius:5px;padding:1px 9px;margin:0 5px 5px 0;color:var(--mu)}
-.acts{margin-top:8px}.btn,.tb button{display:inline-block;border:0;background:var(--ac);color:#fff;border-radius:8px;padding:9px 16px;margin:4px 6px 0 0;cursor:pointer}
-.btn.alt{background:none;color:var(--ac);border:1px solid var(--ac)}.btn:hover{opacity:.88}[disabled]{opacity:.35;pointer-events:none}
-.sum{white-space:pre-line;margin:0}
-.bar2{display:flex;gap:8px;margin-bottom:10px}.bar2 input{flex:1;border:1px solid var(--bd);background:var(--bg);border-radius:8px;padding:8px 12px}
-.bar2 button,select{border:1px solid var(--bd);background:var(--bg);border-radius:8px;padding:8px 12px;cursor:pointer}
-.ch{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid var(--bd);color:var(--tx)}.ch:hover{background:var(--bg)}.ch:hover span{color:var(--ac)}
-.ch.done span{color:var(--mu)}.ch small{color:var(--mu);white-space:nowrap}
-.rbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 14px;margin-bottom:12px}
-.rbar a.t{font-weight:600;flex:1;min-width:140px}.rbar select{max-width:220px}.rbar button{border:1px solid var(--bd);background:var(--bg);border-radius:8px;padding:6px 12px;cursor:pointer}
-#rp{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 14px;margin-bottom:12px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}#rp[hidden]{display:none}
-#rp button{border:1px solid var(--bd);background:var(--bg);border-radius:8px;padding:4px 11px;cursor:pointer}#rp span{color:var(--mu);margin-left:8px}
-.nv{display:flex;gap:8px;justify-content:space-between;margin:12px 0}
-.rd.novel{font-size:var(--fs);line-height:var(--lh);max-width:740px;margin:0 auto;padding:24px;background:var(--card);border:1px solid var(--bd);border-radius:12px}
-.rd.serif{font-family:"Noto Serif",Georgia,"Times New Roman",serif}.rd.novel{text-align:left}
-.rd.sepia{background:#f4ecd8;color:#3b3226;border-color:#e3d6b5}.rd.night{background:#08090d;color:#c9cdd9;border-color:#1c1f2b}
-.rd.manga{max-width:800px;margin:0 auto}.rd.manga img{display:block;width:100%;min-height:200px}
-details{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;margin-bottom:10px}summary{cursor:pointer;font-weight:600}
-details p,.card p{color:var(--mu);margin:6px 0;font-size:.93rem}details img{max-width:100%;border-radius:8px;margin-top:8px;cursor:zoom-in}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
-.card{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:14px}.card h3{margin:0 0 4px;font-size:1.02rem}
-iframe,video{width:100%;border:1px solid var(--bd);border-radius:10px;background:#000;aspect-ratio:16/9;margin-top:8px}iframe.tool{aspect-ratio:auto;height:480px}
-textarea{width:100%;min-height:80px;margin-top:8px;border:1px solid var(--bd);border-radius:8px;padding:10px;background:var(--bg)}
-#pg{position:fixed;top:0;left:0;height:3px;width:0;background:var(--ac2);z-index:50;opacity:0}
-#up{position:fixed;right:16px;bottom:18px;width:44px;height:44px;border-radius:50%;border:0;background:var(--ac);color:#fff;font-size:1.2rem;cursor:pointer;box-shadow:var(--sh);z-index:15}
-#lb{display:none;position:fixed;inset:0;background:#000d;z-index:60;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}#lb img{max-width:100%;max-height:100%}
-.empty{color:var(--mu);text-align:center;padding:20px 0}footer{text-align:center;color:var(--mu);font-size:.85rem;padding:0 14px 30px}
-@media(max-width:560px){.sp .cover{width:140px}dl{grid-template-columns:90px 1fr}.rd.novel{padding:16px}}
-.chr{display:flex}.chr .ch{flex:1}.ed{display:flex;align-items:center;padding:0 14px;border-bottom:1px solid var(--bd);color:var(--mu)}.ed:hover{color:var(--ac)}
-#adm{background:var(--ac);color:#fff;border-radius:999px;padding:6px 14px;white-space:nowrap;font-size:.9rem;font-weight:600}#adm:hover{opacity:.88}
-.gc{margin-bottom:14px}.gc .tag{font-size:.82rem}.tag:hover{border-color:var(--ac);color:var(--ac)}.tag small{opacity:.7}
-.cover img~b{display:none}
-.cover b{font-size:.9rem;font-weight:600;text-wrap:balance}.cover em{font-size:.66rem;padding:2px 7px}
-.ct{margin-top:8px;font-weight:600;font-size:.86rem;line-height:1.3;color:var(--tx);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-wrap:balance;overflow-wrap:break-word}
-.sc:hover .ct{color:var(--ac)}.sc small{margin-top:3px}h1,h2{text-wrap:balance}
-.pj .pi{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:10px;border:1px solid var(--bd)}
-.pj .st{float:right;font-size:.7rem;font-weight:600;color:#fff;background:var(--ac2);border-radius:4px;padding:1px 8px}
-.pj .meta{color:var(--mu);font-size:.82rem;margin:2px 0 6px}.pj .acts .btn{padding:7px 14px;font-size:.9rem}.pj details{margin:10px 0 0;background:var(--card)}
-.pgrid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
-.rc{display:flex;align-items:center;gap:4px;border-bottom:1px dashed var(--bd)}.rc .up{flex:1;border-bottom:0;min-width:0}.fg{border:0;background:none;color:var(--mu);cursor:pointer;padding:6px}.fg:hover{color:#d33}
-.pb{display:block;height:4px;background:var(--bd);border-radius:4px;margin-top:5px;overflow:hidden}.pb i{display:block;height:100%;background:var(--ac)}.nw{color:var(--ac2);font-weight:600}
-/* ===== Polish ===== */
-::selection{background:var(--ac);color:#fff}html{scroll-behavior:smooth}
-*{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--mu) 50%,transparent) transparent}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.6 "Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;overflow-wrap:break-word}
+a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit;color:var(--tx)}
+button{cursor:pointer}
 :focus-visible{outline:2px solid var(--ac);outline-offset:2px}
-body{background:radial-gradient(900px 420px at 8% -5%,color-mix(in srgb,var(--ac) 14%,transparent),transparent),radial-gradient(800px 380px at 96% 0,color-mix(in srgb,var(--ac2) 12%,transparent),transparent),var(--bg);background-attachment:fixed}
-.nav{background:color-mix(in srgb,var(--card) 82%,transparent);-webkit-backdrop-filter:saturate(1.4) blur(10px);backdrop-filter:saturate(1.4) blur(10px)}
-.logo b{background:linear-gradient(135deg,var(--ac),var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
-#nv a{transition:.15s}#nv a.on{background:linear-gradient(135deg,var(--ac),var(--ac2));box-shadow:0 3px 10px color-mix(in srgb,var(--ac) 40%,transparent)}
-#q{transition:.15s}#q:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 25%,transparent)}
-#app>*{animation:fadeUp .35s both}@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}}
-.sec{border-radius:16px;box-shadow:var(--sh)}
-.sh{border-left:0;padding-left:0}.sh h2{display:flex;align-items:center;gap:9px}.sh h2::before{content:"";width:5px;height:1.15em;border-radius:3px;background:linear-gradient(var(--ac),var(--ac2))}
-.banner{position:relative;overflow:hidden;border-radius:18px;padding:28px 24px;margin-bottom:16px;color:#fff;background:linear-gradient(135deg,var(--ac),var(--ac2));box-shadow:var(--sh)}
-.banner::after{content:"";position:absolute;right:-60px;top:-70px;width:230px;height:230px;border-radius:50%;background:#ffffff22}
-.banner h1{margin:0 0 6px;font-size:1.7rem}.banner p{margin:0 0 12px;opacity:.93;max-width:560px}
-.banner .btn{background:#fff;color:var(--ac);box-shadow:none}.banner .btn.alt{background:#ffffff26;color:#fff;border-color:#fff9}
-.cover{border-radius:12px;box-shadow:0 6px 18px #0003}
-.cover::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px #ffffff1f;pointer-events:none}
-.cover em{background:linear-gradient(135deg,var(--ac2),#ff6b6b);box-shadow:0 2px 8px #0004}
-.sc:hover .cover{transform:translateY(-6px) scale(1.015)}
-.btn,.tb button{background:linear-gradient(135deg,var(--ac),var(--ac2));border-radius:10px;box-shadow:0 4px 12px color-mix(in srgb,var(--ac) 35%,transparent);transition:.15s}
-.btn:hover,.tb button:hover{transform:translateY(-1px);opacity:1}
-.btn.alt{background:transparent;box-shadow:none;color:var(--ac);border:1px solid var(--ac)}.btn.alt:hover{background:color-mix(in srgb,var(--ac) 10%,transparent)}
-.card{border-radius:14px;transition:.2s}.card:hover{transform:translateY(-3px);box-shadow:var(--sh);border-color:color-mix(in srgb,var(--ac) 45%,var(--bd))}
-details{border-radius:12px;transition:.2s}details[open]{box-shadow:var(--sh);border-color:color-mix(in srgb,var(--ac) 40%,var(--bd))}
-summary{list-style:none}summary::-webkit-details-marker{display:none}
-summary::before{content:"▸";display:inline-block;margin-right:8px;color:var(--ac);transition:.2s}details[open]>summary::before{transform:rotate(90deg)}
-.tag{border-radius:999px;padding:2px 11px}a.tag:hover{background:var(--ac);color:#fff;border-color:var(--ac)}
-.sp{border-radius:16px;box-shadow:var(--sh);background:linear-gradient(180deg,color-mix(in srgb,var(--ac) 7%,var(--card)),var(--card) 60%)}.si h1{font-size:1.7rem}
-.up{transition:.15s;border-radius:10px}.up:hover{background:color-mix(in srgb,var(--bg) 70%,transparent);padding-left:8px;padding-right:8px}
-.ch{transition:.15s}.chr:nth-child(even) .ch{background:color-mix(in srgb,var(--bg) 55%,transparent)}.ch:hover{padding-left:16px}
-.pb i{background:linear-gradient(90deg,var(--ac),var(--ac2))}
-.rbar{border-radius:14px;box-shadow:var(--sh)}.rd.novel{border-radius:16px;box-shadow:var(--sh)}
-@media(max-width:560px){.banner{padding:22px 18px}.banner h1{font-size:1.4rem}.sec{padding:12px}}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
-details.vol,details.vol[open]{padding:0;border:0;border-radius:0;box-shadow:none;margin:0 0 10px;background:transparent}
-.vol summary{padding:10px 14px;background:var(--bg);border-radius:10px;border:1px solid var(--bd)}.vol summary b{font-size:1rem}.vol[open] summary{border-radius:10px 10px 0 0;border-color:color-mix(in srgb,var(--ac) 40%,var(--bd))}
-.vol .chr:last-child .ch{border-bottom:0}
-#ann{background:linear-gradient(90deg,var(--ac),var(--ac2));color:#fff;text-align:center;padding:8px 42px 8px 14px;position:relative;font-size:.92rem}#ann a{color:#fff;text-decoration:underline}
-#ann button{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:0;color:#fff;font-size:1.1rem;cursor:pointer}
-.btn.alt.on{background:var(--ac);color:#fff}.btn.dc{background:#5865f2;box-shadow:none;color:#fff}.cm{margin-top:16px}
-.pgv{position:relative;cursor:pointer;user-select:none}.pgv img{display:block;width:100%;max-height:calc(100vh - 110px);object-fit:contain;background:#000;border-radius:8px}.pgn{text-align:center;color:var(--mu);font-size:.85rem;margin-top:6px}
+::selection{background:var(--ac);color:#fff}
+svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- Sidebar ---------- */
+#side{position:fixed;inset:0 auto 0 0;width:var(--side);background:var(--s1);padding:12px 12px 20px;overflow-y:auto;z-index:60;display:flex;flex-direction:column;transition:transform .25s ease}
+.sl{display:flex;align-items:center;justify-content:space-between;height:40px;padding:0 6px;margin-bottom:10px}
+.logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:1.25rem;letter-spacing:-.02em}
+.logo i{width:30px;height:30px;border-radius:8px;background:var(--ac);color:#fff;display:grid;place-items:center;font-style:normal;font-size:1rem}
+#sx{display:none;border:0;background:none;padding:6px;border-radius:6px}#sx:hover{background:var(--s2)}
+#nv{display:flex;flex-direction:column;gap:2px}
+#nv .sg{display:flex;align-items:center;gap:10px;font-weight:700;padding:14px 10px 4px}
+#nv a{display:flex;align-items:center;gap:10px;padding:6px 10px 6px 40px;border-radius:6px;font-weight:500}
+#nv a.top{padding-left:10px;font-weight:700}
+#nv a:hover{background:var(--s2)}#nv a.on{background:var(--ac);color:#fff}
+.sfoot{margin-top:auto;padding:18px 10px 0;display:flex;flex-direction:column;gap:6px;font-size:.88rem;color:var(--mu)}
+.sfoot a:hover{color:var(--ac)}
+.dcb{display:flex;align-items:center;justify-content:center;gap:8px;background:#5865f2;color:#fff!important;border-radius:6px;padding:8px;font-weight:600;margin-bottom:8px}
+#scrim{display:none;position:fixed;inset:0;background:#0007;z-index:55}
+#main{margin-left:var(--side);min-height:100vh;display:flex;flex-direction:column}
+body.ov #side{transform:translateX(-100%)}body.ov #main{margin-left:0}
+body.ov.so #side{transform:none;box-shadow:0 0 40px #0005}body.ov.so #scrim{display:block}body.ov #sx{display:block}
+
+/* ---------- Top bar ---------- */
+#top{position:sticky;top:0;z-index:50;height:var(--top);display:flex;align-items:center;gap:10px;padding:0 24px;background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--bd);transition:background .2s,border-color .2s,color .2s}
+#top .logo{display:none;font-size:1.1rem}body.ov #top .logo{display:flex}
+.ib{border:0;background:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:inherit}.ib:hover{background:color-mix(in srgb,currentColor 12%,transparent)}
+.srch{margin-left:auto;position:relative;width:min(340px,100%)}
+.srch svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--mu);pointer-events:none}
+#q{width:100%;border:0;background:var(--s1);border-radius:8px;padding:8px 12px 8px 36px;outline:none}
+#q:focus{box-shadow:0 0 0 2px var(--ac)}
+body.clear #top{background:transparent;border-color:transparent;color:#fff;-webkit-backdrop-filter:none;backdrop-filter:none}
+body.clear #q{background:#ffffff26;color:#fff}body.clear #q::placeholder{color:#ffffffb0}body.clear .srch svg{color:#fffc}
+#ann{background:var(--ac);color:#fff;text-align:center;padding:7px 44px 7px 14px;position:relative;font-size:.9rem;font-weight:500}
+#ann a{text-decoration:underline}#ann button{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;color:#fff;font-size:1.1rem}
+
+/* ---------- Layout ---------- */
+#app{flex:1;padding:0 24px 56px;width:100%;max-width:1440px;margin:0 auto}
+.sec{margin:30px 0}
+.sh{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.sh h2{margin:0;font-size:1.3rem;font-weight:700;letter-spacing:-.01em}
+.more{width:36px;height:36px;border-radius:50%;background:var(--s1);display:grid;place-items:center}.more:hover{background:var(--s2)}
+.lead{color:var(--mu);margin:-6px 0 14px}
+.empty{color:var(--mu);padding:26px 0;text-align:center}
+footer{padding:22px 24px 30px;color:var(--mu);font-size:.85rem;border-top:1px solid var(--bd);display:flex;gap:16px;flex-wrap:wrap}
+footer a:hover{color:var(--ac)}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;height:440px;margin:calc(-1 * var(--top)) -24px 8px;overflow:hidden;background:#111}
+.hs{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .7s,visibility .7s}.hs.on{opacity:1;visibility:visible}
+.hb{position:absolute;inset:0;background:linear-gradient(160deg,hsl(var(--h) 55% 42%),hsl(calc(var(--h) + 50) 55% 20%));background-size:cover;background-position:center 25%;filter:blur(4px);transform:scale(1.08)}
+.hs::after,.tpb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#000b 0%,#0008 55%,color-mix(in srgb,var(--bg) 60%,#0008) 82%,var(--bg) 100%)}
+.hw{position:relative;z-index:1;display:flex;gap:28px;align-items:flex-start;height:100%;padding:calc(var(--top) + 28px) 32px 64px;color:#fff;max-width:1440px;margin:0 auto}
+.hw .cover{width:200px;flex:none;box-shadow:0 10px 30px #0008}
+.hi{min-width:0;display:flex;flex-direction:column}
+.hi h2{margin:0 0 12px;font-size:clamp(1.5rem,3.2vw,2.6rem);font-weight:800;line-height:1.1;letter-spacing:-.02em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.htg{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}.htg span{font-size:.75rem;font-weight:600;background:#ffffff24;padding:2px 9px;border-radius:5px}
+.hi p{margin:0;max-width:72ch;color:#ffffffd9;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.hau{margin-top:14px;font-style:italic;color:#ffffffcc}
+.hn{position:absolute;right:32px;bottom:20px;z-index:2;display:flex;gap:8px;align-items:center}
+.hn span{font-weight:700;margin-right:6px}
+.hn button{width:38px;height:38px;border-radius:50%;border:0;background:var(--s1);display:grid;place-items:center}.hn button:hover{background:var(--ac);color:#fff}
+
+/* ---------- Covers & cards ---------- */
+.cover{position:relative;aspect-ratio:7/10;border-radius:6px;overflow:hidden;background:linear-gradient(160deg,hsl(var(--h) 55% 48%),hsl(calc(var(--h) + 50) 55% 26%))}
+.cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cover b{position:absolute;inset:auto 0 0;padding:28px 9px 9px;color:#fff;font-size:.85rem;line-height:1.25;background:linear-gradient(transparent,#000d)}
+.cover img~b{display:none}
+.kd{position:absolute;top:6px;left:6px;font-style:normal;font-size:.68rem;font-weight:700;background:#000b;color:#fff;padding:1px 7px;border-radius:4px}
+.series{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:22px 16px}
+.shelf{display:grid;grid-auto-flow:column;grid-auto-columns:158px;gap:16px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x proximity;scrollbar-width:thin}
+.shelf>*{scroll-snap-align:start}
+.sc{display:block}.sc:hover .ct{color:var(--ac)}
+.ct{margin-top:8px;font-weight:600;font-size:.9rem;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sc small{display:flex;gap:8px;align-items:center;margin-top:3px;color:var(--mu);font-size:.8rem}
+.st{display:inline-flex;align-items:center;gap:5px;font-weight:600;color:var(--on)}.st::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.st.done{color:var(--done)}.st.pause{color:var(--pause)}
+.pb{display:block;height:3px;background:var(--s2);border-radius:3px;margin-top:6px;overflow:hidden}.pb i{display:block;height:100%;background:var(--ac)}
+.rcs{position:relative}.fg{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;border:0;background:#000b;color:#fff;display:none;font-size:.8rem}
+.rcs:hover .fg{display:block}@media(hover:none){.fg{display:block}}
+.nwb{position:absolute;bottom:6px;right:6px;font-style:normal;font-size:.72rem;font-weight:700;background:var(--ac);color:#fff;padding:1px 7px;border-radius:4px}
+
+/* ---------- Latest updates ---------- */
+.lu{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:12px}
+.lui{min-width:0;display:flex;gap:12px;background:var(--s1);border-radius:6px;padding:10px}
+.th{position:relative;flex:none;width:60px;aspect-ratio:7/10;border-radius:4px;overflow:hidden;background:linear-gradient(160deg,hsl(var(--h) 55% 48%),hsl(calc(var(--h) + 50) 55% 26%))}
+.th img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.lub{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
+.lut{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}.lut:hover{color:var(--ac)}
+.luc{display:flex;justify-content:space-between;gap:10px;font-size:.87rem;border-radius:4px;padding:1px 4px;margin:0 -4px}
+.luc span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.luc small{color:var(--mu);white-space:nowrap}
+.luc:hover{background:var(--s2)}.luc.rd span{color:var(--mu)}
+
+/* ---------- Buttons, pills ---------- */
+.btn,.tb button{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:6px;padding:9px 16px;font-weight:600;background:var(--s1);color:var(--tx)}
+.btn:hover,.tb button:hover{background:var(--s2)}
+.btn.pri,.tb button:first-of-type{background:var(--ac);color:#fff}.btn.pri:hover,.tb button:first-of-type:hover{background:var(--ach)}
+.btn.on{background:var(--acs);color:var(--ac)}
+.btn.dc{background:#5865f2;color:#fff}
+[disabled]{opacity:.35;pointer-events:none}
+.acts{display:flex;flex-wrap:wrap;gap:8px}
+.pill,.tag{display:inline-block;font-size:.78rem;font-weight:600;background:var(--s1);border-radius:5px;padding:2px 9px;color:var(--tx)}
+a.pill:hover,a.tag:hover{background:var(--ac);color:#fff}
+.tag small{color:var(--mu);margin-left:3px}a.tag:hover small{color:#fffc}
+.gc{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.lnk{border:0;background:none;color:var(--ac);font-weight:600;padding:0}
+
+/* ---------- Title page ---------- */
+.tpb{position:relative;height:330px;margin:calc(-1 * var(--top)) -24px -274px;overflow:hidden;background:#111}
+.tp{position:relative;z-index:1}
+.tph{display:grid;grid-template-columns:210px minmax(0,1fr);grid-template-areas:"cv t" "cv m";column-gap:26px;padding-top:24px}
+.tpcv{grid-area:cv;align-self:start;box-shadow:0 10px 30px #0006}
+.tpt{grid-area:t;min-height:162px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;padding-bottom:14px;text-shadow:0 1px 12px #0008}
+.tpt h1{margin:0;font-size:clamp(1.5rem,3.4vw,3rem);font-weight:800;line-height:1.08;letter-spacing:-.025em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-wrap:balance}
+.tpa{margin-top:8px;color:#ffffffd0}
+.tpm{grid-area:m;padding-top:14px;display:flex;flex-direction:column;gap:12px}
+.tptg{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tptg .st{margin-right:6px;font-size:.85rem}
+.tpd{margin:24px 0 8px;max-width:90ch}
+.sum{white-space:pre-line;margin:0}
+.clamp{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.tpc{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:28px;margin-top:22px}
+.tpx{display:flex;flex-direction:column;gap:16px}
+.tpx h4{margin:0 0 4px;font-size:.95rem}.tpx .ibx div{color:var(--mu)}.tpx .ibx .pill{margin:0 4px 4px 0}
+.bar2{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.bar2 input{flex:1;min-width:160px;border:0;background:var(--s1);border-radius:6px;padding:8px 12px;outline:none}.bar2 input:focus{box-shadow:0 0 0 2px var(--ac)}
+.bar2 button{border:0;background:var(--s1);border-radius:6px;padding:8px 12px;font-weight:600}.bar2 button:hover{background:var(--s2)}
+details.vol{margin-bottom:10px}
+.vol>summary{display:flex;align-items:center;gap:12px;padding:6px 2px;cursor:pointer;list-style:none;font-weight:700}
+.vol>summary::-webkit-details-marker{display:none}
+.vol>summary .vc{color:var(--mu);font-weight:500;font-size:.88rem;margin-left:auto}
+.vol>summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--mu);border-bottom:2px solid var(--mu);transform:rotate(45deg);margin:-4px 6px 0 0;transition:transform .2s}
+.vol[open]>summary::after{transform:rotate(-135deg);margin-top:4px}
+.chr{display:flex;gap:4px;margin-bottom:4px}
+.ch{flex:1;min-width:0;display:grid;grid-template-columns:16px minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:7px 12px;background:var(--s1);border-left:3px solid var(--ac);border-radius:4px}
+.ch:hover{background:var(--s2)}
+.ch .eye{width:9px;height:9px;border-radius:50%;border:2px solid var(--ac)}
+.ch.done{border-left-color:var(--s2)}.ch.done .eye{border-color:var(--mu);background:var(--mu)}.ch.done .cht{color:var(--mu)}
+.ch.cur .cht{font-weight:700}
+.cht{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch small{color:var(--mu);white-space:nowrap;font-size:.82rem}
+.ed{display:grid;place-items:center;width:36px;background:var(--s1);border-radius:4px;color:var(--mu)}.ed:hover{color:var(--ac)}
+
+/* ---------- Reader ---------- */
+.rbar{position:sticky;top:var(--top);z-index:20;display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--bd);margin-bottom:14px}
+.rbar .t{font-weight:700;flex:1;min-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rbar .t:hover{color:var(--ac)}
+.rbar select,.rbar button,#rp button{border:0;background:var(--s1);border-radius:6px;padding:7px 12px;max-width:240px}
+.rbar button:hover,#rp button:hover{background:var(--s2)}
+#rp{display:flex;gap:6px;align-items:center;flex-wrap:wrap;background:var(--s1);border-radius:8px;padding:10px 12px;margin-bottom:14px}#rp[hidden]{display:none}
+#rp button{background:var(--bg)}#rp span{color:var(--mu);margin-left:10px}
+.rh{max-width:760px;margin:0 auto}.rh h1{font-size:1.6rem;margin:6px 0 2px;line-height:1.25}.rh p{color:var(--mu);margin:0}
+.nv{display:flex;gap:8px;justify-content:space-between;max-width:760px;margin:16px auto}
+.rd.novel{font-size:var(--fs);line-height:var(--lh);max-width:760px;margin:0 auto;padding:8px 2px}
+.rd.novel p{margin:0 0 1em}
+.rd.serif{font-family:"Noto Serif",Georgia,serif}
+.rd.sepia{background:#f4ecd8;color:#3b3226;padding:24px;border-radius:8px}.rd.night{background:#000;color:#c9cdd9;padding:24px;border-radius:8px}
+.rd.manga{max-width:860px;margin:0 auto}.rd.manga img{display:block;width:100%;min-height:200px}
+.pgv{position:relative;cursor:pointer;user-select:none}.pgv img{display:block;width:100%;max-height:calc(100vh - 140px);object-fit:contain;background:#000;border-radius:6px}
+.pgn{text-align:center;color:var(--mu);font-size:.85rem;margin-top:6px}
+#pg{position:fixed;top:0;left:0;height:3px;width:0;background:var(--ac);z-index:70;opacity:0}
+
+/* ---------- Misc content ---------- */
+details.it{background:var(--s1);border-radius:6px;padding:12px 14px;margin-bottom:8px}
+details.it>summary{cursor:pointer;font-weight:600}
+details.it p{color:var(--mu);margin:8px 0;font-size:.93rem}details.it img{max-width:100%;border-radius:6px;margin-top:8px;cursor:zoom-in}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.card{background:var(--s1);border-radius:6px;padding:16px}.card h3{margin:0 0 4px;font-size:1.02rem}.card h3 a:hover{color:var(--ac)}.card p{color:var(--mu);margin:6px 0;font-size:.92rem}
+.pj .pi{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:4px;margin-bottom:10px}
+.pj .meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;color:var(--mu);font-size:.82rem;margin:4px 0 6px}
+.pj details{margin-top:10px}.pj summary{cursor:pointer;font-weight:600}
+iframe,video{width:100%;border:0;border-radius:6px;background:#000;aspect-ratio:16/9;margin-top:8px}iframe.tool{aspect-ratio:auto;height:480px;background:var(--bg)}
+textarea{width:100%;min-height:80px;margin-top:8px;border:0;border-radius:6px;padding:10px;background:var(--bg)}
+.tb button{margin:8px 6px 0 0}
+#lb{display:none;position:fixed;inset:0;background:#000d;z-index:80;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}#lb img{max-width:100%;max-height:100%}
+#up{position:fixed;right:18px;bottom:18px;width:44px;height:44px;border-radius:50%;border:0;background:var(--ac);color:#fff;display:grid;place-items:center;z-index:40;box-shadow:0 6px 18px #0003}
+.about h3{margin:22px 0 8px}
+
+@media(max-width:700px){
+  #top{padding:0 12px;gap:6px}#app{padding:0 14px 48px}
+  .hero{margin:calc(-1 * var(--top)) -14px 8px;height:380px}
+  .hw{gap:16px;padding:calc(var(--top) + 18px) 16px 60px}.hw .cover{width:118px}.hi p{-webkit-line-clamp:3}.hau{margin-top:10px}
+  .hn{right:16px}
+  .tpb{margin:calc(-1 * var(--top)) -14px -224px;height:280px}
+  .tph{grid-template-columns:118px minmax(0,1fr);grid-template-areas:"cv t" "m m";column-gap:16px;padding-top:16px}
+  .tpt{min-height:150px}.tpt h1{-webkit-line-clamp:3}
+  .tpc{grid-template-columns:1fr}.tpx{order:-1;flex-direction:row;flex-wrap:wrap;gap:14px 24px}
+  .ch{grid-template-columns:16px minmax(0,1fr) auto}.ch .cw{display:none}
+  .lu{grid-template-columns:1fr}
+  .series{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:18px 12px}
+  .shelf{grid-auto-columns:128px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
+<aside id="side"><div class="sl"><a class="logo" href="#home"><i>K</i>Kenrori</a><button id="sx" title="Đóng menu"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><nav id="nv"></nav><div class="sfoot" id="sfoot"></div></aside>
+<div id="scrim"></div>
+<div id="main">
 <div id="ann" hidden></div>
-<header class="nav"><div class="w"><a class="logo" href="#home">📚 <b>Kenrori</b></a><input id="q" type="search" placeholder="Tìm truyện, mẹo..."><a id="adm" href="admin.html" title="Đăng nhập quản trị">🔑 Admin</a><button id="th" title="Sáng/Tối">🌓</button><nav id="nv"></nav></div></header>
-<main class="w" id="app"></main>
-<footer>© Kenrori · Dịch phi lợi nhuận · Chạy trên GitHub Pages · <a href="feed.xml">RSS</a> · <a href="admin.html">Quản trị</a></footer>
-<div id="pg"></div><button id="up" hidden>↑</button>
+<header id="top"><button class="ib" id="hb" title="Menu"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><a class="logo" href="#home"><i>K</i>Kenrori</a>
+<label class="srch"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Tìm truyện, dự án, mẹo..." aria-label="Tìm kiếm"></label>
+<button class="ib" id="th" title="Đổi sáng/tối"><svg class="i" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button></header>
+<main id="app"></main>
+<footer><span>© Kenrori. Dịch phi lợi nhuận.</span><a href="#about">Giới thiệu</a><a href="feed.xml">RSS</a><a href="admin.html">Quản trị</a></footer>
+</div>
+<div id="pg"></div><button id="up" hidden title="Lên đầu trang"><svg class="i" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg></button>
 <div id="lb"><img alt=""></div>
 <script>
 /* ============ DATA: CHỈ CẦN SỬA PHẦN NÀY ============ */
@@ -194,70 +282,111 @@ const hue = t => [...t].reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
 const ls = { get: k => { try { return localStorage.getItem(k) } catch (e) {} }, set: (k, v) => { try { localStorage.setItem(k, v) } catch (e) {} }, del: k => { try { localStorage.removeItem(k) } catch (e) {} } };
 const ADM = !!ls.get("cfg2");
 const imgTag = s => s ? `<img src="${esc(s)}" alt="" loading="lazy" onerror="this.remove()">` : "";
+const ic = p => `<svg class="i" viewBox="0 0 24 24">${p}</svg>`;
+const I = {
+  home: '<path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  book: '<path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2.5zM20 19v3H6"/>',
+  game: '<rect x="2" y="7" width="20" height="12" rx="4"/><path d="M7 11v4M5 13h4M15 12h.01M18 14h.01"/>',
+  more: '<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',
+  next: '<path d="m9 18 6-6-6-6"/>', prev: '<path d="m15 18-6-6 6-6"/>',
+  star: '<path d="m12 3 2.8 5.8 6.2.9-4.5 4.4 1 6.2L12 17.4 6.5 20.3l1-6.2L3 9.7l6.2-.9z"/>',
+  play: '<path d="M7 4v16l13-8z"/>', edit: '<path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/>', plus: '<path d="M12 5v14M5 12h14"/>'
+};
 DATA.projects ??= [{ title: "Tên dự án (ví dụ)", type: "Userscript", status: "Đang phát triển", version: "1.0.0", date: "2026-11-01", desc: "Mô tả ngắn về dự án.", links: [{ label: "Cài đặt", url: "https://greasyfork.org/" }], howto: "Bước 1: ...\nBước 2: ...", img: "" }];
 DATA.site ??= {};
 const KEY = { novel: "novels", manga: "manga" }, app = $("#app"), EMPTY = '<p class="empty">Chưa có nội dung.</p>';
-const NAV = [["home", "🏠 Trang chủ"], ["novels", "📖 Novel"], ["manga", "🖼️ Manga"], ["the-loai", "🏷️ Thể loại"], ["projects", "🧩 Dự án"], ["tips", "💡 Mẹo game"], ["tools", "🛠️ Công cụ"], ["videos", "🎵 Video"], ["links", "🔗 Liên kết"], ["about", "ℹ️ Giới thiệu"]];
-$("#nv").innerHTML = NAV.map(([k, l]) => `<a href="#${k}" data-k="${k}">${l}</a>`).join("");
+const NAV = [["home", "home", "Trang chủ"], ["—", "book", "Truyện"], ["novels", "", "Light Novel"], ["manga", "", "Manga"], ["the-loai", "", "Thể loại"], ["library", "", "Thư viện của tôi"], ["—", "game", "Game & công cụ"], ["projects", "", "Dự án"], ["tips", "", "Mẹo game"], ["tools", "", "Công cụ"], ["—", "more", "Khác"], ["videos", "", "Video Vietsub"], ["links", "", "Liên kết"], ["about", "", "Giới thiệu"]];
+function renderSide() {
+  $("#nv").innerHTML = NAV.map(([k, icn, l]) => k === "—" ? `<div class="sg">${ic(I[icn])}${l}</div>` : `<a href="#${k}" data-k="${k}"${icn ? ' class="top"' : ""}>${icn ? ic(I[icn]) : ""}${l}</a>`).join("");
+  const dc = (DATA.site.about || {}).discord;
+  $("#sfoot").innerHTML = (/^https?:\/\//.test(dc || "") ? `<a class="dcb" href="${esc(dc)}" target="_blank" rel="noopener">Tham gia Discord</a>` : "") + `<a href="feed.xml">Theo dõi qua RSS</a><a href="admin.html">Quản trị</a><span>© Kenrori</span>`;
+}
+const STC = t => /hoàn/i.test(t || "") ? "done" : /tạm|ngưng|dừng|drop/i.test(t || "") ? "pause" : "on";
+const stDot = s => s.status ? `<span class="st ${STC(s.status)}">${esc(s.status)}</span>` : "";
+const ago = d => { if (!d) return ""; const t = new Date(), n = Math.round((Date.UTC(t.getFullYear(), t.getMonth(), t.getDate()) - Date.parse(d)) / 864e5); return n <= 0 ? "Hôm nay" : n === 1 ? "Hôm qua" : n < 7 ? n + " ngày trước" : n < 30 ? Math.floor(n / 7) + " tuần trước" : fmtD(d) };
+const bgStyle = s => `style="--h:${hue(s.title)}${s.cover ? `;background-image:url(&quot;${esc(s.cover)}&quot;)` : ""}"`;
 const allG = (k = "all") => { const m = new Map(); for (const x of (k === "all" ? ["novel", "manga"] : [k])) DATA[KEY[x]].forEach(s => (s.genres || []).forEach(g => m.set(g, (m.get(g) || 0) + 1))); return [...m].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "vi")) };
 const gHref = (g, k = "all") => `#the-loai/${k}/${encodeURIComponent(g)}`;
-const gChips = k => { const a = allG(k); return a.length ? `<div class="gc">${a.map(([g, n]) => `<a class="tag" href="${gHref(g, k)}">${esc(g)} <small>${n}</small></a>`).join("")}</div>` : "" };
-const latest = s => s.chapters.map(c => c.date || "").sort().pop();
+const gChips = k => { const a = allG(k); return a.length ? `<div class="gc">${a.map(([g, n]) => `<a class="tag" href="${gHref(g, k)}">${esc(g)}<small>${n}</small></a>`).join("")}</div>` : "" };
+const latest = s => s.chapters.map(c => c.date || "").sort().pop() || "";
+const first = s => s.chapters.map(c => c.date || "").filter(Boolean).sort()[0] || "";
 const sum = s => s.chapters.reduce((a, c) => a + (c.words || (c.text ? W(c.text) : 0)), 0);
-const byNew = a => [...a].sort((x, y) => (latest(y) || "").localeCompare(latest(x) || ""));
-const sec = (t, more, body) => `<section class="sec"><div class="sh"><h2>${t}</h2>${more ? `<a href="#${more}">Xem tất cả →</a>` : ""}</div>${body}</section>`;
-const card = (k, s) => `<a class="sc" href="#${k}/${s.slug}"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<em>${esc(s.status)}</em><b>${esc(s.title)}</b></div><div class="ct" title="${esc(s.title)}">${esc(s.title)}</div><small>${s.chapters.length} chương · ${fmtD(latest(s))}</small>${(s.genres || []).length ? `<small>${esc(s.genres.slice(0, 2).join(" · "))}</small>` : ""}</a>`;
-const recent = n => { const a = []; for (const k of ["novel", "manga"]) DATA[KEY[k]].forEach(s => s.chapters.forEach((c, i) => a.push({ k, s, c, i }))); return a.sort((x, y) => (y.c.date || "").localeCompare(x.c.date || "") || y.i - x.i).slice(0, n) };
-const row = r => `<a class="up" href="#${r.k}/${r.s.slug}/${r.i}"><div class="th" style="--h:${hue(r.s.title)}">${imgTag(r.s.cover)}</div><div class="ut"><b>${esc(r.s.title)}</b><span>${r.c.vol ? esc(r.c.vol) + " · " : ""}${esc(r.c.t)}</span></div><small>${fmtD(r.c.date)}</small></a>`;
+const allS = () => [...DATA.novels.map(s => ({ k: "novel", s })), ...DATA.manga.map(s => ({ k: "manga", s }))];
+const byNew = a => [...a].sort((x, y) => latest(y.s || y).localeCompare(latest(x.s || x)));
+const sec = (t, more, body) => `<section class="sec"><div class="sh"><h2>${t}</h2>${more ? `<a class="more" href="#${more}" title="Xem tất cả">${ic(I.next)}</a>` : ""}</div>${body}</section>`;
+const card = (k, s) => `<a class="sc" href="#${k}/${s.slug}"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b><i class="kd">${k === "novel" ? "Novel" : "Manga"}</i></div><div class="ct" title="${esc(s.title)}">${esc(s.title)}</div><small>${stDot(s)}<span>${s.chapters.length} chương</span></small></a>`;
 const gridOf = (k, a) => a.length ? `<div class="series">${byNew(a).map(s => card(k, s)).join("")}</div>` : EMPTY;
-const projCard = d => `<div class="card pj">${d.img ? `<img class="pi" src="${esc(d.img)}" alt="" loading="lazy" onerror="this.remove()">` : ""}<h3>${esc(d.title)} <span class="st">${esc(d.status)}</span></h3>${d.type ? `<span class="tag">${esc(d.type)}</span>` : ""}<div class="meta">${[d.version ? "v" + esc(d.version) : "", d.date ? "cập nhật " + fmtD(d.date) : ""].filter(Boolean).join(" · ")}</div><p>${esc(d.desc)}</p><div class="acts">${(d.links || []).filter(l => /^https?:\/\//.test(l.url)).map((l, i) => `<a class="btn${i ? " alt" : ""}" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join("")}</div>${d.howto ? `<details><summary>📖 Hướng dẫn</summary><p class="sum">${esc(d.howto)}</p></details>` : ""}</div>`;
-const reading = () => { const a = []; for (const k of ["novel", "manga"]) DATA[KEY[k]].forEach(s => { const l = ls.get(k + ":" + s.slug); if (l != null && s.chapters[+l]) a.push({ k, s, l: +l, t: +(ls.get("t:" + k + ":" + s.slug) || 0) }) }); return a.sort((x, y) => y.t - x.t).slice(0, 6) };
-const rdCard = r => { const n = r.s.chapters.length, nw = n - 1 - r.l, pct = Math.round(rdSet(r.k, r.s).length / n * 100); return `<div class="rc"><a class="up" href="#${r.k}/${r.s.slug}/${r.l}"><div class="th" style="--h:${hue(r.s.title)}">${imgTag(r.s.cover)}</div><div class="ut"><b>${esc(r.s.title)}</b><span>Đang ở: ${esc(r.s.chapters[r.l].t)}</span><i class="pb"><i style="width:${pct}%"></i></i></div><small>${nw > 0 ? `<span class="nw">+${nw} chương mới</span>` : "Đọc tiếp →"}</small></a><button class="fg" title="Bỏ khỏi danh sách" onclick="forget('${r.k}','${esc(r.s.slug)}')">✕</button></div>` };
+const recent = n => { const a = []; for (const { k, s } of allS()) s.chapters.forEach((c, i) => a.push({ k, s, c, i })); return a.sort((x, y) => (y.c.date || "").localeCompare(x.c.date || "") || y.i - x.i).slice(0, n) };
+const rdSet = (k, s) => { try { return JSON.parse(ls.get("r:" + k + ":" + s.slug) || "[]") } catch (e) { return [] } };
+function latestUpdates() {
+  const m = new Map();
+  for (const r of recent(80)) { const id = r.k + ":" + r.s.slug; if (!m.has(id)) m.set(id, { k: r.k, s: r.s, c: [] }); const g = m.get(id); if (g.c.length < 3) g.c.push(r) }
+  const G = [...m.values()].slice(0, 12); if (!G.length) return EMPTY;
+  return `<div class="lu">${G.map(g => { const rs = rdSet(g.k, g.s); return `<div class="lui"><a class="th" href="#${g.k}/${g.s.slug}" style="--h:${hue(g.s.title)}">${imgTag(g.s.cover)}</a><div class="lub"><a class="lut" href="#${g.k}/${g.s.slug}" title="${esc(g.s.title)}">${esc(g.s.title)}</a>${g.c.map(r => `<a class="luc${rs.includes(r.i) ? " rd" : ""}" href="#${r.k}/${r.s.slug}/${r.i}"><span>${r.c.vol ? esc(r.c.vol) + ", " : ""}${esc(r.c.t)}</span><small>${ago(r.c.date)}</small></a>`).join("")}</div></div>` }).join("")}</div>`;
+}
+let HI = 0, HT = null;
+function heroHtml() {
+  const L = allS().sort((x, y) => latest(y.s).localeCompare(latest(x.s))).slice(0, 5); if (!L.length) return "";
+  return `<section class="hero" id="hero" aria-label="Truyện mới cập nhật">${L.map(({ k, s }, i) => `<div class="hs${i ? "" : " on"}"><div class="hb" ${bgStyle(s)}></div><div class="hw"><a class="cover" href="#${k}/${s.slug}" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></a><div class="hi"><a href="#${k}/${s.slug}"><h2>${esc(s.title)}</h2></a><div class="htg">${(s.genres || []).slice(0, 6).map(g => `<span>${esc(g)}</span>`).join("")}</div><p>${esc(s.desc)}</p><div class="hau">${esc(s.author || "")}</div></div></div></div>`).join("")}${L.length > 1 ? `<div class="hn"><span id="hno">Số 1</span><button onclick="heroGo(-1)" title="Trước">${ic(I.prev)}</button><button onclick="heroGo(1)" title="Sau">${ic(I.next)}</button></div>` : ""}</section>`;
+}
+function heroGo(d) { const ss = document.querySelectorAll(".hs"); if (ss.length < 2) return; ss[HI].classList.remove("on"); HI = (HI + d + ss.length) % ss.length; ss[HI].classList.add("on"); $("#hno").textContent = "Số " + (HI + 1); clearInterval(HT); HT = setInterval(() => heroGo(1), 8000) }
+const projCard = d => `<div class="card pj">${d.img ? `<img class="pi" src="${esc(d.img)}" alt="" loading="lazy" onerror="this.remove()">` : ""}<h3>${esc(d.title)}</h3><div class="meta">${d.status ? `<span class="st ${STC(d.status)}">${esc(d.status)}</span>` : ""}${d.type ? `<span class="pill">${esc(d.type)}</span>` : ""}${d.version ? `<span>v${esc(d.version)}</span>` : ""}${d.date ? `<span>Cập nhật ${fmtD(d.date)}</span>` : ""}</div><p>${esc(d.desc)}</p><div class="acts">${(d.links || []).filter(l => /^https?:\/\//.test(l.url)).map((l, i) => `<a class="btn${i ? "" : " pri"}" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join("")}</div>${d.howto ? `<details><summary>Hướng dẫn sử dụng</summary><p class="sum">${esc(d.howto)}</p></details>` : ""}</div>`;
+const reading = (n = 8) => { const a = []; for (const { k, s } of allS()) { const l = ls.get(k + ":" + s.slug); if (l != null && s.chapters[+l]) a.push({ k, s, l: +l, t: +(ls.get("t:" + k + ":" + s.slug) || 0) }) } return a.sort((x, y) => y.t - x.t).slice(0, n) };
+const rdCard = r => { const n = r.s.chapters.length, nw = n - 1 - r.l, pct = Math.round(rdSet(r.k, r.s).length / n * 100); return `<div class="rcs"><a class="sc" href="#${r.k}/${r.s.slug}/${r.l}"><div class="cover" style="--h:${hue(r.s.title)}">${imgTag(r.s.cover)}<b>${esc(r.s.title)}</b>${nw > 0 ? `<i class="nwb">+${nw} chương</i>` : ""}</div><div class="ct">${esc(r.s.title)}</div><small><span>${esc(r.s.chapters[r.l].t)}</span></small><i class="pb"><i style="width:${pct}%"></i></i></a><button class="fg" title="Bỏ khỏi danh sách đang đọc" onclick="forget('${r.k}','${esc(r.s.slug)}')">✕</button></div>` };
 function forget(k, slug) { ["", "t:", "r:"].forEach(p => ls.del(p + k + ":" + slug)); route() }
 let RDKEY = null;
 const favs = () => { try { return JSON.parse(ls.get("favs") || "[]") } catch (e) { return [] } };
 const isFav = (k, slug) => favs().includes(k + ":" + slug);
-function toggleFav(k, slug) { const f = favs(), id = k + ":" + slug, n = f.includes(id) ? f.filter(x => x !== id) : [...f, id]; ls.set("favs", JSON.stringify(n)); const b = $("#fvb"); if (b) { const on = n.includes(id); b.textContent = on ? "⭐ Đã yêu thích" : "☆ Yêu thích"; b.classList.toggle("on", on) } }
+const favLabel = on => on ? `${ic(I.star)}Trong thư viện` : `${ic(I.star)}Thêm vào thư viện`;
+function toggleFav(k, slug) { const f = favs(), id = k + ":" + slug, n = f.includes(id) ? f.filter(x => x !== id) : [...f, id]; ls.set("favs", JSON.stringify(n)); const b = $("#fvb"); if (b) { const on = n.includes(id); b.innerHTML = favLabel(on); b.classList.toggle("on", on); b.classList.toggle("pri", !on) } }
 const favList = () => favs().map(id => { const [k, slug] = id.split(":"); const s = (DATA[KEY[k]] || []).find(x => x.slug === slug); return s && { k, s } }).filter(Boolean);
 const favGrid = a => `<div class="series">${a.map(({ k, s }) => card(k, s)).join("")}</div>`;
 function renderAnn() {
   const a = DATA.site.announce, el = $("#ann"); if (!a || !a.text) { el.hidden = true; return }
   const key = "ann:" + a.text; if (ls.get(key)) { el.hidden = true; return }
-  el.hidden = false; el.innerHTML = `📢 ${esc(a.text)}${/^https?:\/\//.test(a.url || "") ? ` <a href="${esc(a.url)}" target="_blank" rel="noopener">Xem thêm</a>` : ""}<button title="Đóng">✕</button>`;
+  el.hidden = false; el.innerHTML = `${esc(a.text)}${/^https?:\/\//.test(a.url || "") ? ` <a href="${esc(a.url)}" target="_blank" rel="noopener">Xem thêm</a>` : ""}<button title="Đóng thông báo">✕</button>`;
   el.querySelector("button").onclick = () => { ls.set(key, "1"); el.hidden = true };
 }
 const R = {
-  tips: d => `<details><summary>${esc(d.title)} <span class="tag">${esc(d.game)}</span></summary><p>${esc(d.text)}</p>${imgTag(d.img)}</details>`,
-  links: d => `<div class="card"><h3><a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.title)}</a></h3><p>${esc(d.desc)}</p>${(d.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>`,
-  guides: d => `<details><summary>${esc(d.title)}</summary><p>${esc(d.text)}</p>${imgTag(d.img)}${d.embed ? `<iframe class="tool" src="${esc(d.embed)}" loading="lazy"></iframe>` : ""}</details>`,
+  tips: d => `<details class="it"><summary>${esc(d.title)} <span class="pill">${esc(d.game)}</span></summary><p>${esc(d.text)}</p>${imgTag(d.img)}</details>`,
+  links: d => `<div class="card"><h3><a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.title)}</a></h3><p>${esc(d.desc)}</p><div class="acts">${(d.tags || []).map(t => `<span class="pill">${esc(t)}</span>`).join("")}</div></div>`,
+  guides: d => `<details class="it"><summary>${esc(d.title)}</summary><p>${esc(d.text)}</p>${imgTag(d.img)}${d.embed ? `<iframe class="tool" src="${esc(d.embed)}" loading="lazy"></iframe>` : ""}</details>`,
   videos: d => `<div class="card"><h3>${esc(d.title)}</h3><p>${esc(d.desc)}</p>` + (d.youtube ? `<iframe src="https://www.youtube-nocookie.com/embed/${esc(d.youtube)}" allowfullscreen loading="lazy"></iframe>` : `<video controls preload="none" src="${esc(d.mp4)}">${d.vtt ? `<track kind="subtitles" srclang="vi" label="Tiếng Việt" src="${esc(d.vtt)}" default>` : ""}</video>`) + `</div>`
 };
-const toolUI = (t, i) => `<details class="tb"><summary>${esc(t.t)}</summary>${t.h ? `<p>${esc(t.h)}</p>` : ""}<textarea class="i" placeholder="Dán nội dung vào đây..."></textarea>${t.x ? `<textarea class="x" placeholder="${esc(t.x)}"></textarea>` : ""}<button onclick="runTool(${i},this)">Chạy</button> <button onclick="copyOut(this)">Sao chép kết quả</button><textarea class="o" readonly placeholder="Kết quả"></textarea></details>`;
+const toolUI = (t, i) => `<details class="it tb"><summary>${esc(t.t)}</summary>${t.h ? `<p>${esc(t.h)}</p>` : ""}<textarea class="i" placeholder="Dán nội dung vào đây"></textarea>${t.x ? `<textarea class="x" placeholder="${esc(t.x)}"></textarea>` : ""}<button onclick="runTool(${i},this)">Chạy</button><button onclick="copyOut(this)">Sao chép kết quả</button><textarea class="o" readonly placeholder="Kết quả"></textarea></details>`;
 function runTool(i, b) { const d = b.closest(".tb"), o = $(".o", d); try { o.value = TOOLS[i].fn($(".i", d).value, $(".x", d)?.value || "") } catch (e) { o.value = "Lỗi: " + e.message } }
 function copyOut(b) { const o = $(".o", b.closest(".tb")); o.select(); navigator.clipboard?.writeText(o.value) }
 const P = {
-  home: () => `<div class="banner"><h1>Chào mừng đến với Kenrori</h1><p>Light novel &amp; manga dịch · Mod · Script · Công cụ game</p><div class="acts"><a class="btn" href="#novels">📖 Đọc Novel</a><a class="btn alt" href="#projects">🧩 Dự án</a>${/^https?:\/\//.test((DATA.site.about || {}).discord || "") ? `<a class="btn alt" href="${esc(DATA.site.about.discord)}" target="_blank" rel="noopener">💬 Discord</a>` : ""}</div></div>` + (reading().length ? sec("📖 Đang đọc dở", null, `<div class="ups">${reading().map(rdCard).join("")}</div>`) : "") + (favList().length ? sec("⭐ Yêu thích", "fav", favGrid(favList().slice(0, 6))) : "") + sec("📢 Mới cập nhật", null, `<div class="ups">${recent(10).map(row).join("") || EMPTY}</div>`) + sec("📖 Novel", "novels", gridOf("novel", DATA.novels.slice(0, 20)).replace(/(<a class="sc"[\s\S]*?<\/a>){6}[\s\S]*/, m => m)) + sec("🖼️ Manga", "manga", gridOf("manga", DATA.manga)) + (DATA.projects.length ? sec("🧩 Dự án", "projects", `<div class="grid pgrid">${DATA.projects.slice(0, 3).map(projCard).join("")}</div>`) : "") + (allG().length ? sec("🏷️ Thể loại", "the-loai", gChips("all")) : "") + sec("💡 Mẹo game mới", "tips", DATA.tips.slice(0, 3).map(R.tips).join("") || EMPTY),
-  novels: () => sec("📖 Tất cả Novel", null, gChips("novel") + gridOf("novel", DATA.novels)),
-  manga: () => sec("🖼️ Tất cả Manga", null, gChips("manga") + gridOf("manga", DATA.manga)),
-  tips: () => sec("💡 Mẹo game", null, DATA.tips.map(R.tips).join("") || EMPTY),
-  links: () => sec("🔗 Liên kết hữu ích", null, `<div class="grid">${DATA.links.map(R.links).join("") || EMPTY}</div>`),
-  videos: () => sec("🎵 Video nhạc Vietsub", null, `<div class="grid">${DATA.videos.map(R.videos).join("") || EMPTY}</div>`),
-  projects: () => sec("🧩 Dự án", null, `<p class="sum" style="color:var(--mu);margin-bottom:12px">Script, mod và công cụ do Kenrori làm.</p><div class="grid pgrid">${DATA.projects.map(projCard).join("") || EMPTY}</div>`),
-  fav: () => sec("⭐ Truyện yêu thích", null, favList().length ? favGrid(favList()) : '<p class="empty">Bạn chưa đánh dấu bộ nào. Vào trang truyện và bấm ☆ Yêu thích.</p>'),
+  home: () => {
+    const rd = reading(), fv = favList(), news = allS().filter(x => x.s.chapters.length).sort((x, y) => first(y.s).localeCompare(first(x.s))).slice(0, 15);
+    return heroHtml()
+      + (rd.length ? sec("Đọc tiếp", "library", `<div class="shelf">${rd.map(rdCard).join("")}</div>`) : "")
+      + sec("Mới cập nhật", null, latestUpdates())
+      + (fv.length ? sec("Thư viện của bạn", "library", `<div class="shelf">${fv.slice(0, 15).map(({ k, s }) => card(k, s)).join("")}</div>`) : "")
+      + (news.length ? sec("Mới thêm", null, `<div class="shelf">${news.map(({ k, s }) => card(k, s)).join("")}</div>`) : "")
+      + (DATA.projects.length ? sec("Dự án", "projects", `<div class="grid">${DATA.projects.slice(0, 3).map(projCard).join("")}</div>`) : "")
+      + (allG().length ? sec("Thể loại", "the-loai", gChips("all")) : "");
+  },
+  novels: () => sec("Light Novel", null, gChips("novel") + gridOf("novel", DATA.novels)),
+  manga: () => sec("Manga", null, gChips("manga") + gridOf("manga", DATA.manga)),
+  library: () => { const rd = reading(100), fv = favList(); return sec("Đang đọc", null, rd.length ? `<div class="series">${rd.map(rdCard).join("")}</div>` : '<p class="empty">Bạn chưa đọc bộ nào. Chọn một bộ ở trang chủ để bắt đầu.</p>') + sec("Yêu thích", null, fv.length ? favGrid(fv) : '<p class="empty">Chưa có bộ nào. Mở trang truyện và bấm Thêm vào thư viện.</p>') + `<p class="lead">Thư viện lưu trên trình duyệt này.</p>` },
+  tips: () => sec("Mẹo game", null, DATA.tips.map(R.tips).join("") || EMPTY),
+  links: () => sec("Liên kết hữu ích", null, DATA.links.length ? `<div class="grid">${DATA.links.map(R.links).join("")}</div>` : EMPTY),
+  videos: () => sec("Video nhạc Vietsub", null, DATA.videos.length ? `<div class="grid">${DATA.videos.map(R.videos).join("")}</div>` : EMPTY),
+  projects: () => sec("Dự án", null, `<p class="lead">Script, mod và công cụ do Kenrori làm.</p>` + (DATA.projects.length ? `<div class="grid">${DATA.projects.map(projCard).join("")}</div>` : EMPTY)),
   about: () => {
     const A = DATA.site.about || {}, isU = u => /^https?:\/\//.test(u || "");
-    const ct = (A.contacts || []).map(c => { const u = c.url || "", href = isU(u) ? u : (/@/.test(u) && !/\s/.test(u) ? "mailto:" + u : ""); return href ? `<a class="btn alt" href="${esc(href)}" target="_blank" rel="noopener">${esc(c.label)}</a>` : `<span class="tag">${esc(c.label)}${u ? ": " + esc(u) : ""}</span>` }).join("");
-    const dc = isU(A.discord) ? `<a class="btn dc" href="${esc(A.discord)}" target="_blank" rel="noopener">💬 Vào Discord</a>` : "";
-    return sec("ℹ️ Giới thiệu", null, (A.name || A.intro || dc || ct) ? `<h2 style="margin-top:0">${esc(A.name || "Nhóm dịch")}</h2><p class="sum">${esc(A.intro)}</p><div class="acts">${dc}</div>` + (ct ? `<h3>📬 Liên hệ</h3><div class="acts">${ct}</div>` : "") : '<p class="empty">Chưa có thông tin giới thiệu. Hãy điền trong trang quản trị → ⚙️ Trang web.</p>');
+    const ct = (A.contacts || []).map(c => { const u = c.url || "", href = isU(u) ? u : (/@/.test(u) && !/\s/.test(u) ? "mailto:" + u : ""); return href ? `<a class="btn" href="${esc(href)}" target="_blank" rel="noopener">${esc(c.label)}</a>` : `<span class="pill">${esc(c.label)}${u ? ": " + esc(u) : ""}</span>` }).join("");
+    const dc = isU(A.discord) ? `<a class="btn dc" href="${esc(A.discord)}" target="_blank" rel="noopener">Tham gia Discord</a>` : "";
+    return sec(esc(A.name || "Giới thiệu"), null, (A.name || A.intro || dc || ct) ? `<div class="about"><p class="sum" style="max-width:72ch">${esc(A.intro)}</p>${dc ? `<div class="acts" style="margin-top:16px">${dc}</div>` : ""}${ct ? `<h3>Liên hệ</h3><div class="acts">${ct}</div>` : ""}</div>` : '<p class="empty">Chưa có thông tin giới thiệu. Điền trong trang quản trị, mục Trang web.</p>');
   },
   genre: (k, g) => {
-    if (!g) return sec("🏷️ Tất cả thể loại", null, gChips("all") || '<p class="empty">Chưa có thể loại nào. Hãy thêm thể loại cho truyện trong trang quản trị.</p>');
+    if (!g) return sec("Thể loại", null, gChips("all") || '<p class="empty">Chưa có thể loại nào. Thêm thể loại cho truyện trong trang quản trị.</p>');
     const items = (k === "novel" || k === "manga" ? [k] : ["novel", "manga"]).flatMap(x => DATA[KEY[x]].filter(s => (s.genres || []).includes(g)).map(s => card(x, s)));
-    return sec(`🏷️ Thể loại: ${esc(g)}`, "the-loai", items.length ? `<div class="series">${items.join("")}</div>` : EMPTY);
+    return sec(`Thể loại: ${esc(g)}`, "the-loai", items.length ? `<div class="series">${items.join("")}</div>` : EMPTY);
   },
-  tools: () => sec("🛠️ Công cụ", null, `<p class="sum" style="color:var(--mu);margin-bottom:12px">Dán nội dung, bấm Chạy rồi sao chép kết quả.</p>` + DATA.guides.map(R.guides).join("") + TOOLS.map(toolUI).join(""))
+  tools: () => sec("Công cụ", null, `<p class="lead">Dán nội dung, bấm Chạy rồi sao chép kết quả.</p>` + DATA.guides.map(R.guides).join("") + TOOLS.map(toolUI).join(""))
 };
-const rdSet = (k, s) => { try { return JSON.parse(ls.get("r:" + k + ":" + s.slug) || "[]") } catch (e) { return [] } };
 let RS = { fs: 18, lh: 1.9, ff: "sans", bg: "" }; try { Object.assign(RS, JSON.parse(ls.get("rs") || "{}")) } catch (e) {}
 function applyRS() { const st = document.documentElement.style; st.setProperty("--fs", RS.fs + "px"); st.setProperty("--lh", RS.lh); const r = $("#rd.novel"); if (r) r.className = `rd novel ${RS.ff} ${RS.bg}`; ls.set("rs", JSON.stringify(RS)) }
 function rset(k, d) {
@@ -269,13 +398,19 @@ function rset(k, d) {
 }
 function detail(kind, s) {
   const last = ls.get(kind + ":" + s.slug), rs = rdSet(kind, s), n = s.chapters.length, nv = new Set(s.chapters.map(c => (c.vol || "").trim()).filter(Boolean)).size; let desc = true;
-  const info = [["Tác giả", s.author], ["Tình trạng", s.status], ["Loại", kind === "novel" ? "Light Novel" : "Manga"], ["Số chương", n], nv ? ["Số tập", nv] : null, kind === "novel" ? ["Tổng số chữ", fmtN(sum(s))] : null, ["Cập nhật", fmtD(latest(s))]].filter(Boolean);
-  app.innerHTML = `<div class="crumb"><a href="#home">Trang chủ</a> › <a href="#${KEY[kind]}">${kind === "novel" ? "Novel" : "Manga"}</a> › ${esc(s.title)}</div>
-<div class="sp"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></div><div class="si"><h1>${esc(s.title)}</h1><dl>${info.map(([a, b]) => `<dt>${a}</dt><dd>${esc(b || "—")}</dd>`).join("")}</dl>${(s.genres || []).map(g => `<a class="tag" href="${gHref(g)}">${esc(g)}</a>`).join("")}<div class="acts"><button class="btn alt${isFav(kind, s.slug) ? " on" : ""}" id="fvb" onclick="toggleFav('${kind}','${esc(s.slug)}')">${isFav(kind, s.slug) ? "⭐ Đã yêu thích" : "☆ Yêu thích"}</button>${n ? `<a class="btn" href="#${kind}/${s.slug}/0">▶ Đọc từ đầu</a>${last != null ? `<a class="btn alt" href="#${kind}/${s.slug}/${last}">⏵ Đọc tiếp</a>` : ""}<a class="btn alt" href="#${kind}/${s.slug}/${n - 1}">Chương mới nhất</a>` : ""}${ADM ? `<a class="btn alt" href="admin.html#chap/${kind}/${s.slug}">➕ Thêm chương</a><a class="btn alt" href="admin.html#series/${kind}/${s.slug}">✎ Sửa bộ</a>` : ""}</div></div></div>
-${sec("📝 Tóm tắt", null, `<p class="sum">${esc(s.desc) || "Chưa có tóm tắt."}</p>`)}
-<section class="sec"><div class="sh"><h2>📑 Danh sách chương</h2></div><div class="bar2"><input id="cq" type="search" placeholder="Tìm chương (tên hoặc số)..."><button id="cs">↕ Mới nhất trước</button></div><div id="cl"></div></section>`;
+  const tags = (s.genres || []).map(g => `<a class="pill" href="${gHref(g)}">${esc(g)}</a>`).join("");
+  const info = [["Tác giả", esc(s.author || "Chưa rõ")], ["Loại", kind === "novel" ? "Light Novel" : "Manga"], ["Tình trạng", stDot(s) || "Chưa rõ"], ["Số chương", n], nv ? ["Số tập", nv] : null, kind === "novel" ? ["Tổng số chữ", fmtN(sum(s)) || "Chưa rõ"] : null, ["Cập nhật", fmtD(latest(s)) || "Chưa có"]].filter(Boolean);
+  const fav = isFav(kind, s.slug);
+  app.innerHTML = `<div class="tpb"><div class="hb" ${bgStyle(s)}></div></div>
+<div class="tp"><div class="tph"><div class="cover tpcv" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></div>
+<div class="tpt"><h1>${esc(s.title)}</h1>${s.author ? `<div class="tpa">${esc(s.author)}</div>` : ""}</div>
+<div class="tpm"><div class="acts"><button class="btn ${fav ? "on" : "pri"}" id="fvb" onclick="toggleFav('${kind}','${esc(s.slug)}')">${favLabel(fav)}</button>${n ? (last != null ? `<a class="btn" href="#${kind}/${s.slug}/${last}">${ic(I.play)}Đọc tiếp</a><a class="btn" href="#${kind}/${s.slug}/0">Đọc từ đầu</a>` : `<a class="btn" href="#${kind}/${s.slug}/0">${ic(I.play)}Đọc từ đầu</a>`) + `<a class="btn" href="#${kind}/${s.slug}/${n - 1}">Chương mới nhất</a>` : ""}${ADM ? `<a class="btn" href="admin.html#chap/${kind}/${s.slug}">${ic(I.plus)}Thêm chương</a><a class="btn" href="admin.html#series/${kind}/${s.slug}">${ic(I.edit)}Sửa bộ</a>` : ""}</div><div class="tptg">${stDot(s)}${tags}</div></div></div>
+<div class="tpd"><p class="sum clamp" id="dsc">${esc(s.desc) || "Chưa có tóm tắt."}</p><button class="lnk" id="dmore" hidden>Xem thêm</button></div>
+<div class="tpc"><div class="tpl"><div class="sh"><h2>Danh sách chương</h2></div><div class="bar2"><input id="cq" type="search" placeholder="Tìm chương theo tên hoặc số"><button id="cs">Mới nhất trước</button>${nv ? `<button id="cx">Mở tất cả tập</button>` : ""}</div><div id="cl"></div></div>
+<aside class="tpx">${info.map(([a, b]) => `<div class="ibx"><h4>${a}</h4><div>${b}</div></div>`).join("")}</aside></div></div>`;
+  const dsc = $("#dsc"); if (dsc.scrollHeight > dsc.clientHeight + 2) { $("#dmore").hidden = false; $("#dmore").onclick = e => { const c = dsc.classList.toggle("clamp"); e.target.textContent = c ? "Xem thêm" : "Thu gọn" } }
   const volOf = c => (c.vol || "").trim();
-  const rowHtml = ({ c, i }) => { const info = kind === "novel" ? (fmtN(c.words || (c.text ? W(c.text) : 0)) || "—") : (c.pages ? c.pages.length : c.n) + " trang"; return `<div class="chr"><a class="ch${rs.includes(i) ? " done" : ""}" href="#${kind}/${s.slug}/${i}"><span>${esc(c.t)}${i == last ? " ★" : ""}</span><small>${fmtD(c.date)} · ${info}</small></a>${ADM ? `<a class="ed" href="admin.html#editchap/${kind}/${s.slug}/${i}" title="Sửa chương">✎</a>` : ""}</div>` };
+  const rowHtml = ({ c, i }) => { const w = kind === "novel" ? fmtN(c.words || (c.text ? W(c.text) : 0)) : (c.pages ? c.pages.length : c.n) + " trang"; return `<div class="chr"><a class="ch${rs.includes(i) ? " done" : ""}${i == last ? " cur" : ""}" href="#${kind}/${s.slug}/${i}" title="${rs.includes(i) ? "Đã đọc" : "Chưa đọc"}"><span class="eye"></span><span class="cht">${esc(c.t)}</span><small class="cw">${w || ""}</small><small>${ago(c.date)}</small></a>${ADM ? `<a class="ed" href="admin.html#editchap/${kind}/${s.slug}/${i}" title="Sửa chương">${ic(I.edit)}</a>` : ""}</div>` };
   const draw = () => {
     const q = $("#cq").value.trim().toLowerCase(), L = s.chapters.map((c, i) => ({ c, i })).filter(({ c }) => !q || c.t.toLowerCase().includes(q) || volOf(c).toLowerCase().includes(q));
     let h;
@@ -283,35 +418,33 @@ ${sec("📝 Tóm tắt", null, `<p class="sum">${esc(s.desc) || "Chưa có tóm 
     else {
       const g = new Map(); L.forEach(x => { const v = volOf(x.c) || "Chương lẻ"; if (!g.has(v)) g.set(v, []); g.get(v).push(x) });
       const G = [...g]; if (desc) G.reverse();
-      h = G.map(([v, a], gi) => {
-        if (desc) a = [...a].reverse();
-        const w = kind === "novel" ? fmtN(a.reduce((t, { c }) => t + (c.words || (c.text ? W(c.text) : 0)), 0)) : "", open = !!q || a.some(x => x.i == last) || (last == null && gi === 0);
-        return `<details class="vol"${open ? " open" : ""}><summary><b>${esc(v)}</b> <span class="mu">· ${a.length} chương${w ? " · " + w : ""}</span></summary>${a.map(rowHtml).join("")}</details>`;
-      }).join("");
+      h = G.map(([v, a], gi) => { if (desc) a = [...a].reverse(); const open = !!q || a.some(x => x.i == last) || (last == null && gi === 0); return `<details class="vol"${open ? " open" : ""}><summary>${esc(v)}<span class="vc">${a.length} chương</span></summary>${a.map(rowHtml).join("")}</details>` }).join("");
     }
-    $("#cl").innerHTML = h || `<p class="empty">Không tìm thấy chương.</p>`;
+    $("#cl").innerHTML = h || `<p class="empty">Không có chương nào khớp với từ khóa.</p>`;
   };
-  $("#cq").oninput = draw; $("#cs").onclick = e => { desc = !desc; e.target.textContent = desc ? "↕ Mới nhất trước" : "↕ Cũ nhất trước"; draw() }; draw();
+  $("#cq").oninput = draw; $("#cs").onclick = e => { desc = !desc; e.target.textContent = desc ? "Mới nhất trước" : "Cũ nhất trước"; draw() };
+  if (nv) $("#cx").onclick = e => { const ds = document.querySelectorAll("#cl details.vol"), open = [...ds].some(d => !d.open); ds.forEach(d => d.open = open); e.target.textContent = open ? "Thu gọn tất cả tập" : "Mở tất cả tập" };
+  draw();
 }
 async function read(kind, s, i) {
   const c = s.chapters[i]; if (!c) { location.hash = `#${kind}/${s.slug}`; return }
   ls.set(kind + ":" + s.slug, i); ls.set("t:" + kind + ":" + s.slug, Date.now()); const rs = rdSet(kind, s); if (!rs.includes(i)) { rs.push(i); ls.set("r:" + kind + ":" + s.slug, JSON.stringify(rs)) }
   const base = `#${kind}/${s.slug}`, n = s.chapters.length;
   const goto = j => { if (j >= 0 && j < n) location.hash = `${base}/${j}` }; RDKEY = d => goto(i + d);
-  const nav = `<div class="nv"><a class="btn" ${i > 0 ? `href="${base}/${i - 1}"` : "disabled"}>← Chương trước</a><a class="btn" ${i < n - 1 ? `href="${base}/${i + 1}"` : "disabled"}>Chương sau →</a></div>`;
+  const nav = `<div class="nv"><a class="btn" ${i > 0 ? `href="${base}/${i - 1}"` : "disabled"}>${ic(I.prev)}Chương trước</a><a class="btn pri" ${i < n - 1 ? `href="${base}/${i + 1}"` : "disabled"}>Chương sau${ic(I.next)}</a></div>`;
   const opts = (() => { const o = j => `<option value="${j}" ${j == i ? "selected" : ""}>${esc(s.chapters[j].t)}</option>`; if (!s.chapters.some(x => (x.vol || "").trim())) return s.chapters.map((_, j) => o(j)).join(""); const g = new Map(); s.chapters.forEach((x, j) => { const v = (x.vol || "").trim() || "Chương lẻ"; if (!g.has(v)) g.set(v, []); g.get(v).push(j) }); return [...g].map(([v, a]) => `<optgroup label="${esc(v)}">${a.map(o).join("")}</optgroup>`).join("") })();
-  app.innerHTML = `<div class="rbar"><a class="t" href="${base}">← ${esc(s.title)}</a><select onchange="location.hash='${base}/'+this.value">${opts}</select>${kind === "novel" ? `<button onclick="$('#rp').hidden=!$('#rp').hidden">⚙ Cài đặt</button>` : `<button onclick="ls.set('mm', ls.get('mm') === 'page' ? 'scroll' : 'page'); route()">${ls.get("mm") === "page" ? "📜 Cuộn dọc" : "📄 Lật trang"}</button>`}${ADM ? `<a class="btn alt" style="margin:0;padding:6px 12px" href="admin.html#editchap/${kind}/${s.slug}/${i}">✎ Sửa chương</a>` : ""}</div>
-<div id="rp" hidden><button onclick="rset('fs',-1)">A−</button><button onclick="rset('fs',1)">A+</button><span>Giãn dòng</span><button onclick="rset('lh',-1)">−</button><button onclick="rset('lh',1)">+</button><span>Font</span><button onclick="rset('ff')">Aa</button><span>Nền</span><button onclick="rset('bg')">🎨</button></div>
-<h2 style="margin:6px 0">${esc(c.t)}</h2><p class="crumb" id="meta">${c.vol ? esc(c.vol) + " · " : ""}${fmtD(c.date)}</p>${nav}<article id="rd" class="rd ${kind} ${kind === "novel" ? RS.ff + " " + RS.bg : ""}"></article>${nav}`;
+  app.innerHTML = `<div class="rbar"><a class="t" href="${base}" title="Về trang truyện">${esc(s.title)}</a><select aria-label="Chọn chương" onchange="location.hash='${base}/'+this.value">${opts}</select>${kind === "novel" ? `<button onclick="$('#rp').hidden=!$('#rp').hidden">Tùy chỉnh đọc</button>` : `<button onclick="ls.set('mm', ls.get('mm') === 'page' ? 'scroll' : 'page'); route()">${ls.get("mm") === "page" ? "Chuyển sang cuộn dọc" : "Chuyển sang lật trang"}</button>`}${ADM ? `<a class="btn" href="admin.html#editchap/${kind}/${s.slug}/${i}">${ic(I.edit)}Sửa</a>` : ""}</div>
+<div id="rp" hidden><button onclick="rset('fs',-1)">A−</button><button onclick="rset('fs',1)">A+</button><span>Giãn dòng</span><button onclick="rset('lh',-1)">−</button><button onclick="rset('lh',1)">+</button><span>Font</span><button onclick="rset('ff')">Đổi font</button><span>Nền</span><button onclick="rset('bg')">Đổi nền</button></div>
+<div class="rh"><h1>${esc(c.t)}</h1><p id="meta">${c.vol ? esc(c.vol) + ", " : ""}${fmtD(c.date)}</p></div>${nav}<article id="rd" class="rd ${kind} ${kind === "novel" ? RS.ff + " " + RS.bg : ""}"></article>${nav}`;
   const rd = $("#rd");
   if (kind === "novel") {
-    let t = c.text; if (t == null) { rd.textContent = "Đang tải..."; try { const r = await fetch(c.file); if (!r.ok) throw 0; t = await r.text() } catch (e) { rd.innerHTML = "<p>Không tải được chương. Hãy chạy trên GitHub Pages hoặc server cục bộ (không mở file trực tiếp).</p>"; return } }
-    rd.innerHTML = t.split(/\n+/).filter(l => l.trim()).map(l => `<p>${esc(l)}</p>`).join(""); $("#meta").textContent += " · " + fmtN(c.words || W(t));
+    let t = c.text; if (t == null) { rd.textContent = "Đang tải chương..."; try { const r = await fetch(c.file); if (!r.ok) throw 0; t = await r.text() } catch (e) { rd.innerHTML = "<p>Không tải được chương. Hãy mở web qua GitHub Pages (không mở file trực tiếp từ máy).</p>"; return } }
+    rd.innerHTML = t.split(/\n+/).filter(l => l.trim()).map(l => `<p>${esc(l)}</p>`).join(""); $("#meta").textContent += ", " + fmtN(c.words || W(t));
   } else {
     const pg = c.pages || Array.from({ length: c.n }, (_, k) => c.dir + String(k + 1).padStart(c.pad || 2, "0") + "." + (c.ext || "jpg"));
     if (ls.get("mm") === "page") {
       let pi = 0; rd.innerHTML = `<div class="pgv"><img id="pgimg" alt=""><div class="pgn"></div></div>`;
-      const show = () => { $("#pgimg").src = pg[pi]; $(".pgn").textContent = `Trang ${pi + 1} / ${pg.length}`; if (pg[pi + 1]) new Image().src = pg[pi + 1]; scrollTo({ top: Math.max(0, rd.offsetTop - 70) }) };
+      const show = () => { $("#pgimg").src = pg[pi]; $(".pgn").textContent = `Trang ${pi + 1} / ${pg.length}`; if (pg[pi + 1]) new Image().src = pg[pi + 1]; scrollTo({ top: Math.max(0, rd.offsetTop - 120) }) };
       const step = d => { const x = pi + d; if (x < 0) goto(i - 1); else if (x >= pg.length) goto(i + 1); else { pi = x; show() } };
       $(".pgv").onclick = e => { const r = e.currentTarget.getBoundingClientRect(); step(e.clientX < r.left + r.width / 2 ? -1 : 1) };
       RDKEY = step; if (pg.length) show();
@@ -319,39 +452,52 @@ async function read(kind, s, i) {
   }
   const G = DATA.site.giscus;
   if (G && G.repo && G.repoId && G.category && G.categoryId && rd.isConnected) {
-    const box = document.createElement("section"); box.className = "sec cm"; box.innerHTML = '<div class="sh"><h2>💬 Bình luận</h2></div>'; app.appendChild(box);
+    const box = document.createElement("section"); box.className = "sec rh"; box.innerHTML = '<div class="sh"><h2>Bình luận</h2></div>'; app.appendChild(box);
     const sc = document.createElement("script"); sc.src = "https://giscus.app/client.js";
     Object.entries({ "data-repo": G.repo, "data-repo-id": G.repoId, "data-category": G.category, "data-category-id": G.categoryId, "data-mapping": "specific", "data-term": `${kind}/${s.slug}/${c.file || (c.pages && c.pages[0]) || c.t}`, "data-strict": "0", "data-reactions-enabled": "1", "data-emit-metadata": "0", "data-input-position": "top", "data-theme": "preferred_color_scheme", "data-lang": "vi", crossorigin: "anonymous" }).forEach(([k, v]) => sc.setAttribute(k, v));
     sc.async = true; box.appendChild(sc);
   }
-  scrollTo(0, 0);
 }
+/* ---------- Sidebar mode & top bar ---------- */
+let reading_ = false;
+function sideMode() { const ov = innerWidth < 1100 || reading_ || ls.get("sc") === "1"; document.body.classList.toggle("ov", ov); if (!ov) document.body.classList.remove("so") }
+function setClear() { document.body.classList.toggle("clear", !!$("#hero, .tpb") && scrollY < 40) }
+$("#hb").onclick = () => { if (innerWidth >= 1100 && !reading_) { ls.set("sc", ls.get("sc") === "1" ? "0" : "1"); sideMode() } else document.body.classList.toggle("so") };
+$("#sx").onclick = $("#scrim").onclick = () => document.body.classList.remove("so");
+addEventListener("resize", sideMode);
 function route() {
-  RDKEY = null;
+  RDKEY = null; clearInterval(HT); HI = 0; document.body.classList.remove("so");
   const [a, b, c] = decodeURIComponent(location.hash.slice(1)).split("/");
-  document.querySelectorAll("#nv a").forEach(x => x.classList.toggle("on", x.dataset.k === (a === "novel" ? "novels" : a || "home")));
-  if (a === "the-loai") { app.innerHTML = P.genre(b, c); scrollTo(0, 0); return }
+  const k = a === "novel" ? "novels" : a === "fav" ? "library" : a || "home";
+  document.querySelectorAll("#nv a").forEach(x => x.classList.toggle("on", x.dataset.k === k));
   const s = b && ({ novel: DATA.novels, manga: DATA.manga }[a] || []).find(x => x.slug === b);
-  if (s) { c !== undefined ? read(a, s, +c) : detail(a, s); scrollTo(0, 0); return }
-  app.innerHTML = (P[a] || P.home)(); scrollTo(0, 0);
+  reading_ = !!s && c !== undefined; sideMode();
+  if (a === "the-loai") app.innerHTML = P.genre(b, c);
+  else if (s) c !== undefined ? read(a, s, +c) : detail(a, s);
+  else app.innerHTML = (P[k] || P.home)();
+  scrollTo(0, 0); setClear();
+  if (document.querySelectorAll(".hs").length > 1) HT = setInterval(() => heroGo(1), 8000);
 }
 $("#q").addEventListener("input", e => {
   const f = e.target.value.trim().toLowerCase(); if (!f) return route();
+  clearInterval(HT); reading_ = false; sideMode();
   const m = d => JSON.stringify(d).toLowerCase().includes(f);
-  const ss = [...DATA.novels.filter(m).map(s => card("novel", s)), ...DATA.manga.filter(m).map(s => card("manga", s))];
-  const body = (ss.length ? `<div class="series">${ss.join("")}</div>` : "") + DATA.tips.filter(m).map(R.tips).join("") + `<div class="grid">${DATA.projects.filter(m).map(projCard).join("")}${DATA.links.filter(m).map(R.links).join("")}${DATA.videos.filter(m).map(R.videos).join("")}</div>` + TOOLS.map((t, i) => [t, i]).filter(([t]) => t.t.toLowerCase().includes(f)).map(([t, i]) => toolUI(t, i)).join("");
-  app.innerHTML = sec(`🔍 Kết quả cho “${esc(e.target.value)}”`, null, body.replace(/<div class="grid"><\/div>/, "") || '<p class="empty">😕 Không tìm thấy kết quả phù hợp.</p>');
+  const ss = allS().filter(x => m(x.s)).map(({ k, s }) => card(k, s)), pj = DATA.projects.filter(m).map(projCard), oth = [...DATA.links.filter(m).map(R.links), ...DATA.videos.filter(m).map(R.videos)];
+  const tl = DATA.tips.filter(m).map(R.tips).join("") + TOOLS.map((t, i) => [t, i]).filter(([t]) => t.t.toLowerCase().includes(f)).map(([t, i]) => toolUI(t, i)).join("");
+  const body = (ss.length ? sec("Truyện", null, `<div class="series">${ss.join("")}</div>`) : "") + (pj.length ? sec("Dự án", null, `<div class="grid">${pj.join("")}</div>`) : "") + (tl ? sec("Mẹo và công cụ", null, tl) : "") + (oth.length ? sec("Liên kết và video", null, `<div class="grid">${oth.join("")}</div>`) : "");
+  app.innerHTML = `<section class="sec"><div class="sh"><h2>Kết quả cho “${esc(e.target.value)}”</h2></div></section>` + (body || '<p class="empty">Không tìm thấy kết quả. Thử từ khóa ngắn hơn hoặc tên khác của bộ truyện.</p>');
+  setClear();
 });
 app.addEventListener("click", e => { if (e.target.matches("details img")) { $("#lb img").src = e.target.src; $("#lb").style.display = "flex" } });
 $("#lb").onclick = () => $("#lb").style.display = "none";
 const root = document.documentElement; if (ls.get("theme")) root.dataset.theme = ls.get("theme");
 $("#th").onclick = () => { const cur = root.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"), n = cur === "dark" ? "light" : "dark"; root.dataset.theme = n; ls.set("theme", n) };
-addEventListener("scroll", () => { const h = document.documentElement.scrollHeight - innerHeight; $("#pg").style.width = (h > 0 ? scrollY / h * 100 : 0) + "%"; $("#pg").style.opacity = $("#rd") ? 1 : 0; $("#up").hidden = scrollY < 600 }, { passive: true });
+addEventListener("scroll", () => { const h = document.documentElement.scrollHeight - innerHeight; $("#pg").style.width = (h > 0 ? scrollY / h * 100 : 0) + "%"; $("#pg").style.opacity = $("#rd") ? 1 : 0; $("#up").hidden = scrollY < 600; setClear() }, { passive: true });
 $("#up").onclick = () => scrollTo({ top: 0, behavior: "smooth" });
 addEventListener("keydown", e => { if (!RDKEY || e.altKey || e.ctrlKey || e.metaKey || /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "")) return; if (e.key === "ArrowRight") RDKEY(1); else if (e.key === "ArrowLeft") RDKEY(-1) });
 addEventListener("hashchange", () => { $("#q").value = ""; route() });
-applyRS();
-(async () => { try { const r = await fetch("data.json?v=" + Date.now()); if (r.ok) Object.assign(DATA, await r.json()) } catch (e) {} DATA.site ??= {}; renderAnn(); route() })();
+applyRS(); renderSide(); sideMode();
+(async () => { try { const r = await fetch("data.json?v=" + Date.now()); if (r.ok) Object.assign(DATA, await r.json()) } catch (e) {} DATA.site ??= {}; DATA.projects ??= []; renderSide(); renderAnn(); route() })();
 </script>
 </body>
 </html>
