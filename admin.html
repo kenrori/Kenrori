@@ -62,6 +62,7 @@ button.chip{background:var(--bg);color:var(--tx);border:1px solid var(--bd);padd
 <form class="panel" id="p-chap"><h3>Thêm chương mới</h3>
 <label>Chọn bộ</label><select id="c_ser"></select>
 <label>Tên chương</label><input id="c_title" placeholder="Chương 12: ...">
+<label>Tập (không bắt buộc, ví dụ: Tập 1)</label><input id="c_vol" list="c_vols" placeholder="Để trống nếu không chia tập"><datalist id="c_vols"></datalist>
 <label>Ngày cập nhật</label><input id="c_date" type="date">
 <div id="c_novel"><label>Nội dung (dán vào) — hoặc chọn file .txt bên dưới</label><textarea id="c_text" style="min-height:200px"></textarea><input id="c_file" type="file" accept=".txt"></div>
 <div id="c_manga"><label>Ảnh các trang (chọn nhiều ảnh, tự xếp theo tên file)</label><input id="c_imgs" type="file" accept="image/*" multiple></div>
@@ -90,7 +91,7 @@ button.chip{background:var(--bg);color:var(--tx);border:1px solid var(--bd);padd
 <button>Lưu dự án</button></form>
 
 <form class="panel" id="p-edit"><h3>Sửa chương</h3><p class="mu" id="e_info"></p>
-<label>Tên chương</label><input id="e_title"><label>Ngày cập nhật</label><input id="e_date" type="date">
+<label>Tên chương</label><input id="e_title"><label>Tập (để trống nếu không chia tập)</label><input id="e_vol"><label>Ngày cập nhật</label><input id="e_date" type="date">
 <div id="e_novel"><label>Nội dung</label><textarea id="e_text" style="min-height:280px"></textarea></div>
 <p class="mu" id="e_mn" hidden>Với manga, ở đây sửa được tên chương và ngày. Muốn đổi ảnh thì xóa chương rồi đăng lại.</p>
 <button>Lưu thay đổi</button> <button type="button" id="e_cancel" style="background:#888">Hủy</button></form>
@@ -172,7 +173,11 @@ function fillSel() {
   const o = []; for (const k of ["novel", "manga"]) data[KEYS[k]].forEach((s, i) => o.push(`<option value="${k}|${i}">${k === "novel" ? "📖" : "🖼️"} ${esc(s.title)}</option>`));
   $("#c_ser").innerHTML = o.join("") || "<option value=''>(chưa có bộ nào)</option>"; chapUI(); gChips();
 }
-function chapUI() { const k = $("#c_ser").value.split("|")[0]; $("#c_novel").hidden = k !== "novel"; $("#c_manga").hidden = k !== "manga" }
+function chapUI() { const k = $("#c_ser").value.split("|")[0]; $("#c_novel").hidden = k !== "novel"; $("#c_manga").hidden = k !== "manga"; volList() }
+function volList() {
+  const [k, i] = $("#c_ser").value.split("|"), s = data[KEYS[k]]?.[i], vs = [...new Set((s?.chapters || []).map(c => (c.vol || "").trim()).filter(Boolean))];
+  $("#c_vols").innerHTML = vs.map(v => `<option value="${esc(v)}">`).join(""); $("#c_vol").value = vs.length ? (s.chapters[s.chapters.length - 1].vol || "") : "";
+}
 $("#c_ser").onchange = chapUI;
 
 $("#p-series").onsubmit = e => { e.preventDefault(); run(async () => {
@@ -188,7 +193,7 @@ $("#p-series").onsubmit = e => { e.preventDefault(); run(async () => {
 $("#p-chap").onsubmit = e => { e.preventDefault(); run(async () => {
   const [kind, i] = $("#c_ser").value.split("|"), s = data[KEYS[kind]]?.[i]; if (!s) throw new Error("Hãy tạo/chọn bộ truyện trước");
   const t = $("#c_title").value.trim(); if (!t) throw new Error("Hãy nhập tên chương");
-  const id = `c${s.chapters.length + 1}_${rid()}`, ch = { t, date: $("#c_date").value };
+  const id = `c${s.chapters.length + 1}_${rid()}`, ch = { t, date: $("#c_date").value }; if ($("#c_vol").value.trim()) ch.vol = $("#c_vol").value.trim();
   if (kind === "novel") {
     let text = $("#c_text").value; const f = $("#c_file").files[0]; if (!text.trim() && f) text = await f.text();
     if (!text.trim()) throw new Error("Hãy dán nội dung hoặc chọn file .txt");
@@ -198,7 +203,8 @@ $("#p-chap").onsubmit = e => { e.preventDefault(); run(async () => {
     ch.pages = [];
     for (let j = 0; j < fs.length; j++) { const ext = (fs[j].name.split(".").pop() || "jpg").toLowerCase(), p = `manga/${s.slug}/${id}/${String(j + 1).padStart(3, "0")}.${ext}`; log(`Đang tải trang ${j + 1}/${fs.length}...`); await put(p, await fileB64(fs[j]), `${s.title} ${t} tr.${j + 1}`); ch.pages.push(p) }
   }
-  s.chapters.push(ch); await save("Thêm chương: " + s.title + " - " + t);
+  if (ch.vol) { const at = s.chapters.map(c => (c.vol || "").trim()).lastIndexOf(ch.vol); if (at >= 0) s.chapters.splice(at + 1, 0, ch); else s.chapters.push(ch) } else s.chapters.push(ch);
+  await save("Thêm chương: " + s.title + " - " + t);
   ["c_title", "c_text"].forEach(x => $("#" + x).value = ""); $("#c_file").value = $("#c_imgs").value = ""; done("✅ Đã đăng chương. Web cập nhật sau 1–2 phút.");
 }) };
 
@@ -221,7 +227,7 @@ $("#p-vid").onsubmit = e => { e.preventDefault(); run(async () => {
 
 function manage() {
   const out = [];
-  for (const k of ["novels", "manga"]) data[k].forEach((s, i) => out.push(`<div class="row"><b>${k === "novels" ? "📖" : "🖼️"} ${esc(s.title)}</b><button class="ok" data-s="${k}|${i}">✎ Sửa bộ</button><button data-d="${k}|${i}">✕ Xóa bộ</button>${s.chapters.map((c, j) => `<div class="sub">${esc(c.t)} <span class="mu">${c.date ? "· " + c.date : ""}</span><button class="ok" data-e="${k}|${i}|${j}">✎ Sửa</button><button class="ok" data-m="${k}|${i}|${j}|-1">↑</button><button class="ok" data-m="${k}|${i}|${j}|1">↓</button><button data-d="${k}|${i}|${j}">✕</button></div>`).join("")}</div>`));
+  for (const k of ["novels", "manga"]) data[k].forEach((s, i) => out.push(`<div class="row"><b>${k === "novels" ? "📖" : "🖼️"} ${esc(s.title)}</b><button class="ok" data-s="${k}|${i}">✎ Sửa bộ</button><button data-d="${k}|${i}">✕ Xóa bộ</button>${s.chapters.map((c, j) => `<div class="sub">${c.vol ? "<b>" + esc(c.vol) + "</b> · " : ""}${esc(c.t)} <span class="mu">${c.date ? "· " + c.date : ""}</span><button class="ok" data-e="${k}|${i}|${j}">✎ Sửa</button><button class="ok" data-m="${k}|${i}|${j}|-1">↑</button><button class="ok" data-m="${k}|${i}|${j}|1">↓</button><button data-d="${k}|${i}|${j}">✕</button></div>`).join("")}</div>`));
   for (const [k, l] of [["tips", "💡"], ["links", "🔗"], ["videos", "🎵"], ["projects", "🧩"]]) data[k].forEach((d, i) => out.push(`<div class="row">${l} ${esc(d.title)}${k === "projects" ? `<button class="ok" data-p="${i}">✎ Sửa</button>` : ""}<button data-d="${k}|${i}">✕</button></div>`));
   $("#manage").innerHTML = out.join("") || "<p class='mu'>Chưa có gì.</p>";
 }
@@ -245,7 +251,7 @@ $("#manage").addEventListener("click", e => {
   } else if (be) {
     const [k, i, j] = be.dataset.e.split("|"), s = data[k][+i], c = s.chapters[+j]; ed = { k, i: +i, j: +j };
     run(async () => {
-      $("#e_info").textContent = s.title; $("#e_title").value = c.t; $("#e_date").value = c.date || ""; $("#e_novel").hidden = k !== "novels"; $("#e_mn").hidden = k === "novels";
+      $("#e_info").textContent = s.title; $("#e_title").value = c.t; $("#e_date").value = c.date || ""; $("#e_vol").value = c.vol || ""; $("#e_novel").hidden = k !== "novels"; $("#e_mn").hidden = k === "novels";
       if (k === "novels") { log("Đang tải nội dung chương..."); $("#e_text").value = c.text ?? await getText(c.file) }
       tab("edit"); log("Đang sửa: " + c.t);
     });
@@ -253,7 +259,7 @@ $("#manage").addEventListener("click", e => {
 });
 $("#p-edit").onsubmit = e => { e.preventDefault(); run(async () => {
   if (!ed) throw new Error("Chưa chọn chương nào"); const s = data[ed.k][ed.i], c = s.chapters[ed.j], t = $("#e_title").value.trim(); if (!t) throw new Error("Hãy nhập tên chương");
-  c.t = t; c.date = $("#e_date").value;
+  c.t = t; c.date = $("#e_date").value; const ev = $("#e_vol").value.trim(); if (ev) c.vol = ev; else delete c.vol;
   if (ed.k === "novels") {
     const text = $("#e_text").value; if (!text.trim()) throw new Error("Nội dung đang trống");
     c.words = text.trim().split(/\s+/).length;
