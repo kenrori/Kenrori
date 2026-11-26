@@ -5,158 +5,287 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Quản trị · Kenrori</title>
+<script data-theme>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t } catch (e) {}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f4f5fb;--card:#fff;--tx:#1b2033;--mu:#6a7288;--ac:#6558f5;--ac2:#b05cf5;--bd:#e4e7f1}
-@media(prefers-color-scheme:dark){:root{--bg:#0f1117;--card:#1a1d29;--tx:#e8eaf2;--mu:#9aa2b8;--ac:#8b84ff;--ac2:#c47dff;--bd:#2b3042}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-header{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;padding:18px 16px}header div,main{max-width:760px;margin:auto}
-header h1{margin:0;font-size:1.3rem}header a{color:#fff}
-main{padding:14px 16px 80px}
-details,.panel{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:14px}
-summary{font-weight:600;cursor:pointer}
-label{display:block;margin:12px 0 4px;font-weight:600;font-size:.9rem}
-input,select,textarea{width:100%;font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:9px 12px}
-textarea{min-height:110px}
-button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:10px 18px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;margin-top:14px}
-button:disabled{opacity:.5}
-.tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px}.tabs button{margin:0;background:var(--card);color:var(--tx);border:1px solid var(--bd);white-space:nowrap;flex:none}
-.tabs button.on{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border-color:transparent}
-.panel{display:none}.panel.on{display:block}
+:root{--bg:#fff;--s1:#f0f1f2;--s2:#e4e5e8;--tx:#121316;--mu:#6b6e75;--ac:#ff6740;--ach:#ff4f1f;--acs:#ffe9e2;--bd:#e2e3e6;--ok:#04a74b;--okb:#e3f6ea;--err:#d93636;--errb:#fde7e7;--warn:#e89a00;--side:240px}
+:root[data-theme=dark]{--bg:#191a1c;--s1:#2c2d30;--s2:#3a3b3f;--tx:#f2f2f3;--mu:#a3a6ad;--acs:#4a2a20;--bd:#34353a;--okb:#123522;--errb:#3d1a1a}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#191a1c;--s1:#2c2d30;--s2:#3a3b3f;--tx:#f2f2f3;--mu:#a3a6ad;--acs:#4a2a20;--bd:#34353a;--okb:#123522;--errb:#3d1a1a}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 "Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+svg.i{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+h3{margin:0 0 4px;font-size:1.25rem;letter-spacing:-.01em}
+h4{margin:26px 0 2px;font-size:1rem}
 .mu{color:var(--mu);font-size:.88rem}
-#log{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--bd);padding:10px 16px;font-size:.92rem;z-index:9}
-.row{padding:8px 0;border-bottom:1px solid var(--bd)}.row button,.sub button{margin:0 0 0 8px;padding:2px 10px;background:#d33}.sub{margin-left:20px;color:var(--mu);font-size:.9rem;padding:2px 0}
-.row button.ok,.sub button.ok{background:var(--ac)}
-button.chip{background:var(--bg);color:var(--tx);border:1px solid var(--bd);padding:3px 11px;margin:0 6px 6px 0;border-radius:999px;font-size:.85rem}button.chip.on{background:var(--ac);color:#fff;border-color:var(--ac)}
-.vc{margin:2px 0;font-weight:400}#p-vol .vc input{width:auto;margin-right:6px}h4{margin:20px 0 0}
-main.wide{max-width:1180px}.trrow{display:grid;grid-template-columns:2fr 2fr 1fr 1fr;gap:10px}.trgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}.trta{min-height:440px;font-size:15px;line-height:1.7}.trbar button{margin:10px 6px 0 0}
-@media(max-width:800px){.trrow,.trgrid{grid-template-columns:1fr}.trta{min-height:300px}}
-[hidden]{display:none!important}
-.rvh{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:10px 0}
+p.mu{margin:2px 0 14px}
+
+/* ---------- Form controls ---------- */
+label{display:block;margin:14px 0 5px;font-weight:600;font-size:.88rem}
+label small{font-weight:400;color:var(--mu)}
+input,select,textarea{width:100%;font:inherit;color:var(--tx);background:var(--s1);border:1px solid transparent;border-radius:6px;padding:9px 12px;outline:none;transition:border-color .15s,background .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--ac);background:var(--bg)}
+input[type=file]{padding:7px;background:none;border:1px dashed var(--s2)}
+input[type=checkbox]{width:auto;accent-color:var(--ac)}
+textarea{min-height:110px;resize:vertical}
+button{font:inherit;cursor:pointer;border:0;border-radius:6px;padding:9px 16px;font-weight:600;background:var(--ac);color:#fff;margin-top:16px;display:inline-flex;align-items:center;gap:7px;transition:background .15s}
+button:hover{background:var(--ach)}
+button.sec,button.chip,.tabs button{background:var(--s1);color:var(--tx)}button.sec:hover{background:var(--s2)}
+button.dng{background:var(--errb);color:var(--err)}button.dng:hover{background:var(--err);color:#fff}
+button.sm{margin:0;padding:4px 10px;font-size:.82rem;font-weight:600}
+button:disabled{opacity:.45;cursor:progress}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}.g2 .full{grid-column:1/-1}
+.g4{display:grid;grid-template-columns:2fr 2fr 1fr 1fr;gap:0 14px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:20px}.acts button{margin:0}
+button.chip{border:0;padding:3px 11px;margin:0 6px 6px 0;border-radius:5px;font-size:.82rem;font-weight:600}button.chip:hover{background:var(--s2)}button.chip.on{background:var(--ac);color:#fff}
+#g_chips{margin-bottom:6px}
+
+/* ---------- Gate (login) ---------- */
+#gate{min-height:100vh;display:grid;place-items:center;padding:24px 16px}
+.gc{width:min(460px,100%)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.3rem;margin-bottom:22px}
+.brand i{width:34px;height:34px;border-radius:8px;background:var(--ac);color:#fff;display:grid;place-items:center;font-style:normal}
+.brand small{font-weight:500;color:var(--mu);font-size:.95rem}
+.gatecard{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:26px}
+.gatecard h3{font-size:1.4rem}
+#setup>summary{list-style:none;cursor:pointer}#setup>summary::-webkit-details-marker{display:none}
+.gatecard button{width:100%;justify-content:center}
+.gatecard .row2{display:flex;gap:8px}.gatecard .row2 button{flex:1}
+.back{display:inline-flex;margin-top:18px;color:var(--mu);font-size:.9rem}.back:hover{color:var(--ac)}
+
+/* ---------- App shell ---------- */
+#app{display:flex;min-height:100vh}
+#nav{position:sticky;top:0;height:100vh;width:var(--side);flex:none;background:var(--s1);padding:14px 12px;display:flex;flex-direction:column;overflow-y:auto}
+#nav .brand{font-size:1.1rem;margin:0 0 14px 6px}#nav .brand i{width:30px;height:30px}
+#tabs{display:flex;flex-direction:column;gap:2px}
+#tabs .tg{font-size:.8rem;font-weight:700;color:var(--mu);padding:14px 10px 4px}
+#tabs button{margin:0;width:100%;justify-content:flex-start;gap:10px;padding:7px 10px;font-weight:500;background:none;color:var(--tx)}
+#tabs button:hover{background:var(--s2)}#tabs button.on{background:var(--ac);color:#fff}
+.nfoot{margin-top:auto;padding:16px 6px 0;display:flex;flex-direction:column;gap:4px}
+.nfoot a,.nfoot button{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:6px;color:var(--mu);font-weight:500;background:none;margin:0;font-size:.92rem;width:100%}
+.nfoot a:hover,.nfoot button:hover{background:var(--s2);color:var(--tx)}
+#bye{display:block}
+main{flex:1;min-width:0;padding:26px 32px 110px;max-width:900px}
+main.wide{max-width:none}
+.ph{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:4px}
+#ptitle{margin:0;font-size:1.6rem;font-weight:800;letter-spacing:-.02em}
+.panel{display:none}.panel.on{display:block}
+.panel>h3:first-child{display:none}
+
+/* ---------- Toast ---------- */
+#log{position:fixed;right:20px;bottom:20px;max-width:min(460px,calc(100vw - 40px));background:var(--tx);color:var(--bg);padding:11px 16px;border-radius:8px;font-size:.92rem;z-index:90;box-shadow:0 10px 30px #0003;transition:opacity .3s}
+#log.ok{background:var(--ok);color:#fff}#log.err{background:var(--err);color:#fff}#log.fade{opacity:0;pointer-events:none}
+
+/* ---------- Dashboard ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0 6px}
+.stat{background:var(--s1);border-radius:8px;padding:14px 16px}.stat b{display:block;font-size:1.5rem;font-weight:800;letter-spacing:-.02em}.stat span{color:var(--mu);font-size:.85rem}
+.qa{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-top:10px}
+.qa button{margin:0;justify-content:flex-start;background:var(--s1);color:var(--tx);padding:14px;font-weight:600}.qa button:hover{background:var(--acs);color:var(--ac)}
+.qa button svg{color:var(--ac)}
+.lst{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+.li{display:flex;align-items:center;gap:12px;padding:8px 10px;background:var(--s1);border-radius:6px;min-width:0}
+.li .lt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.li .lt em{font-style:normal;color:var(--mu)}
+.li small{color:var(--mu);white-space:nowrap}
+
+/* ---------- Series form ---------- */
+.sf{display:grid;grid-template-columns:180px minmax(0,1fr);gap:26px;margin-top:10px}
+.cvbox{position:relative;aspect-ratio:7/10;border-radius:6px;background:var(--s1);border:2px dashed var(--s2);overflow:hidden;display:grid;place-items:center;text-align:center;color:var(--mu);font-size:.85rem;padding:10px;cursor:pointer}
+.cvbox:hover{border-color:var(--ac)}
+.cvbox img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cvbox input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.sf .cvl{margin-top:0}
+
+/* ---------- Manage ---------- */
+.msearch{margin:6px 0 16px}
+details.ms{background:var(--s1);border-radius:8px;margin-bottom:8px}
+details.ms>summary{display:flex;align-items:center;gap:12px;padding:10px 12px;cursor:pointer;list-style:none}
+details.ms>summary::-webkit-details-marker{display:none}
+.mth{position:relative;width:40px;aspect-ratio:7/10;border-radius:4px;overflow:hidden;flex:none;background:linear-gradient(160deg,hsl(var(--h) 55% 48%),hsl(calc(var(--h) + 50) 55% 26%))}
+.mth img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.mti{flex:1;min-width:0}.mti b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mti small{color:var(--mu)}
+.mact{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.mch{padding:4px 12px 12px 64px;display:flex;flex-direction:column;gap:2px}
+.mc{display:flex;align-items:center;gap:10px;padding:5px 8px;border-radius:5px;font-size:.9rem}.mc:hover{background:var(--s2)}
+.mcn{color:var(--mu);font-size:.78rem;width:24px;text-align:right;flex:none}
+.mct{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mct em{font-style:normal;color:var(--mu)}
+.mc small{color:var(--mu);white-space:nowrap}
+.mca{display:flex;gap:3px}.mca button{margin:0;padding:2px 8px;font-size:.8rem;background:var(--bg);color:var(--tx)}.mca button:hover{background:var(--acs);color:var(--ac)}.mca button.dng:hover{background:var(--err);color:#fff}
+.mgrp{margin-top:22px}.mgrp h4{margin:0 0 8px}
+
+/* ---------- Volume assign ---------- */
+.vtools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0}.vtools input{width:80px}.vtools button{margin:0}
+#v_list{max-height:420px;overflow-y:auto;background:var(--s1);border-radius:8px;padding:8px}
+.vc{display:flex;align-items:center;gap:8px;margin:0;padding:4px 6px;border-radius:4px;font-weight:400;font-size:.9rem;cursor:pointer}.vc:hover{background:var(--s2)}
+
+/* ---------- Translator ---------- */
+#t_set{background:var(--s1);border-radius:8px;padding:12px 16px;margin:16px 0}
+#t_set>summary{cursor:pointer;font-weight:600}
+#t_set input,#t_set select,#t_set textarea{background:var(--bg)}
+.trgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
+.trta{min-height:460px;font-size:15px;line-height:1.75}
+.trbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px;padding:10px;background:var(--s1);border-radius:8px;position:sticky;bottom:12px;z-index:5;box-shadow:0 6px 20px #0002}
+.trbar button{margin:0}.trbar .sp{flex:1}
+#t_prog{margin:10px 0 0}
+#t_pub{margin-top:14px}
+.rvh{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:10px 0}.rvh label{display:flex;align-items:center;gap:8px;margin:0;font-weight:400}
 .rv{display:grid;grid-template-columns:34px 1fr 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd);align-items:start}
-.rn{color:var(--mu);font-size:.8rem;padding-top:7px;text-align:right}.rs{white-space:pre-wrap;font-size:.95rem;line-height:1.7;background:var(--bg);border-radius:8px;padding:8px 10px}
-.ro{position:relative}.ro textarea{min-height:0;margin:0;font-size:.95rem;line-height:1.7;padding-right:86px;resize:vertical}
-.ra{position:absolute;top:4px;right:4px;display:flex;gap:2px}.ra button{margin:0;padding:0 7px;font-size:.85rem;background:var(--card);color:var(--tx);border:1px solid var(--bd)}
-.rv.miss .ro textarea{border-color:#d33;background:color-mix(in srgb,#d33 8%,var(--bg))}.rv.cjk .ro textarea{border-color:#e69500;background:color-mix(in srgb,#e69500 10%,var(--bg))}
+.rn{color:var(--mu);font-size:.8rem;padding-top:7px;text-align:right}.rs{white-space:pre-wrap;font-size:.95rem;line-height:1.7;background:var(--s1);border-radius:6px;padding:8px 10px}
+.ro{position:relative}.ro textarea{min-height:0;margin:0;font-size:.95rem;line-height:1.7;padding-right:92px}
+.ra{position:absolute;top:5px;right:5px;display:flex;gap:2px}.ra button{margin:0;padding:1px 7px;font-size:.85rem;background:var(--bg);color:var(--tx);border:1px solid var(--bd)}
+.rv.miss .ro textarea{border-color:var(--err);background:var(--errb)}.rv.cjk .ro textarea{border-color:var(--warn);background:color-mix(in srgb,var(--warn) 14%,var(--bg))}
 #t_rows.only .rv:not(.miss):not(.cjk){display:none}
-@media(max-width:800px){.rv{grid-template-columns:1fr}.rn{text-align:left;padding:0}}
+
+.li button.sec,.ms button.sec,.trbar button.sec,#t_set button.sec{background:var(--bg)}.li button.sec:hover,.ms button.sec:hover,.trbar button.sec:hover{background:var(--s2)}
+.li .mth{width:28px}.sf .cvl{margin-top:14px}
+@media(max-width:900px){.qa{grid-template-columns:1fr 1fr}
+
+  #app{flex-direction:column}
+  #nav{position:sticky;top:0;z-index:20;height:auto;width:100%;flex-direction:row;align-items:center;gap:8px;padding:8px 10px;overflow:visible;border-bottom:1px solid var(--bd)}
+  #nav .brand{display:none}
+  #tabs{flex-direction:row;overflow-x:auto;flex:1;scrollbar-width:none}#tabs .tg{display:none}#tabs button{width:auto;white-space:nowrap}
+  .nfoot{flex-direction:row;margin:0;padding:0}.nfoot a span,.nfoot button span{display:none}.nfoot a,.nfoot button{width:auto}
+  main{padding:18px 16px 110px}
+  .g2,.g4,.trgrid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}
+  .sf{grid-template-columns:1fr}.cvbox{width:150px}
+  .mch{padding-left:12px}.rv{grid-template-columns:1fr}.rn{text-align:left;padding:0}
+  details.ms>summary{flex-wrap:wrap}.mact{width:100%;justify-content:flex-start;padding-left:52px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<header><div><h1>🛠️ Trang quản trị</h1><span class="mu" style="color:#ffffffcc">Thêm truyện, chương, mẹo... không cần sửa code · <a href="index.html">← Về trang chính</a></span></div></header>
-<main>
-<div class="panel on" id="login" hidden><h3>🔐 Đăng nhập quản trị</h3>
-<label>Mã PIN</label><input id="l_pin" type="password" autocomplete="current-password">
-<button id="l_go">Đăng nhập</button> <button type="button" id="l_new" style="background:#888">Đổi tài khoản / quên PIN</button></div>
-<details id="setup" open><summary>🔑 Thiết lập lần đầu (chỉ làm một lần trên mỗi thiết bị)</summary>
-<p class="mu">Token và mã PIN: token được mã hóa bằng PIN rồi lưu trong trình duyệt này. Lần sau chỉ cần nhập PIN. Token tạo giới hạn cho đúng repo này (quyền Contents: Read and write).</p>
-<label>Tên người dùng GitHub</label><input id="g_u" placeholder="username">
-<label>Tên repo</label><input id="g_r" placeholder="kho-game">
-<label>Nhánh</label><input id="g_b" value="main">
-<label>Token (github_pat_...)</label><input id="g_t" type="password" autocomplete="off">
-<label>Đặt mã PIN (ít nhất 6 ký tự, nên dài hơn)</label><input id="g_p" type="password" autocomplete="new-password">
-<button id="g_go">Lưu & đăng nhập</button></details>
-<div id="bye" hidden style="text-align:right"><button id="l_out" style="background:#888;margin:0 0 10px">Đăng xuất</button></div>
+<div id="gate"><div class="gc">
+<div class="brand"><i>K</i>Kenrori <small>Quản trị</small></div>
+<div class="gatecard" id="login" hidden><h3>Đăng nhập</h3><p class="mu">Nhập mã PIN bạn đã đặt trên thiết bị này.</p>
+<label for="l_pin">Mã PIN</label><input id="l_pin" type="password" autocomplete="current-password" autofocus>
+<button id="l_go">Đăng nhập</button><button type="button" id="l_new" class="sec">Đổi tài khoản hoặc quên PIN</button></div>
+<details class="gatecard" id="setup" open><summary><h3>Thiết lập lần đầu</h3><p class="mu">Chỉ làm một lần trên mỗi thiết bị. Token được mã hóa bằng PIN rồi lưu trong trình duyệt này, lần sau chỉ cần nhập PIN.</p></summary>
+<div class="g2"><div><label for="g_u">Tên người dùng GitHub</label><input id="g_u" placeholder="username"></div><div><label for="g_r">Tên repo</label><input id="g_r" placeholder="kho-game"></div></div>
+<label for="g_b">Nhánh</label><input id="g_b" value="main">
+<label for="g_t">Token <small>(github_pat_..., quyền Contents: Read and write cho đúng repo này)</small></label><input id="g_t" type="password" autocomplete="off">
+<label for="g_p">Đặt mã PIN <small>(ít nhất 6 ký tự, nên dài hơn)</small></label><input id="g_p" type="password" autocomplete="new-password">
+<button id="g_go">Lưu và đăng nhập</button></details>
+<a class="back" href="index.html">Quay lại trang chính</a>
+</div></div>
 
 <div id="app" hidden>
-<div class="tabs" id="tabs"></div>
+<aside id="nav"><div class="brand"><i>K</i>Kenrori <small>Quản trị</small></div>
+<div id="tabs"></div>
+<div class="nfoot"><a href="index.html" target="_blank" rel="noopener" title="Mở trang chính"><svg class="i" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg><span>Xem trang chính</span></a>
+<div id="bye" hidden><button id="l_out" type="button" title="Đăng xuất"><svg class="i" viewBox="0 0 24 24"><path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M10 17l-5-5 5-5M5 12h11"/></svg><span>Đăng xuất</span></button></div></div>
+</aside>
+<main>
+<div class="ph"><h2 id="ptitle">Tổng quan</h2></div>
 
-<form class="panel" id="p-series"><h3>Thêm / sửa bộ truyện</h3><p class="mu">Nhập trùng đường dẫn (slug) của bộ có sẵn thì sẽ sửa bộ đó.</p>
-<label>Loại</label><select id="s_kind"><option value="novel">📖 Novel</option><option value="manga">🖼️ Manga</option></select>
-<label>Tên truyện</label><input id="s_title">
-<label>Slug (tên thư mục, để trống sẽ tự tạo)</label><input id="s_slug">
-<label>Tên gốc (không bắt buộc, ví dụ tên tiếng Nhật)</label><input id="s_orig" placeholder="勇者召喚に巻き込まれたけど…">
-<label>Tên khác (không bắt buộc, mỗi dòng một tên: romaji, tên tiếng Anh, tên viết tắt...)</label><textarea id="s_alts" style="min-height:70px"></textarea>
-<label>Tác giả</label><input id="s_author">
-<label>Họa sĩ minh họa (không bắt buộc)</label><input id="s_artist">
-<label>Thể loại (bấm để chọn, hoặc gõ thêm, cách nhau bằng dấu phẩy)</label><div id="g_chips"></div><input id="s_genres">
-<label>Trạng thái</label><select id="s_status"><option>Đang dịch</option><option>Hoàn thành</option><option>Tạm ngưng</option></select>
-<label>Mô tả</label><textarea id="s_desc"></textarea>
-<label>Ảnh bìa (tự thu nhỏ)</label><input id="s_cover" type="file" accept="image/*">
-<button>Lưu bộ truyện</button></form>
+<div class="panel" id="p-dash"><h3>Tổng quan</h3><div id="dash"></div></div>
 
-<form class="panel" id="p-chap"><h3>Thêm chương mới</h3>
-<label>Chọn bộ</label><select id="c_ser"></select>
-<label>Tên chương</label><input id="c_title" placeholder="Chương 12: ...">
-<label>Tập (không bắt buộc, ví dụ: Tập 1)</label><input id="c_vol" list="c_vols" placeholder="Để trống nếu không chia tập"><datalist id="c_vols"></datalist>
-<label>Ngày cập nhật</label><input id="c_date" type="date">
-<div id="c_novel"><label>Nội dung (dán vào) — hoặc chọn file .txt bên dưới</label><textarea id="c_text" style="min-height:200px"></textarea><input id="c_file" type="file" accept=".txt"></div>
-<div id="c_manga"><label>Ảnh các trang (chọn nhiều ảnh, tự xếp theo tên file)</label><input id="c_imgs" type="file" accept="image/*" multiple></div>
-<button>Đăng chương</button></form>
+<form class="panel" id="p-series"><h3>Bộ truyện</h3><p class="mu">Điền thông tin để tạo bộ mới. Muốn sửa bộ có sẵn, vào Quản lý và bấm Sửa bộ.</p>
+<div class="sf"><div><label class="cvl">Ảnh bìa</label><div class="cvbox"><img id="s_prev" alt="" hidden><span id="s_ph">Bấm để chọn ảnh bìa</span><input id="s_cover" type="file" accept="image/*" aria-label="Chọn ảnh bìa"></div><p class="mu" style="margin-top:6px">Ảnh tự được thu nhỏ khi lưu.</p></div>
+<div><div class="g2">
+<div><label for="s_kind">Loại</label><select id="s_kind"><option value="novel">Light Novel</option><option value="manga">Manga</option></select></div>
+<div><label for="s_status">Tình trạng</label><select id="s_status"><option>Đang dịch</option><option>Hoàn thành</option><option>Tạm ngưng</option></select></div>
+<div class="full"><label for="s_title">Tên truyện</label><input id="s_title" required></div>
+<div class="full"><label for="s_orig">Tên gốc <small>(không bắt buộc)</small></label><input id="s_orig" placeholder="勇者召喚に巻き込まれたけど…"></div>
+<div class="full"><label for="s_alts">Tên khác <small>(mỗi dòng một tên: romaji, tiếng Anh, viết tắt...)</small></label><textarea id="s_alts" style="min-height:64px"></textarea></div>
+<div><label for="s_author">Tác giả</label><input id="s_author"></div>
+<div><label for="s_artist">Họa sĩ minh họa <small>(không bắt buộc)</small></label><input id="s_artist"></div>
+<div class="full"><label for="s_genres">Thể loại <small>(bấm để chọn, hoặc gõ thêm, cách nhau bằng dấu phẩy)</small></label><div id="g_chips"></div><input id="s_genres"></div>
+<div class="full"><label for="s_desc">Tóm tắt</label><textarea id="s_desc"></textarea></div>
+<div class="full"><label for="s_slug">Đường dẫn <small>(slug, để trống sẽ tự tạo từ tên)</small></label><input id="s_slug"></div>
+</div>
+<div class="acts"><button>Lưu bộ truyện</button><button type="button" class="sec" id="s_new">Làm trống để tạo bộ mới</button></div></div></div></form>
 
-<form class="panel" id="p-tip"><h3>Thêm mẹo game</h3>
-<label>Tiêu đề</label><input id="t_title"><label>Game</label><input id="t_game"><label>Nội dung</label><textarea id="t_text"></textarea>
-<label>Ảnh minh họa (không bắt buộc)</label><input id="t_img" type="file" accept="image/*"><button>Thêm mẹo</button></form>
+<form class="panel" id="p-chap"><h3>Thêm chương</h3><p class="mu">Đăng chương đã dịch sẵn. Muốn dịch ngay trên trang, dùng mục Dịch chương.</p>
+<div class="g2"><div class="full"><label for="c_ser">Bộ truyện</label><select id="c_ser"></select></div>
+<div class="full"><label for="c_title">Tên chương</label><input id="c_title" placeholder="Chương 12: ..."></div>
+<div><label for="c_vol">Tập <small>(để trống nếu không chia tập)</small></label><input id="c_vol" list="c_vols" placeholder="Tập 1"><datalist id="c_vols"></datalist></div>
+<div><label for="c_date">Ngày đăng</label><input id="c_date" type="date"></div></div>
+<div id="c_novel"><label for="c_text">Nội dung <small>(dán vào, hoặc chọn file .txt bên dưới)</small></label><textarea id="c_text" style="min-height:260px"></textarea><input id="c_file" type="file" accept=".txt" style="margin-top:8px"></div>
+<div id="c_manga"><label for="c_imgs">Ảnh các trang <small>(chọn nhiều ảnh, tự xếp theo tên file)</small></label><input id="c_imgs" type="file" accept="image/*" multiple></div>
+<div class="acts"><button>Đăng chương</button></div></form>
 
-<form class="panel" id="p-link"><h3>Thêm liên kết</h3>
-<label>Tên</label><input id="l_title"><label>Địa chỉ (https://...)</label><input id="l_url"><label>Mô tả</label><input id="l_desc"><label>Nhãn (cách nhau bằng dấu phẩy)</label><input id="l_tags"><button>Thêm liên kết</button></form>
+<div class="panel" id="p-tr"><h3>Dịch chương</h3><p class="mu">Dán bản gốc bên trái, dịch tay hoặc dịch tự động sang bên phải, soát lại rồi đăng. Bản nháp tự lưu trên máy này.</p>
+<div class="g4"><div><label for="t_ser">Bộ truyện (Novel)</label><select id="t_ser"></select></div><div><label for="t_title">Tên chương</label><input id="t_title" placeholder="Chương 1: ..."></div>
+<div><label for="t_vol">Tập</label><input id="t_vol" list="t_vols"><datalist id="t_vols"></datalist></div><div><label for="t_date">Ngày</label><input id="t_date" type="date"></div></div>
+<details id="t_set"><summary>Cài đặt dịch tự động và bảng tên riêng</summary>
+<div class="g2"><div><label for="t_src">Ngôn ngữ gốc</label><select id="t_src"><option>tiếng Nhật</option><option>tiếng Anh</option><option>tiếng Trung</option><option>tiếng Hàn</option></select></div>
+<div><label for="t_model">Tên model <small>(đổi nếu Google đổi tên)</small></label><input id="t_model"></div>
+<div class="full"><label for="t_style">Văn phong</label><input id="t_style" value="tự nhiên, mượt mà, đúng chất light novel"></div>
+<div class="full"><label for="t_key">Gemini API key <small>(lưu mã hóa bằng PIN trên máy này)</small></label><input id="t_key" type="password" autocomplete="off" placeholder="Dán key lấy từ aistudio.google.com/apikey"></div></div>
+<div class="acts"><button type="button" id="t_keysave" class="trb">Lưu key</button><button type="button" id="t_keydel" class="sec">Xóa key</button></div>
+<label for="t_gl">Bảng tên riêng của bộ này <small>(mỗi dòng: gốc = bản dịch)</small></label><textarea id="t_gl" placeholder="アリス = Alice&#10;魔王 = Ma Vương"></textarea>
+<div class="acts"><button type="button" id="gl_push">Lưu bảng tên lên repo</button><button type="button" id="gl_pull" class="sec">Lấy từ repo</button></div>
+<p class="mu" style="margin-top:10px">Bảng tên lưu trong file glossary.json của repo, dùng chung giữa các máy. Repo công khai thì file này cũng công khai.</p></details>
+<div class="trgrid"><div><label for="t_in">Bản gốc <span class="mu" id="t_sc"></span></label><textarea id="t_in" class="trta" placeholder="Dán nội dung gốc, mỗi đoạn một dòng"></textarea></div>
+<div><label for="t_out">Bản dịch <span class="mu" id="t_oc"></span></label><textarea id="t_out" class="trta" placeholder="Bản dịch tiếng Việt"></textarea></div></div>
+<div id="t_rv" hidden><div class="rvh"><span id="t_rvs" class="mu"></span><label><input type="checkbox" id="t_only"> Chỉ hiện dòng cần chú ý</label></div><div id="t_rows"></div></div>
+<p class="mu" id="t_prog"></p>
+<div class="trbar"><button type="button" id="t_all" class="trb">Dịch tất cả</button><button type="button" id="t_resume" class="trb sec">Dịch tiếp</button><button type="button" id="t_sel" class="trb sec">Dịch đoạn bôi đen</button><button type="button" id="t_view" class="trb sec">Đối chiếu</button><button type="button" id="t_stop" class="dng" hidden>Dừng</button>
+<button type="button" id="t_join" class="trb sec">Nối dòng gốc</button><button type="button" id="t_apply" class="trb sec">Áp dụng bảng tên</button><button type="button" id="t_clear" class="trb dng">Xóa nháp</button><span class="sp"></span><button type="button" id="t_pub" class="trb">Đăng chương lên web</button></div></div>
 
-<form class="panel" id="p-vid"><h3>Thêm video YouTube</h3>
-<label>Tên bài</label><input id="v_title"><label>Link hoặc ID YouTube</label><input id="v_yt"><label>Mô tả</label><input id="v_desc"><button>Thêm video</button></form>
+<form class="panel" id="p-proj"><h3>Dự án</h3><p class="mu">Thêm dự án mới, hoặc bấm Sửa ở mục Quản lý để chỉnh dự án có sẵn.</p>
+<div class="g2"><div class="full"><label for="j_title">Tên dự án</label><input id="j_title"></div>
+<div><label for="j_type">Loại</label><input id="j_type" list="j_types" placeholder="Userscript, Mod, Công cụ..."><datalist id="j_types"><option>Userscript</option><option>Mod</option><option>Công cụ</option><option>Bản dịch game</option></datalist></div>
+<div><label for="j_status">Tình trạng</label><select id="j_status"><option>Đang phát triển</option><option>Ổn định</option><option>Tạm dừng</option></select></div>
+<div><label for="j_ver">Phiên bản</label><input id="j_ver" placeholder="1.0.0"></div>
+<div><label for="j_date">Ngày cập nhật</label><input id="j_date" type="date"></div>
+<div class="full"><label for="j_desc">Mô tả</label><textarea id="j_desc"></textarea></div>
+<div class="full"><label for="j_links">Nút liên kết <small>(mỗi dòng: Tên nút | https://link)</small></label><textarea id="j_links" placeholder="Cài đặt | https://greasyfork.org/..."></textarea></div>
+<div class="full"><label for="j_how">Hướng dẫn sử dụng <small>(không bắt buộc)</small></label><textarea id="j_how"></textarea></div>
+<div class="full"><label for="j_img">Ảnh minh họa <small>(không bắt buộc)</small></label><input id="j_img" type="file" accept="image/*"></div></div>
+<div class="acts"><button>Lưu dự án</button></div></form>
 
-<form class="panel" id="p-proj"><h3>Thêm / sửa dự án</h3>
-<label>Tên dự án</label><input id="j_title">
-<label>Loại</label><input id="j_type" list="j_types" placeholder="Userscript, Mod, Công cụ..."><datalist id="j_types"><option>Userscript</option><option>Mod</option><option>Công cụ</option><option>Bản dịch game</option></datalist>
-<label>Trạng thái</label><select id="j_status"><option>Đang phát triển</option><option>Ổn định</option><option>Tạm dừng</option></select>
-<label>Phiên bản</label><input id="j_ver" placeholder="1.0.0">
-<label>Ngày cập nhật</label><input id="j_date" type="date">
-<label>Mô tả</label><textarea id="j_desc"></textarea>
-<label>Nút liên kết (mỗi dòng: Tên nút | https://link)</label><textarea id="j_links" placeholder="Cài đặt | https://greasyfork.org/..."></textarea>
-<label>Hướng dẫn sử dụng (không bắt buộc)</label><textarea id="j_how"></textarea>
-<label>Ảnh minh họa (không bắt buộc)</label><input id="j_img" type="file" accept="image/*">
-<button>Lưu dự án</button></form>
+<form class="panel" id="p-tip"><h3>Mẹo game</h3><p class="mu">Mẹo mới hiện ở đầu danh sách.</p>
+<div class="g2"><div><label for="tp_title">Tiêu đề</label><input id="tp_title"></div><div><label for="tp_game">Game</label><input id="tp_game"></div>
+<div class="full"><label for="tp_text">Nội dung</label><textarea id="tp_text" style="min-height:160px"></textarea></div>
+<div class="full"><label for="tp_img">Ảnh minh họa <small>(không bắt buộc)</small></label><input id="tp_img" type="file" accept="image/*"></div></div>
+<div class="acts"><button>Thêm mẹo</button></div></form>
 
-<div class="panel" id="p-tr"><h3>🈯 Công cụ dịch Light Novel</h3>
-<p class="mu">Dán bản gốc bên trái, dịch tay hoặc dịch tự động (Gemini) sang bên phải, chỉnh sửa rồi đăng thẳng lên web. Bản nháp tự lưu trên máy này.</p>
-<div class="trrow"><div><label>Bộ truyện (Novel)</label><select id="t_ser"></select></div><div><label>Tên chương</label><input id="t_title" placeholder="Chương 1: ..."></div>
-<div><label>Tập (nếu có)</label><input id="t_vol" list="t_vols"><datalist id="t_vols"></datalist></div><div><label>Ngày</label><input id="t_date" type="date"></div></div>
-<details id="t_set"><summary>⚙️ Cài đặt dịch tự động và bảng tên riêng</summary>
-<div class="trrow"><div><label>Ngôn ngữ gốc</label><select id="t_src"><option>tiếng Nhật</option><option>tiếng Anh</option><option>tiếng Trung</option><option>tiếng Hàn</option></select></div>
-<div style="grid-column:span 3"><label>Văn phong</label><input id="t_style" value="tự nhiên, mượt mà, đúng chất light novel"></div></div>
-<label>Gemini API key (lưu mã hóa bằng PIN trên máy này)</label><input id="t_key" type="password" autocomplete="off" placeholder="Dán key lấy từ aistudio.google.com/apikey">
-<label>Tên model (có thể đổi nếu Google đổi tên)</label><input id="t_model">
-<button type="button" id="t_keysave" class="trb">Lưu key</button> <button type="button" id="t_keydel" style="background:#888">Xóa key</button>
-<label>Bảng tên riêng của bộ này (mỗi dòng: gốc = bản dịch)</label><textarea id="t_gl" placeholder="アリス = Alice&#10;魔王 = Ma Vương"></textarea>
-<button type="button" id="gl_push">☁️ Lưu bảng tên lên repo</button> <button type="button" id="gl_pull" style="background:#888">⬇ Lấy từ repo</button>
-<p class="mu">Bảng tên lưu trong file glossary.json của repo, dùng chung giữa các máy. Repo công khai thì file này cũng công khai như mọi file khác.</p></details>
-<div class="trgrid"><div><label>Bản gốc <span class="mu" id="t_sc"></span></label><textarea id="t_in" class="trta" placeholder="Dán nội dung gốc, mỗi đoạn một dòng..."></textarea></div>
-<div><label>Bản dịch <span class="mu" id="t_oc"></span></label><textarea id="t_out" class="trta" placeholder="Bản dịch tiếng Việt..."></textarea></div></div>
-<div id="t_rv" hidden><div class="rvh"><span id="t_rvs" class="mu"></span><label style="margin:0;font-weight:400"><input type="checkbox" id="t_only" style="width:auto"> Chỉ hiện dòng cần chú ý (thiếu bản dịch hoặc còn chữ gốc)</label></div><div id="t_rows"></div></div>
-<div class="trbar"><button type="button" id="t_all" class="trb">🤖 Dịch tất cả</button><button type="button" id="t_resume" class="trb">▶ Dịch tiếp</button><button type="button" id="t_sel" class="trb">🎯 Dịch đoạn bôi đen</button><button type="button" id="t_view" class="trb" style="background:#2b8a6e">👁 Đối chiếu</button><button type="button" id="t_stop" hidden style="background:#d33">⏹ Dừng</button>
-<button type="button" id="t_join" class="trb" style="background:#888">🧹 Nối dòng gốc</button><button type="button" id="t_apply" class="trb" style="background:#888">🔁 Áp dụng bảng tên</button><button type="button" id="t_clear" class="trb" style="background:#888">🗑 Xóa nháp</button></div>
-<p class="mu" id="t_prog"></p><button type="button" id="t_pub" class="trb">🚀 Đăng chương lên web</button></div>
+<form class="panel" id="p-link"><h3>Liên kết</h3>
+<div class="g2"><div><label for="l_title">Tên</label><input id="l_title"></div><div><label for="l_url">Địa chỉ</label><input id="l_url" placeholder="https://..."></div>
+<div class="full"><label for="l_desc">Mô tả</label><input id="l_desc"></div><div class="full"><label for="l_tags">Nhãn <small>(cách nhau bằng dấu phẩy)</small></label><input id="l_tags"></div></div>
+<div class="acts"><button>Thêm liên kết</button></div></form>
 
-<form class="panel" id="p-site"><h3>⚙️ Cài đặt trang web</h3>
-<h4>📢 Thông báo đầu trang</h4><p class="mu">Để trống nội dung để tắt thông báo.</p>
-<label>Nội dung</label><input id="a_text" placeholder="Ví dụ: Đã ra Tập 3!"><label>Link (không bắt buộc)</label><input id="a_url" placeholder="https://...">
-<h4>ℹ️ Giới thiệu & liên hệ</h4>
-<label>Tên nhóm dịch</label><input id="b_name"><label>Giới thiệu nhóm</label><textarea id="b_intro"></textarea>
-<label>Link Discord</label><input id="b_dc" placeholder="https://discord.gg/...">
-<label>Nguồn liên hệ (mỗi dòng: Tên | link hoặc email)</label><textarea id="b_ct" placeholder="Facebook | https://facebook.com/...&#10;Email | ten@mail.com"></textarea>
-<h4>💬 Bình luận (Giscus)</h4><p class="mu">Lấy 4 giá trị dưới đây tại giscus.app. Để trống để tắt bình luận.</p>
-<label>Repo (tên-người-dùng/tên-repo)</label><input id="g_repo"><label>Repo ID</label><input id="g_rid"><label>Tên danh mục (Category)</label><input id="g_cat"><label>Category ID</label><input id="g_cid">
-<h4>🔗 Địa chỉ web (cho RSS)</h4><label>Để trống nếu dùng địa chỉ github.io mặc định</label><input id="w_url" placeholder="https://username.github.io/kho-game/">
-<button>Lưu cài đặt</button></form>
+<form class="panel" id="p-vid"><h3>Video</h3>
+<div class="g2"><div><label for="v_title">Tên bài</label><input id="v_title"></div><div><label for="v_yt">Link hoặc ID YouTube</label><input id="v_yt"></div>
+<div class="full"><label for="v_desc">Mô tả</label><input id="v_desc"></div></div>
+<div class="acts"><button>Thêm video</button></div></form>
 
-<form class="panel" id="p-vol"><h3>📦 Gán tập hàng loạt</h3><p class="mu" id="v_info"></p>
-<label>Tên tập (để trống = bỏ chương khỏi tập)</label><input id="v_name" placeholder="Tập 1">
-<div style="margin:12px 0">Từ chương số <input id="v_from" type="number" min="1" style="width:80px;display:inline-block"> đến <input id="v_to" type="number" min="1" style="width:80px;display:inline-block">
-<button type="button" id="v_range" style="margin-top:0">Chọn khoảng</button> <button type="button" id="v_all" style="margin-top:0">Chọn tất cả</button> <button type="button" id="v_none" style="margin-top:0;background:#888">Bỏ chọn</button></div>
-<div id="v_list"></div><button>Áp dụng</button> <button type="button" id="v_cancel" style="background:#888">Hủy</button></form>
+<form class="panel" id="p-site"><h3>Cài đặt trang web</h3>
+<h4>Thông báo đầu trang</h4><p class="mu">Để trống nội dung để tắt thông báo.</p>
+<div class="g2"><div><label for="a_text">Nội dung</label><input id="a_text" placeholder="Ví dụ: Đã ra Tập 3!"></div><div><label for="a_url">Link <small>(không bắt buộc)</small></label><input id="a_url" placeholder="https://..."></div></div>
+<h4>Giới thiệu và liên hệ</h4>
+<div class="g2"><div><label for="b_name">Tên nhóm dịch</label><input id="b_name"></div><div><label for="b_dc">Link Discord</label><input id="b_dc" placeholder="https://discord.gg/..."></div>
+<div class="full"><label for="b_intro">Giới thiệu nhóm</label><textarea id="b_intro"></textarea></div>
+<div class="full"><label for="b_ct">Nguồn liên hệ <small>(mỗi dòng: Tên | link hoặc email)</small></label><textarea id="b_ct" placeholder="Facebook | https://facebook.com/...&#10;Email | ten@mail.com"></textarea></div></div>
+<h4>Bình luận (Giscus)</h4><p class="mu">Lấy 4 giá trị tại giscus.app. Để trống để tắt bình luận.</p>
+<div class="g2"><div><label for="g_repo">Repo <small>(tên-người-dùng/tên-repo)</small></label><input id="g_repo"></div><div><label for="g_rid">Repo ID</label><input id="g_rid"></div>
+<div><label for="g_cat">Tên danh mục</label><input id="g_cat"></div><div><label for="g_cid">Category ID</label><input id="g_cid"></div></div>
+<h4>Địa chỉ web cho RSS</h4><label for="w_url">Để trống nếu dùng địa chỉ github.io mặc định</label><input id="w_url" placeholder="https://username.github.io/kho-game/">
+<div class="acts"><button>Lưu cài đặt</button></div></form>
+
+<form class="panel" id="p-vol"><h3>Gán tập hàng loạt</h3><p class="mu" id="v_info"></p>
+<label for="v_name">Tên tập <small>(để trống để bỏ các chương đã chọn khỏi tập)</small></label><input id="v_name" placeholder="Tập 1">
+<div class="vtools">Từ chương <input id="v_from" type="number" min="1"> đến <input id="v_to" type="number" min="1"><button type="button" id="v_range" class="sec">Chọn khoảng</button><button type="button" id="v_all" class="sec">Chọn tất cả</button><button type="button" id="v_none" class="sec">Bỏ chọn</button></div>
+<div id="v_list"></div><div class="acts"><button>Áp dụng</button><button type="button" id="v_cancel" class="sec">Hủy</button></div></form>
 
 <form class="panel" id="p-edit"><h3>Sửa chương</h3><p class="mu" id="e_info"></p>
-<label>Tên chương</label><input id="e_title"><label>Tập (để trống nếu không chia tập)</label><input id="e_vol"><label>Ngày cập nhật</label><input id="e_date" type="date">
-<div id="e_novel"><label>Nội dung</label><textarea id="e_text" style="min-height:280px"></textarea></div>
+<div class="g2"><div class="full"><label for="e_title">Tên chương</label><input id="e_title"></div><div><label for="e_vol">Tập <small>(để trống nếu không chia tập)</small></label><input id="e_vol"></div><div><label for="e_date">Ngày đăng</label><input id="e_date" type="date"></div></div>
+<div id="e_novel"><label for="e_text">Nội dung</label><textarea id="e_text" style="min-height:360px"></textarea></div>
 <p class="mu" id="e_mn" hidden>Với manga, ở đây sửa được tên chương và ngày. Muốn đổi ảnh thì xóa chương rồi đăng lại.</p>
-<button>Lưu thay đổi</button> <button type="button" id="e_cancel" style="background:#888">Hủy</button></form>
+<div class="acts"><button>Lưu thay đổi</button><button type="button" id="e_cancel" class="sec">Hủy</button></div></form>
 
-<div class="panel" id="p-man"><h3>Quản lý / xóa</h3><p class="mu">Xóa chỉ gỡ khỏi web; file ảnh và chương vẫn còn trong repo.</p><div id="manage"></div></div>
-</div>
+<div class="panel" id="p-man"><h3>Quản lý</h3><p class="mu">Gỡ một mục chỉ ẩn nó khỏi web, file ảnh và chương vẫn còn trong repo.</p>
+<input class="msearch" id="m_q" type="search" placeholder="Lọc theo tên truyện, mẹo, dự án..."><div id="manage"></div></div>
 </main>
-<div id="log">Đang chờ đăng nhập.</div>
+</div>
+<div id="log" class="fade"></div>
 <script>
 const $ = s => document.querySelector(s), esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const ls = { get: k => { try { return localStorage.getItem(k) } catch (e) {} }, set: (k, v) => { try { localStorage.setItem(k, v) } catch (e) {} }, del: k => { try { localStorage.removeItem(k) } catch (e) {} } };
-const KEYS = { novel: "novels", manga: "manga" }, log = m => $("#log").textContent = m;
+const KEYS = { novel: "novels", manga: "manga" }, log = m => { const el = $("#log"), ok = /^✅/.test(m), er = /^❌/.test(m); el.textContent = String(m).replace(/^(✅|❌)\s*/, ""); el.className = ok ? "ok" : er ? "err" : ""; clearTimeout(log.t); log.t = setTimeout(() => el.classList.add("fade"), ok ? 4000 : er ? 9000 : 6000) };
 const slugify = x => x.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const b64t = t => { const b = new TextEncoder().encode(String(t).normalize("NFC")); let s = ""; for (let i = 0; i < b.length; i += 8192) s += String.fromCharCode(...b.subarray(i, i + 8192)); return btoa(s) };
 const t64 = b => new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\n/g, "")), c => c.charCodeAt(0)));
@@ -209,7 +338,7 @@ async function connect(c, after) {
     if (r.status === 404) data = {}; else if (r.ok) data = JSON.parse(t64((await r.json()).content)); else throw new Error("Không đọc được data.json (" + r.status + ")");
     for (const k of ["tips", "links", "novels", "manga", "videos", "projects"]) data[k] ??= []; data.site ??= {};
     if (after) await after();
-    $("#login").hidden = $("#setup").hidden = true; $("#bye").hidden = false; $("#app").hidden = false; $("#c_date").value = $("#j_date").value = $("#t_date").value = new Date().toISOString().slice(0, 10);
+    $("#login").hidden = $("#setup").hidden = true; $("#bye").hidden = false; $("#app").hidden = false; $("#gate").hidden = true; $("#c_date").value = $("#j_date").value = $("#t_date").value = new Date().toISOString().slice(0, 10);
     fillSel(); manage(); siteLoad(); trLoadKey(); glLoad(); log("✅ Đã đăng nhập. Chọn mục cần thêm."); deepLink();
   });
 }
@@ -230,10 +359,19 @@ $("#g_go").onclick = async () => {
 };
 $("#l_out").onclick = () => location.reload();
 
-const TABS = [["series", "📚 Bộ truyện"], ["chap", "➕ Chương"], ["tr", "🈯 Dịch"], ["tip", "💡 Mẹo"], ["link", "🔗 Liên kết"], ["vid", "🎵 Video"], ["proj", "🧩 Dự án"], ["site", "⚙️ Trang web"], ["man", "🗂️ Quản lý"]];
-$("#tabs").innerHTML = TABS.map(([k, l]) => `<button type="button" data-k="${k}">${l}</button>`).join("");
-const tab = k => { document.querySelector("main").classList.toggle("wide", k === "tr"); [...TABS.map(x => x[0]), "edit", "vol"].forEach(t => $("#p-" + t).classList.toggle("on", t === k)); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)) };
-$("#tabs").onclick = e => { const b = e.target.closest("button"); if (b) tab(b.dataset.k) }; tab("series");
+const NI = {
+  dash: '<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
+  series: '<path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2.5zM20 19v3H6"/>', chap: '<path d="M12 5v14M5 12h14"/>',
+  tr: '<path d="M4 5h8M8 3v2M10 5c-1 4-3.5 7-6 8.5M6 9c1 2 3 3.5 5 4.5M13 21l4-9 4 9M14.5 18h5"/>', proj: '<path d="M10 3H5a2 2 0 0 0-2 2v5h3a2 2 0 1 1 0 4H3v5a2 2 0 0 0 2 2h5v-3a2 2 0 1 1 4 0v3h5a2 2 0 0 0 2-2v-5h-3a2 2 0 1 1 0-4h3V5a2 2 0 0 0-2-2h-5v3a2 2 0 1 1-4 0z"/>',
+  tip: '<path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/>', link: '<path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>',
+  vid: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/>', site: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
+  man: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>'
+};
+const TABS = [["dash", "Tổng quan"], ["—", "Truyện"], ["series", "Bộ truyện"], ["chap", "Thêm chương"], ["tr", "Dịch chương"], ["—", "Game và công cụ"], ["proj", "Dự án"], ["tip", "Mẹo game"], ["—", "Khác"], ["link", "Liên kết"], ["vid", "Video"], ["—", "Hệ thống"], ["site", "Cài đặt trang web"], ["man", "Quản lý"]];
+const PT = { edit: "Sửa chương", vol: "Gán tập hàng loạt" };
+$("#tabs").innerHTML = TABS.map(([k, l]) => k === "—" ? `<div class="tg">${l}</div>` : `<button type="button" data-k="${k}"><svg class="i" viewBox="0 0 24 24">${NI[k]}</svg>${l}</button>`).join("");
+const tab = k => { document.querySelector("main").classList.toggle("wide", k === "tr"); $("#ptitle").textContent = PT[k] || (TABS.find(x => x[0] === k) || [])[1] || ""; scrollTo(0, 0); [...TABS.map(x => x[0]).filter(x => x !== "—"), "edit", "vol"].forEach(t => $("#p-" + t).classList.toggle("on", t === k)); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)) };
+$("#tabs").onclick = e => { const b = e.target.closest("button[data-k]"); if (b) tab(b.dataset.k) }; tab("dash");
 
 function fillSel() {
   const o = []; for (const k of ["novel", "manga"]) data[KEYS[k]].forEach((s, i) => o.push(`<option value="${k}|${i}">${k === "novel" ? "📖" : "🖼️"} ${esc(s.title)}</option>`));
@@ -275,8 +413,8 @@ $("#p-chap").onsubmit = e => { e.preventDefault(); run(async () => {
 }) };
 
 $("#p-tip").onsubmit = e => { e.preventDefault(); run(async () => {
-  const title = $("#t_title").value.trim(); if (!title) throw new Error("Hãy nhập tiêu đề");
-  const d = { title, game: $("#t_game").value.trim(), text: $("#t_text").value.trim(), img: "" }, f = $("#t_img").files[0];
+  const title = $("#tp_title").value.trim(); if (!title) throw new Error("Hãy nhập tiêu đề");
+  const d = { title, game: $("#tp_game").value.trim(), text: $("#tp_text").value.trim(), img: "" }, f = $("#tp_img").files[0];
   if (f) { const p = `images/tips/${slugify(title)}-${rid()}.${(f.name.split(".").pop() || "jpg").toLowerCase()}`; log("Đang tải ảnh..."); await put(p, await fileB64(f), "Ảnh mẹo: " + title); d.img = p }
   data.tips.unshift(d); await save("Thêm mẹo: " + title); e.target.reset(); done("✅ Đã thêm mẹo.");
 }) };
@@ -291,11 +429,21 @@ $("#p-vid").onsubmit = e => { e.preventDefault(); run(async () => {
   data.videos.push({ title, youtube: m ? m[1] : v, desc: $("#v_desc").value.trim() }); await save("Thêm video: " + title); e.target.reset(); done("✅ Đã thêm video.");
 }) };
 
+const hueOf = t => [...String(t)].reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
+const thumb = s => `<span class="mth" style="--h:${hueOf(s.title)}">${s.cover ? `<img src="${esc(s.cover)}" alt="" loading="lazy" onerror="this.remove()">` : ""}</span>`;
 function manage() {
-  const out = [];
-  for (const k of ["novels", "manga"]) data[k].forEach((s, i) => out.push(`<div class="row"><b>${k === "novels" ? "📖" : "🖼️"} ${esc(s.title)}</b><button class="ok" data-v="${k}|${i}">📦 Gán tập</button><button class="ok" data-s="${k}|${i}">✎ Sửa bộ</button><button data-d="${k}|${i}">✕ Xóa bộ</button>${s.chapters.map((c, j) => `<div class="sub">${c.vol ? "<b>" + esc(c.vol) + "</b> · " : ""}${esc(c.t)} <span class="mu">${c.date ? "· " + c.date : ""}</span><button class="ok" data-e="${k}|${i}|${j}">✎ Sửa</button><button class="ok" data-m="${k}|${i}|${j}|-1">↑</button><button class="ok" data-m="${k}|${i}|${j}|1">↓</button><button data-d="${k}|${i}|${j}">✕</button></div>`).join("")}</div>`));
-  for (const [k, l] of [["tips", "💡"], ["links", "🔗"], ["videos", "🎵"], ["projects", "🧩"]]) data[k].forEach((d, i) => out.push(`<div class="row">${l} ${esc(d.title)}${k === "projects" ? `<button class="ok" data-p="${i}">✎ Sửa</button>` : ""}<button data-d="${k}|${i}">✕</button></div>`));
-  $("#manage").innerHTML = out.join("") || "<p class='mu'>Chưa có gì.</p>";
+  const q = ($("#m_q")?.value || "").trim().toLowerCase(), hit = o => !q || JSON.stringify(o).toLowerCase().includes(q), out = [];
+  for (const k of ["novels", "manga"]) data[k].forEach((s, i) => {
+    if (!hit([s.title, s.orig, s.alts, s.author])) return;
+    out.push(`<details class="ms"><summary>${thumb(s)}<span class="mti"><b>${esc(s.title)}</b><small>${k === "novels" ? "Light Novel" : "Manga"}, ${s.chapters.length} chương${s.status ? ", " + esc(s.status) : ""}</small></span><span class="mact"><button type="button" class="sec sm" data-s="${k}|${i}">Sửa bộ</button><button type="button" class="sec sm" data-v="${k}|${i}">Gán tập</button><button type="button" class="dng sm" data-d="${k}|${i}">Gỡ bộ</button></span></summary><div class="mch">${s.chapters.map((c, j) => `<div class="mc"><span class="mcn">${j + 1}</span><span class="mct">${c.vol ? `<em>${esc(c.vol)}, </em>` : ""}${esc(c.t)}</span><small>${c.date || ""}</small><span class="mca"><button type="button" data-e="${k}|${i}|${j}">Sửa</button><button type="button" data-m="${k}|${i}|${j}|-1" title="Chuyển lên"${j ? "" : " disabled"}>↑</button><button type="button" data-m="${k}|${i}|${j}|1" title="Chuyển xuống"${j < s.chapters.length - 1 ? "" : " disabled"}>↓</button><button type="button" class="dng" data-d="${k}|${i}|${j}" title="Gỡ chương">✕</button></span></div>`).join("") || '<p class="mu">Chưa có chương nào.</p>'}</div></details>`);
+  });
+  const grp = [];
+  for (const [k, l] of [["projects", "Dự án"], ["tips", "Mẹo game"], ["links", "Liên kết"], ["videos", "Video"]]) {
+    const rows = data[k].map((d, i) => [d, i]).filter(([d]) => hit(d)).map(([d, i]) => `<div class="li"><span class="lt">${esc(d.title)}${d.game ? ` <em>${esc(d.game)}</em>` : ""}</span>${k === "projects" ? `<button type="button" class="sec sm" data-p="${i}">Sửa</button>` : ""}<button type="button" class="dng sm" data-d="${k}|${i}">Gỡ</button></div>`).join("");
+    if (rows) grp.push(`<div class="mgrp"><h4>${l}</h4><div class="lst">${rows}</div></div>`);
+  }
+  $("#manage").innerHTML = ((out.length ? `<h4 style="margin:0 0 8px">Truyện</h4>${out.join("")}` : "") + grp.join("")) || `<p class="mu">${q ? "Không có mục nào khớp với từ khóa." : "Chưa có nội dung. Bắt đầu bằng mục Bộ truyện."}</p>`;
+  dash();
 }
 $("#manage").onclick = e => { const b = e.target.closest("button[data-d]"); if (!b) return; const [k, i, j] = b.dataset.d.split("|"); if (!confirm("Gỡ mục này khỏi web?")) return;
   run(async () => { j === undefined ? data[k].splice(+i, 1) : data[k][+i].chapters.splice(+j, 1); await save("Xóa mục"); done("✅ Đã gỡ.") }) };
@@ -310,7 +458,7 @@ $("#manage").addEventListener("click", e => {
   if (bs) {
     const [k, i] = bs.dataset.s.split("|"), s = data[k][+i];
     $("#s_kind").value = k === "novels" ? "novel" : "manga"; $("#s_title").value = s.title; $("#s_slug").value = s.slug; $("#s_author").value = s.author || ""; $("#s_orig").value = s.orig || ""; $("#s_alts").value = (s.alts || []).join("\n"); $("#s_artist").value = s.artist || "";
-    $("#s_status").value = s.status || "Đang dịch"; $("#s_desc").value = s.desc || ""; $("#s_genres").value = (s.genres || []).join(", "); gChips(); $("#s_cover").value = ""; tab("series"); log("Đang sửa bộ: " + s.title + " (chọn ảnh bìa mới nếu muốn đổi)");
+    $("#s_status").value = s.status || "Đang dịch"; $("#s_desc").value = s.desc || ""; $("#s_genres").value = (s.genres || []).join(", "); gChips(); $("#s_cover").value = ""; cvPrev(s.cover); tab("series"); $("#ptitle").textContent = "Sửa bộ: " + s.title; log("Đang sửa bộ " + s.title + ". Chọn ảnh bìa mới nếu muốn đổi.");
   } else if (bm) {
     const [k, i, j, d] = bm.dataset.m.split("|"), a = data[k][+i].chapters, x = +j, y = x + +d; if (y < 0 || y >= a.length) return;
     [a[x], a[y]] = [a[y], a[x]]; run(async () => { await save("Đổi thứ tự chương"); done("✅ Đã đổi thứ tự chương.") });
@@ -546,6 +694,27 @@ $("#t_rows").addEventListener("click", async e => {
     b.disabled = false;
   }
 });
+
+/* ===== Giao diện: tổng quan, xem trước bìa, lọc ===== */
+$("#m_q").addEventListener("input", () => manage());
+$("#manage").addEventListener("click", e => { if (e.target.closest("summary button")) e.preventDefault() }, true);
+function cvPrev(src) { const im = $("#s_prev"); if (src) { im.onerror = () => { im.hidden = true; $("#s_ph").hidden = false }; im.src = src; im.hidden = false; $("#s_ph").hidden = true } else { im.hidden = true; im.removeAttribute("src"); $("#s_ph").hidden = false } }
+$("#s_cover").addEventListener("change", e => { const f = e.target.files[0]; cvPrev(f ? URL.createObjectURL(f) : "") });
+$("#s_new").onclick = () => { $("#p-series").reset(); cvPrev(""); gChips(); $("#ptitle").textContent = "Bộ truyện"; $("#s_title").focus() };
+function goEdit(k, i, j) { $("#m_q").value = ""; manage(); $(`#manage button[data-e="${k}|${i}|${j}"]`)?.click() }
+function dash() {
+  const el = $("#dash"); if (!el || !data) return;
+  const S = [...data.novels.map((s, i) => ["novels", s, i]), ...data.manga.map((s, i) => ["manga", s, i])];
+  const nch = S.reduce((a, [, s]) => a + s.chapters.length, 0), nw = data.novels.reduce((a, s) => a + s.chapters.reduce((b, c) => b + (c.words || 0), 0), 0);
+  const rec = []; S.forEach(([k, s, i]) => s.chapters.forEach((c, j) => rec.push({ k, s, i, c, j }))); rec.sort((a, b) => (b.c.date || "").localeCompare(a.c.date || "") || b.j - a.j);
+  const drafts = []; try { for (let x = 0; x < localStorage.length; x++) { const key = localStorage.key(x); if (!key.startsWith("dr:")) continue; const d = JSON.parse(localStorage.getItem(key) || "{}"); if ((d.i || "").trim() || (d.o || "").trim()) drafts.push({ s: data.novels.find(n => n.slug === key.slice(3)), slug: key.slice(3), d }) } } catch (e) {}
+  const qa = [["series", "Thêm bộ truyện mới", "s_new"], ["chap", "Đăng chương"], ["tr", "Dịch chương mới"], ["man", "Quản lý nội dung"]];
+  el.innerHTML = `<div class="stats"><div class="stat"><b>${data.novels.length}</b><span>Light Novel</span></div><div class="stat"><b>${data.manga.length}</b><span>Manga</span></div><div class="stat"><b>${nch.toLocaleString("vi-VN")}</b><span>Chương đã đăng</span></div><div class="stat"><b>${nw.toLocaleString("vi-VN")}</b><span>Chữ đã dịch</span></div></div>
+<h4>Làm nhanh</h4><div class="qa">${qa.map(([k, l, x]) => `<button type="button" onclick="${x ? `$('#${x}').click();` : ""}tab('${k}')"><svg class="i" viewBox="0 0 24 24">${NI[k]}</svg>${l}</button>`).join("")}</div>
+${drafts.length ? `<h4>Bản dịch đang dở trên máy này</h4><div class="lst">${drafts.map(({ s, slug, d }) => `<div class="li"><span class="lt">${esc(s ? s.title : slug)}${d.t ? ` <em>${esc(d.t)}</em>` : ""}</span><small>${(d.o || "").trim() ? d.o.trim().split(/\s+/).length.toLocaleString("vi-VN") + " chữ" : "chưa dịch"}</small><button type="button" class="sec sm" onclick="openDraft('${esc(slug)}')">Mở</button></div>`).join("")}</div>` : ""}
+<h4>Chương mới đăng</h4>${rec.length ? `<div class="lst">${rec.slice(0, 8).map(r => `<div class="li">${thumb(r.s)}<span class="lt">${esc(r.s.title)} <em>${r.c.vol ? esc(r.c.vol) + ", " : ""}${esc(r.c.t)}</em></span><small>${r.c.date || ""}</small><button type="button" class="sec sm" onclick="goEdit('${r.k}',${r.i},${r.j})">Sửa</button></div>`).join("")}</div>` : '<p class="mu">Chưa có chương nào. Tạo bộ truyện rồi đăng chương đầu tiên.</p>'}`;
+}
+function openDraft(slug) { const i = data.novels.findIndex(n => n.slug === slug); if (i >= 0) { $("#t_ser").value = i; $("#t_ser").dispatchEvent(new Event("change")) } tab("tr") }
 </script>
 </body>
 </html>
