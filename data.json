@@ -860,8 +860,7 @@
     "Tập 4": "images/youkoso-jitsuryoku-shijou-shugi-tap-4-mwxtn4uc.jpg",
     "Tập 5": "images/youkoso-jitsuryoku-shijou-shugi-tap-5-mwxtn7uf.jpg",
     "Tập 4.5": "images/youkoso-jitsuryoku-shijou-shugi-tap-4-5-mwxtn6fl.jpg"
-   },
-   "feat": true
+   }
   },
   {
    "slug": "mondaiji",
@@ -947,5 +946,5 @@
   "stickers": [],
   "gc": ""
  },
- "rev": 1795723330558
+ "rev": 1795725238232
 }
