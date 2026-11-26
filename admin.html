@@ -28,6 +28,17 @@ button:disabled{opacity:.5}
 .row button.ok,.sub button.ok{background:var(--ac)}
 button.chip{background:var(--bg);color:var(--tx);border:1px solid var(--bd);padding:3px 11px;margin:0 6px 6px 0;border-radius:999px;font-size:.85rem}button.chip.on{background:var(--ac);color:#fff;border-color:var(--ac)}
 .vc{margin:2px 0;font-weight:400}#p-vol .vc input{width:auto;margin-right:6px}h4{margin:20px 0 0}
+main.wide{max-width:1180px}.trrow{display:grid;grid-template-columns:2fr 2fr 1fr 1fr;gap:10px}.trgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}.trta{min-height:440px;font-size:15px;line-height:1.7}.trbar button{margin:10px 6px 0 0}
+@media(max-width:800px){.trrow,.trgrid{grid-template-columns:1fr}.trta{min-height:300px}}
+[hidden]{display:none!important}
+.rvh{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:10px 0}
+.rv{display:grid;grid-template-columns:34px 1fr 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd);align-items:start}
+.rn{color:var(--mu);font-size:.8rem;padding-top:7px;text-align:right}.rs{white-space:pre-wrap;font-size:.95rem;line-height:1.7;background:var(--bg);border-radius:8px;padding:8px 10px}
+.ro{position:relative}.ro textarea{min-height:0;margin:0;font-size:.95rem;line-height:1.7;padding-right:86px;resize:vertical}
+.ra{position:absolute;top:4px;right:4px;display:flex;gap:2px}.ra button{margin:0;padding:0 7px;font-size:.85rem;background:var(--card);color:var(--tx);border:1px solid var(--bd)}
+.rv.miss .ro textarea{border-color:#d33;background:color-mix(in srgb,#d33 8%,var(--bg))}.rv.cjk .ro textarea{border-color:#e69500;background:color-mix(in srgb,#e69500 10%,var(--bg))}
+#t_rows.only .rv:not(.miss):not(.cjk){display:none}
+@media(max-width:800px){.rv{grid-template-columns:1fr}.rn{text-align:left;padding:0}}
 </style>
 </head>
 <body>
@@ -90,6 +101,26 @@ button.chip{background:var(--bg);color:var(--tx);border:1px solid var(--bd);padd
 <label>Hướng dẫn sử dụng (không bắt buộc)</label><textarea id="j_how"></textarea>
 <label>Ảnh minh họa (không bắt buộc)</label><input id="j_img" type="file" accept="image/*">
 <button>Lưu dự án</button></form>
+
+<div class="panel" id="p-tr"><h3>🈯 Công cụ dịch Light Novel</h3>
+<p class="mu">Dán bản gốc bên trái, dịch tay hoặc dịch tự động (Gemini) sang bên phải, chỉnh sửa rồi đăng thẳng lên web. Bản nháp tự lưu trên máy này.</p>
+<div class="trrow"><div><label>Bộ truyện (Novel)</label><select id="t_ser"></select></div><div><label>Tên chương</label><input id="t_title" placeholder="Chương 1: ..."></div>
+<div><label>Tập (nếu có)</label><input id="t_vol" list="t_vols"><datalist id="t_vols"></datalist></div><div><label>Ngày</label><input id="t_date" type="date"></div></div>
+<details id="t_set"><summary>⚙️ Cài đặt dịch tự động và bảng tên riêng</summary>
+<div class="trrow"><div><label>Ngôn ngữ gốc</label><select id="t_src"><option>tiếng Nhật</option><option>tiếng Anh</option><option>tiếng Trung</option><option>tiếng Hàn</option></select></div>
+<div style="grid-column:span 3"><label>Văn phong</label><input id="t_style" value="tự nhiên, mượt mà, đúng chất light novel"></div></div>
+<label>Gemini API key (lưu mã hóa bằng PIN trên máy này)</label><input id="t_key" type="password" autocomplete="off" placeholder="Dán key lấy từ aistudio.google.com/apikey">
+<label>Tên model (có thể đổi nếu Google đổi tên)</label><input id="t_model">
+<button type="button" id="t_keysave" class="trb">Lưu key</button> <button type="button" id="t_keydel" style="background:#888">Xóa key</button>
+<label>Bảng tên riêng của bộ này (mỗi dòng: gốc = bản dịch)</label><textarea id="t_gl" placeholder="アリス = Alice&#10;魔王 = Ma Vương"></textarea>
+<button type="button" id="gl_push">☁️ Lưu bảng tên lên repo</button> <button type="button" id="gl_pull" style="background:#888">⬇ Lấy từ repo</button>
+<p class="mu">Bảng tên lưu trong file glossary.json của repo, dùng chung giữa các máy. Repo công khai thì file này cũng công khai như mọi file khác.</p></details>
+<div class="trgrid"><div><label>Bản gốc <span class="mu" id="t_sc"></span></label><textarea id="t_in" class="trta" placeholder="Dán nội dung gốc, mỗi đoạn một dòng..."></textarea></div>
+<div><label>Bản dịch <span class="mu" id="t_oc"></span></label><textarea id="t_out" class="trta" placeholder="Bản dịch tiếng Việt..."></textarea></div></div>
+<div id="t_rv" hidden><div class="rvh"><span id="t_rvs" class="mu"></span><label style="margin:0;font-weight:400"><input type="checkbox" id="t_only" style="width:auto"> Chỉ hiện dòng cần chú ý (thiếu bản dịch hoặc còn chữ gốc)</label></div><div id="t_rows"></div></div>
+<div class="trbar"><button type="button" id="t_all" class="trb">🤖 Dịch tất cả</button><button type="button" id="t_resume" class="trb">▶ Dịch tiếp</button><button type="button" id="t_sel" class="trb">🎯 Dịch đoạn bôi đen</button><button type="button" id="t_view" class="trb" style="background:#2b8a6e">👁 Đối chiếu</button><button type="button" id="t_stop" hidden style="background:#d33">⏹ Dừng</button>
+<button type="button" id="t_join" class="trb" style="background:#888">🧹 Nối dòng gốc</button><button type="button" id="t_apply" class="trb" style="background:#888">🔁 Áp dụng bảng tên</button><button type="button" id="t_clear" class="trb" style="background:#888">🗑 Xóa nháp</button></div>
+<p class="mu" id="t_prog"></p><button type="button" id="t_pub" class="trb">🚀 Đăng chương lên web</button></div>
 
 <form class="panel" id="p-site"><h3>⚙️ Cài đặt trang web</h3>
 <h4>📢 Thông báo đầu trang</h4><p class="mu">Để trống nội dung để tắt thông báo.</p>
@@ -175,15 +206,15 @@ async function connect(c, after) {
     if (r.status === 404) data = {}; else if (r.ok) data = JSON.parse(t64((await r.json()).content)); else throw new Error("Không đọc được data.json (" + r.status + ")");
     for (const k of ["tips", "links", "novels", "manga", "videos", "projects"]) data[k] ??= []; data.site ??= {};
     if (after) await after();
-    $("#login").hidden = $("#setup").hidden = true; $("#bye").hidden = false; $("#app").hidden = false; $("#c_date").value = $("#j_date").value = new Date().toISOString().slice(0, 10);
-    fillSel(); manage(); siteLoad(); log("✅ Đã đăng nhập. Chọn mục cần thêm."); deepLink();
+    $("#login").hidden = $("#setup").hidden = true; $("#bye").hidden = false; $("#app").hidden = false; $("#c_date").value = $("#j_date").value = $("#t_date").value = new Date().toISOString().slice(0, 10);
+    fillSel(); manage(); siteLoad(); trLoadKey(); glLoad(); log("✅ Đã đăng nhập. Chọn mục cần thêm."); deepLink();
   });
 }
 let sealed = null; try { sealed = JSON.parse(ls.get("cfg2") || "null") } catch (e) {}
 const oldCfg = ls.get("cfg"); if (oldCfg) { try { const c = JSON.parse(oldCfg); $("#g_u").value = c.u; $("#g_r").value = c.r; $("#g_b").value = c.b; $("#g_t").value = c.t } catch (e) {} ls.del("cfg") }
 if (sealed) { $("#login").hidden = false; $("#setup").hidden = true; $("#g_u").value = sealed.u; $("#g_r").value = sealed.r; $("#g_b").value = sealed.b; log("Nhập mã PIN để đăng nhập.") }
 $("#l_go").onclick = async () => {
-  try { needHttps(); let t; try { t = await unseal($("#l_pin").value, sealed) } catch (e) { throw new Error("Sai mã PIN") } await connect({ u: sealed.u, r: sealed.r, b: sealed.b, t }) } catch (e) { log("❌ " + e.message) }
+  try { needHttps(); let t; try { t = await unseal($("#l_pin").value, sealed) } catch (e) { throw new Error("Sai mã PIN") } sessionPin = $("#l_pin").value; await connect({ u: sealed.u, r: sealed.r, b: sealed.b, t }) } catch (e) { log("❌ " + e.message) }
 };
 $("#l_pin").addEventListener("keydown", e => { if (e.key === "Enter") $("#l_go").click() });
 $("#l_new").onclick = () => { $("#login").hidden = true; $("#setup").hidden = false; $("#setup").open = true; log("Nhập lại thông tin và đặt PIN mới.") };
@@ -191,19 +222,19 @@ $("#g_go").onclick = async () => {
   try {
     needHttps(); const c = { u: $("#g_u").value.trim(), r: $("#g_r").value.trim(), b: $("#g_b").value.trim() || "main", t: $("#g_t").value.trim() }, pin = $("#g_p").value;
     if (!c.u || !c.r || !c.t) throw new Error("Hãy điền đủ tên người dùng, repo và token"); if (pin.length < 6) throw new Error("PIN cần ít nhất 6 ký tự");
-    await connect(c, async () => { ls.set("cfg2", JSON.stringify({ u: c.u, r: c.r, b: c.b, ...await seal(pin, c.t) })) });
+    sessionPin = pin; await connect(c, async () => { ls.set("cfg2", JSON.stringify({ u: c.u, r: c.r, b: c.b, ...await seal(pin, c.t) })) });
   } catch (e) { log("❌ " + e.message) }
 };
 $("#l_out").onclick = () => location.reload();
 
-const TABS = [["series", "📚 Bộ truyện"], ["chap", "➕ Chương"], ["tip", "💡 Mẹo"], ["link", "🔗 Liên kết"], ["vid", "🎵 Video"], ["proj", "🧩 Dự án"], ["site", "⚙️ Trang web"], ["man", "🗂️ Quản lý"]];
+const TABS = [["series", "📚 Bộ truyện"], ["chap", "➕ Chương"], ["tr", "🈯 Dịch"], ["tip", "💡 Mẹo"], ["link", "🔗 Liên kết"], ["vid", "🎵 Video"], ["proj", "🧩 Dự án"], ["site", "⚙️ Trang web"], ["man", "🗂️ Quản lý"]];
 $("#tabs").innerHTML = TABS.map(([k, l]) => `<button type="button" data-k="${k}">${l}</button>`).join("");
-const tab = k => { [...TABS.map(x => x[0]), "edit", "vol"].forEach(t => $("#p-" + t).classList.toggle("on", t === k)); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)) };
+const tab = k => { document.querySelector("main").classList.toggle("wide", k === "tr"); [...TABS.map(x => x[0]), "edit", "vol"].forEach(t => $("#p-" + t).classList.toggle("on", t === k)); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)) };
 $("#tabs").onclick = e => { const b = e.target.closest("button"); if (b) tab(b.dataset.k) }; tab("series");
 
 function fillSel() {
   const o = []; for (const k of ["novel", "manga"]) data[KEYS[k]].forEach((s, i) => o.push(`<option value="${k}|${i}">${k === "novel" ? "📖" : "🖼️"} ${esc(s.title)}</option>`));
-  $("#c_ser").innerHTML = o.join("") || "<option value=''>(chưa có bộ nào)</option>"; chapUI(); gChips();
+  $("#c_ser").innerHTML = o.join("") || "<option value=''>(chưa có bộ nào)</option>"; chapUI(); gChips(); trFill();
 }
 function chapUI() { const k = $("#c_ser").value.split("|")[0]; $("#c_novel").hidden = k !== "novel"; $("#c_manga").hidden = k !== "manga"; volList() }
 function volList() {
@@ -363,6 +394,155 @@ $("#p-vol").onsubmit = e => { e.preventDefault(); run(async () => {
   sel.forEach(j => { if (v) s.chapters[j].vol = v; else delete s.chapters[j].vol });
   await save("Gán tập: " + s.title); ve = null; done("✅ Đã gán " + (v || "không tập") + " cho " + sel.length + " chương."); tab("man");
 }) };
+
+/* ===== Công cụ dịch ===== */
+let sessionPin = "", trKey = "", trSlug = null, trTimer = null, trStop = false, trNext = 0;
+const trWords = t => t.trim() ? t.trim().split(/\s+/).length : 0;
+const trGl = () => $("#t_gl").value.split("\n").map(l => l.split("=")).filter(p => p.length >= 2 && p[0].trim()).map(([x, ...y]) => [x.trim(), y.join("=").trim()]);
+const trCount = () => { $("#t_sc").textContent = "· " + $("#t_in").value.replace(/\s/g, "").length.toLocaleString("vi-VN") + " ký tự"; $("#t_oc").textContent = "· " + trWords($("#t_out").value).toLocaleString("vi-VN") + " chữ" };
+const trBusy = on => document.querySelectorAll(".trb").forEach(b => b.disabled = on);
+const trDraft = () => { if (trSlug) ls.set("dr:" + trSlug, JSON.stringify({ t: $("#t_title").value, v: $("#t_vol").value, i: $("#t_in").value, o: $("#t_out").value, n: trNext })) };
+function trFill() {
+  const cur = $("#t_ser").value;
+  $("#t_ser").innerHTML = data.novels.map((s, i) => `<option value="${i}">${esc(s.title)}</option>`).join("") || "<option value=''>(chưa có novel, hãy tạo ở tab Bộ truyện)</option>";
+  if (cur && data.novels[+cur]) $("#t_ser").value = cur; trSer();
+}
+function trSer() {
+  if (trSlug) trDraft(); const s = data.novels[+$("#t_ser").value]; trSlug = s ? s.slug : null; if (!s) return;
+  let d = {}; try { d = JSON.parse(ls.get("dr:" + s.slug) || "{}") } catch (e) {}
+  const vs = [...new Set(s.chapters.map(c => (c.vol || "").trim()).filter(Boolean))]; $("#t_vols").innerHTML = vs.map(v => `<option value="${esc(v)}">`).join("");
+  $("#t_title").value = d.t || ""; $("#t_vol").value = d.v ?? (s.chapters.length ? (s.chapters[s.chapters.length - 1].vol || "") : "");
+  $("#t_in").value = d.i || ""; $("#t_out").value = d.o || ""; trNext = d.n || 0; $("#t_gl").value = ls.get("gl:" + s.slug) || GL[s.slug] || ""; trCount();
+  $("#t_prog").textContent = d.i ? "Đã khôi phục bản nháp." : "";
+}
+$("#t_ser").onchange = () => { trExitRV(); trSer() };
+$("#t_gl").addEventListener("input", () => { if (trSlug) ls.set("gl:" + trSlug, $("#t_gl").value) });
+["t_in", "t_out", "t_title", "t_vol"].forEach(id => $("#" + id).addEventListener("input", () => { trCount(); clearTimeout(trTimer); trTimer = setTimeout(trDraft, 600) }));
+(function () { let S = {}; try { S = JSON.parse(ls.get("trset") || "{}") } catch (e) {} if (S.src) $("#t_src").value = S.src; if (S.style) $("#t_style").value = S.style; $("#t_model").value = ls.get("gmodel") || "gemini-3.6-flash" })();
+["t_src", "t_style"].forEach(id => $("#" + id).addEventListener("change", () => ls.set("trset", JSON.stringify({ src: $("#t_src").value, style: $("#t_style").value }))));
+$("#t_model").addEventListener("change", () => ls.set("gmodel", $("#t_model").value.trim()));
+async function trLoadKey() { try { const o = JSON.parse(ls.get("gem2") || "null"); if (o && sessionPin) { trKey = await unseal(sessionPin, o); $("#t_key").value = "••••••••" } } catch (e) {} }
+$("#t_keysave").onclick = async () => {
+  const k = $("#t_key").value.trim(); if (!k || /^•+$/.test(k)) return log("Hãy dán API key vào ô trước");
+  if (!sessionPin) return log("Hãy đăng nhập lại bằng PIN để lưu key");
+  try { needHttps(); ls.set("gem2", JSON.stringify(await seal(sessionPin, k))); trKey = k; $("#t_key").value = "••••••••"; log("✅ Đã lưu key (mã hóa bằng PIN).") } catch (e) { log("❌ " + e.message) }
+};
+$("#t_keydel").onclick = () => { ls.del("gem2"); trKey = ""; $("#t_key").value = ""; log("Đã xóa key.") };
+const trPrompt = txt => `Bạn là dịch giả light novel chuyên nghiệp. Hãy dịch đoạn văn ${$("#t_src").value} dưới đây sang tiếng Việt.
+Yêu cầu:
+- Văn phong: ${$("#t_style").value}.
+- Giữ nguyên cấu trúc đoạn: mỗi đoạn gốc tương ứng một đoạn dịch, cách nhau bằng một dòng trống. Không gộp hay tách đoạn, không bỏ sót câu nào.
+- Giữ lời thoại trong dấu ngoặc kép.
+${trGl().length ? "- Dùng đúng bảng tên riêng sau, xưng hô nhất quán:\n" + trGl().map(([x, y]) => x + " = " + y).join("\n") + "\n" : ""}- Chỉ trả về bản dịch, không giải thích, không ghi chú, không thêm tiêu đề.
+
+Đoạn cần dịch:
+"""
+${txt}
+"""`;
+async function gem(prompt) {
+  if (!trKey) throw new Error("Chưa có Gemini API key. Mở ⚙️ Cài đặt dịch tự động để nhập.");
+  const model = $("#t_model").value.trim() || "gemini-3.6-flash";
+  for (let a = 0; a < 3; a++) {
+    let r, j;
+    try {
+      r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": trKey }, body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { temperature: 0.4 } }) });
+      j = await r.json().catch(() => ({}));
+    } catch (e) { throw new Error("Không kết nối được tới Gemini. Kiểm tra mạng hoặc tắt trình chặn quảng cáo/VPN rồi thử lại.") }
+    if (r.status === 429 && a < 2) { for (let s = 25; s > 0 && !trStop; s--) { $("#t_prog").textContent = `Hết hạn mức tạm thời, chờ ${s}s rồi thử lại...`; await new Promise(z => setTimeout(z, 1000)) } continue }
+    if (!r.ok) throw new Error(j.error?.message || "Lỗi " + r.status);
+    const t = (j.candidates?.[0]?.content?.parts || []).map(p => p.text || "").join("").trim();
+    if (!t) throw new Error("Model không trả về nội dung (có thể bị bộ lọc chặn). Thử chia nhỏ đoạn hoặc đổi model.");
+    return t;
+  }
+}
+const chunks = txt => { const ps = txt.replace(/\r/g, "").split(/\n+/).map(x => x.trim()).filter(Boolean), out = []; let cur = ""; for (const p of ps) { if (cur && cur.length + p.length > 1800) { out.push(cur); cur = "" } cur += (cur ? "\n" : "") + p } if (cur) out.push(cur); return out };
+async function trRun(from) {
+  const src = $("#t_in").value; if (!src.trim()) throw new Error("Hãy dán bản gốc vào ô bên trái");
+  const cs = chunks(src); trStop = false; if (from === 0 || from >= cs.length) { from = 0; $("#t_out").value = "" }
+  for (let k = from; k < cs.length; k++) {
+    if (trStop) { trNext = k; trDraft(); $("#t_prog").textContent = `⏹ Đã dừng ở đoạn ${k}/${cs.length}. Bấm ▶ Dịch tiếp để tiếp tục.`; return }
+    $("#t_prog").textContent = `Đang dịch ${k + 1}/${cs.length}...`;
+    let t; try { t = await gem(trPrompt(cs[k])) } catch (e) { trNext = k; trDraft(); throw new Error(`Lỗi ở đoạn ${k + 1}/${cs.length}: ${e.message} (bấm ▶ Dịch tiếp để thử lại từ đoạn này)`) }
+    const o = $("#t_out"); o.value += (o.value.trim() ? "\n\n" : "") + t.split(/\n+/).map(x => x.trim()).filter(Boolean).join("\n\n"); trNext = k + 1; trDraft(); trCount();
+  }
+  trNext = 0; trDraft(); $("#t_prog").textContent = `✅ Đã dịch xong ${cs.length} đoạn. Hãy đọc lại và chỉnh sửa trước khi đăng.`;
+}
+async function trGo(from) { trBusy(true); $("#t_stop").hidden = false; try { await trRun(from) } catch (e) { $("#t_prog").textContent = "❌ " + e.message; log("❌ " + e.message) } trBusy(false); $("#t_stop").hidden = true }
+$("#t_all").onclick = () => { if ($("#t_out").value.trim() && !confirm("Ô bản dịch đang có nội dung, dịch lại từ đầu sẽ ghi đè. Tiếp tục?")) return; trGo(0) };
+$("#t_resume").onclick = () => trGo(trNext);
+$("#t_stop").onclick = () => { trStop = true; $("#t_prog").textContent = "Đang dừng sau khi xong đoạn hiện tại..." };
+$("#t_sel").onclick = async () => {
+  const ta = $("#t_in"), sel = ta.value.slice(ta.selectionStart, ta.selectionEnd).trim(); if (!sel) return log("Hãy bôi đen đoạn gốc cần dịch ở ô bên trái");
+  trBusy(true); try { log("Đang dịch đoạn đã chọn..."); const t = await gem(trPrompt(sel)), o = $("#t_out"), p = o.selectionStart ?? o.value.length; o.value = o.value.slice(0, p) + t + o.value.slice(p); trDraft(); trCount(); log("✅ Đã chèn bản dịch tại vị trí con trỏ trong ô bên phải.") } catch (e) { log("❌ " + e.message) } trBusy(false);
+};
+$("#t_join").onclick = () => { const sp = /Nhật|Trung|Hàn/.test($("#t_src").value) ? "" : " "; $("#t_in").value = $("#t_in").value.replace(/\r/g, "").replace(/([^\n])\n(?!\n)/g, "$1" + sp); trCount(); trDraft() };
+$("#t_apply").onclick = () => { let t = $("#t_out").value; trGl().forEach(([x, y]) => t = t.split(x).join(y)); $("#t_out").value = t; trDraft(); log("✅ Đã áp dụng bảng tên riêng cho bản dịch.") };
+$("#t_clear").onclick = () => { if (!confirm("Xóa bản gốc, bản dịch và tên chương đang soạn?")) return; ["t_in", "t_out", "t_title"].forEach(id => $("#" + id).value = ""); trNext = 0; trDraft(); trCount(); $("#t_prog").textContent = "" };
+$("#t_pub").onclick = () => run(async () => {
+  if (trRV) trSync();
+  const s = data.novels[+$("#t_ser").value]; if (!s) throw new Error("Hãy chọn bộ truyện (novel)");
+  const t = $("#t_title").value.trim(), text = $("#t_out").value.trim(); if (!t) throw new Error("Hãy nhập tên chương"); if (!text) throw new Error("Chưa có bản dịch để đăng");
+  if (!confirm(`Đăng "${t}" (${trWords(text)} chữ) lên bộ "${s.title}"?`)) return;
+  const ch = { t, date: $("#t_date").value }, vol = $("#t_vol").value.trim(); if (vol) ch.vol = vol;
+  const id = `c${s.chapters.length + 1}_${rid()}`, p = `novels/${s.slug}/${id}.txt`, body = text.split(/\n+/).map(x => x.trim()).filter(Boolean).join("\n");
+  log("Đang tải chương lên..."); await put(p, b64t(body), "Chương: " + t); ch.file = p; ch.words = trWords(body);
+  if (vol) { const at = s.chapters.map(c => (c.vol || "").trim()).lastIndexOf(vol); if (at >= 0) s.chapters.splice(at + 1, 0, ch); else s.chapters.push(ch) } else s.chapters.push(ch);
+  await save("Thêm chương: " + s.title + " - " + t);
+  ["t_in", "t_out", "t_title"].forEach(x => $("#" + x).value = ""); trNext = 0; trDraft(); $("#t_prog").textContent = "";
+  done("✅ Đã đăng chương. Web cập nhật sau 1–2 phút.");
+});
+
+/* ===== Bảng tên trên repo ===== */
+let GL = {};
+async function glFetch() { const r = await api("glossary.json", { q: "?ref=" + cfg.b }); if (r.status === 404) return {}; if (!r.ok) throw new Error("Không đọc được glossary.json (" + r.status + ")"); return JSON.parse(t64((await r.json()).content)) }
+async function glLoad() { try { GL = await glFetch(); if (trSlug && !$("#t_gl").value.trim() && GL[trSlug]) { $("#t_gl").value = GL[trSlug]; ls.set("gl:" + trSlug, GL[trSlug]) } } catch (e) { GL = {} } }
+$("#gl_push").onclick = () => run(async () => {
+  if (!trSlug) throw new Error("Hãy chọn bộ truyện"); log("Đang lưu bảng tên lên repo...");
+  const cur = await glFetch(), t = $("#t_gl").value; if (t.trim()) cur[trSlug] = t; else delete cur[trSlug];
+  await put("glossary.json", b64t(JSON.stringify(cur, null, 1)), "Bảng tên riêng: " + trSlug); GL = cur; log("✅ Đã lưu bảng tên của bộ này lên repo.");
+});
+$("#gl_pull").onclick = () => run(async () => {
+  if (!trSlug) throw new Error("Hãy chọn bộ truyện"); GL = await glFetch(); const t = GL[trSlug]; if (!t) throw new Error("Repo chưa có bảng tên cho bộ này");
+  if ($("#t_gl").value.trim() && !confirm("Ghi đè bảng tên đang có trên máy này bằng bản trên repo?")) return;
+  $("#t_gl").value = t; ls.set("gl:" + trSlug, t); log("✅ Đã lấy bảng tên từ repo.");
+});
+
+/* ===== Chế độ đối chiếu ===== */
+let trRV = false, trS = [], trO = [], trTimer2 = null;
+const trParas = t => t.replace(/\r/g, "").split(/\n+/).map(x => x.trim()).filter(Boolean);
+const trFlag = v => !v.trim() ? "miss" : (/Nhật|Trung|Hàn/.test($("#t_src").value) && /[\u3040-\u30ff\u4e00-\u9fff\uac00-\ud7af]/.test(v) ? "cjk" : "");
+const autosize = t => { t.style.height = "auto"; t.style.height = t.scrollHeight + "px" };
+const trSync = () => { $("#t_out").value = trO.filter(x => x && x.trim()).join("\n\n"); trCount(); trDraft() };
+function trRender(fresh) {
+  trS = trParas($("#t_in").value); if (fresh) trO = trParas($("#t_out").value);
+  const n = Math.max(trS.length, trO.length), cnt = trO.filter(x => x && x.trim()).length;
+  $("#t_rvs").textContent = trS.length === cnt ? `✅ ${trS.length} đoạn gốc – ${cnt} đoạn dịch (khớp nhau).` : `⚠️ ${trS.length} đoạn gốc – ${cnt} đoạn dịch. Dùng ＋ / − để căn lại cho khớp.`;
+  $("#t_rows").innerHTML = Array.from({ length: n }, (_, i) => { const o = trO[i] || ""; return `<div class="rv ${trFlag(o)}"><div class="rn">${i + 1}</div><div class="rs">${esc(trS[i] || "")}</div><div class="ro"><textarea data-i="${i}" rows="2">${esc(o)}</textarea><div class="ra"><button type="button" data-a="re" data-i="${i}" title="Dịch lại đoạn này">↻</button><button type="button" data-a="ins" data-i="${i}" title="Chèn dòng trống phía trên (đẩy bản dịch xuống)">＋</button><button type="button" data-a="del" data-i="${i}" title="Xóa dòng bản dịch này (kéo bản dịch lên)">−</button></div></div></div>` }).join("");
+  document.querySelectorAll("#t_rows textarea").forEach(autosize);
+}
+function trExitRV() { if (trRV) $("#t_view").click() }
+$("#t_view").onclick = () => {
+  trRV = !trRV; $(".trgrid").hidden = trRV; $("#t_rv").hidden = !trRV; $("#t_view").textContent = trRV ? "✏️ Về soạn thảo" : "👁 Đối chiếu";
+  if (trRV) trRender(true); else trSync();
+};
+$(".trbar").addEventListener("click", e => { const b = e.target.closest("button"); if (b && trRV && b.id !== "t_view" && b.id !== "t_stop") trExitRV() }, true);
+$("#t_only").onchange = e => $("#t_rows").classList.toggle("only", e.target.checked);
+$("#t_rows").addEventListener("input", e => {
+  const ta = e.target.closest("textarea"); if (!ta) return; trO[+ta.dataset.i] = ta.value; autosize(ta);
+  clearTimeout(trTimer2); trTimer2 = setTimeout(trSync, 400);
+});
+$("#t_rows").addEventListener("change", e => { const ta = e.target.closest("textarea"); if (ta) ta.closest(".rv").className = "rv " + trFlag(ta.value) });
+$("#t_rows").addEventListener("click", async e => {
+  const b = e.target.closest("button[data-a]"); if (!b) return; const i = +b.dataset.i, act = b.dataset.a;
+  if (act === "ins") { trO.splice(i, 0, ""); trRender(); trSync() }
+  else if (act === "del") { trO.splice(i, 1); trRender(); trSync() }
+  else if (act === "re") {
+    if (!trS[i]) return log("Dòng này không có bản gốc để dịch lại.");
+    b.disabled = true; log("Đang dịch lại đoạn " + (i + 1) + "...");
+    try { const t = (await gem(trPrompt(trS[i]))).split(/\n+/).map(x => x.trim()).filter(Boolean).join(" "), ta = $(`#t_rows textarea[data-i="${i}"]`); trO[i] = t; if (ta) { ta.value = t; autosize(ta); ta.closest(".rv").className = "rv " + trFlag(t) } trSync(); log("✅ Đã dịch lại đoạn " + (i + 1) + ".") } catch (err) { log("❌ " + err.message) }
+    b.disabled = false;
+  }
+});
 </script>
 </body>
 </html>
