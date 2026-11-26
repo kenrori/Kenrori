@@ -171,6 +171,8 @@ details.ms>summary::-webkit-details-marker{display:none}
 #t_set input,#t_set select,#t_set textarea{background:var(--bg)}
 #pv_list .li{background:var(--bg)}#pv_list .li input{width:auto;margin:0}.pvs{font-size:.8rem;color:var(--mu);max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pvs.ok{color:var(--ok)}.pvs.err{color:var(--err)}
 .pvadd{margin-top:10px}
+.insw{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px}.insw button{margin:0}.insw small{font-size:.8rem}
+.pvt figure{margin:1.2em 0;text-align:center}.pvt figure img{max-width:100%;max-height:70vh;border-radius:6px}.pvt figcaption{color:var(--mu);font-size:.85rem;margin-top:4px}
 .tbw{margin:6px 0 12px;background:var(--s1);border-radius:8px;padding:10px 14px}.tbw summary{cursor:pointer;font-weight:600}.tbw textarea{min-height:150px;margin-top:8px;background:var(--bg);font-size:.9rem;line-height:1.6}.tbw .acts{margin-top:8px}
 .trgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
 .trta{min-height:460px;font-size:15px;line-height:1.75}
@@ -297,7 +299,7 @@ details.ms>summary::-webkit-details-marker{display:none}
 <div class="full"><label for="c_title">Tên chương</label><input id="c_title" placeholder="Chương 12: ..."></div>
 <div><label for="c_vol">Tập <small>(để trống nếu không chia tập)</small></label><input id="c_vol" list="c_vols" placeholder="Tập 1"><datalist id="c_vols"></datalist></div>
 <div><label for="c_date">Ngày đăng</label><input id="c_date" type="date"></div></div>
-<div id="c_novel"><label for="c_text">Nội dung <small>(dán vào, hoặc chọn file .txt bên dưới)</small></label><textarea id="c_text" style="min-height:260px"></textarea><input id="c_file" type="file" accept=".txt" style="margin-top:8px"></div>
+<div id="c_novel"><label for="c_text">Nội dung <small>(dán vào, hoặc chọn file .txt bên dưới)</small></label><textarea id="c_text" style="min-height:260px"></textarea><div class="insw"><button type="button" class="sec sm" data-insimg="c_text">Chèn ảnh minh họa vào đoạn này</button><small class="mu">Đặt con trỏ ở chỗ muốn chèn rồi bấm nút. Ảnh hiện thành dòng [img:...], thêm chú thích bằng [img:...|chú thích].</small></div><input id="c_file" type="file" accept=".txt" style="margin-top:8px"></div>
 <div id="c_manga"><label for="c_imgs"><span id="c_imgl">Ảnh các trang</span> <small>(chọn nhiều ảnh, tự xếp theo tên file)</small></label><input id="c_imgs" type="file" accept="image/*" multiple><label class="ck" id="c_firstw"><input type="checkbox" id="c_first" checked> Đặt ở đầu tập <small>(trước các chương chữ của tập đó)</small></label><label class="ck"><input type="checkbox" id="c_cz" checked> Nén ảnh trước khi đăng <small>(WebP, rộng tối đa 1400px; ảnh nào nén không nhỏ hơn thì giữ nguyên)</small></label></div>
 <div class="acts"><button>Đăng chương</button><button type="button" class="sec" id="c_pv">Xem trước</button></div></form>
 
@@ -331,7 +333,7 @@ details.ms>summary::-webkit-details-marker{display:none}
 <div><label for="t_out">Bản dịch <span class="mu" id="t_oc"></span></label><textarea id="t_out" class="trta" placeholder="Bản dịch tiếng Việt"></textarea></div></div>
 <div id="t_rv" hidden><div class="rvh"><span id="t_rvs" class="mu"></span><label><input type="checkbox" id="t_only"> Chỉ hiện dòng cần chú ý</label></div><div id="t_rows"></div></div>
 <p class="mu" id="t_prog"></p>
-<div class="trbar"><button type="button" id="t_all" class="trb">Dịch tất cả</button><button type="button" id="t_resume" class="trb sec">Dịch tiếp</button><button type="button" id="t_sel" class="trb sec">Dịch đoạn bôi đen</button><button type="button" id="t_polish" class="trb sec" title="Bôi đen một đoạn trong ô bản dịch, hoặc không bôi đen để trau chuốt cả bài">Trau chuốt</button><button type="button" id="t_view" class="trb sec">Đối chiếu</button><button type="button" id="t_stop" class="dng" hidden>Dừng</button>
+<div class="trbar"><button type="button" id="t_all" class="trb">Dịch tất cả</button><button type="button" id="t_resume" class="trb sec">Dịch tiếp</button><button type="button" id="t_sel" class="trb sec">Dịch đoạn bôi đen</button><button type="button" class="trb sec" data-insimg="t_out" title="Đặt con trỏ trong ô bản dịch ở chỗ muốn chèn">Chèn ảnh</button><button type="button" id="t_polish" class="trb sec" title="Bôi đen một đoạn trong ô bản dịch, hoặc không bôi đen để trau chuốt cả bài">Trau chuốt</button><button type="button" id="t_view" class="trb sec">Đối chiếu</button><button type="button" id="t_stop" class="dng" hidden>Dừng</button>
 <button type="button" id="t_join" class="trb sec">Nối dòng gốc</button><button type="button" id="t_apply" class="trb sec">Áp dụng bảng tên</button><button type="button" id="t_clear" class="trb dng">Xóa nháp</button><span class="sp"></span><button type="button" id="t_pv" class="trb sec">Xem trước</button><button type="button" id="t_pub" class="trb">Đăng chương lên web</button></div></div>
 
 <div class="panel" id="p-imp"><h3>Nhập từ file</h3><p class="mu">Tải lên cả bộ trong một file Word (.docx) hoặc văn bản (.txt), công cụ tự chia thành từng chương theo tiêu đề hoặc theo các dòng như "Chương 1", "Tập 2". Bạn xem lại danh sách, sửa tên, bỏ chọn phần thừa rồi mới đăng.</p>
@@ -425,7 +427,7 @@ details.ms>summary::-webkit-details-marker{display:none}
 
 <form class="panel" id="p-edit"><h3>Sửa chương</h3><p class="mu" id="e_info"></p>
 <div class="g2"><div class="full"><label for="e_title">Tên chương</label><input id="e_title"></div><div><label for="e_vol">Tập <small>(để trống nếu không chia tập)</small></label><input id="e_vol"></div><div><label for="e_date">Ngày đăng</label><input id="e_date" type="date"></div></div>
-<div id="e_novel"><label for="e_text">Nội dung</label><textarea id="e_text" style="min-height:360px"></textarea></div>
+<div id="e_novel"><label for="e_text">Nội dung</label><textarea id="e_text" style="min-height:360px"></textarea><div class="insw"><button type="button" class="sec sm" data-insimg="e_text">Chèn ảnh minh họa vào đoạn này</button><small class="mu">Đặt con trỏ ở chỗ muốn chèn rồi bấm nút. Muốn bỏ ảnh, xóa dòng [img:...] đó.</small></div></div>
 <div id="e_imgw" hidden><label>Ảnh trong chương <small>(dùng ← → để đổi thứ tự, ✕ để bỏ ảnh; ảnh mới được thêm vào cuối)</small></label><div id="e_imgs" class="eimgs"></div>
 <label for="e_add">Thêm ảnh</label><input id="e_add" type="file" accept="image/*" multiple><label class="ck"><input type="checkbox" id="e_cz" checked> Nén ảnh mới trước khi đăng</label></div>
 <p class="mu" id="e_mn" hidden>Ảnh bị bỏ chỉ không hiện trên web nữa, file vẫn còn trong repo.</p>
@@ -584,7 +586,7 @@ $("#p-chap").onsubmit = e => { e.preventDefault(); run(async () => {
   if (kind === "novel" && !img) {
     let text = $("#c_text").value; const f = $("#c_file").files[0]; if (!text.trim() && f) text = await f.text();
     if (!text.trim()) throw new Error("Hãy dán nội dung hoặc chọn file .txt");
-    const p = `novels/${s.slug}/${id}.txt`; log("Đang tải chương..."); await put(p, b64t(text), "Chương: " + t); ch.file = p; ch.words = text.trim().split(/\s+/).length;
+    const p = `novels/${s.slug}/${id}.txt`; log("Đang tải chương..."); await put(p, b64t(text), "Chương: " + t); ch.file = p; ch.words = trWords(text);
   } else {
     const fs = [...$("#c_imgs").files].sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })); if (!fs.length) throw new Error(img ? "Hãy chọn ảnh minh họa" : "Hãy chọn ảnh các trang");
     ch.pages = []; if (img) ch.type = "img";
@@ -705,7 +707,7 @@ $("#p-edit").onsubmit = e => { e.preventDefault(); run(async () => {
   c.t = t; c.date = $("#e_date").value; const ev = $("#e_vol").value.trim(); if (ev) c.vol = ev; else delete c.vol;
   if (ed.k === "novels" && !(c.type === "img" || c.pages)) {
     const text = $("#e_text").value; if (!text.trim()) throw new Error("Nội dung đang trống");
-    c.words = text.trim().split(/\s+/).length;
+    c.words = trWords(text);
     if (c.text !== undefined) c.text = text; else { log("Đang lưu nội dung..."); await put(c.file, b64t(text), "Sửa chương: " + t) }
   } else if (ed.k === "manga" || c.type === "img") {
     if (!EI.length) throw new Error("Chương phải có ít nhất một ảnh");
@@ -998,7 +1000,8 @@ $("#v_auto").onclick = () => {
 
 /* ===== Công cụ dịch ===== */
 let sessionPin = "", trKey = "", trSlug = null, trTimer = null, trStop = false, trNext = 0;
-const trWords = t => t.trim() ? t.trim().split(/\s+/).length : 0;
+const IMGL = /^\[img:[^\]\n]*\]$/gm;
+const trWords = t => { t = String(t).replace(IMGL, "").trim(); return t ? t.split(/\s+/).length : 0 };
 const trGl = () => $("#t_gl").value.split("\n").map(l => l.split("=")).filter(p => p.length >= 2 && p[0].trim()).map(([x, ...y]) => [x.trim(), y.join("=").trim()]);
 const trCount = () => { $("#t_sc").textContent = "· " + $("#t_in").value.replace(/\s/g, "").length.toLocaleString("vi-VN") + " ký tự"; $("#t_oc").textContent = "· " + trWords($("#t_out").value).toLocaleString("vi-VN") + " chữ" };
 const trBusy = on => document.querySelectorAll(".trb").forEach(b => b.disabled = on);
@@ -1162,7 +1165,7 @@ NGUYÊN TẮC
 4. Bỏ đại từ thừa. Tránh văn dịch: "một cách + tính từ", "việc" đầu câu, nhiều "của" liên tiếp, "bị/được" thừa, "điều đó", "nó" chỉ sự việc, "đã" ở mọi câu, lặp "anh ấy/cô ấy", lặp dẫn thoại "cô ấy nói", lặp một từ cảm xúc trong cùng đoạn.
 5. Từ tượng thanh, tượng hình chuyển thành từ Việt (ドキドキ → thình thịch, ニヤニヤ → cười nham nhở, ぎゅっ → ôm chặt), không phiên âm. Chơi chữ: ưu tiên giữ được cái hay, cái buồn cười.
 6. Hội thoại: ${trDlg()}.
-7. Câu quá mơ hồ: dịch theo cách hiểu hợp lý nhất và thêm [?] ở cuối câu đó.
+7. Câu quá mơ hồ: dịch theo cách hiểu hợp lý nhất và thêm [?] ở cuối câu đó. Dòng có dạng [img:...] là ảnh minh họa: chép lại y nguyên thành một đoạn riêng, không dịch.
 ${TRL[src] ? "8. " + TRL[src] + "\n" : ""}${/Nhật/.test(src) ? "9. Hậu tố gọi tên tiếng Nhật: " + (TRH[$("#t_hon").value] || TRH.keep3) + ".\n" : ""}
 THỂ LOẠI VÀ VĂN PHONG: ${g[1]}${st ? "\nYÊU CẦU THÊM VỀ VĂN PHONG: " + st : ""}
 ${gl.length ? "\nBẢNG TÊN RIÊNG, BẮT BUỘC DÙNG ĐÚNG:\n" + gl.map(([x, y]) => x + " = " + y).join("\n") + "\n" : ""}${nt ? "\nGHI CHÚ CỦA NGƯỜI DỊCH CHO BỘ NÀY, BẮT BUỘC THEO:\n" + nt + "\n" : ""}${br ? "\nPHÂN TÍCH CHƯƠNG NÀY (nhân vật và xưng hô đã chốt, dùng thống nhất cho mọi phần):\n" + br + "\n" : ""}
@@ -1406,12 +1409,29 @@ $("#e_imgs").onclick = e => {
 $("#e_add").onchange = e => { [...e.target.files].sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })).forEach(f => EI.push({ f, u: URL.createObjectURL(f) })); e.target.value = ""; eiRender() };
 
 /* ===== Xem trước chương ===== */
+/* ===== Chèn ảnh minh họa vào giữa chương chữ ===== */
+const IMGC = {}; // ảnh vừa tải lên, để xem trước ngay khi GitHub Pages chưa cập nhật
+function insSlug(id) { if (id === "t_out") return trSlug; if (id === "e_text") return ed ? data[ed.k][ed.i].slug : null; const [k, i] = $("#c_ser").value.split("|"); return data[KEYS[k]]?.[i]?.slug }
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-insimg]"); if (!b) return; const ta = $("#" + b.dataset.insimg), slug = insSlug(b.dataset.insimg);
+  if (!slug) return log("❌ Hãy chọn bộ truyện trước"); const pos = ta.selectionStart ?? ta.value.length;
+  const inp = document.createElement("input"); inp.type = "file"; inp.accept = "image/*"; inp.multiple = true;
+  inp.onchange = () => { const fs = [...inp.files].sort((a, c) => a.name.localeCompare(c.name, undefined, { numeric: true })); if (!fs.length) return; run(async () => {
+    const lines = [];
+    for (let j = 0; j < fs.length; j++) { log(`Đang tải ảnh ${j + 1}/${fs.length}...`); const f = fs[j]; let b64 = null, ext = (f.name.split(".").pop() || "jpg").toLowerCase().replace("jpeg", "jpg"); const r = await squeeze(f); if (r) { b64 = r.b64; ext = r.ext } if (!b64) b64 = await fileB64(f); const p = `novels/${slug}/img/${rid()}.${ext}`; await put(p, b64, "Ảnh minh họa trong chương"); IMGC[p] = URL.createObjectURL(f); lines.push(`[img:${p}]`) }
+    const pre = ta.value.slice(0, pos), post = ta.value.slice(pos), ins = (pre && !/\n$/.test(pre) ? "\n" : "") + lines.join("\n") + (post && !/^\n/.test(post) ? "\n" : "");
+    ta.value = pre + ins + post; ta.dispatchEvent(new Event("input", { bubbles: true })); ta.focus(); ta.setSelectionRange(pos + ins.length, pos + ins.length);
+    log(`✅ Đã chèn ${lines.length} ảnh. Bấm Xem trước để xem, nhớ lưu hoặc đăng chương để giữ thay đổi.`);
+  }) };
+  inp.click();
+});
 function preview({ title, vol, text, imgs }) {
   let body, info, note = "";
   if (imgs) { body = `<div class="pvg">${imgs.map(u => `<img src="${esc(u)}" alt="">`).join("")}</div>`; info = imgs.length + " ảnh"; if (!imgs.length) note = "Chưa có ảnh nào." }
   else {
     const ps = String(text || "").normalize("NFC").split(/\n+/).map(x => x.trim()).filter(Boolean), w = ps.join(" ").split(/\s+/).filter(Boolean).length;
-    body = `<div class="pvt">${ps.map(x => `<p>${esc(x)}</p>`).join("") || '<p class="mu">Chưa có nội dung.</p>'}</div>`; info = `${w.toLocaleString("vi-VN")} chữ, ${ps.length} đoạn`;
+    const im = x => /^\[img:\s*([^\]|]+?)\s*(?:\|\s*([^\]]*))?\]$/.exec(x), ni = ps.filter(im).length;
+    body = `<div class="pvt">${ps.map(x => { const m = im(x); return m ? `<figure><img src="${esc(IMGC[m[1]] || m[1])}" alt="">${m[2] ? `<figcaption>${esc(m[2])}</figcaption>` : ""}</figure>` : `<p>${esc(x)}</p>` }).join("") || '<p class="mu">Chưa có nội dung.</p>'}</div>`; info = `${trWords(ps.join("\n")).toLocaleString("vi-VN")} chữ, ${ps.length - ni} đoạn${ni ? `, ${ni} ảnh` : ""}`;
     if (ps.length === 1 && w > 300) note = "Cả chương chỉ có một đoạn, có thể bị mất xuống dòng.";
     else if (ps.some(x => x.length > 2000)) note = "Có đoạn rất dài, có thể bị dính nhiều đoạn vào nhau.";
     else if (/[぀-ヿ一-鿿]/.test(ps.join(""))) note = "Còn sót chữ Nhật hoặc Trung trong nội dung.";
@@ -1499,14 +1519,14 @@ function impSplit(B) {
   const mode = $("#i_mode").value, useH = mode === "h" || (mode === "auto" && !!lv), chapLv = lv ? +lv[0] : 0;
   const segs = []; let vol = "", cur = { t: "Mở đầu", vol: "", body: [], imgs: [], pre: true };
   for (const b of B) {
-    if (b.img) { cur.imgs.push(b.img); continue }
+    if (b.img) { cur.imgs.push(b.img); cur.body.push("\u0000IMG" + (cur.imgs.length - 1)); continue }
     if (isVol(b.t) && (b.h || b.t.length <= 60)) { if (cur.body.length || cur.imgs.length) segs.push(cur); vol = volName(b.t); cur = { t: "Mở đầu", vol, body: [], imgs: [], pre: true }; continue }
     const head = useH ? (b.h && b.h <= chapLv) : isChap(b.t);
     if (head) { if (cur.body.length || cur.imgs.length || !cur.pre) segs.push(cur); cur = { t: b.t.slice(0, 200), vol, body: [], imgs: [] } }
     else cur.body.push(b.t);
   }
   if (cur.body.length || cur.imgs.length || !cur.pre) segs.push(cur);
-  return { useH, segs: segs.map(g => { const w = g.body.join(" ").split(/\s+/).filter(Boolean).length, img = g.imgs.length > 0 && w < 30; return { ...g, w, type: img ? "img" : "text", on: g.pre ? (w >= 50 || img) : (w > 0 || img), t: g.pre && img ? "Minh họa" : g.t } }) };
+  return { useH, segs: segs.map(g => { const w = g.body.filter(x => x[0] !== "\u0000").join(" ").split(/\s+/).filter(Boolean).length, img = g.imgs.length > 0 && (w <= 5 || (w < 30 && /minh h(ọa|oạ)|illustration|口絵|挿絵|插图|彩页/i.test(g.t))); return { ...g, w, type: img ? "img" : "text", on: g.pre ? (w >= 50 || img) : (w > 0 || img), t: g.pre && img ? "Minh họa" : g.t } }) };
 }
 const VNRE = /(?:^|[^\p{L}])(?:tập|tap|volume|vol|quyển|quyen)\.?\s*[-_#:]?\s*(\d+|[IVXLC]+)(?![\p{L}\d])/iu;
 function impVols(segs, name, s, carry) {
@@ -1533,7 +1553,7 @@ function impVols(segs, name, s, carry) {
 function impRender() {
   const sel = IMP.filter(x => x.on), lost = IMP.filter(x => x.type === "text" && x.imgs.length).reduce((a, x) => a + x.imgs.length, 0);
   $("#i_sum").textContent = `Tìm thấy ${IMP.length} phần, đã chọn ${sel.length} để đăng`;
-  $("#i_note").textContent = [IMPINFO, lost ? `Có ${lost} ảnh nằm giữa các chương chữ sẽ không được đăng (chương chữ chỉ chứa chữ). Ảnh nằm riêng trong phần "Minh họa" vẫn được đăng thành chương minh họa.` : ""].filter(Boolean).join(" ");
+  $("#i_note").textContent = [IMPINFO, lost ? `Có ${lost} ảnh nằm giữa các chương chữ, sẽ được đăng kèm ngay tại vị trí đó trong chương. Ảnh nằm riêng trong phần "Minh họa" được đăng thành chương minh họa.` : ""].filter(Boolean).join(" ");
   $("#i_list").innerHTML = IMP.map((x, i) => `<div class="irow${x.on ? "" : " off"}"><input type="checkbox" data-ion="${i}" ${x.on ? "checked" : ""} aria-label="Chọn"><span class="n">${i + 1}</span><input type="text" class="vi" data-ivol="${i}" value="${esc(x.vol)}" placeholder="Tập"><input type="text" data-it="${i}" value="${esc(x.t)}"><small>${x.type === "img" ? x.imgs.length + " ảnh" : x.w.toLocaleString("vi-VN") + " chữ"}</small><button type="button" class="sec sm" data-ipv="${i}">Xem</button><span class="sn">${esc(x.type === "img" ? "Chương minh họa" : (x.body[0] || "").slice(0, 140))}</span></div>`).join("");
 }
 $("#i_go").onclick = () => run(async () => {
@@ -1551,7 +1571,7 @@ $("#i_go").onclick = () => run(async () => {
 });
 $("#i_list").addEventListener("input", e => { const t = e.target; if (t.dataset.it != null) IMP[+t.dataset.it].t = t.value; if (t.dataset.ivol != null) IMP[+t.dataset.ivol].vol = t.value });
 $("#i_list").addEventListener("change", e => { const t = e.target; if (t.dataset.ion != null) { IMP[+t.dataset.ion].on = t.checked; t.closest(".irow").classList.toggle("off", !t.checked); $("#i_sum").textContent = `Tìm thấy ${IMP.length} phần, đã chọn ${IMP.filter(x => x.on).length} để đăng` } });
-$("#i_list").addEventListener("click", e => { const b = e.target.closest("button[data-ipv]"); if (!b) return; const x = IMP[+b.dataset.ipv]; x.type === "img" ? preview({ title: x.t, vol: x.vol, imgs: x.imgs }) : preview({ title: x.t, vol: x.vol, text: x.body.join("\n") }) });
+$("#i_list").addEventListener("click", e => { const b = e.target.closest("button[data-ipv]"); if (!b) return; const x = IMP[+b.dataset.ipv]; x.type === "img" ? preview({ title: x.t, vol: x.vol, imgs: x.imgs }) : preview({ title: x.t, vol: x.vol, text: x.body.map(l => l[0] === "\u0000" ? `[img:${x.imgs[+l.slice(4)]}]` : l).join("\n") }) });
 $("#i_sort").onclick = () => { const L = chSort(IMP.map(x => ({ ...x, c0: x }))).map(x => x.c0); const same = L.every((x, j) => x === IMP[j]); IMP = L; impRender(); log(same ? "✅ Danh sách đã đúng thứ tự." : "✅ Đã sắp xếp lại danh sách. Kiểm tra rồi bấm Đăng.") };
 $("#i_bulkgo").onclick = () => { const v = $("#i_bulk").value.trim(), L = IMP.filter(x => x.on); if (!L.length) return log("❌ Chưa chọn mục nào"); L.forEach(x => x.vol = v); impRender(); log(v ? `✅ Đã gán ${v} cho ${L.length} mục.` : `✅ Đã bỏ tập của ${L.length} mục.`) };
 $("#i_all").onclick = () => { IMP.forEach(x => x.on = true); impRender() }; $("#i_none").onclick = () => { IMP.forEach(x => x.on = false); impRender() };
@@ -1576,8 +1596,15 @@ $("#i_pub").onclick = () => {
             const p = `novels/${s.slug}/${id}/${String(j + 1).padStart(3, "0")}.${ext}`; await put(p, b64, `${s.title} ${ch.t} ảnh ${j + 1}`); ch.pages.push(p);
           }
         } else {
-          const text = x.body.join("\n"); log(`Đang đăng ${n}/${L.length}: ${ch.t}...`);
-          const p = `novels/${s.slug}/${id}.txt`; await put(p, b64t(text), "Chương: " + ch.t); ch.file = p; ch.words = text.split(/\s+/).filter(Boolean).length;
+          const lines = [];
+          for (const l of x.body) {
+            if (l[0] !== "\u0000") { lines.push(l); continue }
+            const u = x.imgs[+l.slice(4)]; log(`Đang đăng ${n}/${L.length}: ${ch.t}, ảnh trong chương...`);
+            const blob = await (await fetch(u)).blob(); let b64 = null, ext = (blob.type.split("/")[1] || "jpg").replace("jpeg", "jpg"); if (cz) { const r = await squeeze(blob); if (r) { b64 = r.b64; ext = r.ext } } if (!b64) b64 = u.split(",")[1];
+            const ip = `novels/${s.slug}/img/${rid()}.${ext}`; await put(ip, b64, `${s.title} ${ch.t} ảnh`); lines.push(`[img:${ip}]`);
+          }
+          const text = lines.join("\n"); log(`Đang đăng ${n}/${L.length}: ${ch.t}...`);
+          const p = `novels/${s.slug}/${id}.txt`; await put(p, b64t(text), "Chương: " + ch.t); ch.file = p; ch.words = trWords(text);
         }
         { const vs = s.chapters.map(c => (c.vol || "").trim()), at = ch.vol ? vs.lastIndexOf(ch.vol) : -1, k = ch.vol ? volNum(ch.vol) : null, nx = at < 0 && k != null ? vs.findIndex(v => v && volNum(v) != null && volNum(v) > k) : -1;
           if (at >= 0) s.chapters.splice(at + 1, 0, ch); else if (nx >= 0) s.chapters.splice(nx, 0, ch); else s.chapters.push(ch) }

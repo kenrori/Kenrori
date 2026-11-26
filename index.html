@@ -290,6 +290,7 @@ iframe.ytf{width:100%;aspect-ratio:16/9;margin:0;border-radius:8px}
 .vmini{display:none}.vhd b{flex:1}
 @media(max-width:700px){.vbd{grid-template-columns:minmax(0,1fr);padding:10px}.vcv{display:none}.vhd{align-items:center}.vmini{display:block;width:34px;aspect-ratio:7/10;object-fit:cover;border-radius:3px}}
 .st.soon{color:#0d9488}
+.rd.novel .rimg{margin:1.6em 0;text-align:center}.rimg button{border:0;padding:0;background:none;cursor:zoom-in;display:block;margin:0 auto;max-width:100%}.rimg img{display:block;max-width:100%;max-height:88vh;margin:0 auto;border-radius:6px;box-shadow:0 8px 24px -10px #0006}.rimg figcaption{margin-top:8px;color:var(--mu);font-size:.85em;text-align:center}
 .tpl .cmw.cmside{max-width:none;margin:36px 0 0}
 .hcta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.hsec{background:#0008;color:#fff}.hsec:hover{background:#000b}
 .sch{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
@@ -670,7 +671,9 @@ ${isImgCh(c) ? "" : `<button class="fab" id="rsb" title="Tùy chỉnh đọc" ar
     LBL = c.pages; $("#meta").textContent += " · " + c.pages.length + " ảnh";
   } else if (kind === "novel") {
     let t = c.text; if (t == null) { rd.textContent = "Đang tải chương..."; try { const r = await fetch(c.file); if (!r.ok) throw 0; t = await r.text() } catch (e) { rd.innerHTML = "<p>Không tải được chương. Hãy mở web qua GitHub Pages (không mở file trực tiếp từ máy).</p>"; return } }
-    rd.innerHTML = t.split(/\n+/).filter(l => l.trim()).map(l => `<p>${esc(l)}</p>`).join(""); $("#meta").textContent += " · " + fmtN(c.words || W(t));
+    const IL = [], IMR = /^\[img:\s*((?:novels|images)\/[\w./%-]+\.(?:webp|jpe?g|png|gif|avif)|https:\/\/[^\s|\]"'<>]+\.(?:webp|jpe?g|png|gif|avif)(?:\?[^\s|\]"'<>]*)?)\s*(?:\|\s*([^\]]*))?\]$/i;
+    rd.innerHTML = t.split(/\n+/).map(l => l.trim()).filter(Boolean).map(l => { const m = IMR.exec(l); if (!m) return `<p>${esc(l)}</p>`; IL.push(m[1]); return `<figure class="rimg"><button type="button" onclick="LBL=RIMG;lbShow(${IL.length - 1})" aria-label="Phóng to ảnh minh họa"><img src="${esc(m[1])}" alt="${esc(m[2] || "Ảnh minh họa")}" loading="lazy"></button>${m[2] ? `<figcaption>${esc(m[2])}</figcaption>` : ""}</figure>` }).join(""); window.RIMG = IL;
+    $("#meta").textContent += " · " + fmtN(c.words || W(t.replace(/^\[img:[^\]\n]*\]$/gm, "")));
   } else {
     const pg = c.pages || Array.from({ length: c.n }, (_, k) => c.dir + String(k + 1).padStart(c.pad || 2, "0") + "." + (c.ext || "jpg"));
     if (ls.get("mm") === "page") {
