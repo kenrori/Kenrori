@@ -918,7 +918,7 @@
  ],
  "site": {
   "announce": {
-   "text": "Dị Giới Yên Bình đã bắt đầu Dịch !!!",
+   "text": "Web hiện vẫn đang phát triển, xin vui lòng vào Discord gợi ý nếu bạn có mong muốn",
    "url": ""
   },
   "about": {
@@ -946,5 +946,5 @@
   "stickers": [],
   "gc": ""
  },
- "rev": 1795725238232
+ "rev": 1795725287077
 }
