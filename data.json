@@ -112,7 +112,33 @@
   },
   {
    "slug": "zero-no-tsukaima",
-   "chapters": [],
+   "chapters": [
+    {
+     "t": "Minh Họa",
+     "date": "2026-11-26",
+     "vol": "Tập 1",
+     "pages": [
+      "novels/zero-no-tsukaima/c1_mwxgfzf2/001.webp",
+      "novels/zero-no-tsukaima/c1_mwxgfzf2/002.webp",
+      "novels/zero-no-tsukaima/c1_mwxgfzf2/003.webp",
+      "novels/zero-no-tsukaima/c1_mwxgfzf2/004.webp",
+      "novels/zero-no-tsukaima/c1_mwxgfzf2/005.webp",
+      "novels/zero-no-tsukaima/c1_mwxgfzf2/006.webp",
+      "novels/zero-no-tsukaima/c1_mwxgfzf2/007.webp",
+      "novels/zero-no-tsukaima/c1_mwxgfzf2/008.webp",
+      "novels/zero-no-tsukaima/c1_mwxgfzf2/009.webp",
+      "novels/zero-no-tsukaima/c1_mwxgfzf2/010.webp",
+      "novels/zero-no-tsukaima/c1_mwxgfzf2/011.webp",
+      "novels/zero-no-tsukaima/c1_mwxgfzf2/012.webp",
+      "novels/zero-no-tsukaima/c1_mwxgfzf2/013.webp",
+      "novels/zero-no-tsukaima/c1_mwxgfzf2/014.webp",
+      "novels/zero-no-tsukaima/c1_mwxgfzf2/015.webp",
+      "novels/zero-no-tsukaima/c1_mwxgfzf2/016.webp",
+      "novels/zero-no-tsukaima/c1_mwxgfzf2/017.webp"
+     ],
+     "type": "img"
+    }
+   ],
    "title": "Zero no Tsukaima",
    "orig": "ゼロの使い魔",
    "alts": [
