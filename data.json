@@ -943,8 +943,179 @@
   "cmt": "anon",
   "giphy": "",
   "st": true,
-  "stickers": [],
+  "stickers": [
+   {
+    "p": "stickers/dc-pkoke-309782.png",
+    "n": "pkoke",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-pkchingchong-222423.png",
+    "n": "pkchingchong",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-kmr-471656.png",
+    "n": "kmr",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-pkangry-811900.png",
+    "n": "pkangry",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-chuataydau-026187.png",
+    "n": "chuataydau",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-feelsbadman-163040.png",
+    "n": "FeelsBadMan",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-bantumlum-198585.png",
+    "n": "bantumlum",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-caught-641631.png",
+    "n": "CAUGHT",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-pkbruh-436486.png",
+    "n": "pkbruh",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-meusmoke-465874.png",
+    "n": "meusmoke",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-pkchuahe-870720.png",
+    "n": "pkchuahe",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-meuchuahe-977985.png",
+    "n": "meuchuahe",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-dongiau-851974.png",
+    "n": "dongiau",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-simp-590505.gif",
+    "n": "Simp",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-boosinside-648873.gif",
+    "n": "boosinside",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-credit-075520.gif",
+    "n": "Credit",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-peepofat-805854.png",
+    "n": "peepofat",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-pkca-743771.png",
+    "n": "pkCA",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-pkhehe-037312.png",
+    "n": "pkhehe",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-pkmuda-845696.png",
+    "n": "pkmuda",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-pkjesus-141407.png",
+    "n": "pkjesus",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-xddinsinde-210922.gif",
+    "n": "xddinsinde",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-weirdchampnono-292416.gif",
+    "n": "weirdchampnono",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-waht-552576.png",
+    "n": "waht",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-tritue-107423.png",
+    "n": "tritue",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-uytin-089715.png",
+    "n": "uytin",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-kekwait-012894.png",
+    "n": "kekwait",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-pkdisgust-528411.png",
+    "n": "pkDisgust",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-shut-219944.png",
+    "n": "shut",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-2982pepecry-845309.png",
+    "n": "2982pepecry",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-nhangay-658133.png",
+    "n": "nhangay",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-3959hmm-271763.png",
+    "n": "3959hmm",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-9381pepenoob-735061.gif",
+    "n": "9381pepenoob",
+    "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/dc-cringepepe-140799.png",
+    "n": "CringePepe",
+    "g": "Kenrori Emote"
+   }
+  ],
   "gc": ""
  },
- "rev": 1795726801792
+ "rev": 1795727054661
 }
