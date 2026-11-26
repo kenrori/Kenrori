@@ -154,7 +154,7 @@ details.ms>summary::-webkit-details-marker{display:none}
 .wsn{margin:0;padding:2px 6px;min-width:34px;justify-content:center;background:none!important;color:var(--mu);font-size:.8rem;font-weight:600}.wsn:hover{color:var(--ac)}
 .wsr .tt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.92rem}.wsr .tt em{font-style:normal;color:var(--ac);font-size:.78rem;margin-right:6px}.wsr small{color:var(--mu);font-size:.78rem;white-space:nowrap}
 .wsr .wa{display:flex;gap:4px}.wsr .wa button{margin:0;padding:3px 9px;font-size:.8rem;background:var(--bg);color:var(--tx)}.wsr .wa button:hover{background:var(--s2)}.wsr .wa button.dng{color:var(--err)}
-.wsr.mv{background:var(--acs)}
+.wsr.mv{background:var(--acs)}@media(hover:hover){.wsr [data-wsp]{opacity:0}.wsr:hover [data-wsp],.wsr [data-wsp]:focus{opacity:1}}
 #ws_list .vgh .vcv2{margin:0;flex:none;width:28px;height:40px;border-radius:3px;overflow:hidden;background:var(--s2);cursor:pointer;display:grid;place-items:center;font-size:.7rem;color:var(--mu)}#ws_list .vgh .vcv2 img{width:100%;height:100%;object-fit:cover}
 #ws_list .vgb{padding:2px 0 6px 0}
 #p-chap.inws{background:var(--s1);border-radius:10px;padding:16px 18px;margin:14px 0 4px}#p-chap.inws>p.mu:first-of-type,#p-chap.inws .g2:first-of-type>.full:first-child{display:none}
@@ -216,7 +216,7 @@ details.ms>summary::-webkit-details-marker{display:none}
 .pvg{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}.pvg img{width:100%;aspect-ratio:7/10;object-fit:cover;border-radius:6px;background:var(--s1)}
 .ilist{display:flex;flex-direction:column;gap:6px;margin-top:10px;max-height:62vh;overflow-y:auto;padding-right:4px}
 .irow{display:grid;grid-template-columns:24px 34px 130px minmax(0,1fr) auto auto;gap:4px 8px;align-items:center;background:var(--s1);border-radius:6px;padding:6px 8px}
-.irow.off{opacity:.5}.irow input[type=text]{padding:6px 9px;background:var(--bg)}.irow .n{color:var(--mu);font-size:.8rem;text-align:right}.irow small{color:var(--mu);white-space:nowrap;font-size:.8rem}
+.isv{display:inline-flex;gap:6px;align-items:center;margin-left:auto}.isv input{width:150px;padding:5px 9px}.irow.off{opacity:.5}.irow input[type=text]{padding:6px 9px;background:var(--bg)}.irow .n{color:var(--mu);font-size:.8rem;text-align:right}.irow small{color:var(--mu);white-space:nowrap;font-size:.8rem}
 .irow .sn{grid-column:3 / -1;color:var(--mu);font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #i_opt{background:var(--s1);border-radius:8px;padding:10px 14px;margin-top:14px}#i_opt summary{cursor:pointer;font-weight:600}#i_opt input:not([type=checkbox]),#i_opt select{background:var(--bg)}
 @media(max-width:900px){.irow{grid-template-columns:24px minmax(0,1fr) auto auto;grid-template-areas:"c v w b" "t t t t" "s s s s"}.irow .n{display:none}.irow>input[type=checkbox]{grid-area:c}.irow .vi{grid-area:v}.irow small{grid-area:w}.irow button{grid-area:b}.irow input[data-it]{grid-area:t}.irow .sn{grid-area:s}}
@@ -257,9 +257,9 @@ details.ms>summary::-webkit-details-marker{display:none}
 <button type="button" class="sec sm" id="ws_back">← Tất cả bộ</button>
 <div class="wsh"><div class="wscv" id="ws_cvw"><img id="ws_cv" alt=""><label class="wscb">Đổi ảnh bìa<input type="file" id="ws_cvf" accept="image/*" hidden></label></div>
 <div class="wsi"><h3 id="ws_t"></h3><p class="mu" id="ws_m"></p><div class="acts"><button type="button" class="sec sm" id="ws_edit">Sửa thông tin bộ</button><a class="sbtn" id="ws_web" target="_blank" rel="noopener">Xem trên web</a></div></div></div>
-<div class="wstb"><button type="button" id="ws_addb">+ Thêm chương</button><button type="button" class="sec" id="ws_imp">Nhập từ file</button><button type="button" class="sec" id="ws_sort" title="Minh họa, Mở đầu, Chương 1, 2..., Vĩ thanh, Lời bạt">Sắp xếp tự động</button><button type="button" class="sec" id="ws_auto" title="Tập mới bắt đầu ở mỗi Minh họa hoặc Mở đầu">Tự chia tập</button><button type="button" class="sec" id="ws_exp">Mở hết</button></div>
+<div class="wstb"><button type="button" id="ws_addb">+ Thêm chương</button><button type="button" class="sec" id="ws_imp">Nhập từ file</button><button type="button" class="sec" id="ws_sort" title="Minh họa, Mở đầu, Chương 1, 2..., Vĩ thanh, Lời bạt">Sắp xếp tự động</button><button type="button" class="sec" id="ws_auto" title="Tập mới bắt đầu ở mỗi Minh họa hoặc Mở đầu, rồi xếp lại chương trong từng tập">Tự chia tập</button><button type="button" class="sec" id="ws_exp">Mở hết</button></div>
 <div id="ws_add"></div>
-<p class="mu wshint">Thay đổi thứ tự, chia tập hay gỡ chương chỉ được lưu khi bạn bấm <b>Lưu thay đổi</b>. Bấm vào số thứ tự để chuyển chương tới vị trí khác.</p>
+<p class="mu wshint">Thay đổi thứ tự, chia tập hay gỡ chương chỉ được lưu khi bạn bấm <b>Lưu thay đổi</b>. Bấm vào số thứ tự để chuyển chương tới vị trí khác, bấm <b>✂ Tách tập</b> để bắt đầu tập mới từ chương đó.</p>
 <div id="ws_list"></div>
 <div class="wsdock"><div id="ws_sel" class="wsbar" hidden><span id="ws_cnt"></span><input id="ws_vol" list="ws_vols" placeholder="Tên tập" aria-label="Tên tập"><datalist id="ws_vols"></datalist><button type="button" id="ws_set" class="sec">Gán vào tập</button><button type="button" id="ws_unset" class="sec">Bỏ khỏi tập</button><button type="button" id="ws_rm" class="dng">Gỡ</button><button type="button" id="ws_none" class="sec">Bỏ chọn</button></div>
 <div id="ws_dirty" class="wsbar dirty" hidden><span>Có thay đổi chưa lưu</span><button type="button" id="ws_save">Lưu thay đổi</button><button type="button" id="ws_undo" class="sec">Hoàn tác</button></div></div>
@@ -327,8 +327,9 @@ details.ms>summary::-webkit-details-marker{display:none}
 
 <div class="panel" id="p-imp"><h3>Nhập từ file</h3><p class="mu">Tải lên cả bộ trong một file Word (.docx) hoặc văn bản (.txt), công cụ tự chia thành từng chương theo tiêu đề hoặc theo các dòng như "Chương 1", "Tập 2". Bạn xem lại danh sách, sửa tên, bỏ chọn phần thừa rồi mới đăng.</p>
 <div class="g2"><div class="full"><label for="i_ser">Bộ truyện (Novel)</label><select id="i_ser"></select></div>
-<div><label for="i_file">File .docx, .txt hoặc .md</label><input id="i_file" type="file" accept=".docx,.txt,.md,text/plain"></div>
+<div><label for="i_file">File .docx, .txt hoặc .md <small>(chọn được nhiều file, mỗi file một tập)</small></label><input id="i_file" type="file" multiple accept=".docx,.txt,.md,text/plain"></div>
 <div><label for="i_url">Hoặc link Google Docs</label><input id="i_url" placeholder="https://docs.google.com/document/d/..."></div>
+<div class="full"><label for="i_vol">Tập <small>(để trống để tự nhận từ tên file, ví dụ "Youjitsu Tập 2.docx", hoặc từ trang đầu file)</small></label><input id="i_vol" placeholder="Tự nhận"></div>
 <div class="full"><label for="i_paste">Hoặc dán toàn bộ nội dung <small>(mở Google Docs, Ctrl+A, Ctrl+C rồi dán vào đây)</small></label><textarea id="i_paste" style="min-height:90px"></textarea></div></div>
 <details id="i_opt"><summary>Cách chia chương</summary><div class="g2">
 <div><label for="i_mode">Chia theo</label><select id="i_mode"><option value="auto">Tự nhận (khuyên dùng)</option><option value="h">Tiêu đề trong Word (Heading)</option><option value="kw">Dòng bắt đầu bằng từ khóa</option></select></div>
@@ -340,7 +341,7 @@ details.ms>summary::-webkit-details-marker{display:none}
 <label class="ck"><input type="checkbox" id="i_cz" checked> Nén ảnh minh họa trong file trước khi đăng</label></details>
 <div class="acts"><button type="button" id="i_go">Đọc và chia chương</button></div>
 <div id="i_res" hidden><h4 id="i_sum"></h4><p class="mu" id="i_note"></p>
-<div class="acts" style="margin-top:6px"><button type="button" class="sec sm" id="i_all">Chọn tất cả</button><button type="button" class="sec sm" id="i_none">Bỏ chọn tất cả</button><button type="button" class="sec sm" id="i_sort" title="Minh họa, Mở đầu, Chương 1, 2, 3..., Vĩ thanh, Lời bạt">Sắp xếp</button></div>
+<div class="acts" style="margin-top:6px"><button type="button" class="sec sm" id="i_all">Chọn tất cả</button><button type="button" class="sec sm" id="i_none">Bỏ chọn tất cả</button><button type="button" class="sec sm" id="i_sort" title="Minh họa, Mở đầu, Chương 1, 2, 3..., Vĩ thanh, Lời bạt">Sắp xếp</button><span class="isv"><input id="i_bulk" list="i_vols" placeholder="Tên tập"><datalist id="i_vols"></datalist><button type="button" class="sec sm" id="i_bulkgo">Gán tập cho mục đã chọn</button></span></div>
 <div id="i_list" class="ilist"></div>
 <div class="acts"><button type="button" id="i_pub">Đăng các chương đã chọn</button></div></div></div>
 
@@ -734,7 +735,7 @@ function wsDraw() {
   const runs = []; W.forEach((c, j) => { const v = wsVol(c), r = runs[runs.length - 1]; if (r && r.v === v) r.js.push(j); else runs.push({ v, js: [j] }) });
   if (!WS.open) WS.open = new Set(W.length <= 25 ? runs.map(r => r.v) : runs.filter(r => !r.v).map(r => r.v));
   const vc = s.vc || {}, wd = c => (c.type === "img" || (c.pages && kind === "novel")) ? (c.pages || []).length + " ảnh" : kind === "novel" ? (c.words || 0).toLocaleString("vi-VN") + " chữ" : (c.pages ? c.pages.length : c.n || 0) + " trang";
-  const row = j => { const c = W[j]; return `<div class="wsr${WS.last === j ? " mv" : ""}" data-j="${j}"><input type="checkbox" value="${j}" aria-label="Chọn chương"><button type="button" class="wsn" data-wpos="${j}" title="Chuyển tới vị trí khác">${j + 1}</button><span class="tt">${esc(c.t)}</span><small>${wd(c)}</small><small>${c.date || ""}</small><span class="wa"><button type="button" data-wed="${j}">Sửa</button><button type="button" data-wmv="${j}|-1" title="Lên"${j ? "" : " disabled"}>↑</button><button type="button" data-wmv="${j}|1" title="Xuống"${j < W.length - 1 ? "" : " disabled"}>↓</button><button type="button" class="dng" data-wrm="${j}" title="Gỡ chương">✕</button></span></div>` };
+  const row = j => { const c = W[j]; return `<div class="wsr${WS.last === j ? " mv" : ""}" data-j="${j}"><input type="checkbox" value="${j}" aria-label="Chọn chương"><button type="button" class="wsn" data-wpos="${j}" title="Chuyển tới vị trí khác">${j + 1}</button><span class="tt">${esc(c.t)}</span><small>${wd(c)}</small><small>${c.date || ""}</small><span class="wa"><button type="button" data-wed="${j}">Sửa</button><button type="button" data-wmv="${j}|-1" title="Lên"${j ? "" : " disabled"}>↑</button><button type="button" data-wmv="${j}|1" title="Xuống"${j < W.length - 1 ? "" : " disabled"}>↓</button><button type="button" data-wsp="${j}" title="Bắt đầu tập mới từ chương này">✂ Tách tập</button><button type="button" class="dng" data-wrm="${j}" title="Gỡ chương">✕</button></span></div>` };
   $("#ws_list").innerHTML = runs.map(r => `<div class="vg${WS.open.has(r.v) ? " open" : ""}${r.v ? "" : " nov"}" data-v="${esc(r.v)}"><div class="vgh"><input type="checkbox" class="vga" aria-label="Chọn cả nhóm">${r.v ? `<label class="vcv2" title="Đổi bìa ${esc(r.v)}">${vc[r.v] ? `<img src="${esc(vc[r.v])}" alt="" onerror="this.remove()">` : "+bìa"}<input type="file" accept="image/*" hidden data-wvc="${esc(r.v)}"></label>` : ""}<button type="button" class="vgt"><b>${r.v ? esc(r.v) : "Chưa có tập"}</b><small>${r.js.length} chương, số ${r.js[0] + 1}${r.js.length > 1 ? "–" + (r.js[r.js.length - 1] + 1) : ""}</small></button>${r.v ? `<button type="button" class="sec sm" data-wren="${esc(r.v)}">Đổi tên</button>` : ""}</div><div class="vgb">${r.js.map(row).join("")}</div></div>`).join("") || '<p class="mu" style="padding:10px">Bộ này chưa có chương nào. Bấm Thêm chương để đăng chương đầu tiên.</p>';
   $("#ws_vols").innerHTML = vs.map(v => `<option value="${esc(v)}">`).join("");
   $("#ws_exp").textContent = runs.length && runs.every(r => WS.open.has(r.v)) ? "Thu gọn hết" : "Mở hết";
@@ -758,6 +759,12 @@ $("#ws_list").addEventListener("click", e => {
   const ps = t.closest("[data-wpos]");
   if (ps) { const j = +ps.dataset.wpos, n = parseInt(prompt(`Chuyển "${W[j].t}" tới vị trí số (1–${W.length}):`, j + 1)); if (!n || n < 1 || n > W.length || n - 1 === j) return;
     const [c] = W.splice(j, 1), at = n - 1, nb = W[at] || W[at - 1]; W.splice(at, 0, c); if (nb) { if (nb.vol) c.vol = nb.vol; else delete c.vol } WS.open.add(wsVol(c)); WS.last = at; return wsDirty() }
+  const sp = t.closest("[data-wsp]");
+  if (sp) { const j = +sp.dataset.wsp, v = wsVol(W[j]); if (j > 0 && wsVol(W[j - 1]) !== v) return log("Chương này đã là chương đầu của " + (v || "nhóm chưa có tập") + ".");
+    const ns = W.map(c => volNum(wsVol(c))).filter(x => x != null), def = "Tập " + ((ns.length ? Math.floor(Math.max(...ns)) : v ? 1 : 0) + 1);
+    const nw = (prompt(`Tách từ "${W[j].t}" đến hết ${v || "nhóm này"} thành tập mới. Tên tập mới:`, def) || "").trim(); if (!nw) return;
+    for (let x = j; x < W.length && wsVol(W[x]) === v; x++) W[x].vol = nw;
+    WS.open.add(nw); WS.last = j; wsDirty(); log(`Đã tách ${nw}. Kiểm tra lại rồi bấm Lưu thay đổi.`); return }
   const rm = t.closest("[data-wrm]");
   if (rm) { const j = +rm.dataset.wrm; if (!confirm(`Gỡ "${W[j].t}" khỏi web? (Bấm Lưu thay đổi mới có hiệu lực)`)) return; W.splice(j, 1); WS.last = null; return wsDirty() }
   const ed2 = t.closest("[data-wed]");
@@ -780,11 +787,13 @@ $("#ws_unset").onclick = () => wsSetVol("");
 $("#ws_none").onclick = () => { document.querySelectorAll("#ws_list input[type=checkbox]").forEach(c => c.checked = false); wsSync() };
 $("#ws_rm").onclick = () => { const L = wsPick(); if (!L.length || !confirm(`Gỡ ${L.length} chương đã chọn khỏi web? (Bấm Lưu thay đổi mới có hiệu lực)`)) return; const S = new Set(L); WS.W = WS.W.filter((c, j) => !S.has(j)); WS.last = null; wsDirty() };
 $("#ws_exp").onclick = () => { const all = $("#ws_exp").textContent === "Thu gọn hết"; WS.open = new Set(all ? [] : WS.W.map(wsVol)); wsDraw() };
-$("#ws_sort").onclick = () => { const W = WS.W, L = chSort(W); if (L.every((c, j) => c === W[j])) return log("✅ Các chương đã đúng thứ tự."); WS.W = L; WS.last = null; wsDirty(); log("Đã sắp xếp. Kiểm tra lại rồi bấm Lưu thay đổi.") };
+$("#ws_sort").onclick = () => { let W = WS.W; const vs = new Set(W.map(wsVol)), seg = vs.size <= 1 ? vAutoPlan(W) : [];
+  if (seg.length >= 2 && confirm(`Bộ này ${[...vs][0] ? "mới chỉ có 1 tập" : "chưa chia tập"}, nếu sắp xếp ngay thì Chương 1 của các tập sẽ bị trộn vào nhau. Chia tập trước rồi mới sắp xếp?\n\n${seg.map(g => `${g.name}: chương ${g.js[0] + 1}–${g.js[g.js.length - 1] + 1}, bắt đầu bằng "${W[g.js[0]].t.slice(0, 40)}"`).join("\n")}\n\nBấm Hủy để chỉ sắp xếp, không chia tập.`)) { seg.forEach(g => g.js.forEach(j => W[j].vol = g.name)); WS.open = null }
+  const L = chSort(W); if (L.every((c, j) => c === W[j])) return log("✅ Các chương đã đúng thứ tự."); WS.W = L; WS.last = null; wsDirty(); log("Đã sắp xếp. Kiểm tra lại rồi bấm Lưu thay đổi.") };
 $("#ws_auto").onclick = () => { const W = WS.W, seg = vAutoPlan(W); if (seg.length < 2) return log("Không tìm thấy chỗ chuyển tập (Minh họa hoặc Mở đầu nằm giữa các chương). Hãy chọn chương rồi gán tập bằng tay.");
   if (seg.every(g => g.js.every(j => wsVol(W[j]) === g.name))) return log("✅ Các chương đã được chia tập đúng.");
   if (!confirm(`Chia thành ${seg.length} tập?\n\n${seg.map(g => `${g.name}: chương ${g.js[0] + 1}–${g.js[g.js.length - 1] + 1}, bắt đầu bằng "${W[g.js[0]].t.slice(0, 40)}"`).join("\n")}`)) return;
-  seg.forEach(g => g.js.forEach(j => W[j].vol = g.name)); WS.open = null; WS.last = null; wsDirty(); log("Đã chia tập. Kiểm tra lại rồi bấm Lưu thay đổi.") };
+  seg.forEach(g => g.js.forEach(j => W[j].vol = g.name)); WS.W = chSort(W); WS.open = null; WS.last = null; wsDirty(); log("Đã chia tập và xếp lại chương trong từng tập. Kiểm tra rồi bấm Lưu thay đổi.") };
 $("#ws_save").onclick = () => run(async () => { const s = wsS(); if (!s || !WS.dirty) return; s.chapters = WS.W.map(({ _o, ...c }) => { if (!wsVol(c)) delete c.vol; return c }); await save("Sắp xếp chương: " + s.title); WS.dirty = false; WS.W = null; WS.last = null; done("✅ Đã lưu thay đổi của " + s.title + ". Web cập nhật sau 1–2 phút."); wsDraw() });
 $("#ws_undo").onclick = () => { WS.dirty = false; WS.W = null; WS.last = null; wsDraw(); log("Đã hoàn tác.") };
 $("#ws_addb").onclick = () => { const f = $("#p-chap"); if (f.classList.contains("inws")) return wsPark(); if (WS.dirty) return log("❌ Hãy Lưu thay đổi hoặc Hoàn tác trước khi thêm chương");
@@ -1254,16 +1263,21 @@ $("#bk_in").onchange = async e => {
 };
 
 /* ===== Nhập cả bộ từ file ===== */
-let IMP = [];
+let IMP = [], IMPINFO = "";
 function impFill() { const cur = $("#i_ser").value; $("#i_ser").innerHTML = data.novels.map((s, i) => `<option value="${i}">${esc(s.title)}</option>`).join("") || "<option value=''>(chưa có novel, hãy tạo ở mục Bộ truyện)</option>"; if (cur && data.novels[+cur]) $("#i_ser").value = cur; if (!$("#i_date").value) $("#i_date").value = new Date().toISOString().slice(0, 10) }
 const rxq = x => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const NUMKW = /^(chương|chapter|chap|ch|hồi|phần|episode|tập|volume|vol|quyển)$/i;
 function loadMammoth() { return window.mammoth ? Promise.resolve() : new Promise((res, rej) => { const sc = document.createElement("script"); sc.src = "https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.13.0/mammoth.browser.min.js"; sc.onload = res; sc.onerror = () => rej(new Error("Không tải được thư viện đọc file Word. Kiểm tra mạng rồi thử lại.")); document.head.appendChild(sc) }) }
 const linesToBlocks = t => String(t).replace(/\r/g, "").normalize("NFC").split("\n").map(l => l.trim()).filter(Boolean).map(l => { const m = /^(#{1,6})\s+(.+)$/.exec(l); return m ? { h: m[1].length, t: m[2].trim() } : { h: 0, t: l } });
-async function impBlocks() {
-  const f = $("#i_file").files[0], url = $("#i_url").value.trim(), paste = $("#i_paste").value;
+async function impSources() {
+  const fs = [...$("#i_file").files].sort((a, b) => a.name.localeCompare(b.name, "vi", { numeric: true })), out = [];
+  if (fs.length) { for (const f of fs) out.push({ name: f.name, B: await impBlocks(f) }); return out }
+  return [{ name: "", B: await impBlocks(null) }];
+}
+async function impBlocks(f) {
+  const url = $("#i_url").value.trim(), paste = $("#i_paste").value;
   if (f && /\.docx$/i.test(f.name)) {
-    log("Đang đọc file Word..."); await loadMammoth();
+    log("Đang đọc " + f.name + "..."); await loadMammoth();
     const r = await mammoth.convertToHtml({ arrayBuffer: await f.arrayBuffer() }), doc = new DOMParser().parseFromString(r.value, "text/html"), out = [], pushImg = im => { const u = im.getAttribute("src") || ""; if (/^data:image\/(png|jpe?g|gif|webp);base64,/.test(u)) out.push({ img: u }) };
     const walk = el => {
       for (const n of el.children) {
@@ -1305,24 +1319,52 @@ function impSplit(B) {
   if (cur.body.length || cur.imgs.length || !cur.pre) segs.push(cur);
   return { useH, segs: segs.map(g => { const w = g.body.join(" ").split(/\s+/).filter(Boolean).length, img = g.imgs.length > 0 && w < 30; return { ...g, w, type: img ? "img" : "text", on: g.pre ? (w >= 50 || img) : (w > 0 || img), t: g.pre && img ? "Minh họa" : g.t } }) };
 }
+const VNRE = /(?:^|[^\p{L}])(?:tập|tap|volume|vol|quyển|quyen)\.?\s*[-_#:]?\s*(\d+|[IVXLC]+)(?![\p{L}\d])/iu;
+function impVols(segs, name, s, carry) {
+  // Trả về { n, src }: số tập đã nhận ra (để file sau nối tiếp)
+  const own = $("#i_vol").value.trim(), multi = $("#i_file").files.length > 1; let n = null, src = "";
+  const fm = VNRE.exec(name.replace(/\.[^.]+$/, "").replace(/[_.]+/g, " "));
+  if (fm) { n = numOf(fm[1]); src = "tên file" }
+  if (n == null) { const pre = segs.find(g => g.pre), L = [...(pre ? pre.body.slice(0, 30) : []), ...segs.slice(0, 3).map(g => g.t)]; for (const t of L) { if (t.length > 150) continue; const m = VNRE.exec(t); if (m) { n = numOf(m[1]); src = "trang đầu file"; break } } }
+  const has = segs.some(g => g.vol);
+  if (has) { let i = 0; const fv = segs.find(g => g.vol).vol; while (i < segs.length && !segs[i].vol) segs[i++].vol = fv; src = "các dòng Tập trong file" }
+  else if (own && !multi) { segs.forEach(g => g.vol = own); src = "ô Tập" }
+  else {
+    if (n == null && carry != null) { n = carry + 1; src = "nối tiếp file trước" }
+    const plan = vAutoPlan(segs.map(g => ({ t: g.t, type: g.type, pages: g.type === "img" ? g.imgs : null })));
+    if (plan.length >= 2) { const b = n ?? 1; plan.forEach((p, k) => p.js.forEach(j => segs[j].vol = "Tập " + (b + k))); n = b + plan.length - 1; src = (src ? src + ", " : "") + "tự chia theo Minh họa và Mở đầu" }
+    else if (n != null) segs.forEach(g => g.vol = "Tập " + n);
+  }
+  // Dùng đúng tên tập đã có trong bộ (ví dụ "Tập 1: Lớp D") nếu cùng số tập
+  const ex = [...new Set(s.chapters.map(c => (c.vol || "").trim()).filter(Boolean))];
+  segs.forEach(g => { if (!g.vol || ex.includes(g.vol)) return; const k = volNum(g.vol), m = k != null && ex.find(v => volNum(v) === k); if (m) g.vol = m });
+  const last = segs.length ? volNum(segs[segs.length - 1].vol || "") : null;
+  return { n: last ?? n, src, vols: [...new Set(segs.map(g => g.vol).filter(Boolean))] };
+}
 function impRender() {
   const sel = IMP.filter(x => x.on), lost = IMP.filter(x => x.type === "text" && x.imgs.length).reduce((a, x) => a + x.imgs.length, 0);
   $("#i_sum").textContent = `Tìm thấy ${IMP.length} phần, đã chọn ${sel.length} để đăng`;
-  $("#i_note").textContent = lost ? `Có ${lost} ảnh nằm giữa các chương chữ sẽ không được đăng (chương chữ chỉ chứa chữ). Ảnh nằm riêng trong phần "Minh họa" vẫn được đăng thành chương minh họa.` : "";
+  $("#i_note").textContent = [IMPINFO, lost ? `Có ${lost} ảnh nằm giữa các chương chữ sẽ không được đăng (chương chữ chỉ chứa chữ). Ảnh nằm riêng trong phần "Minh họa" vẫn được đăng thành chương minh họa.` : ""].filter(Boolean).join(" ");
   $("#i_list").innerHTML = IMP.map((x, i) => `<div class="irow${x.on ? "" : " off"}"><input type="checkbox" data-ion="${i}" ${x.on ? "checked" : ""} aria-label="Chọn"><span class="n">${i + 1}</span><input type="text" class="vi" data-ivol="${i}" value="${esc(x.vol)}" placeholder="Tập"><input type="text" data-it="${i}" value="${esc(x.t)}"><small>${x.type === "img" ? x.imgs.length + " ảnh" : x.w.toLocaleString("vi-VN") + " chữ"}</small><button type="button" class="sec sm" data-ipv="${i}">Xem</button><span class="sn">${esc(x.type === "img" ? "Chương minh họa" : (x.body[0] || "").slice(0, 140))}</span></div>`).join("");
 }
 $("#i_go").onclick = () => run(async () => {
   if (!data.novels[+$("#i_ser").value]) throw new Error("Hãy tạo bộ truyện (novel) trước ở mục Bộ truyện");
-  const B = await impBlocks(); if (!B.length) throw new Error("File không có nội dung");
-  const r = impSplit(B); IMP = r.segs; if (!IMP.length) throw new Error("Không tìm thấy nội dung để chia");
-  $("#i_res").hidden = false; impRender();
-  log(`✅ Đã chia thành ${IMP.length} phần (${r.useH ? "theo tiêu đề trong Word" : "theo từ khóa"}). Hãy xem lại trước khi đăng.`);
+  const s = data.novels[+$("#i_ser").value], S = await impSources(), info = []; let carry = null, useH = false; IMP = [];
+  for (const src of S) {
+    if (!src.B.length) { info.push((src.name || "Nội dung") + ": trống"); continue }
+    const r = impSplit(src.B); useH ||= r.useH; const v = impVols(r.segs, src.name, s, carry); carry = v.n; IMP.push(...r.segs);
+    info.push(`${src.name ? src.name + ": " : ""}${r.segs.length} phần, ${v.vols.length ? v.vols.join(", ") + (v.src ? " (nhận từ " + v.src + ")" : "") : "chưa nhận ra tập"}`);
+  }
+  if (!IMP.length) throw new Error("Không tìm thấy nội dung để chia");
+  $("#i_res").hidden = false; $("#i_vols").innerHTML = [...new Set([...s.chapters.map(c => (c.vol || "").trim()), ...IMP.map(x => x.vol)].filter(Boolean))].map(v => `<option value="${esc(v)}">`).join(""); IMPINFO = info.join(". ") + "."; impRender();
+  log(`✅ Đã chia thành ${IMP.length} phần (${useH ? "theo tiêu đề trong Word" : "theo từ khóa"}). ${IMP.some(x => !x.vol) ? "Có phần chưa có tập, hãy điền ở cột Tập. " : ""}Hãy xem lại trước khi đăng.`);
   if (IMP.length === 1) log("Chỉ tìm thấy 1 phần. Thử đổi cách chia hoặc thêm từ khóa trong mục Cách chia chương.");
 });
 $("#i_list").addEventListener("input", e => { const t = e.target; if (t.dataset.it != null) IMP[+t.dataset.it].t = t.value; if (t.dataset.ivol != null) IMP[+t.dataset.ivol].vol = t.value });
 $("#i_list").addEventListener("change", e => { const t = e.target; if (t.dataset.ion != null) { IMP[+t.dataset.ion].on = t.checked; t.closest(".irow").classList.toggle("off", !t.checked); $("#i_sum").textContent = `Tìm thấy ${IMP.length} phần, đã chọn ${IMP.filter(x => x.on).length} để đăng` } });
 $("#i_list").addEventListener("click", e => { const b = e.target.closest("button[data-ipv]"); if (!b) return; const x = IMP[+b.dataset.ipv]; x.type === "img" ? preview({ title: x.t, vol: x.vol, imgs: x.imgs }) : preview({ title: x.t, vol: x.vol, text: x.body.join("\n") }) });
 $("#i_sort").onclick = () => { const L = chSort(IMP.map(x => ({ ...x, c0: x }))).map(x => x.c0); const same = L.every((x, j) => x === IMP[j]); IMP = L; impRender(); log(same ? "✅ Danh sách đã đúng thứ tự." : "✅ Đã sắp xếp lại danh sách. Kiểm tra rồi bấm Đăng.") };
+$("#i_bulkgo").onclick = () => { const v = $("#i_bulk").value.trim(), L = IMP.filter(x => x.on); if (!L.length) return log("❌ Chưa chọn mục nào"); L.forEach(x => x.vol = v); impRender(); log(v ? `✅ Đã gán ${v} cho ${L.length} mục.` : `✅ Đã bỏ tập của ${L.length} mục.`) };
 $("#i_all").onclick = () => { IMP.forEach(x => x.on = true); impRender() }; $("#i_none").onclick = () => { IMP.forEach(x => x.on = false); impRender() };
 $("#i_pub").onclick = () => {
   const s = data.novels[+$("#i_ser").value]; if (!s) return log("❌ Hãy chọn bộ truyện");
@@ -1348,7 +1390,9 @@ $("#i_pub").onclick = () => {
           const text = x.body.join("\n"); log(`Đang đăng ${n}/${L.length}: ${ch.t}...`);
           const p = `novels/${s.slug}/${id}.txt`; await put(p, b64t(text), "Chương: " + ch.t); ch.file = p; ch.words = text.split(/\s+/).filter(Boolean).length;
         }
-        s.chapters.push(ch); added++; x.on = false;
+        { const vs = s.chapters.map(c => (c.vol || "").trim()), at = ch.vol ? vs.lastIndexOf(ch.vol) : -1, k = ch.vol ? volNum(ch.vol) : null, nx = at < 0 && k != null ? vs.findIndex(v => v && volNum(v) != null && volNum(v) > k) : -1;
+          if (at >= 0) s.chapters.splice(at + 1, 0, ch); else if (nx >= 0) s.chapters.splice(nx, 0, ch); else s.chapters.push(ch) }
+        added++; x.on = false;
       }
     } finally { if (added) { if ($("#i_resort").checked) s.chapters = chSort(s.chapters); log("Đang lưu danh sách chương..."); await save(`Nhập ${added} chương: ${s.title}`); impFill() } }
     impRender(); done(`✅ Đã đăng ${L.length} chương vào "${s.title}". Web cập nhật sau 1–2 phút.`);
