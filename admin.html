@@ -158,6 +158,7 @@ details.ms>summary::-webkit-details-marker{display:none}
   details.ms>summary{flex-wrap:wrap}.mact{width:100%;justify-content:flex-start;padding-left:52px}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.ck{display:flex;align-items:center;gap:8px;font-weight:500;margin-top:10px}
 </style>
 </head>
 <body>
@@ -212,7 +213,7 @@ details.ms>summary::-webkit-details-marker{display:none}
 <div><label for="c_vol">Tập <small>(để trống nếu không chia tập)</small></label><input id="c_vol" list="c_vols" placeholder="Tập 1"><datalist id="c_vols"></datalist></div>
 <div><label for="c_date">Ngày đăng</label><input id="c_date" type="date"></div></div>
 <div id="c_novel"><label for="c_text">Nội dung <small>(dán vào, hoặc chọn file .txt bên dưới)</small></label><textarea id="c_text" style="min-height:260px"></textarea><input id="c_file" type="file" accept=".txt" style="margin-top:8px"></div>
-<div id="c_manga"><label for="c_imgs">Ảnh các trang <small>(chọn nhiều ảnh, tự xếp theo tên file)</small></label><input id="c_imgs" type="file" accept="image/*" multiple></div>
+<div id="c_manga"><label for="c_imgs">Ảnh các trang <small>(chọn nhiều ảnh, tự xếp theo tên file)</small></label><input id="c_imgs" type="file" accept="image/*" multiple><label class="ck"><input type="checkbox" id="c_cz" checked> Nén ảnh trước khi đăng <small>(WebP, rộng tối đa 1400px; ảnh nào nén không nhỏ hơn thì giữ nguyên)</small></label></div>
 <div class="acts"><button>Đăng chương</button></div></form>
 
 <div class="panel" id="p-tr"><h3>Dịch chương</h3><p class="mu">Dán bản gốc bên trái, dịch tay hoặc dịch tự động sang bên phải, soát lại rồi đăng. Bản nháp tự lưu trên máy này.</p>
@@ -328,6 +329,24 @@ async function put(path, content, msg) {
     throw new Error(j.message || "Lỗi " + r.status);
   }
 }
+const siteBase = () => { const S = data.site || {}; let b = (S.url || "").trim(); if (!b) b = cfg.r.toLowerCase() === (cfg.u + ".github.io").toLowerCase() ? `https://${cfg.u}.github.io/` : `https://${cfg.u}.github.io/${cfg.r}/`; return b.endsWith("/") ? b : b + "/" };
+const shPath = (k, s) => `truyen/${k === "manga" ? "manga-" : ""}${s.slug}.html`;
+const hx = t => String(t ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+function shareHtml(k, s) {
+  const base = siteBase(), self = base + shPath(k, s), target = `../index.html#${k}/${s.slug}`, img = s.cover ? (/^https?:/.test(s.cover) ? s.cover : base + s.cover) : "";
+  const fmt = k === "manga" ? "Manga" : s.format || "Light Novel", d = (s.desc || "").replace(/\s+/g, " ").trim(), D = d.length > 200 ? d.slice(0, 197) + "..." : d;
+  return `<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${hx(s.title)} (${fmt}) | Kenrori</title><meta name="description" content="${hx(D)}"><link rel="canonical" href="${hx(self)}">
+<meta property="og:type" content="book"><meta property="og:site_name" content="Kenrori"><meta property="og:locale" content="vi_VN">
+<meta property="og:title" content="${hx(s.title)}"><meta property="og:description" content="${hx(D)}"><meta property="og:url" content="${hx(self)}">${img ? `\n<meta property="og:image" content="${hx(img)}"><meta name="twitter:image" content="${hx(img)}">` : ""}
+<meta name="twitter:card" content="${img ? "summary_large_image" : "summary"}"><meta name="theme-color" content="#ff6740">
+<script>location.replace(${JSON.stringify(target).replace(/</g, "\\u003c")})<\/script>
+<style>body{font-family:system-ui,sans-serif;max-width:640px;margin:40px auto;padding:0 16px;line-height:1.6;color:#121316}img{width:180px;border-radius:6px}a{color:#ff6740;font-weight:700}</style></head>
+<body>${img ? `<img src="${hx(img)}" alt="Bìa ${hx(s.title)}">` : ""}<h1>${hx(s.title)}</h1>${s.orig ? `<p>${hx(s.orig)}</p>` : ""}<p>${fmt}${s.author ? `, tác giả ${hx(s.author)}` : ""}</p><p>${hx(D)}</p><p><a href="${hx(target)}">Đọc trên Kenrori</a></p></body></html>`;
+}
+const sitemapXml = () => { const b = siteBase(), u = [b + "index.html", ...["novel", "manga"].flatMap(k => data[KEYS[k]].map(s => b + shPath(k, s)))]; return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${u.map(x => `<url><loc>${hx(x)}</loc></url>`).join("")}</urlset>` };
+async function writeShare(k, s) { await put(shPath(k, s), b64t(shareHtml(k, s)), "Trang chia sẻ: " + s.title); await put("sitemap.xml", b64t(sitemapXml()), "Cập nhật sitemap") }
+async function writeAllShare() { const L = ["novel", "manga"].flatMap(k => data[KEYS[k]].map(s => [k, s])); for (let i = 0; i < L.length; i++) { log(`Đang tạo trang chia sẻ ${i + 1}/${L.length}...`); await put(shPath(...L[i]), b64t(shareHtml(...L[i])), "Trang chia sẻ: " + L[i][1].title) } await put("sitemap.xml", b64t(sitemapXml()), "Cập nhật sitemap"); return L.length }
 const feedXml = () => {
   const S = data.site || {}; let base = (S.url || "").trim();
   if (!base) base = cfg.r.toLowerCase() === (cfg.u + ".github.io").toLowerCase() ? `https://${cfg.u}.github.io/` : `https://${cfg.u}.github.io/${cfg.r}/`;
@@ -413,7 +432,9 @@ $("#p-series").onsubmit = e => { e.preventDefault(); run(async () => {
   Object.assign(s, { title, orig: $("#s_orig").value.trim(), alts: $("#s_alts").value.split("\n").map(x => x.trim()).filter(Boolean), artist: $("#s_artist").value.trim(), author: $("#s_author").value.trim(), status: $("#s_status").value, genres: $("#s_genres").value.split(",").map(x => x.trim()).filter(Boolean), desc: $("#s_desc").value.trim(), src, team: $("#s_team").value.split("\n").map(l => { const [r, ...n] = l.split("|"); return n.length ? { r: r.trim(), n: n.join("|").trim() } : { r: "", n: r.trim() } }).filter(t => t.n), prog: $("#s_prog").value.trim(), sched: $("#s_sched").value.trim() }); if (kind === "novel") s.format = fmt === "webnovel" ? "Web Novel" : "Light Novel";
   const f = $("#s_cover").files[0];
   if (f) { log("Đang tải ảnh bìa..."); const p = `images/${slug}-bia.jpg`; await put(p, await resize(f), "Bìa: " + title); s.cover = p }
-  await save("Thêm/sửa truyện: " + title); done("✅ Đã lưu bộ truyện. Web cập nhật sau 1–2 phút.");
+  await save("Thêm/sửa truyện: " + title);
+  try { log("Đang tạo trang chia sẻ..."); await writeShare(kind, s) } catch (e) { done("✅ Đã lưu bộ truyện, nhưng chưa tạo được trang chia sẻ: " + e.message); return }
+  done("✅ Đã lưu bộ truyện. Web cập nhật sau 1–2 phút.");
 }) };
 
 $("#p-chap").onsubmit = e => { e.preventDefault(); run(async () => {
@@ -427,11 +448,19 @@ $("#p-chap").onsubmit = e => { e.preventDefault(); run(async () => {
   } else {
     const fs = [...$("#c_imgs").files].sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })); if (!fs.length) throw new Error("Hãy chọn ảnh các trang");
     ch.pages = [];
-    for (let j = 0; j < fs.length; j++) { const ext = (fs[j].name.split(".").pop() || "jpg").toLowerCase(), p = `manga/${s.slug}/${id}/${String(j + 1).padStart(3, "0")}.${ext}`; log(`Đang tải trang ${j + 1}/${fs.length}...`); await put(p, await fileB64(fs[j]), `${s.title} ${t} tr.${j + 1}`); ch.pages.push(p) }
+    const cz = $("#c_cz").checked; let szA = 0, szB = 0;
+    for (let j = 0; j < fs.length; j++) {
+      const f = fs[j]; let ext = (f.name.split(".").pop() || "jpg").toLowerCase(), b64 = null; szA += f.size;
+      if (cz) { log(`Đang nén trang ${j + 1}/${fs.length}...`); const r = await squeeze(f); if (r) { b64 = r.b64; ext = r.ext; szB += r.size } }
+      if (!b64) { b64 = await fileB64(f); szB += f.size }
+      const p = `manga/${s.slug}/${id}/${String(j + 1).padStart(3, "0")}.${ext}`; log(`Đang tải trang ${j + 1}/${fs.length}...`); await put(p, b64, `${s.title} ${t} tr.${j + 1}`); ch.pages.push(p);
+    }
+    const fz = b => b < 1048576 ? Math.round(b / 1024) + " KB" : (b / 1048576).toFixed(1) + " MB"; window.lastSz = `${fz(szA)} → ${fz(szB)}`;
   }
   if (ch.vol) { const at = s.chapters.map(c => (c.vol || "").trim()).lastIndexOf(ch.vol); if (at >= 0) s.chapters.splice(at + 1, 0, ch); else s.chapters.push(ch) } else s.chapters.push(ch);
   await save("Thêm chương: " + s.title + " - " + t);
-  ["c_title", "c_text"].forEach(x => $("#" + x).value = ""); $("#c_file").value = $("#c_imgs").value = ""; done("✅ Đã đăng chương. Web cập nhật sau 1–2 phút.");
+  const szMsg = window.lastSz ? ` Dung lượng ảnh: ${window.lastSz}.` : ""; window.lastSz = "";
+  ["c_title", "c_text"].forEach(x => $("#" + x).value = ""); $("#c_file").value = $("#c_imgs").value = ""; done("✅ Đã đăng chương." + szMsg + " Web cập nhật sau 1–2 phút.");
 }) };
 
 $("#p-tip").onsubmit = e => { e.preventDefault(); run(async () => {
@@ -800,6 +829,7 @@ function dash() {
   const qa = [["series", "Thêm bộ truyện mới", "s_new"], ["chap", "Đăng chương"], ["tr", "Dịch chương mới"], ["man", "Quản lý nội dung"]];
   el.innerHTML = `<div class="stats"><div class="stat"><b>${data.novels.filter(s => s.format !== "Web Novel").length}</b><span>Light Novel</span></div><div class="stat"><b>${data.novels.filter(s => s.format === "Web Novel").length}</b><span>Web Novel</span></div><div class="stat"><b>${data.manga.length}</b><span>Manga</span></div><div class="stat"><b>${nch.toLocaleString("vi-VN")}</b><span>Chương đã đăng</span></div><div class="stat"><b>${nw.toLocaleString("vi-VN")}</b><span>Chữ đã dịch</span></div></div>
 <h4>Làm nhanh</h4><div class="qa">${qa.map(([k, l, x]) => `<button type="button" onclick="${x ? `$('#${x}').click();` : ""}tab('${k}')"><svg class="i" viewBox="0 0 24 24">${NI[k]}</svg>${l}</button>`).join("")}</div>
+<h4>Bảo trì</h4><div class="acts" style="margin-top:8px"><button type="button" class="sec" onclick="regenShare()">Tạo lại trang chia sẻ cho tất cả bộ</button></div><p class="mu" style="margin-top:6px">Trang chia sẻ giúp link từng bộ hiện đúng bìa, tên và tóm tắt khi dán lên Discord, Facebook. Bộ mới hoặc vừa sửa được tạo tự động; nút này dùng cho các bộ đăng từ trước.</p>
 ${drafts.length ? `<h4>Bản dịch đang dở trên máy này</h4><div class="lst">${drafts.map(({ s, slug, d }) => `<div class="li"><span class="lt">${esc(s ? s.title : slug)}${d.t ? ` <em>${esc(d.t)}</em>` : ""}</span><small>${(d.o || "").trim() ? d.o.trim().split(/\s+/).length.toLocaleString("vi-VN") + " chữ" : "chưa dịch"}</small><button type="button" class="sec sm" onclick="openDraft('${esc(slug)}')">Mở</button></div>`).join("")}</div>` : ""}
 <h4>Chương mới đăng</h4>${rec.length ? `<div class="lst">${rec.slice(0, 8).map(r => `<div class="li">${thumb(r.s)}<span class="lt">${esc(r.s.title)} <em>${r.c.vol ? esc(r.c.vol) + ", " : ""}${esc(r.c.t)}</em></span><small>${r.c.date || ""}</small><button type="button" class="sec sm" onclick="goEdit('${r.k}',${r.i},${r.j})">Sửa</button></div>`).join("")}</div>` : '<p class="mu">Chưa có chương nào. Tạo bộ truyện rồi đăng chương đầu tiên.</p>'}`;
 }
@@ -833,6 +863,22 @@ $("#g_list").onclick = e => {
     await save(r ? `Đổi thể loại ${old} thành ${nw}` : `Gỡ thể loại ${old}`); done(`✅ Đã cập nhật ${c} bộ.`);
   });
 };
+
+/* ===== Nén ảnh manga ===== */
+async function squeeze(f, maxW = 1400, q = .82) {
+  if (/gif/i.test(f.type)) return null;
+  try {
+    const bm = await createImageBitmap(f), k = Math.min(1, maxW / bm.width), w = Math.round(bm.width * k), h = Math.round(bm.height * k);
+    if (h > 16000 || w * h > 40e6) { bm.close?.(); return null }
+    const c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d").drawImage(bm, 0, 0, w, h); bm.close?.();
+    const toB = t => new Promise(r => c.toBlob(r, t, q));
+    let b = await toB("image/webp"), ext = "webp"; if (!b || b.type !== "image/webp") { b = await toB("image/jpeg"); ext = "jpg" }
+    if (!b || b.size >= f.size * .95) return null;
+    const b64 = await new Promise(r => { const x = new FileReader(); x.onload = () => r(x.result.split(",")[1]); x.readAsDataURL(b) });
+    return { b64, ext, size: b.size };
+  } catch (e) { return null }
+}
+function regenShare() { run(async () => { const n = await writeAllShare(); done(`✅ Đã tạo trang chia sẻ cho ${n} bộ và cập nhật sitemap.`) }) }
 </script>
 </body>
 </html>

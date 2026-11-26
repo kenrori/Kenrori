@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kenrori</title>
 <link rel="alternate" type="application/rss+xml" title="Kenrori" href="feed.xml">
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#ff6740">
+<link rel="icon" type="image/png" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="description" content="Light novel, web novel, manga dịch tiếng Việt, video Vietsub và công cụ game.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -265,6 +268,9 @@ a.nxc:hover{background:var(--ach)}
 iframe.ytf{width:100%;aspect-ratio:16/9;margin:0;border-radius:8px}
 .sc small{flex-wrap:wrap;gap:2px 8px}.sc small>*{white-space:nowrap}
 @media(max-width:700px){.hau{display:none}.hero{height:400px}}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--tx);color:var(--bg);padding:10px 18px;border-radius:8px;font-size:.92rem;font-weight:500;z-index:90;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;max-width:calc(100vw - 32px)}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.dcb.ins{background:var(--ac)}
 </style>
 </head>
 <body>
@@ -282,40 +288,8 @@ iframe.ytf{width:100%;aspect-ratio:16/9;margin:0;border-radius:8px}
 <div id="lb"><img alt=""></div>
 <script>
 /* ============ DATA: CHỈ CẦN SỬA PHẦN NÀY ============ */
-const DATA = {
-  tips: [
-    { title: "Cách farm Raid nhanh (ví dụ)", game: "Granblue Fantasy", text: "Viết mẹo ở đây. Bấm vào ảnh để phóng to.", img: "images/vi-du-1.png" }
-  ],
-  links: [
-    { title: "Greasyfork", url: "https://greasyfork.org/", desc: "Kho userscript.", tags: ["script"] },
-    { title: "NovelUpdates", url: "https://www.novelupdates.com/", desc: "Tra cứu novel.", tags: ["novel"] },
-    { title: "Nexus Mods", url: "https://www.nexusmods.com/", desc: "Kho mod game.", tags: ["mod"] }
-  ],
-  guides: [ /* giải thích công cụ bằng ảnh; embed: "https://..." để nhúng công cụ web */
-    { title: "Hướng dẫn cài userscript (ví dụ)", text: "Cài Tampermonkey → mở link script → bấm Install.", img: "images/tool-1.png", embed: "" }
-  ],
-  novels: [ /* chương: dùng file: "novels/ten/c1.txt" (mỗi dòng = 1 đoạn) hoặc text: "..." */
-    { slug: "vi-du-novel", title: "Tên Light Novel (ví dụ)", author: "Tác giả", status: "Đang dịch", cover: "images/bia-1.jpg",
-      desc: "Giới thiệu ngắn về bộ truyện.",
-      chapters: [
-        { t: "Chương 1: Khởi đầu", date: "2026-11-01", text: "Đây là đoạn mở đầu.\nĐoạn thứ hai của chương 1." },
-        { t: "Chương 2: Gặp gỡ", date: "2026-11-05", text: "Nội dung chương 2.\nThêm một đoạn nữa." },
-        { t: "Chương 3: Hành trình", date: "2026-11-12", file: "novels/vi-du-novel/c3.txt", words: 3200 }
-      ] }
-  ],
-  manga: [ /* trang: pages:[url,...] hoặc dir + n (+ pad, ext) → dir/01.jpg ... */
-    { slug: "vi-du-manga", title: "Tên Manga (ví dụ)", author: "Tác giả", status: "Hoàn thành", cover: "images/bia-2.jpg",
-      desc: "Giới thiệu ngắn.",
-      chapters: [
-        { t: "Chương 1", date: "2026-11-02", dir: "manga/vi-du-manga/c1/", n: 20, pad: 2, ext: "jpg" },
-        { t: "Chương 2", date: "2026-11-09", dir: "manga/vi-du-manga/c2/", n: 18, pad: 2, ext: "jpg" }
-      ] }
-  ],
-  videos: [
-    { title: "Bài hát Vietsub (YouTube)", youtube: "dQw4w9WgXcQ", desc: "Thay ID bằng video của bạn." },
-    { title: "Bài hát Vietsub (file trong repo)", mp4: "videos/bai-hat.mp4", vtt: "videos/bai-hat.vi.vtt", desc: "Phụ đề .vtt hiện trong trình phát." }
-  ]
-};
+const DATA = { tips: [], links: [], guides: [], novels: [], manga: [], videos: [], projects: [], site: {} };
+/* Nội dung thật nằm trong data.json và được sửa qua trang quản trị (admin.html). */
 /* ============ CÔNG CỤ TÍCH HỢP ============ */
 const W = x => x.trim() ? x.trim().split(/\s+/).length : 0;
 const TOOLS = [
@@ -346,16 +320,30 @@ const I = {
   more: '<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',
   next: '<path d="m9 18 6-6-6-6"/>', prev: '<path d="m15 18-6-6 6-6"/>',
   star: '<path d="m12 3 2.8 5.8 6.2.9-4.5 4.4 1 6.2L12 17.4 6.5 20.3l1-6.2L3 9.7l6.2-.9z"/>',
-  play: '<path d="M7 4v16l13-8z"/>', edit: '<path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/>', plus: '<path d="M12 5v14M5 12h14"/>'
+  play: '<path d="M7 4v16l13-8z"/>', share: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>', dl: '<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>', edit: '<path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/>', plus: '<path d="M12 5v14M5 12h14"/>'
 };
-DATA.projects ??= [{ title: "Tên dự án (ví dụ)", type: "Userscript", status: "Đang phát triển", version: "1.0.0", date: "2026-11-01", desc: "Mô tả ngắn về dự án.", links: [{ label: "Cài đặt", url: "https://greasyfork.org/" }], howto: "Bước 1: ...\nBước 2: ...", img: "" }];
+DATA.projects ??= [];
 DATA.site ??= {};
 const KEY = { novel: "novels", manga: "manga" }, app = $("#app"), EMPTY = '<p class="empty">Chưa có nội dung.</p>';
 const NAV = [["home", "home", "Trang chủ"], ["—", "book", "Truyện"], ["novels", "", "Light Novel"], ["webnovel", "", "Web Novel"], ["manga", "", "Manga"], ["tim-kiem", "", "Tìm truyện"], ["the-loai", "", "Thể loại"], ["library", "", "Thư viện của tôi"], ["—", "game", "Game & công cụ"], ["projects", "", "Dự án"], ["tips", "", "Mẹo game"], ["tools", "", "Công cụ"], ["—", "more", "Khác"], ["videos", "", "Video Vietsub"], ["links", "", "Liên kết"], ["about", "", "Giới thiệu"]];
+function toast(m) { let t = $("#toast"); if (!t) { t = document.createElement("div"); t.id = "toast"; document.body.appendChild(t) } t.textContent = m; t.className = "on"; clearTimeout(toast.t); toast.t = setTimeout(() => t.className = "", 3500) }
+async function shareS(k, slug) {
+  const s = (DATA[KEY[k]] || []).find(x => x.slug === slug); if (!s) return;
+  const url = new URL(`truyen/${k === "manga" ? "manga-" : ""}${slug}.html`, location.href).href;
+  if (navigator.share) { try { await navigator.share({ title: s.title, url }); return } catch (e) { if (e.name === "AbortError") return } }
+  try { await navigator.clipboard.writeText(url); toast("Đã sao chép link chia sẻ") } catch (e) { prompt("Sao chép link này:", url) }
+}
+let installEv = null;
+addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEv = e; renderSide() });
+addEventListener("appinstalled", () => { installEv = null; renderSide(); toast("Đã cài Kenrori") });
+function doInstall() { if (installEv) { installEv.prompt(); installEv.userChoice.finally(() => { installEv = null; renderSide() }) } }
+addEventListener("offline", () => toast("Bạn đang ngoại tuyến. Các chương đã mở trước đó vẫn đọc được."));
+addEventListener("online", () => toast("Đã có mạng trở lại"));
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 function renderSide() {
   $("#nv").innerHTML = NAV.map(([k, icn, l]) => k === "—" ? `<div class="sg">${ic(I[icn])}${l}</div>` : `<a href="#${k}" data-k="${k}"${icn ? ' class="top"' : ""}>${icn ? ic(I[icn]) : ""}${l}</a>`).join("");
   const dc = (DATA.site.about || {}).discord;
-  $("#sfoot").innerHTML = (/^https?:\/\//.test(dc || "") ? `<a class="dcb" href="${esc(dc)}" target="_blank" rel="noopener">Tham gia Discord</a>` : "") + `<a href="feed.xml">Theo dõi qua RSS</a><a href="admin.html">Quản trị</a><span>© Kenrori</span>`;
+  $("#sfoot").innerHTML = (/^https?:\/\//.test(dc || "") ? `<a class="dcb" href="${esc(dc)}" target="_blank" rel="noopener">Tham gia Discord</a>` : "") + (installEv ? `<a class="dcb ins" href="javascript:void 0" onclick="doInstall()">${ic(I.dl)}Cài ứng dụng</a>` : "") + `<a href="feed.xml">Theo dõi qua RSS</a><a href="admin.html">Quản trị</a><span>© Kenrori</span>`;
 }
 const STC = t => /hoàn/i.test(t || "") ? "done" : /tạm|ngưng|dừng|drop/i.test(t || "") ? "pause" : "on";
 const stDot = s => s.status ? `<span class="st ${STC(s.status)}">${esc(s.status)}</span>` : "";
@@ -509,7 +497,7 @@ function detail(kind, s) {
   app.innerHTML = `<div class="tpb"><div class="hb" ${bgStyle(s)}></div></div>
 <div class="tp"><div class="tph"><div class="cover tpcv" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></div>
 <div class="tpt"><h1>${esc(s.title)}</h1>${s.orig || (s.alts || [])[0] ? `<div class="tpo" lang="${s.orig ? "ja" : "vi"}">${esc(s.orig || s.alts[0])}</div>` : ""}${s.author || s.artist ? `<div class="crs">${credit("Tác giả", s.author)}${s.artist && s.artist !== s.author ? credit("Minh họa", s.artist) : ""}</div>` : ""}</div>
-<div class="tpm"><div class="acts tpa2">${n ? `<a class="btn pri big" href="#${kind}/${s.slug}/${last ?? 0}">${ic(I.play)}${last != null ? "Đọc tiếp" : "Đọc từ đầu"}</a>` : ""}<button class="btn ico${fav ? " on" : ""}" id="fvb" title="${fav ? "Bỏ khỏi thư viện" : "Thêm vào thư viện"}" aria-label="Thư viện" aria-pressed="${fav}" onclick="toggleFav('${kind}','${esc(s.slug)}')">${ic(I.star)}</button>${n ? `<span class="subl">${last != null ? `<a href="#${kind}/${s.slug}/0">Đọc từ đầu</a>` : ""}<a href="#${kind}/${s.slug}/${n - 1}">Chương mới nhất</a></span>` : ""}${ADM ? `<span class="admb"><a class="btn ico sm" title="Thêm chương" href="admin.html#chap/${kind}/${s.slug}">${ic(I.plus)}</a><a class="btn ico sm" title="Sửa bộ" href="admin.html#series/${kind}/${s.slug}">${ic(I.edit)}</a></span>` : ""}</div><div class="tptg">${stDot(s)}${tags}</div>${s.prog || s.sched ? `<div class="prog">${s.prog ? `<span><i>Tiến độ</i>${esc(s.prog)}</span>` : ""}${s.sched ? `<span><i>Lịch ra chương</i>${esc(s.sched)}</span>` : ""}</div>` : ""}</div></div>
+<div class="tpm"><div class="acts tpa2">${n ? `<a class="btn pri big" href="#${kind}/${s.slug}/${last ?? 0}">${ic(I.play)}${last != null ? "Đọc tiếp" : "Đọc từ đầu"}</a>` : ""}<button class="btn ico${fav ? " on" : ""}" id="fvb" title="${fav ? "Bỏ khỏi thư viện" : "Thêm vào thư viện"}" aria-label="Thư viện" aria-pressed="${fav}" onclick="toggleFav('${kind}','${esc(s.slug)}')">${ic(I.star)}</button><button class="btn ico" title="Chia sẻ" aria-label="Chia sẻ" onclick="shareS('${kind}','${esc(s.slug)}')">${ic(I.share)}</button>${n ? `<span class="subl">${last != null ? `<a href="#${kind}/${s.slug}/0">Đọc từ đầu</a>` : ""}<a href="#${kind}/${s.slug}/${n - 1}">Chương mới nhất</a></span>` : ""}${ADM ? `<span class="admb"><a class="btn ico sm" title="Thêm chương" href="admin.html#chap/${kind}/${s.slug}">${ic(I.plus)}</a><a class="btn ico sm" title="Sửa bộ" href="admin.html#series/${kind}/${s.slug}">${ic(I.edit)}</a></span>` : ""}</div><div class="tptg">${stDot(s)}${tags}</div>${s.prog || s.sched ? `<div class="prog">${s.prog ? `<span><i>Tiến độ</i>${esc(s.prog)}</span>` : ""}${s.sched ? `<span><i>Lịch ra chương</i>${esc(s.sched)}</span>` : ""}</div>` : ""}</div></div>
 <div class="tpd"><p class="sum clamp" id="dsc">${esc(s.desc) || "Chưa có tóm tắt."}</p><button class="lnk" id="dmore" hidden>Xem thêm</button></div>
 <div class="tpc"><div class="tpl"><div class="sh"><h2>Danh sách chương</h2></div><div class="bar2"><input id="cq" type="search" placeholder="Tìm chương theo tên hoặc số"><button id="cs">Mới nhất trước</button>${nv ? `<button id="cx">Mở tất cả tập</button>` : ""}</div><div id="cl"></div></div>
 <aside class="tpx">${info.map(([a, b]) => `<div class="ibx"><h4>${a}</h4><div>${b}</div></div>`).join("")}</aside></div></div>`;
