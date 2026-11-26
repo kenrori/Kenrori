@@ -159,6 +159,7 @@ details.ms>summary::-webkit-details-marker{display:none}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 .ck{display:flex;align-items:center;gap:8px;font-weight:500;margin-top:10px}
+.segr{display:flex;flex-wrap:wrap;gap:8px}.segr label{display:flex;align-items:center;gap:8px;margin:0;padding:8px 14px;border-radius:6px;background:var(--s1);font-weight:600;cursor:pointer}.segr label:has(input:checked){background:var(--acs);color:var(--ac)}.segr input{width:auto;accent-color:var(--ac)}
 </style>
 </head>
 <body>
@@ -209,11 +210,12 @@ details.ms>summary::-webkit-details-marker{display:none}
 
 <form class="panel" id="p-chap"><h3>Thêm chương</h3><p class="mu">Đăng chương đã dịch sẵn. Muốn dịch ngay trên trang, dùng mục Dịch chương.</p>
 <div class="g2"><div class="full"><label for="c_ser">Bộ truyện</label><select id="c_ser"></select></div>
+<div class="full" id="c_typew"><label>Loại chương</label><div class="segr"><label><input type="radio" name="c_type" value="text" checked> Chương chữ</label><label><input type="radio" name="c_type" value="img"> Minh họa <small>(bộ ảnh minh họa của tập)</small></label></div></div>
 <div class="full"><label for="c_title">Tên chương</label><input id="c_title" placeholder="Chương 12: ..."></div>
 <div><label for="c_vol">Tập <small>(để trống nếu không chia tập)</small></label><input id="c_vol" list="c_vols" placeholder="Tập 1"><datalist id="c_vols"></datalist></div>
 <div><label for="c_date">Ngày đăng</label><input id="c_date" type="date"></div></div>
 <div id="c_novel"><label for="c_text">Nội dung <small>(dán vào, hoặc chọn file .txt bên dưới)</small></label><textarea id="c_text" style="min-height:260px"></textarea><input id="c_file" type="file" accept=".txt" style="margin-top:8px"></div>
-<div id="c_manga"><label for="c_imgs">Ảnh các trang <small>(chọn nhiều ảnh, tự xếp theo tên file)</small></label><input id="c_imgs" type="file" accept="image/*" multiple><label class="ck"><input type="checkbox" id="c_cz" checked> Nén ảnh trước khi đăng <small>(WebP, rộng tối đa 1400px; ảnh nào nén không nhỏ hơn thì giữ nguyên)</small></label></div>
+<div id="c_manga"><label for="c_imgs"><span id="c_imgl">Ảnh các trang</span> <small>(chọn nhiều ảnh, tự xếp theo tên file)</small></label><input id="c_imgs" type="file" accept="image/*" multiple><label class="ck" id="c_firstw"><input type="checkbox" id="c_first" checked> Đặt ở đầu tập <small>(trước các chương chữ của tập đó)</small></label><label class="ck"><input type="checkbox" id="c_cz" checked> Nén ảnh trước khi đăng <small>(WebP, rộng tối đa 1400px; ảnh nào nén không nhỏ hơn thì giữ nguyên)</small></label></div>
 <div class="acts"><button>Đăng chương</button></div></form>
 
 <div class="panel" id="p-tr"><h3>Dịch chương</h3><p class="mu">Dán bản gốc bên trái, dịch tay hoặc dịch tự động sang bên phải, soát lại rồi đăng. Bản nháp tự lưu trên máy này.</p>
@@ -296,7 +298,7 @@ details.ms>summary::-webkit-details-marker{display:none}
 <form class="panel" id="p-edit"><h3>Sửa chương</h3><p class="mu" id="e_info"></p>
 <div class="g2"><div class="full"><label for="e_title">Tên chương</label><input id="e_title"></div><div><label for="e_vol">Tập <small>(để trống nếu không chia tập)</small></label><input id="e_vol"></div><div><label for="e_date">Ngày đăng</label><input id="e_date" type="date"></div></div>
 <div id="e_novel"><label for="e_text">Nội dung</label><textarea id="e_text" style="min-height:360px"></textarea></div>
-<p class="mu" id="e_mn" hidden>Với manga, ở đây sửa được tên chương và ngày. Muốn đổi ảnh thì xóa chương rồi đăng lại.</p>
+<p class="mu" id="e_mn" hidden>Với chương ảnh (manga hoặc minh họa), ở đây sửa được tên, tập và ngày. Muốn đổi ảnh thì gỡ chương rồi đăng lại.</p>
 <div class="acts"><button>Lưu thay đổi</button><button type="button" id="e_cancel" class="sec">Hủy</button></div></form>
 
 <div class="panel" id="p-man"><h3>Quản lý</h3><p class="mu">Gỡ một mục chỉ ẩn nó khỏi web, file ảnh và chương vẫn còn trong repo.</p>
@@ -418,7 +420,9 @@ function fillSel() {
   const o = []; for (const k of ["novel", "manga"]) data[KEYS[k]].forEach((s, i) => o.push(`<option value="${k}|${i}">${k === "novel" ? "📖" : "🖼️"} ${esc(s.title)}</option>`));
   $("#c_ser").innerHTML = o.join("") || "<option value=''>(chưa có bộ nào)</option>"; chapUI(); gChips(); trFill();
 }
-function chapUI() { const k = $("#c_ser").value.split("|")[0]; $("#c_novel").hidden = k !== "novel"; $("#c_manga").hidden = k !== "manga"; volList() }
+const cType = () => (document.querySelector('input[name="c_type"]:checked') || {}).value || "text";
+function chapUI() { const k = $("#c_ser").value.split("|")[0], img = k === "novel" && cType() === "img"; $("#c_typew").hidden = k !== "novel"; $("#c_novel").hidden = k !== "novel" || img; $("#c_manga").hidden = !(k === "manga" || img); $("#c_firstw").hidden = !img; $("#c_imgl").textContent = img ? "Ảnh minh họa" : "Ảnh các trang"; $("#c_title").placeholder = img ? "Minh họa" : "Chương 12: ..."; volList() }
+document.querySelectorAll('input[name="c_type"]').forEach(r => r.addEventListener("change", chapUI));
 function volList() {
   const [k, i] = $("#c_ser").value.split("|"), s = data[KEYS[k]]?.[i], vs = [...new Set((s?.chapters || []).map(c => (c.vol || "").trim()).filter(Boolean))];
   $("#c_vols").innerHTML = vs.map(v => `<option value="${esc(v)}">`).join(""); $("#c_vol").value = vs.length ? (s.chapters[s.chapters.length - 1].vol || "") : "";
@@ -439,25 +443,27 @@ $("#p-series").onsubmit = e => { e.preventDefault(); run(async () => {
 
 $("#p-chap").onsubmit = e => { e.preventDefault(); run(async () => {
   const [kind, i] = $("#c_ser").value.split("|"), s = data[KEYS[kind]]?.[i]; if (!s) throw new Error("Hãy tạo/chọn bộ truyện trước");
-  const t = $("#c_title").value.trim(); if (!t) throw new Error("Hãy nhập tên chương");
+  const img = kind === "novel" && cType() === "img", t = $("#c_title").value.trim() || (img ? "Minh họa" : ""); if (!t) throw new Error("Hãy nhập tên chương");
   const id = `c${s.chapters.length + 1}_${rid()}`, ch = { t, date: $("#c_date").value }; if ($("#c_vol").value.trim()) ch.vol = $("#c_vol").value.trim();
-  if (kind === "novel") {
+  if (kind === "novel" && !img) {
     let text = $("#c_text").value; const f = $("#c_file").files[0]; if (!text.trim() && f) text = await f.text();
     if (!text.trim()) throw new Error("Hãy dán nội dung hoặc chọn file .txt");
     const p = `novels/${s.slug}/${id}.txt`; log("Đang tải chương..."); await put(p, b64t(text), "Chương: " + t); ch.file = p; ch.words = text.trim().split(/\s+/).length;
   } else {
-    const fs = [...$("#c_imgs").files].sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })); if (!fs.length) throw new Error("Hãy chọn ảnh các trang");
-    ch.pages = [];
+    const fs = [...$("#c_imgs").files].sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true })); if (!fs.length) throw new Error(img ? "Hãy chọn ảnh minh họa" : "Hãy chọn ảnh các trang");
+    ch.pages = []; if (img) ch.type = "img";
     const cz = $("#c_cz").checked; let szA = 0, szB = 0;
     for (let j = 0; j < fs.length; j++) {
       const f = fs[j]; let ext = (f.name.split(".").pop() || "jpg").toLowerCase(), b64 = null; szA += f.size;
       if (cz) { log(`Đang nén trang ${j + 1}/${fs.length}...`); const r = await squeeze(f); if (r) { b64 = r.b64; ext = r.ext; szB += r.size } }
       if (!b64) { b64 = await fileB64(f); szB += f.size }
-      const p = `manga/${s.slug}/${id}/${String(j + 1).padStart(3, "0")}.${ext}`; log(`Đang tải trang ${j + 1}/${fs.length}...`); await put(p, b64, `${s.title} ${t} tr.${j + 1}`); ch.pages.push(p);
+      const p = `${img ? "novels" : "manga"}/${s.slug}/${id}/${String(j + 1).padStart(3, "0")}.${ext}`; log(`Đang tải trang ${j + 1}/${fs.length}...`); await put(p, b64, `${s.title} ${t} tr.${j + 1}`); ch.pages.push(p);
     }
     const fz = b => b < 1048576 ? Math.round(b / 1024) + " KB" : (b / 1048576).toFixed(1) + " MB"; window.lastSz = `${fz(szA)} → ${fz(szB)}`;
   }
-  if (ch.vol) { const at = s.chapters.map(c => (c.vol || "").trim()).lastIndexOf(ch.vol); if (at >= 0) s.chapters.splice(at + 1, 0, ch); else s.chapters.push(ch) } else s.chapters.push(ch);
+  const vols = s.chapters.map(c => (c.vol || "").trim()), fi = ch.vol ? vols.indexOf(ch.vol) : -1;
+  if (img && $("#c_first").checked && fi >= 0) s.chapters.splice(fi, 0, ch);
+  else if (ch.vol) { const at = vols.lastIndexOf(ch.vol); if (at >= 0) s.chapters.splice(at + 1, 0, ch); else s.chapters.push(ch) } else s.chapters.push(ch);
   await save("Thêm chương: " + s.title + " - " + t);
   const szMsg = window.lastSz ? ` Dung lượng ảnh: ${window.lastSz}.` : ""; window.lastSz = "";
   ["c_title", "c_text"].forEach(x => $("#" + x).value = ""); $("#c_file").value = $("#c_imgs").value = ""; done("✅ Đã đăng chương." + szMsg + " Web cập nhật sau 1–2 phút.");
@@ -486,7 +492,7 @@ function manage() {
   const q = ($("#m_q")?.value || "").trim().toLowerCase(), hit = o => !q || JSON.stringify(o).toLowerCase().includes(q), out = [];
   for (const k of ["novels", "manga"]) data[k].forEach((s, i) => {
     if (!hit([s.title, s.orig, s.alts, s.author])) return;
-    out.push(`<details class="ms"><summary>${thumb(s)}<span class="mti"><b>${esc(s.title)}</b><small>${k === "novels" ? (s.format || "Light Novel") : "Manga"}${s.author ? ", " + esc(s.author) : ""}, ${s.chapters.length} chương${s.status ? ", " + esc(s.status) : ""}</small></span><span class="mact"><button type="button" class="sec sm" data-s="${k}|${i}">Sửa bộ</button><button type="button" class="sec sm" data-v="${k}|${i}">Tập và bìa</button><button type="button" class="dng sm" data-d="${k}|${i}">Gỡ bộ</button></span></summary><div class="mch">${s.chapters.map((c, j) => `<div class="mc"><span class="mcn">${j + 1}</span><span class="mct">${c.vol ? `<em>${esc(c.vol)}, </em>` : ""}${esc(c.t)}</span><small>${c.date || ""}</small><span class="mca"><button type="button" data-e="${k}|${i}|${j}">Sửa</button><button type="button" data-m="${k}|${i}|${j}|-1" title="Chuyển lên"${j ? "" : " disabled"}>↑</button><button type="button" data-m="${k}|${i}|${j}|1" title="Chuyển xuống"${j < s.chapters.length - 1 ? "" : " disabled"}>↓</button><button type="button" class="dng" data-d="${k}|${i}|${j}" title="Gỡ chương">✕</button></span></div>`).join("") || '<p class="mu">Chưa có chương nào.</p>'}</div></details>`);
+    out.push(`<details class="ms"><summary>${thumb(s)}<span class="mti"><b>${esc(s.title)}</b><small>${k === "novels" ? (s.format || "Light Novel") : "Manga"}${s.author ? ", " + esc(s.author) : ""}, ${s.chapters.length} chương${s.status ? ", " + esc(s.status) : ""}</small></span><span class="mact"><button type="button" class="sec sm" data-s="${k}|${i}">Sửa bộ</button><button type="button" class="sec sm" data-v="${k}|${i}">Tập và bìa</button><button type="button" class="dng sm" data-d="${k}|${i}">Gỡ bộ</button></span></summary><div class="mch">${s.chapters.map((c, j) => `<div class="mc"><span class="mcn">${j + 1}</span><span class="mct">${c.vol ? `<em>${esc(c.vol)}, </em>` : ""}${esc(c.t)}${c.type === "img" ? ` <em>(${c.pages.length} ảnh)</em>` : ""}</span><small>${c.date || ""}</small><span class="mca"><button type="button" data-e="${k}|${i}|${j}">Sửa</button><button type="button" data-m="${k}|${i}|${j}|-1" title="Chuyển lên"${j ? "" : " disabled"}>↑</button><button type="button" data-m="${k}|${i}|${j}|1" title="Chuyển xuống"${j < s.chapters.length - 1 ? "" : " disabled"}>↓</button><button type="button" class="dng" data-d="${k}|${i}|${j}" title="Gỡ chương">✕</button></span></div>`).join("") || '<p class="mu">Chưa có chương nào.</p>'}</div></details>`);
   });
   const grp = [];
   for (const [k, l] of [["projects", "Dự án"], ["tips", "Mẹo game"], ["links", "Liên kết"], ["videos", "Video"]]) {
@@ -516,8 +522,8 @@ $("#manage").addEventListener("click", e => {
   } else if (be) {
     const [k, i, j] = be.dataset.e.split("|"), s = data[k][+i], c = s.chapters[+j]; ed = { k, i: +i, j: +j };
     run(async () => {
-      $("#e_info").textContent = s.title; $("#e_title").value = c.t; $("#e_date").value = c.date || ""; $("#e_vol").value = c.vol || ""; $("#e_novel").hidden = k !== "novels"; $("#e_mn").hidden = k === "novels";
-      if (k === "novels") { log("Đang tải nội dung chương..."); $("#e_text").value = c.text ?? await getText(c.file) }
+      $("#e_info").textContent = s.title; $("#e_title").value = c.t; $("#e_date").value = c.date || ""; $("#e_vol").value = c.vol || ""; const isImg = c.type === "img" || !!c.pages; $("#e_novel").hidden = k !== "novels" || isImg; $("#e_mn").hidden = !(k !== "novels" || isImg);
+      if (k === "novels" && !isImg) { log("Đang tải nội dung chương..."); $("#e_text").value = c.text ?? await getText(c.file) }
       tab("edit"); log("Đang sửa: " + c.t);
     });
   }
@@ -525,7 +531,7 @@ $("#manage").addEventListener("click", e => {
 $("#p-edit").onsubmit = e => { e.preventDefault(); run(async () => {
   if (!ed) throw new Error("Chưa chọn chương nào"); const s = data[ed.k][ed.i], c = s.chapters[ed.j], t = $("#e_title").value.trim(); if (!t) throw new Error("Hãy nhập tên chương");
   c.t = t; c.date = $("#e_date").value; const ev = $("#e_vol").value.trim(); if (ev) c.vol = ev; else delete c.vol;
-  if (ed.k === "novels") {
+  if (ed.k === "novels" && !(c.type === "img" || c.pages)) {
     const text = $("#e_text").value; if (!text.trim()) throw new Error("Nội dung đang trống");
     c.words = text.trim().split(/\s+/).length;
     if (c.text !== undefined) c.text = text; else { log("Đang lưu nội dung..."); await put(c.file, b64t(text), "Sửa chương: " + t) }
