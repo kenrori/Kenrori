@@ -564,8 +564,8 @@ function detail(kind, s) {
       const LIM = 6;
       h = G.map(([v, a]) => {
         if (desc) a = [...a].reverse();
-        const cv = vc[v] || (v !== "Chương lẻ" ? s.cover : ""), cut = !q && !allOpen && a.length > LIM && !a.some(x => x.i == last);
-        return `<section class="vblk"><div class="vhd">${cv ? `<img class="vmini" src="${esc(cv)}" alt="" loading="lazy" onerror="this.remove()">` : ""}<b>${esc(v)}</b><span>${a.length} chương</span></div><div class="vbd${cv ? "" : " nocv"}">${cv ? `<button class="vcv" style="--h:${hue(s.title + v)}" data-src="${esc(cv)}" onclick="LBL=[this.dataset.src];lbShow(0)" aria-label="Xem bìa ${esc(v)}"><img src="${esc(cv)}" alt="Bìa ${esc(v)}" loading="lazy" onerror="this.remove()"></button>` : ""}<div class="vlw"><div class="vls${cut ? " cut" : ""}">${a.map(rowHtml).join("")}</div>${cut ? `<button class="vmore" onclick="this.previousElementSibling.classList.remove('cut');this.remove()">Xem tiếp (${a.length - LIM} chương)</button>` : ""}</div></div></section>`;
+        const cv = vc[v] || (v !== "Chương lẻ" ? s.cover : ""), cut = !q && !allOpen && a.length > LIM;
+        return `<section class="vblk"><div class="vhd">${cv ? `<img class="vmini" src="${esc(cv)}" alt="" loading="lazy" onerror="this.remove()">` : ""}<b>${esc(v)}</b><span>${a.length} chương</span></div><div class="vbd${cv ? "" : " nocv"}">${cv ? `<button class="vcv" style="--h:${hue(s.title + v)}" data-src="${esc(cv)}" onclick="LBL=[this.dataset.src];lbShow(0)" aria-label="Xem bìa ${esc(v)}"><img src="${esc(cv)}" alt="Bìa ${esc(v)}" loading="lazy" onerror="this.remove()"></button>` : ""}<div class="vlw"><div class="vls${cut ? " cut" : ""}">${a.map(rowHtml).join("")}</div>${cut ? `<button class="vmore" data-n="${a.length - LIM}" onclick="const c=this.previousElementSibling.classList.toggle('cut');this.textContent=c?'Xem tiếp ('+this.dataset.n+' chương)':'Thu gọn';if(c)this.closest('.vblk').scrollIntoView({block:'nearest'})">Xem tiếp (${a.length - LIM} chương)</button>` : ""}</div></div></section>`;
       }).join("");
     }
     $("#cl").innerHTML = h || `<p class="empty">Không có chương nào khớp với từ khóa.</p>`;
