@@ -103,5 +103,23 @@
    "img": ""
   }
  ],
- "site": {}
+ "site": {
+  "announce": {
+   "text": "Dị Giới Yên Bình đã bắt đầu Dịch !!!",
+   "url": ""
+  },
+  "about": {
+   "name": "Kenrori",
+   "intro": "",
+   "discord": "https://discord.com/users/353873299018743809",
+   "contacts": []
+  },
+  "giscus": {
+   "repo": "",
+   "repoId": "",
+   "category": "",
+   "categoryId": ""
+  },
+  "url": ""
+ }
 }
