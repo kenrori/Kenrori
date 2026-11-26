@@ -136,6 +136,8 @@ details.ms>summary::-webkit-details-marker{display:none}
 
 /* ---------- Quản lý bộ ---------- */
 #retbar{margin:-6px 0 14px}
+.ph{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.sbtn2{display:inline-flex;align-items:center;padding:9px 16px;border-radius:6px;background:var(--ac);color:#fff;font-weight:600;text-decoration:none}.sbtn2.sec{background:var(--s1);color:var(--tx)}
+.lc{font-size:.8rem;font-weight:600;padding:4px 11px;border-radius:999px;background:var(--s1);color:var(--mu)}.lc.wait{background:var(--acs);color:var(--ac)}.lc.ok{background:var(--okb);color:var(--ok)}
 .wstop{display:flex;gap:8px}.wstop input{flex:1}.wstop button{margin:0;flex:none}
 .wsf{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 16px}.wsf .chip{margin:0;padding:6px 12px;font-size:.85rem}.wsf .chip.on{background:var(--tx);color:var(--bg)}
 .wsg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
@@ -248,7 +250,7 @@ details.ms>summary::-webkit-details-marker{display:none}
 <div id="bye" hidden><button id="l_out" type="button" title="Đăng xuất"><svg class="i" viewBox="0 0 24 24"><path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M10 17l-5-5 5-5M5 12h11"/></svg><span>Đăng xuất</span></button></div></div>
 </aside>
 <main>
-<div class="ph"><h2 id="ptitle">Tổng quan</h2></div>
+<div class="ph"><h2 id="ptitle">Tổng quan</h2><span id="livechip" class="lc" hidden></span></div>
 <div id="retbar" hidden><button type="button" class="sec sm" id="ret_go">← Về trang bộ <span></span></button></div>
 
 <div class="panel" id="p-ws"><h3>Quản lý bộ</h3>
@@ -454,7 +456,35 @@ const rid = () => Date.now().toString(36);
 let cfg = {}, data = null;
 
 const api = (p, o = {}) => fetch(`https://api.github.com/repos/${cfg.u}/${cfg.r}/contents/${p}` + (o.q ? o.q + "&_=" + Date.now() : ""), { method: o.m || "GET", cache: "no-store", headers: { Authorization: "Bearer " + cfg.t, Accept: "application/vnd.github+json" }, body: o.body && JSON.stringify(o.body) });
-async function put(path, content, msg) {
+/* ===== Gom nhiều file vào một lần lưu (một commit), web cập nhật nhanh hơn ===== */
+let STAGE = null, RUND = 0, NOJ = false, WATCH = null;
+const ghx = async (path, o = {}) => { const r = await fetch(`https://api.github.com/repos/${cfg.u}/${cfg.r}/${path}`, { method: o.m || "GET", cache: "no-store", headers: { Authorization: "Bearer " + cfg.t, Accept: "application/vnd.github+json" }, body: o.body && JSON.stringify(o.body) }); const j = await r.json().catch(() => ({})); if (!r.ok) { const e = new Error(j.message || "GitHub báo lỗi " + r.status); e.st = r.status; throw e } return j };
+async function flush(msg) {
+  if (!STAGE || !STAGE.length) return; const m = new Map(); STAGE.splice(0).forEach(f => m.set(f.path, f)); const L = [...m.values()];
+  if (!NOJ) { try { const g = await api(".nojekyll", { q: "?ref=" + cfg.b }); NOJ = true; if (g.status === 404) L.push({ path: ".nojekyll", b64: "" }) } catch (e) {} }
+  let tree;
+  try {
+    tree = new Array(L.length); let k = 0, done = 0; const worker = async () => { while (k < L.length) { const i = k++; const b = await ghx("git/blobs", { m: "POST", body: { content: L[i].b64, encoding: "base64" } }); tree[i] = { path: L[i].path, mode: "100644", type: "blob", sha: b.sha }; done++; if (L.length > 3) log(`Đang lưu ${done}/${L.length} file lên GitHub...`) } };
+    await Promise.all(Array.from({ length: Math.min(4, L.length) }, worker));
+  } catch (e) { for (const f of L) await putNow(f.path, f.b64, f.msg || msg); return } // dự phòng: lưu từng file như cũ
+  for (let t = 0; t < 4; t++) {
+    const ref = await ghx(`git/ref/heads/${encodeURIComponent(cfg.b)}`), base = ref.object.sha, bc = await ghx(`git/commits/${base}`);
+    const tr = await ghx("git/trees", { m: "POST", body: { base_tree: bc.tree.sha, tree } }), c = await ghx("git/commits", { m: "POST", body: { message: msg || L[0].msg || "Cập nhật", tree: tr.sha, parents: [base] } });
+    try { await ghx(`git/refs/heads/${encodeURIComponent(cfg.b)}`, { m: "PATCH", body: { sha: c.sha, force: false } }); return } catch (e) { if (e.st !== 422 || t === 3) throw e; await new Promise(z => setTimeout(z, 600)) }
+  }
+}
+async function put(path, content, msg) { if (STAGE) { STAGE.push({ path, b64: content, msg }); return } return putNow(path, content, msg) }
+/* Theo dõi đến khi người đọc thấy bản mới */
+function watchLive(rev) {
+  clearInterval(WATCH); const t0 = Date.now(), chip = $("#livechip"); chip.hidden = false; chip.className = "lc wait"; chip.textContent = "Đang đưa lên web...";
+  const url = siteBase() + "data.json";
+  WATCH = setInterval(async () => {
+    const s = Math.round((Date.now() - t0) / 1000); chip.textContent = `Đang đưa lên web... ${s}s`;
+    try { const r = await fetch(url + "?v=" + Date.now(), { cache: "no-store" }); if (r.ok && (await r.json()).rev >= rev) { clearInterval(WATCH); chip.className = "lc ok"; chip.textContent = `Web đã cập nhật (${s}s)`; log(`✅ Người đọc đã thấy thay đổi trên web (sau ${s} giây).`); setTimeout(() => { if (chip.className === "lc ok") chip.hidden = true }, 15000) } } catch (e) {}
+    if (s > 300) { clearInterval(WATCH); chip.className = "lc"; chip.textContent = "Web cập nhật chậm, hãy kiểm tra lại sau" }
+  }, 4000);
+}
+async function putNow(path, content, msg) {
   for (let t = 0; t < 3; t++) {
     let sha; const g = await api(path, { q: "?ref=" + cfg.b });
     if (g.ok) sha = (await g.json()).sha; else if (g.status !== 404) throw new Error("Không đọc được " + path + " (" + g.status + ")");
@@ -494,10 +524,19 @@ const feedXml = () => {
   return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Kenrori</title><link>${x(base)}</link><description>Chương mới cập nhật</description><language>vi</language>${it}</channel></rss>`;
 };
 async function save(msg) {
-  await put("data.json", b64t(JSON.stringify(data, null, 1)), msg);
-  try { await put("feed.xml", b64t(feedXml()), "Cập nhật RSS") } catch (e) { log("Đã lưu, nhưng chưa cập nhật được RSS: " + e.message) }
+  data.rev = Date.now(); const own = !STAGE; if (own) STAGE = [];
+  try {
+    await put("data.json", b64t(JSON.stringify(data, null, 1)), msg);
+    try { await put("feed.xml", b64t(feedXml()), "Cập nhật RSS") } catch (e) { log("Đã lưu, nhưng chưa cập nhật được RSS: " + e.message) }
+    await flush(msg);
+  } finally { if (own) STAGE = null }
+  watchLive(data.rev);
 }
-async function run(fn) { const bs = [...document.querySelectorAll("button")]; bs.forEach(b => b.disabled = true); try { await fn() } catch (e) { log("❌ " + e.message) } bs.forEach(b => b.disabled = false) }
+async function run(fn) {
+  const bs = [...document.querySelectorAll("button")]; bs.forEach(b => b.disabled = true); if (!RUND++) STAGE = [];
+  try { await fn(); if (RUND === 1 && STAGE && STAGE.length) await flush("Cập nhật") } catch (e) { log("❌ " + e.message) }
+  finally { if (!--RUND) STAGE = null; bs.forEach(b => b.disabled = false) }
+}
 const done = m => { log(m); fillSel(); manage() };
 
 const needHttps = () => { if (!window.crypto?.subtle) throw new Error("Cần mở bằng địa chỉ https (GitHub Pages) để dùng đăng nhập bảo mật.") };
@@ -1344,6 +1383,7 @@ function dash() {
   const qa = [["series", "Thêm bộ truyện mới", "s_new"], ["chap", "Đăng chương"], ["tr", "Dịch chương mới"], ["man", "Quản lý nội dung"]];
   el.innerHTML = `<div class="stats"><div class="stat"><b>${data.novels.filter(s => s.format !== "Web Novel").length}</b><span>Light Novel</span></div><div class="stat"><b>${data.novels.filter(s => s.format === "Web Novel").length}</b><span>Web Novel</span></div><div class="stat"><b>${data.manga.length}</b><span>Manga</span></div><div class="stat"><b>${nch.toLocaleString("vi-VN")}</b><span>Chương đã đăng</span></div><div class="stat"><b>${nw.toLocaleString("vi-VN")}</b><span>Chữ đã dịch</span></div></div>
 <h4>Làm nhanh</h4><div class="qa">${qa.map(([k, l, x]) => `<button type="button" onclick="${x ? `$('#${x}').click();` : ""}tab('${k}')"><svg class="i" viewBox="0 0 24 24">${NI[k]}</svg>${l}</button>`).join("")}</div>
+${data.site?.st && data.site?.sb?.url ? `<h4>Khu Sáng tác</h4><div class="acts" style="margin-top:8px"><a class="btn sbtn2" href="index.html#kiem-duyet/tai-khoan" target="_blank" rel="noopener">Quản lý tài khoản tác giả</a><a class="btn sbtn2 sec" href="index.html#kiem-duyet" target="_blank" rel="noopener">Báo cáo vi phạm và truyện bị ẩn</a></div>` : ""}
 <h4>Bảo trì</h4><div class="acts" style="margin-top:8px"><button type="button" onclick="backupDl()">Tải bản sao lưu</button><button type="button" class="sec" onclick="$('#bk_in').click()">Khôi phục từ bản sao lưu</button><button type="button" class="sec" onclick="regenShare()">Tạo lại trang chia sẻ cho tất cả bộ</button>${/^[a-z0-9-]+$/i.test(data.site?.gc || "") ? `<a class="btnl" href="https://${data.site.gc}.goatcounter.com" target="_blank" rel="noopener">Xem thống kê lượt xem</a>` : ""}</div><p class="mu" style="margin-top:6px">Nên tải bản sao lưu trước những thay đổi lớn như gộp thể loại hay gỡ bộ truyện.</p><p class="mu" style="margin-top:6px">Trang chia sẻ giúp link từng bộ hiện đúng bìa, tên và tóm tắt khi dán lên Discord, Facebook. Bộ mới hoặc vừa sửa được tạo tự động; nút này dùng cho các bộ đăng từ trước.</p>
 ${drafts.length ? `<h4>Bản dịch đang dở trên máy này</h4><div class="lst">${drafts.map(({ s, slug, d }) => `<div class="li"><span class="lt">${esc(s ? s.title : slug)}${d.t ? ` <em>${esc(d.t)}</em>` : ""}</span><small>${(d.o || "").trim() ? d.o.trim().split(/\s+/).length.toLocaleString("vi-VN") + " chữ" : "chưa dịch"}</small><button type="button" class="sec sm" onclick="openDraft('${esc(slug)}')">Mở</button></div>`).join("")}</div>` : ""}
 <h4>Chương mới đăng</h4>${rec.length ? `<div class="lst">${rec.slice(0, 8).map(r => `<div class="li">${thumb(r.s)}<span class="lt">${esc(r.s.title)} <em>${r.c.vol ? esc(r.c.vol) + ", " : ""}${esc(r.c.t)}</em></span><small>${r.c.date || ""}</small><button type="button" class="sec sm" onclick="goEdit('${r.k}',${r.i},${r.j})">Sửa</button></div>`).join("")}</div>` : '<p class="mu">Chưa có chương nào. Tạo bộ truyện rồi đăng chương đầu tiên.</p>'}`;

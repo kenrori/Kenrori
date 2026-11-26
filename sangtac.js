@@ -321,6 +321,40 @@ ${hasDr ? `<p class="stwarn" id="c_dr">Có bản nháp chưa lưu trên máy nà
 
 
   /* ---------- Kiểm duyệt ---------- */
+  const modTabs = cur => `<div class="utabs mtabs" role="tablist"><a role="tab" class="${cur === "bc" ? "on" : ""}" href="#kiem-duyet">Báo cáo và truyện bị ẩn</a><a role="tab" class="${cur === "tk" ? "on" : ""}" href="#kiem-duyet/tai-khoan">Tài khoản</a></div>`;
+  const RL = { user: "Thành viên", mod: "Kiểm duyệt viên", admin: "Quản trị viên" };
+  const relT = ts => { if (!ts) return "chưa đăng nhập lần nào"; const d = (Date.now() - new Date(ts)) / 864e5; return d < 1 ? "hoạt động hôm nay" : d < 2 ? "hoạt động hôm qua" : d < 30 ? `hoạt động ${Math.floor(d)} ngày trước` : `hoạt động ${new Date(ts).toLocaleDateString("vi-VN")}` };
+  async function pAccounts() {
+    document.title = "Quản lý tài khoản | Kenrori";
+    if (!me) return pAuth("login"); await loadProf(); if (!isMod()) { app.innerHTML = notice("Chỉ ban kiểm duyệt mới vào được trang này."); return }
+    const adm = prof.role === "admin", ref = (/^https:\/\/([a-z0-9-]+)\.supabase\.(co|in)/.exec(cfg().url || "") || [])[1];
+    let q = "", f = "all", page = 0, rows = [], total = 0, tmr = null;
+    app.innerHTML = `<section class="sec"><div class="sh"><h2>Kiểm duyệt</h2><a class="more all" href="#viet">Về Góc tác giả</a></div>${modTabs("tk")}
+<div class="acf"><input id="ac_q" type="search" placeholder="${adm ? "Tìm theo tên hoặc email" : "Tìm theo tên hiển thị"}" aria-label="Tìm tài khoản"><div class="acc" role="group" aria-label="Lọc">${[["all", "Tất cả"], ["writers", "Đã viết truyện"], ["new", "Mới 7 ngày"], ["mod", "Ban kiểm duyệt"], ["banned", "Bị khóa"]].map(([k, l]) => `<button type="button" class="fc${k === "all" ? " on" : ""}" data-af="${k}">${l}</button>`).join("")}</div></div>
+<p class="mu" id="ac_n"></p><div id="ac_l" class="acl"><p class="mu">Đang tải...</p></div><div class="acts" style="justify-content:center;margin-top:14px"><button class="btn" id="ac_more" hidden>Xem thêm</button></div>
+<p class="mu acnote">${adm ? "Bạn là quản trị viên: đổi được vai trò và thấy email. " : "Kiểm duyệt viên khóa được tài khoản và ẩn truyện; chỉ quản trị viên đổi được vai trò. "}Muốn xóa hẳn một tài khoản, vào Supabase › Authentication › Users${ref ? ` (<a class="al" href="https://supabase.com/dashboard/project/${esc(ref)}/auth/users" target="_blank" rel="noopener">mở trang đó</a>)` : ""}.</p></section>`;
+    const row = u => { const self = u.id === me.id, isAdm = u.role === "admin"; return `<div class="acr${u.banned ? " ban" : ""}" data-u="${esc(u.id)}">${avHtml(u, "acav")}<div class="acb"><div class="act"><a href="#tg/${esc(u.id)}"><b>${esc(u.display_name)}</b></a>${u.role !== "user" ? `<em class="okb">${RL[u.role]}</em>` : ""}${u.banned ? '<em class="bad">Bị khóa</em>' : ""}${self ? '<em class="drf">Bạn</em>' : ""}</div><small>${u.email ? esc(u.email) + ", " : ""}tham gia ${new Date(u.created_at).toLocaleDateString("vi-VN")}, ${relT(u.last_sign_in_at)}</small><small>${u.works} truyện (${u.published} công khai), ${u.chapters} chương</small></div>
+<div class="aca">${adm && !self ? `<select data-arole aria-label="Vai trò của ${esc(u.display_name)}">${Object.entries(RL).map(([k, l]) => `<option value="${k}" ${k === u.role ? "selected" : ""}>${l}</option>`).join("")}</select>` : ""}${!self && (adm || !isAdm) ? `<button class="btn sm${u.banned ? "" : " dngb"}" data-aban="${u.banned ? 0 : 1}">${u.banned ? "Mở khóa" : "Khóa"}</button>` : ""}${!self && u.published ? `<button class="btn sm" data-ahide>Ẩn hết truyện</button>` : ""}</div></div>` };
+    const load = async more => {
+      page = more ? page + 1 : 0; const { data, error } = await sb.rpc("admin_users", { q, f, lim: 30, off: page * 30 });
+      if (error) { $("#ac_l").innerHTML = errBox(/admin_users|function/i.test(error.message || "") ? { message: "Máy chủ chưa có trang quản lý tài khoản. Hãy chạy lại file supabase-setup.sql mới trong Supabase." } : error); return }
+      rows = more ? rows.concat(data || []) : (data || []); total = (data && data[0] && +data[0].total) || (more ? total : 0);
+      $("#ac_n").textContent = total ? `${total.toLocaleString("vi-VN")} tài khoản` : ""; $("#ac_l").innerHTML = rows.map(row).join("") || '<p class="empty">Không có tài khoản nào khớp.</p>'; $("#ac_more").hidden = rows.length >= total;
+    };
+    $("#ac_q").oninput = e => { clearTimeout(tmr); tmr = setTimeout(() => { q = e.target.value.trim(); load(false) }, 400) };
+    document.querySelector(".acc").onclick = e => { const b = e.target.closest("[data-af]"); if (!b) return; f = b.dataset.af; document.querySelectorAll(".acc .fc").forEach(x => x.classList.toggle("on", x === b)); load(false) };
+    $("#ac_more").onclick = () => load(true);
+    $("#ac_l").addEventListener("change", async e => { const s = e.target.closest("[data-arole]"); if (!s) return; const id = s.closest(".acr").dataset.u, u = rows.find(x => x.id === id), nr = s.value;
+      if (!confirm(`Đổi vai trò của ${u.display_name} thành ${RL[nr]}?${nr === "admin" ? "\nQuản trị viên có toàn quyền, kể cả đổi vai trò của người khác." : ""}`)) { s.value = u.role; return }
+      const { error } = await sb.from("profiles").update({ role: nr }).eq("id", id); if (error) { s.value = u.role; return toast(viMsg(error)) } u.role = nr; toast("Đã đổi vai trò"); s.closest(".acr").outerHTML = row(u) });
+    $("#ac_l").addEventListener("click", async e => {
+      const b = e.target.closest("[data-aban],[data-ahide]"); if (!b) return; const id = b.closest(".acr").dataset.u, u = rows.find(x => x.id === id);
+      if (b.dataset.aban != null) { const on = b.dataset.aban === "1"; if (on && !confirm(`Khóa tài khoản ${u.display_name}? Họ không đăng, sửa truyện hay bình luận được, và truyện của họ bị ẩn khỏi web.`)) return; const { error } = await sb.from("profiles").update({ banned: on }).eq("id", id); if (error) return toast(viMsg(error)); u.banned = on; toast(on ? "Đã khóa tài khoản" : "Đã mở khóa tài khoản") }
+      else { if (!confirm(`Ẩn toàn bộ ${u.published} truyện công khai của ${u.display_name}? Bạn bỏ ẩn lại được ở tab Báo cáo và truyện bị ẩn.`)) return; const { error } = await sb.from("works").update({ hidden: true }).eq("author_id", id).eq("hidden", false); if (error) return toast(viMsg(error)); u.published = 0; toast("Đã ẩn các truyện của tài khoản này") }
+      b.closest(".acr").outerHTML = row(u);
+    });
+    await load(false);
+  }
   async function pMod() {
     document.title = "Kiểm duyệt | Kenrori";
     if (!me) return pAuth("login"); await loadProf(); if (!isMod()) { app.innerHTML = notice("Chỉ ban kiểm duyệt mới vào được trang này."); return }
@@ -329,7 +363,7 @@ ${hasDr ? `<p class="stwarn" id="c_dr">Có bản nháp chưa lưu trên máy nà
       sb.from("works").select("id,title,author_id,author:profiles(display_name)").eq("hidden", true).limit(100),
       sb.from("profiles").select("id,display_name").eq("banned", true).limit(100)]);
     const R = rp.data || [], H = hw.data || [], B = bu.data || [];
-    app.innerHTML = `<section class="sec"><div class="sh"><h2>Kiểm duyệt</h2><a class="more all" href="#viet">Về Góc tác giả</a></div>${rp.error ? errBox(rp.error) : ""}
+    app.innerHTML = `<section class="sec"><div class="sh"><h2>Kiểm duyệt</h2><a class="more all" href="#viet">Về Góc tác giả</a></div>${modTabs("bc")}${rp.error ? errBox(rp.error) : ""}
 <h3>Báo cáo chưa xử lý (${R.length})</h3>${R.length ? `<div class="stl">${R.map(r => `<div class="stli col"><span class="stb"><b>${r.work ? `<a class="al" href="#st/${esc(r.work.id)}${r.chapter ? "/" + esc(r.chapter.id) : ""}" target="_blank">${esc(r.work.title)}${r.chapter ? ", " + esc(r.chapter.title) : ""}</a>` : "Truyện đã bị xóa"}</b><small>${esc((r.reporter && r.reporter.display_name) || "Ẩn danh")} báo cáo ${ago(day(r.created_at)).toLowerCase()}: ${esc(r.reason)}</small></span><span class="acts" style="margin:0">${r.work ? (r.work.hidden ? `<button class="btn sm" onclick="ST.hide('${esc(r.work.id)}',false)">Bỏ ẩn truyện</button>` : `<button class="btn sm dngb" onclick="ST.hide('${esc(r.work.id)}',true)">Ẩn truyện</button>`) + `<button class="btn sm dngb" onclick="ST.ban('${esc(r.work.author_id)}',true)">Khóa tác giả</button>` : ""}<button class="btn sm" onclick="ST.resolve(${+r.id})">Đã xử lý</button></span></div>`).join("")}</div>` : '<p class="mu">Không có báo cáo nào.</p>'}
 <h3>Truyện đang bị ẩn (${H.length})</h3>${H.length ? `<div class="stl">${H.map(w => `<div class="stli"><span class="stb"><b><a class="al" href="#st/${esc(w.id)}">${esc(w.title)}</a></b><small>${esc(aName(w))}</small></span><button class="btn sm" onclick="ST.hide('${esc(w.id)}',false)">Bỏ ẩn</button></div>`).join("")}</div>` : '<p class="mu">Không có truyện nào bị ẩn.</p>'}
 <h3>Tài khoản bị khóa (${B.length})</h3>${B.length ? `<div class="stl">${B.map(p => `<div class="stli"><span class="stb"><b><a class="al" href="#tg/${esc(p.id)}">${esc(p.display_name)}</a></b></span><button class="btn sm" onclick="ST.ban('${esc(p.id)}',false)">Mở khóa</button></div>`).join("")}</div>` : '<p class="mu">Không có tài khoản nào bị khóa.</p>'}</section>`;
@@ -360,7 +394,7 @@ Ban quản trị có quyền ẩn truyện hoặc khóa tài khoản vi phạm m
       if (a === "sang-tac") return await pList();
       if (a === "st") return parts[2] ? await pRead(parts[1], parts[2]) : await pWork(parts[1]);
       if (a === "tg") return await pWriter(parts[1]);
-      if (a === "kiem-duyet") return await pMod();
+      if (a === "kiem-duyet") return parts[1] === "tai-khoan" ? await pAccounts() : await pMod();
       if (a === "viet") {
         const sub = parts[1];
         if (!me) return pAuth(sub === "dang-ky" ? "reg" : sub === "quen-mat-khau" ? "forgot" : "login");
@@ -575,7 +609,12 @@ em.okb,em.drf,em.bad{font-style:normal;font-weight:700;font-size:.75rem;padding:
 .stcv img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.stcv:hover{border-color:var(--ac)}
 .stchips{display:flex;flex-wrap:wrap;gap:6px}.stchips .fc{background:var(--s1)}.stchips .fc.on{background:var(--ac)}
 .strules{max-width:72ch;line-height:1.8;padding-left:22px}.strules li{margin-bottom:8px}
-#stu{text-decoration:none}.avs{overflow:hidden;flex:none}.avs img{width:100%;height:100%;object-fit:cover;display:block}.cav{overflow:hidden}.cav img{width:100%;height:100%;object-fit:cover;display:block}.cmh a:hover b{color:var(--ac)}
+#stu{text-decoration:none}.mtabs{margin:0 0 18px;width:max-content}.mtabs a{padding:6px 14px;border-radius:6px;font-weight:600;font-size:.9rem;color:var(--mu)}.mtabs a.on{background:var(--bg);color:var(--tx);box-shadow:0 1px 3px #0002}
+.acf{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}.acf input{width:min(420px,100%);border:0;background:var(--s1);border-radius:8px;padding:9px 12px;color:var(--tx);font:inherit;outline:none}.acf input:focus{box-shadow:0 0 0 2px var(--ac)}.acc{display:flex;flex-wrap:wrap;gap:6px}.acc .fc{background:var(--s1)}.acc .fc.on{background:var(--ac);color:#fff}
+.acl{display:flex;flex-direction:column;gap:6px}.acr{display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--s1);border-radius:10px}.acr.ban{opacity:.7}.avs.acav{width:44px;height:44px;font-size:1.1rem}
+.acb{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}.act{display:flex;flex-wrap:wrap;align-items:center;gap:6px}.act a:hover b{color:var(--ac)}.acb small{color:var(--mu);font-size:.82rem;overflow-wrap:anywhere}
+.aca{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:flex-end}.aca select{border:0;background:var(--bg);color:var(--tx);border-radius:6px;padding:6px 8px;font:inherit;font-size:.85rem}.acnote{margin-top:18px;font-size:.85rem}
+@media(max-width:700px){.acr{flex-wrap:wrap}.aca{width:100%;justify-content:flex-start;padding-left:56px}}.avs{overflow:hidden;flex:none}.avs img{width:100%;height:100%;object-fit:cover;display:block}.cav{overflow:hidden}.cav img{width:100%;height:100%;object-fit:cover;display:block}.cmh a:hover b{color:var(--ac)}
 .tgp{margin:0 0 10px}.tgb{position:relative;aspect-ratio:3/1;max-height:300px;width:100%;border-radius:14px;overflow:hidden;background:linear-gradient(120deg,hsl(var(--h) 60% 42%),hsl(calc(var(--h) + 60) 60% 26%))}.tgb img{width:100%;height:100%;object-fit:cover;display:block}
 .tgh{display:flex;align-items:flex-start;gap:18px;padding:0 20px;margin-top:-52px;position:relative}.tgh .btn{margin-left:auto;margin-top:62px}
 .avs.tga{width:116px;height:116px;font-size:2.8rem;border:5px solid var(--bg);box-shadow:0 8px 24px -10px #0008}
