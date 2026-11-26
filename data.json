@@ -893,6 +893,13 @@
    "category": "",
    "categoryId": ""
   },
-  "url": ""
+  "url": "",
+  "report": "",
+  "sb": {
+   "url": "https://vbcsyjxlqtafiuvemxdt.supabase.co",
+   "key": "sb_publishable_5jm-vg7AgE-nkjxg4aEPCQ_dZLfCZVY"
+  },
+  "rules": "",
+  "gc": ""
  }
 }
