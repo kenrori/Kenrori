@@ -165,7 +165,10 @@
    "prog": "",
    "sched": "",
    "format": "Light Novel",
-   "cover": "images/zero-no-tsukaima-bia.jpg"
+   "cover": "images/zero-no-tsukaima-bia.jpg",
+   "vc": {
+    "Tập 1": "images/zero-no-tsukaima-tap-1-mwxgllzl.jpg"
+   }
   }
  ],
  "manga": [],
