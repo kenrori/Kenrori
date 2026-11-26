@@ -134,6 +134,37 @@ details.ms>summary::-webkit-details-marker{display:none}
 @media(min-width:901px){#v_cnt{flex:0 0 auto;margin-right:4px}}
 @media(max-width:900px){.vauto{flex-direction:column;align-items:stretch}.vbar{padding:8px;gap:6px}#v_cnt{font-size:.82rem}.vbar button{padding:8px 12px;font-size:.88rem}.vbar input{padding:7px 10px;flex-basis:100%}}
 
+/* ---------- Quản lý bộ ---------- */
+#retbar{margin:-6px 0 14px}
+.wstop{display:flex;gap:8px}.wstop input{flex:1}.wstop button{margin:0;flex:none}
+.wsf{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 16px}.wsf .chip{margin:0;padding:6px 12px;font-size:.85rem}.wsf .chip.on{background:var(--tx);color:var(--bg)}
+.wsg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.wsc{display:flex;flex-direction:column;align-items:stretch;gap:4px;margin:0;padding:0;background:none!important;color:var(--tx);text-align:left;font-weight:400}
+.wsct{display:block;aspect-ratio:7/10;border-radius:8px;overflow:hidden;background:hsl(var(--h) 45% 45%);margin-bottom:4px;transition:transform .15s}.wsct img{width:100%;height:100%;object-fit:cover;display:block}.wsc:hover .wsct{transform:translateY(-2px)}
+.wsc b{font-size:.92rem;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.wsc small{color:var(--mu);font-size:.8rem}
+.wsh{display:flex;gap:20px;margin:14px 0 18px;align-items:flex-start}
+.wscv{position:relative;width:150px;flex:none;aspect-ratio:7/10;border-radius:8px;overflow:hidden;background:hsl(var(--h,20) 45% 45%)}.wscv img{width:100%;height:100%;object-fit:cover;display:block}.wscv img[src=""]{visibility:hidden}
+.wscb{position:absolute;left:0;right:0;bottom:0;margin:0;padding:8px;text-align:center;font-size:.82rem;font-weight:600;color:#fff;background:#000000a6;cursor:pointer}.wscb:hover{background:#000000d0}
+.wsi{min-width:0}.wsi h3{display:block!important;margin:0 0 4px;font-size:1.3rem;line-height:1.3}.wsi .acts{margin-top:12px}
+.sbtn{display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;background:var(--s1);color:var(--tx);font-size:.82rem;font-weight:600;text-decoration:none}.sbtn:hover{background:var(--s2)}
+.wstb{display:flex;flex-wrap:wrap;gap:8px}.wstb button{margin:0}.wstb #ws_addb.on{background:var(--tx);color:var(--bg)}
+.wshint{font-size:.84rem;margin:14px 0 8px}
+#ws_list{background:var(--s1);border-radius:8px;padding:6px}
+.wsr{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto auto auto;gap:8px;align-items:center;padding:4px 6px;border-radius:5px}.wsr:hover{background:var(--s2)}.wsr input{width:auto;margin:0}
+.wsn{margin:0;padding:2px 6px;min-width:34px;justify-content:center;background:none!important;color:var(--mu);font-size:.8rem;font-weight:600}.wsn:hover{color:var(--ac)}
+.wsr .tt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.92rem}.wsr .tt em{font-style:normal;color:var(--ac);font-size:.78rem;margin-right:6px}.wsr small{color:var(--mu);font-size:.78rem;white-space:nowrap}
+.wsr .wa{display:flex;gap:4px}.wsr .wa button{margin:0;padding:3px 9px;font-size:.8rem;background:var(--bg);color:var(--tx)}.wsr .wa button:hover{background:var(--s2)}.wsr .wa button.dng{color:var(--err)}
+.wsr.mv{background:var(--acs)}
+#ws_list .vgh .vcv2{margin:0;flex:none;width:28px;height:40px;border-radius:3px;overflow:hidden;background:var(--s2);cursor:pointer;display:grid;place-items:center;font-size:.7rem;color:var(--mu)}#ws_list .vgh .vcv2 img{width:100%;height:100%;object-fit:cover}
+#ws_list .vgb{padding:2px 0 6px 0}
+#p-chap.inws{background:var(--s1);border-radius:10px;padding:16px 18px;margin:14px 0 4px}#p-chap.inws>p.mu:first-of-type,#p-chap.inws .g2:first-of-type>.full:first-child{display:none}
+#p-chap.inws input,#p-chap.inws select,#p-chap.inws textarea{background:var(--bg)}
+.wsdock{position:sticky;bottom:0;z-index:5;display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.wsdock .wsbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;background:var(--s2);border-radius:8px;box-shadow:0 -6px 16px #0000001f}.wsdock .wsbar[hidden]{display:none}
+.wsbar button{margin:0}.wsbar input{flex:1 1 150px;width:auto;background:var(--bg);padding:7px 10px}.wsbar span{font-weight:600;font-size:.9rem;margin-right:auto}
+.wsbar.dirty{background:var(--acs)}
+@media(max-width:900px){.wsh{gap:14px}.wscv{width:110px}.wsr{grid-template-columns:auto auto minmax(0,1fr) auto;row-gap:2px}.wsr small{display:none}.wsr .wa{grid-column:3 / -1;justify-content:flex-start}.wsr .wa button{padding:3px 8px}.wsg{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}.wstb button{padding:7px 11px;font-size:.86rem}.wsdock .wsbar{padding:8px;gap:6px}.wsbar span{font-size:.82rem}.wsbar input{flex:1 1 120px}.wsbar button{padding:6px 10px;font-size:.82rem}#ws_sel span{flex:0 0 auto;margin-right:0}}
+
 /* ---------- Translator ---------- */
 #t_set{background:var(--s1);border-radius:8px;padding:12px 16px;margin:16px 0}
 #t_set>summary{cursor:pointer;font-weight:600}
@@ -214,6 +245,26 @@ details.ms>summary::-webkit-details-marker{display:none}
 </aside>
 <main>
 <div class="ph"><h2 id="ptitle">Tổng quan</h2></div>
+<div id="retbar" hidden><button type="button" class="sec sm" id="ret_go">← Về trang bộ <span></span></button></div>
+
+<div class="panel" id="p-ws"><h3>Quản lý bộ</h3>
+<div id="ws_home">
+<div class="wstop"><input id="ws_q" type="search" placeholder="Tìm bộ truyện theo tên" aria-label="Tìm bộ truyện"><button type="button" id="ws_new">Thêm bộ mới</button></div>
+<div class="wsf" id="ws_f"><button type="button" class="chip on" data-wf="all">Tất cả</button><button type="button" class="chip" data-wf="ln">Light Novel</button><button type="button" class="chip" data-wf="wn">Web Novel</button><button type="button" class="chip" data-wf="manga">Manga</button></div>
+<div id="ws_grid" class="wsg"></div>
+</div>
+<div id="ws_one" hidden>
+<button type="button" class="sec sm" id="ws_back">← Tất cả bộ</button>
+<div class="wsh"><div class="wscv" id="ws_cvw"><img id="ws_cv" alt=""><label class="wscb">Đổi ảnh bìa<input type="file" id="ws_cvf" accept="image/*" hidden></label></div>
+<div class="wsi"><h3 id="ws_t"></h3><p class="mu" id="ws_m"></p><div class="acts"><button type="button" class="sec sm" id="ws_edit">Sửa thông tin bộ</button><a class="sbtn" id="ws_web" target="_blank" rel="noopener">Xem trên web</a></div></div></div>
+<div class="wstb"><button type="button" id="ws_addb">+ Thêm chương</button><button type="button" class="sec" id="ws_imp">Nhập từ file</button><button type="button" class="sec" id="ws_sort" title="Minh họa, Mở đầu, Chương 1, 2..., Vĩ thanh, Lời bạt">Sắp xếp tự động</button><button type="button" class="sec" id="ws_auto" title="Tập mới bắt đầu ở mỗi Minh họa hoặc Mở đầu">Tự chia tập</button><button type="button" class="sec" id="ws_exp">Mở hết</button></div>
+<div id="ws_add"></div>
+<p class="mu wshint">Thay đổi thứ tự, chia tập hay gỡ chương chỉ được lưu khi bạn bấm <b>Lưu thay đổi</b>. Bấm vào số thứ tự để chuyển chương tới vị trí khác.</p>
+<div id="ws_list"></div>
+<div class="wsdock"><div id="ws_sel" class="wsbar" hidden><span id="ws_cnt"></span><input id="ws_vol" list="ws_vols" placeholder="Tên tập" aria-label="Tên tập"><datalist id="ws_vols"></datalist><button type="button" id="ws_set" class="sec">Gán vào tập</button><button type="button" id="ws_unset" class="sec">Bỏ khỏi tập</button><button type="button" id="ws_rm" class="dng">Gỡ</button><button type="button" id="ws_none" class="sec">Bỏ chọn</button></div>
+<div id="ws_dirty" class="wsbar dirty" hidden><span>Có thay đổi chưa lưu</span><button type="button" id="ws_save">Lưu thay đổi</button><button type="button" id="ws_undo" class="sec">Hoàn tác</button></div></div>
+</div>
+</div>
 
 <div class="panel" id="p-dash"><h3>Tổng quan</h3><div id="dash"></div></div>
 
@@ -463,6 +514,7 @@ $("#g_go").onclick = async () => {
 $("#l_out").onclick = () => location.reload();
 
 const NI = {
+  ws: '<path d="M4 19V5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v14M9 19V8a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v11M14.5 7.5l2.9-.8a1 1 0 0 1 1.2.7l2.9 10.7M3 19h18"/>',
   dash: '<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
   series: '<path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2.5zM20 19v3H6"/>', chap: '<path d="M12 5v14M5 12h14"/>',
   imp: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M12 18v-6M9 15l3 3 3-3"/>',
@@ -471,15 +523,16 @@ const NI = {
   vid: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/>', site: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
   man: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>'
 };
-const TABS = [["dash", "Tổng quan"], ["—", "Truyện"], ["series", "Bộ truyện"], ["chap", "Thêm chương"], ["tr", "Dịch chương"], ["imp", "Nhập từ file"], ["—", "Game và công cụ"], ["proj", "Dự án"], ["tip", "Mẹo game"], ["—", "Khác"], ["link", "Liên kết"], ["vid", "Video"], ["—", "Hệ thống"], ["site", "Cài đặt trang web"], ["man", "Quản lý"]];
+const TABS = [["dash", "Tổng quan"], ["—", "Truyện"], ["ws", "Quản lý bộ"], ["series", "Bộ truyện"], ["chap", "Thêm chương"], ["tr", "Dịch chương"], ["imp", "Nhập từ file"], ["—", "Game và công cụ"], ["proj", "Dự án"], ["tip", "Mẹo game"], ["—", "Khác"], ["link", "Liên kết"], ["vid", "Video"], ["—", "Hệ thống"], ["site", "Cài đặt trang web"], ["man", "Quản lý"]];
 const PT = { edit: "Sửa chương", vol: "Tập và bìa tập" };
 $("#tabs").innerHTML = TABS.map(([k, l]) => k === "—" ? `<div class="tg">${l}</div>` : `<button type="button" data-k="${k}"><svg class="i" viewBox="0 0 24 24">${NI[k]}</svg>${l}</button>`).join("");
-const tab = k => { document.querySelector("main").classList.toggle("wide", k === "tr"); $("#ptitle").textContent = PT[k] || (TABS.find(x => x[0] === k) || [])[1] || ""; scrollTo(0, 0); [...TABS.map(x => x[0]).filter(x => x !== "—"), "edit", "vol"].forEach(t => $("#p-" + t).classList.toggle("on", t === k)); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)) };
-$("#tabs").onclick = e => { const b = e.target.closest("button[data-k]"); if (b) tab(b.dataset.k) }; tab("dash");
+const tab = k => { if (k !== "ws") wsPark(); $("#retbar").hidden = !(RET === "ws" && k !== "ws" && WS.k); if (!$("#retbar").hidden) $("#ret_go span").textContent = data[WS.k]?.[WS.i]?.title || ""; document.querySelector("main").classList.toggle("wide", k === "tr"); $("#ptitle").textContent = PT[k] || (TABS.find(x => x[0] === k) || [])[1] || ""; scrollTo(0, 0); [...TABS.map(x => x[0]).filter(x => x !== "—"), "edit", "vol"].forEach(t => $("#p-" + t).classList.toggle("on", t === k)); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)); if ($("#p-chap").classList.contains("inws")) $("#p-chap").classList.add("on") };
+let RET = null; const WS = { k: null, i: -1, W: null, dirty: false, f: "all", open: null, last: null };
+$("#tabs").onclick = e => { const b = e.target.closest("button[data-k]"); if (!b) return; if (WS.dirty && !confirm("Bỏ các thay đổi chưa lưu ở trang Quản lý bộ?")) return; WS.dirty = false; RET = null; tab(b.dataset.k); if (b.dataset.k === "ws") wsHome() }; tab("dash");
 
 function fillSel() {
   const o = []; for (const k of ["novel", "manga"]) data[KEYS[k]].forEach((s, i) => o.push(`<option value="${k}|${i}">${k === "novel" ? "📖" : "🖼️"} ${esc(s.title)}</option>`));
-  $("#c_ser").innerHTML = o.join("") || "<option value=''>(chưa có bộ nào)</option>"; chapUI(); gChips(); trFill(); impFill();
+  const cur = $("#c_ser").value; $("#c_ser").innerHTML = o.join("") || "<option value=''>(chưa có bộ nào)</option>"; if (cur && o.some(x => x.includes(`value="${cur}"`))) $("#c_ser").value = cur; chapUI(); gChips(); trFill(); impFill();
 }
 const cType = () => (document.querySelector('input[name="c_type"]:checked') || {}).value || "text";
 function chapUI() { const k = $("#c_ser").value.split("|")[0], img = k === "novel" && cType() === "img"; $("#c_typew").hidden = k !== "novel"; $("#c_novel").hidden = k !== "novel" || img; $("#c_manga").hidden = !(k === "manga" || img); $("#c_firstw").hidden = !img; $("#c_imgl").textContent = img ? "Ảnh minh họa" : "Ảnh các trang"; $("#c_title").placeholder = img ? "Minh họa" : "Chương 12: ..."; volList() }
@@ -500,6 +553,7 @@ $("#p-series").onsubmit = e => { e.preventDefault(); run(async () => {
   await save("Thêm/sửa truyện: " + title);
   try { log("Đang tạo trang chia sẻ..."); await writeShare(kind, s) } catch (e) { done("✅ Đã lưu bộ truyện, nhưng chưa tạo được trang chia sẻ: " + e.message); return }
   done("✅ Đã lưu bộ truyện. Web cập nhật sau 1–2 phút.");
+  if (RET === "ws") { WS.k = KEYS[kind]; WS.i = list.indexOf(s); goRet() }
 }) };
 
 $("#p-chap").onsubmit = e => { e.preventDefault(); run(async () => {
@@ -527,7 +581,7 @@ $("#p-chap").onsubmit = e => { e.preventDefault(); run(async () => {
   else if (ch.vol) { const at = vols.lastIndexOf(ch.vol); if (at >= 0) s.chapters.splice(at + 1, 0, ch); else s.chapters.push(ch) } else s.chapters.push(ch);
   await save("Thêm chương: " + s.title + " - " + t);
   const szMsg = window.lastSz ? ` Dung lượng ảnh: ${window.lastSz}.` : ""; window.lastSz = "";
-  ["c_title", "c_text"].forEach(x => $("#" + x).value = ""); $("#c_file").value = $("#c_imgs").value = ""; done("✅ Đã đăng chương." + szMsg + " Web cập nhật sau 1–2 phút.");
+  ["c_title", "c_text"].forEach(x => $("#" + x).value = ""); $("#c_file").value = $("#c_imgs").value = ""; done("✅ Đã đăng chương." + szMsg + " Web cập nhật sau 1–2 phút."); if ($("#p-chap").classList.contains("inws")) wsDraw();
 }) };
 
 $("#p-tip").onsubmit = e => { e.preventDefault(); run(async () => {
@@ -644,15 +698,107 @@ $("#p-edit").onsubmit = e => { e.preventDefault(); run(async () => {
     }
     c.pages = out; delete c.dir; delete c.n; delete c.pad; delete c.ext;
   }
-  await save("Sửa chương: " + s.title + " - " + t); ed = null; done("✅ Đã lưu chỉnh sửa. Web cập nhật sau 1–2 phút."); tab("man");
+  await save("Sửa chương: " + s.title + " - " + t); ed = null; done("✅ Đã lưu chỉnh sửa. Web cập nhật sau 1–2 phút."); goRet();
 }) };
-$("#e_cancel").onclick = () => { ed = null; tab("man") };
+$("#e_cancel").onclick = () => { ed = null; goRet() };
 
+/* ===== Quản lý bộ ===== */
+function goRet() { const r = RET; RET = null; if (r === "ws" && WS.k && data[WS.k][WS.i]) { tab("ws"); $("#ws_home").hidden = true; $("#ws_one").hidden = false; wsDraw() } else tab("man") }
+$("#ret_go").onclick = () => { ed = null; goRet() };
+const chHome = document.createComment("p-chap"); $("#p-chap").before(chHome);
+function wsPark() { const f = $("#p-chap"); if (!f.classList.contains("inws")) return; chHome.after(f); f.classList.remove("inws", "on"); $("#ws_addb").classList.remove("on"); $("#ws_addb").textContent = "+ Thêm chương" }
+const wsS = () => WS.k ? data[WS.k][WS.i] : null;
+const wsType = (k, s) => k === "manga" ? "manga" : s.format === "Web Novel" ? "wn" : "ln";
+const wsLat = s => s.chapters.reduce((m, c) => (c.date || "") > m ? c.date : m, "");
+function wsHome() { WS.k = null; WS.W = null; WS.dirty = false; wsPark(); $("#ws_one").hidden = true; $("#ws_home").hidden = false; $("#ptitle").textContent = "Quản lý bộ"; wsGrid() }
+function wsGrid() {
+  const q = $("#ws_q").value.trim().toLowerCase(), L = [];
+  for (const k of ["novels", "manga"]) data[k].forEach((s, i) => { const t = wsType(k, s); if (WS.f !== "all" && WS.f !== t) return; if (q && ![s.title, s.orig, ...(s.alts || [])].join(" ").toLowerCase().includes(q)) return; L.push({ k, i, s, t }) });
+  L.sort((a, b) => wsLat(b.s).localeCompare(wsLat(a.s)));
+  $("#ws_grid").innerHTML = L.map(({ k, i, s, t }) => `<button type="button" class="wsc" data-ws="${k}|${i}"><span class="wsct" style="--h:${hueOf(s.title)}">${s.cover ? `<img src="${esc(s.cover)}" alt="" loading="lazy" onerror="this.remove()">` : ""}</span><b>${esc(s.title)}</b><small>${t === "manga" ? "Manga" : t === "wn" ? "Web Novel" : "Light Novel"}, ${s.chapters.length} chương</small></button>`).join("") || `<p class="mu">${q || WS.f !== "all" ? "Không có bộ nào khớp." : "Chưa có bộ nào. Bấm Thêm bộ mới để bắt đầu."}</p>`;
+}
+$("#ws_q").oninput = wsGrid;
+$("#ws_f").onclick = e => { const b = e.target.closest("[data-wf]"); if (!b) return; WS.f = b.dataset.wf; document.querySelectorAll("#ws_f .chip").forEach(x => x.classList.toggle("on", x === b)); wsGrid() };
+$("#ws_grid").onclick = e => { const b = e.target.closest("[data-ws]"); if (b) { const [k, i] = b.dataset.ws.split("|"); wsOpen(k, +i) } };
+$("#ws_new").onclick = () => { RET = "ws"; WS.k = null; tab("series"); $("#s_new").click() };
+function wsOpen(k, i) { WS.k = k; WS.i = +i; WS.W = null; WS.dirty = false; WS.open = null; WS.last = null; RET = null; tab("ws"); $("#ws_home").hidden = true; $("#ws_one").hidden = false; wsDraw(); scrollTo(0, 0) }
+$("#ws_back").onclick = () => { if (WS.dirty && !confirm("Bỏ các thay đổi chưa lưu?")) return; wsHome() };
+const wsVol = c => (c.vol || "").trim();
+function wsDraw() {
+  const s = wsS(); if (!s) return wsHome();
+  if (!WS.dirty || !WS.W) WS.W = s.chapters.map(c => ({ ...c, _o: c }));
+  const W = WS.W, k = WS.k, kind = k === "manga" ? "manga" : "novel", vs = [...new Set(W.map(wsVol).filter(Boolean))];
+  $("#ptitle").textContent = "Quản lý bộ"; $("#ws_t").textContent = s.title;
+  $("#ws_m").textContent = `${k === "manga" ? "Manga" : s.format || "Light Novel"}, ${s.status || "Đang dịch"}, ${s.chapters.length} chương${vs.length ? ", " + vs.length + " tập" : ""}`;
+  $("#ws_cvw").style.setProperty("--h", hueOf(s.title)); $("#ws_cv").src = s.cover || ""; $("#ws_web").href = `index.html#${kind}/${s.slug}`; $("#ws_imp").hidden = k === "manga";
+  const runs = []; W.forEach((c, j) => { const v = wsVol(c), r = runs[runs.length - 1]; if (r && r.v === v) r.js.push(j); else runs.push({ v, js: [j] }) });
+  if (!WS.open) WS.open = new Set(W.length <= 25 ? runs.map(r => r.v) : runs.filter(r => !r.v).map(r => r.v));
+  const vc = s.vc || {}, wd = c => (c.type === "img" || (c.pages && kind === "novel")) ? (c.pages || []).length + " ảnh" : kind === "novel" ? (c.words || 0).toLocaleString("vi-VN") + " chữ" : (c.pages ? c.pages.length : c.n || 0) + " trang";
+  const row = j => { const c = W[j]; return `<div class="wsr${WS.last === j ? " mv" : ""}" data-j="${j}"><input type="checkbox" value="${j}" aria-label="Chọn chương"><button type="button" class="wsn" data-wpos="${j}" title="Chuyển tới vị trí khác">${j + 1}</button><span class="tt">${esc(c.t)}</span><small>${wd(c)}</small><small>${c.date || ""}</small><span class="wa"><button type="button" data-wed="${j}">Sửa</button><button type="button" data-wmv="${j}|-1" title="Lên"${j ? "" : " disabled"}>↑</button><button type="button" data-wmv="${j}|1" title="Xuống"${j < W.length - 1 ? "" : " disabled"}>↓</button><button type="button" class="dng" data-wrm="${j}" title="Gỡ chương">✕</button></span></div>` };
+  $("#ws_list").innerHTML = runs.map(r => `<div class="vg${WS.open.has(r.v) ? " open" : ""}${r.v ? "" : " nov"}" data-v="${esc(r.v)}"><div class="vgh"><input type="checkbox" class="vga" aria-label="Chọn cả nhóm">${r.v ? `<label class="vcv2" title="Đổi bìa ${esc(r.v)}">${vc[r.v] ? `<img src="${esc(vc[r.v])}" alt="" onerror="this.remove()">` : "+bìa"}<input type="file" accept="image/*" hidden data-wvc="${esc(r.v)}"></label>` : ""}<button type="button" class="vgt"><b>${r.v ? esc(r.v) : "Chưa có tập"}</b><small>${r.js.length} chương, số ${r.js[0] + 1}${r.js.length > 1 ? "–" + (r.js[r.js.length - 1] + 1) : ""}</small></button>${r.v ? `<button type="button" class="sec sm" data-wren="${esc(r.v)}">Đổi tên</button>` : ""}</div><div class="vgb">${r.js.map(row).join("")}</div></div>`).join("") || '<p class="mu" style="padding:10px">Bộ này chưa có chương nào. Bấm Thêm chương để đăng chương đầu tiên.</p>';
+  $("#ws_vols").innerHTML = vs.map(v => `<option value="${esc(v)}">`).join("");
+  $("#ws_exp").textContent = runs.length && runs.every(r => WS.open.has(r.v)) ? "Thu gọn hết" : "Mở hết";
+  $("#ws_dirty").hidden = !WS.dirty; wsSync();
+  if ($("#p-chap").classList.contains("inws")) { $("#c_ser").value = kind + "|" + WS.i; chapUI() }
+}
+function wsSync() {
+  let n = 0; document.querySelectorAll("#ws_list .vg").forEach(g => { const L = [...g.querySelectorAll(".vgb input")], c = L.filter(x => x.checked).length; n += c; const a = g.querySelector(".vga"); a.checked = c > 0 && c === L.length; a.indeterminate = c > 0 && c < L.length });
+  $("#ws_sel").hidden = !n; $("#ws_cnt").textContent = `Đã chọn ${n} chương`;
+}
+const wsPick = () => [...document.querySelectorAll("#ws_list .vgb input:checked")].map(c => +c.value);
+const wsDirty = () => { WS.dirty = true; wsDraw() };
+let wsShift = null;
+$("#ws_list").addEventListener("click", e => {
+  const W = WS.W, t = e.target;
+  const g = t.closest(".vgt"); if (g) { const v = g.closest(".vg").dataset.v; WS.open.has(v) ? WS.open.delete(v) : WS.open.add(v); g.closest(".vg").classList.toggle("open"); $("#ws_exp").textContent = "Mở hết"; return }
+  const mv = t.closest("[data-wmv]");
+  if (mv) { const [j, d] = mv.dataset.wmv.split("|").map(Number), y = j + d; if (y < 0 || y >= W.length) return;
+    if (wsVol(W[y]) !== wsVol(W[j])) { if (W[y].vol) W[j].vol = W[y].vol; else delete W[j].vol; WS.open.add(wsVol(W[j])); WS.last = j } else { [W[j], W[y]] = [W[y], W[j]]; WS.last = y }
+    return wsDirty() }
+  const ps = t.closest("[data-wpos]");
+  if (ps) { const j = +ps.dataset.wpos, n = parseInt(prompt(`Chuyển "${W[j].t}" tới vị trí số (1–${W.length}):`, j + 1)); if (!n || n < 1 || n > W.length || n - 1 === j) return;
+    const [c] = W.splice(j, 1), at = n - 1, nb = W[at] || W[at - 1]; W.splice(at, 0, c); if (nb) { if (nb.vol) c.vol = nb.vol; else delete c.vol } WS.open.add(wsVol(c)); WS.last = at; return wsDirty() }
+  const rm = t.closest("[data-wrm]");
+  if (rm) { const j = +rm.dataset.wrm; if (!confirm(`Gỡ "${W[j].t}" khỏi web? (Bấm Lưu thay đổi mới có hiệu lực)`)) return; W.splice(j, 1); WS.last = null; return wsDirty() }
+  const ed2 = t.closest("[data-wed]");
+  if (ed2) { if (WS.dirty) return log("❌ Hãy Lưu thay đổi hoặc Hoàn tác trước khi sửa chương"); const j = +ed2.dataset.wed; RET = "ws";
+    let b = $("#manage").querySelector(`button[data-e="${WS.k}|${WS.i}|${j}"]`); if (!b) { $("#m_q").value = ""; manage(); b = $("#manage").querySelector(`button[data-e="${WS.k}|${WS.i}|${j}"]`) } b?.click(); return }
+  const rn = t.closest("[data-wren]");
+  if (rn) { const s = wsS(), old = rn.dataset.wren, nw = (prompt(`Đổi tên "${old}" thành:`, old) || "").trim(); if (!nw || nw === old) return;
+    run(async () => { for (const c of [...s.chapters, ...W]) if (wsVol(c) === old) c.vol = nw; if (s.vc && s.vc[old]) { s.vc[nw] = s.vc[old]; delete s.vc[old] } if (WS.open.delete(old)) WS.open.add(nw); await save(`Đổi tên tập: ${s.title} - ${old} thành ${nw}`); done(`✅ Đã đổi tên ${old} thành ${nw}.`); wsDraw() }); return }
+  const cb = t.closest(".vgb input");
+  if (cb) { const j = +cb.value; if (e.shiftKey && wsShift != null) { const [a, b] = [Math.min(wsShift, j), Math.max(wsShift, j)]; document.querySelectorAll("#ws_list .vgb input").forEach(x => { if (+x.value >= a && +x.value <= b) x.checked = cb.checked }) } wsShift = j; wsSync() }
+});
+$("#ws_list").addEventListener("change", e => {
+  const a = e.target.closest(".vga"); if (a) { a.closest(".vg").querySelectorAll(".vgb input").forEach(c => c.checked = a.checked); wsSync(); return }
+  const f = e.target.closest("[data-wvc]"); if (!f || !f.files[0]) return; const s = wsS(), v = f.dataset.wvc, file = f.files[0];
+  run(async () => { log("Đang tải bìa " + v + "..."); const p = `images/${s.slug}-${slugify(v) || "tap"}-${rid()}.jpg`; await put(p, await resize(file), "Bìa " + v + ": " + s.title); s.vc = { ...(s.vc || {}), [v]: p }; await save("Bìa tập: " + s.title + " - " + v); done("✅ Đã đổi bìa " + v + "."); wsDraw() });
+});
+const wsSetVol = v => { const L = wsPick(); if (!L.length) return; L.forEach(j => { if (v) WS.W[j].vol = v; else delete WS.W[j].vol }); if (v) WS.open.add(v); else WS.open.add(""); WS.last = null; wsDirty() };
+$("#ws_set").onclick = () => { const v = $("#ws_vol").value.trim(); if (!v) return log("❌ Nhập tên tập trước"); wsSetVol(v); $("#ws_vol").value = "" };
+$("#ws_unset").onclick = () => wsSetVol("");
+$("#ws_none").onclick = () => { document.querySelectorAll("#ws_list input[type=checkbox]").forEach(c => c.checked = false); wsSync() };
+$("#ws_rm").onclick = () => { const L = wsPick(); if (!L.length || !confirm(`Gỡ ${L.length} chương đã chọn khỏi web? (Bấm Lưu thay đổi mới có hiệu lực)`)) return; const S = new Set(L); WS.W = WS.W.filter((c, j) => !S.has(j)); WS.last = null; wsDirty() };
+$("#ws_exp").onclick = () => { const all = $("#ws_exp").textContent === "Thu gọn hết"; WS.open = new Set(all ? [] : WS.W.map(wsVol)); wsDraw() };
+$("#ws_sort").onclick = () => { const W = WS.W, L = chSort(W); if (L.every((c, j) => c === W[j])) return log("✅ Các chương đã đúng thứ tự."); WS.W = L; WS.last = null; wsDirty(); log("Đã sắp xếp. Kiểm tra lại rồi bấm Lưu thay đổi.") };
+$("#ws_auto").onclick = () => { const W = WS.W, seg = vAutoPlan(W); if (seg.length < 2) return log("Không tìm thấy chỗ chuyển tập (Minh họa hoặc Mở đầu nằm giữa các chương). Hãy chọn chương rồi gán tập bằng tay.");
+  if (seg.every(g => g.js.every(j => wsVol(W[j]) === g.name))) return log("✅ Các chương đã được chia tập đúng.");
+  if (!confirm(`Chia thành ${seg.length} tập?\n\n${seg.map(g => `${g.name}: chương ${g.js[0] + 1}–${g.js[g.js.length - 1] + 1}, bắt đầu bằng "${W[g.js[0]].t.slice(0, 40)}"`).join("\n")}`)) return;
+  seg.forEach(g => g.js.forEach(j => W[j].vol = g.name)); WS.open = null; WS.last = null; wsDirty(); log("Đã chia tập. Kiểm tra lại rồi bấm Lưu thay đổi.") };
+$("#ws_save").onclick = () => run(async () => { const s = wsS(); if (!s || !WS.dirty) return; s.chapters = WS.W.map(({ _o, ...c }) => { if (!wsVol(c)) delete c.vol; return c }); await save("Sắp xếp chương: " + s.title); WS.dirty = false; WS.W = null; WS.last = null; done("✅ Đã lưu thay đổi của " + s.title + ". Web cập nhật sau 1–2 phút."); wsDraw() });
+$("#ws_undo").onclick = () => { WS.dirty = false; WS.W = null; WS.last = null; wsDraw(); log("Đã hoàn tác.") };
+$("#ws_addb").onclick = () => { const f = $("#p-chap"); if (f.classList.contains("inws")) return wsPark(); if (WS.dirty) return log("❌ Hãy Lưu thay đổi hoặc Hoàn tác trước khi thêm chương");
+  $("#ws_add").appendChild(f); f.classList.add("inws", "on"); $("#ws_addb").classList.add("on"); $("#ws_addb").textContent = "Đóng khung thêm chương"; $("#c_ser").value = (WS.k === "manga" ? "manga" : "novel") + "|" + WS.i; chapUI(); $("#c_title").focus() };
+$("#ws_imp").onclick = () => { if (WS.dirty) return log("❌ Hãy Lưu thay đổi hoặc Hoàn tác trước"); RET = "ws"; tab("imp"); impFill(); $("#i_ser").value = WS.i };
+$("#ws_edit").onclick = () => { if (WS.dirty) return log("❌ Hãy Lưu thay đổi hoặc Hoàn tác trước"); RET = "ws"; let b = $("#manage").querySelector(`button[data-s="${WS.k}|${WS.i}"]`); if (!b) { $("#m_q").value = ""; manage(); b = $("#manage").querySelector(`button[data-s="${WS.k}|${WS.i}"]`) } b?.click() };
+$("#ws_cvf").onchange = e => { const f = e.target.files[0], s = wsS(); if (!f || !s) return; run(async () => { log("Đang tải ảnh bìa..."); const p = `images/${s.slug}-bia-${rid()}.jpg`; await put(p, await resize(f), "Bìa: " + s.title); s.cover = p; await save("Đổi bìa: " + s.title); try { await writeShare(WS.k === "manga" ? "manga" : "novel", s) } catch (err) {} e.target.value = ""; done("✅ Đã đổi ảnh bìa. Web cập nhật sau 1–2 phút."); wsDraw() }) };
+addEventListener("beforeunload", e => { if (WS.dirty) { e.preventDefault(); e.returnValue = "" } });
 function deepLink() {
   const [a, k, slug, j] = decodeURIComponent(location.hash.slice(1)).split("/"); if (!a || !KEYS[k]) return;
   const key = KEYS[k], i = data[key].findIndex(x => x.slug === slug); if (i < 0) { log("Không tìm thấy bộ truyện này trong dữ liệu."); return }
   if (a === "chap") { $("#c_ser").value = k + "|" + i; chapUI(); tab("chap"); $("#c_title").focus(); log("Thêm chương cho: " + data[key][i].title) }
   else if (a === "series") $(`#manage button[data-s="${key}|${i}"]`)?.click();
+  else if (a === "bo") wsOpen(key, i);
   else if (a === "editchap") $(`#manage button[data-e="${key}|${i}|${j}"]`)?.click();
 }
 
