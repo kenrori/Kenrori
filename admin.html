@@ -171,6 +171,7 @@ details.ms>summary::-webkit-details-marker{display:none}
 #t_set input,#t_set select,#t_set textarea{background:var(--bg)}
 #pv_list .li{background:var(--bg)}#pv_list .li input{width:auto;margin:0}.pvs{font-size:.8rem;color:var(--mu);max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pvs.ok{color:var(--ok)}.pvs.err{color:var(--err)}
 .pvadd{margin-top:10px}
+.tbw{margin:6px 0 12px;background:var(--s1);border-radius:8px;padding:10px 14px}.tbw summary{cursor:pointer;font-weight:600}.tbw textarea{min-height:150px;margin-top:8px;background:var(--bg);font-size:.9rem;line-height:1.6}.tbw .acts{margin-top:8px}
 .trgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
 .trta{min-height:460px;font-size:15px;line-height:1.75}
 .trbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px;padding:10px;background:var(--s1);border-radius:8px;position:sticky;bottom:12px;z-index:5;box-shadow:0 6px 20px #0002}
@@ -216,7 +217,7 @@ details.ms>summary::-webkit-details-marker{display:none}
 .pvg{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}.pvg img{width:100%;aspect-ratio:7/10;object-fit:cover;border-radius:6px;background:var(--s1)}
 .ilist{display:flex;flex-direction:column;gap:6px;margin-top:10px;max-height:62vh;overflow-y:auto;padding-right:4px}
 .irow{display:grid;grid-template-columns:24px 34px 130px minmax(0,1fr) auto auto;gap:4px 8px;align-items:center;background:var(--s1);border-radius:6px;padding:6px 8px}
-.isv{display:inline-flex;gap:6px;align-items:center;margin-left:auto}.isv input{width:150px;padding:5px 9px}.stkl{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}.stki{position:relative;width:76px;height:76px;border-radius:8px;background:var(--s1);display:grid;place-items:center}.stki img{max-width:64px;max-height:64px}.stki button{position:absolute;top:-6px;right:-6px;margin:0;width:22px;height:22px;padding:0;border-radius:50%;justify-content:center;font-size:.75rem}.stkup{display:inline-flex;align-items:center;padding:9px 16px;border-radius:6px;background:var(--s1);font-weight:600;cursor:pointer}.stkup:hover{background:var(--s2)}details.gsx{margin:12px 0}details.gsx summary{cursor:pointer;font-weight:600}
+.isv{display:inline-flex;gap:6px;align-items:center;margin-left:auto}.isv input{width:150px;padding:5px 9px}.stkg{background:var(--s1);border-radius:10px;padding:14px 16px;margin:8px 0 12px}.stkg textarea,.stkg input{background:var(--bg)}.stkg code{background:var(--bg);padding:1px 5px;border-radius:4px}.stkh{display:flex;align-items:center;gap:10px;margin:14px 0 6px}.stkh b{font-size:.95rem}.stkh small{color:var(--mu)}.stkh button{margin:0 0 0 auto}.stkl{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}.stki{position:relative;width:76px;height:76px;border-radius:8px;background:var(--s1);display:grid;place-items:center}.stki img{max-width:64px;max-height:64px}.stki button{position:absolute;top:-6px;right:-6px;margin:0;width:22px;height:22px;padding:0;border-radius:50%;justify-content:center;font-size:.75rem}.stkup{display:inline-flex;align-items:center;padding:9px 16px;border-radius:6px;background:var(--s1);font-weight:600;cursor:pointer}.stkup:hover{background:var(--s2)}details.gsx{margin:12px 0}details.gsx summary{cursor:pointer;font-weight:600}
 .irow.off{opacity:.5}.irow input[type=text]{padding:6px 9px;background:var(--bg)}.irow .n{color:var(--mu);font-size:.8rem;text-align:right}.irow small{color:var(--mu);white-space:nowrap;font-size:.8rem}
 .irow .sn{grid-column:3 / -1;color:var(--mu);font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #i_opt{background:var(--s1);border-radius:8px;padding:10px 14px;margin-top:14px}#i_opt summary{cursor:pointer;font-weight:600}#i_opt input:not([type=checkbox]),#i_opt select{background:var(--bg)}
@@ -305,7 +306,13 @@ details.ms>summary::-webkit-details-marker{display:none}
 <div><label for="t_vol">Tập</label><input id="t_vol" list="t_vols"><datalist id="t_vols"></datalist></div><div><label for="t_date">Ngày</label><input id="t_date" type="date"></div></div>
 <details id="t_set"><summary>Cài đặt dịch tự động, bảng tên riêng và ghi chú</summary>
 <div class="g2"><div><label for="t_src">Ngôn ngữ gốc</label><select id="t_src"><option>tiếng Nhật</option><option>tiếng Anh</option><option>tiếng Trung</option><option>tiếng Hàn</option></select></div>
-<div><label for="t_style">Văn phong</label><input id="t_style" value="tự nhiên, mượt mà, đúng chất light novel"></div></div>
+<div><label for="t_genre">Thể loại <small>(quyết định văn phong và xưng hô)</small></label><select id="t_genre"><option value="auto">Tự nhận theo nội dung</option><option value="ln">Light novel học đường, romcom, đời thường</option><option value="isekai">Isekai, fantasy</option><option value="tienhiep">Tiên hiệp, huyền huyễn, kiếm hiệp, cổ đại</option><option value="dothi">Đô thị, ngôn tình hiện đại</option><option value="litrpg">Web novel tiếng Anh (litRPG, hệ thống)</option></select></div>
+<div><label for="t_dlg">Lời thoại</label><select id="t_dlg"><option value="quote">Trong ngoặc kép: "Chào cậu."</option><option value="dash">Gạch đầu dòng: – Chào cậu.</option></select></div>
+<div><label for="t_hon">Hậu tố tên tiếng Nhật</label><select id="t_hon"><option value="keep3">Giữ -senpai, -sama, -chan; bỏ -san, -kun</option><option value="keep">Giữ tất cả (-san, -kun...)</option><option value="drop">Bỏ tất cả</option></select></div>
+<div><label for="t_mode">Tốc độ</label><select id="t_mode"><option value="fast">Nhanh: chia phần lớn, dịch 3 phần cùng lúc</option><option value="careful">Kỹ: dịch lần lượt, nối mạch từng phần</option></select></div>
+<div><label for="t_style">Yêu cầu thêm về văn phong <small>(không bắt buộc)</small></label><input id="t_style" placeholder="Ví dụ: giọng hài hước, giữ từ chửi ở mức nhẹ"></div>
+<div class="full"><label class="ck"><input type="checkbox" id="t_bon" checked> Đọc trước cả chương để chốt nhân vật, xưng hô và tên mới rồi mới dịch <small>(khuyên dùng, thêm khoảng 10 giây)</small></label>
+<label class="ck"><input type="checkbox" id="t_pol2"> Trau chuốt lần 2 sau khi dịch <small>(mượt hơn nhưng chậm gấp đôi và tốn gấp đôi lượt gọi)</small></label></div></div>
 <h4>Dịch vụ AI</h4><p class="mu">Thêm một hoặc nhiều dịch vụ. Công cụ dùng dịch vụ đầu tiên đang bật; dịch vụ nào lỗi hoặc hết hạn mức thì tự chuyển sang dịch vụ kế tiếp. Key được mã hóa bằng PIN và chỉ lưu trên máy này.</p>
 <div id="pv_list" class="lst"></div>
 <div class="pvadd"><div class="g2">
@@ -319,11 +326,12 @@ details.ms>summary::-webkit-details-marker{display:none}
 <label for="t_notes">Ghi chú cho AI <small>(xưng hô, giọng nhân vật, thuật ngữ; được đưa vào mọi yêu cầu dịch của bộ này)</small></label><textarea id="t_notes" placeholder="Alice gọi nhân vật chính là anh, xưng em.&#10;Ma Vương nói giọng cổ, xưng ta, gọi người khác là ngươi."></textarea>
 <div class="acts"><button type="button" id="gl_push">Lưu bảng tên và ghi chú lên repo</button><button type="button" id="gl_pull" class="sec">Lấy từ repo</button></div>
 <p class="mu" style="margin-top:10px">Bảng tên và ghi chú lưu trong file glossary.json của repo, dùng chung giữa các máy. Repo công khai thì file này cũng công khai.</p></details>
+<details id="t_bw" class="tbw" open hidden><summary>Phân tích chương <small class="mu">(AI tự tạo trước khi dịch; bạn sửa được, mọi phần sẽ dịch theo ghi chú này)</small></summary><textarea id="t_brief" placeholder="Thể loại, giọng kể, nhân vật, xưng hô, thuật ngữ mới"></textarea><div class="acts"><button type="button" class="trb sec sm" id="t_bnew">Phân tích lại</button><button type="button" class="trb sec sm" id="t_badd">Thêm tên mới vào bảng tên</button></div></details>
 <div class="trgrid"><div><label for="t_in">Bản gốc <span class="mu" id="t_sc"></span></label><textarea id="t_in" class="trta" placeholder="Dán nội dung gốc, mỗi đoạn một dòng"></textarea></div>
 <div><label for="t_out">Bản dịch <span class="mu" id="t_oc"></span></label><textarea id="t_out" class="trta" placeholder="Bản dịch tiếng Việt"></textarea></div></div>
 <div id="t_rv" hidden><div class="rvh"><span id="t_rvs" class="mu"></span><label><input type="checkbox" id="t_only"> Chỉ hiện dòng cần chú ý</label></div><div id="t_rows"></div></div>
 <p class="mu" id="t_prog"></p>
-<div class="trbar"><button type="button" id="t_all" class="trb">Dịch tất cả</button><button type="button" id="t_resume" class="trb sec">Dịch tiếp</button><button type="button" id="t_sel" class="trb sec">Dịch đoạn bôi đen</button><button type="button" id="t_view" class="trb sec">Đối chiếu</button><button type="button" id="t_stop" class="dng" hidden>Dừng</button>
+<div class="trbar"><button type="button" id="t_all" class="trb">Dịch tất cả</button><button type="button" id="t_resume" class="trb sec">Dịch tiếp</button><button type="button" id="t_sel" class="trb sec">Dịch đoạn bôi đen</button><button type="button" id="t_polish" class="trb sec" title="Bôi đen một đoạn trong ô bản dịch, hoặc không bôi đen để trau chuốt cả bài">Trau chuốt</button><button type="button" id="t_view" class="trb sec">Đối chiếu</button><button type="button" id="t_stop" class="dng" hidden>Dừng</button>
 <button type="button" id="t_join" class="trb sec">Nối dòng gốc</button><button type="button" id="t_apply" class="trb sec">Áp dụng bảng tên</button><button type="button" id="t_clear" class="trb dng">Xóa nháp</button><span class="sp"></span><button type="button" id="t_pv" class="trb sec">Xem trước</button><button type="button" id="t_pub" class="trb">Đăng chương lên web</button></div></div>
 
 <div class="panel" id="p-imp"><h3>Nhập từ file</h3><p class="mu">Tải lên cả bộ trong một file Word (.docx) hoặc văn bản (.txt), công cụ tự chia thành từng chương theo tiêu đề hoặc theo các dòng như "Chương 1", "Tập 2". Bạn xem lại danh sách, sửa tên, bỏ chọn phần thừa rồi mới đăng.</p>
@@ -393,9 +401,12 @@ details.ms>summary::-webkit-details-marker{display:none}
 <div class="g2"><div class="full"><label for="st_rules">Nội quy Sáng tác <small>(mỗi dòng một điều; để trống để dùng nội quy mặc định)</small></label><textarea id="st_rules" style="min-height:120px"></textarea></div></div>
 <h4>Kiểm duyệt bình luận</h4><p class="mu">Đặt mật khẩu kiểm duyệt trong Supabase (xem đầu file binh-luan.sql), rồi nhập vào đây. Mật khẩu chỉ lưu trên máy này, không đưa lên web. Khi đã lưu, trên web bạn thấy nút Ẩn, Xóa và Chặn dưới mỗi bình luận.</p>
 <div class="g2"><div><label for="cm_pw">Mật khẩu kiểm duyệt</label><input id="cm_pw" type="password" autocomplete="off"></div><div class="acts" style="align-self:end"><button type="button" class="sec" id="cm_pwgo">Kiểm tra và lưu trên máy này</button><button type="button" class="sec" id="cm_pwx">Xóa khỏi máy này</button></div></div>
-<h4>Nhãn dán (emote) riêng của nhóm</h4><p class="mu">Ảnh nhỏ (GIF động, PNG, WebP) người đọc chọn được trong khung bình luận, giống emote trên các web truyện. Nên dùng ảnh vuông, dưới 500 KB. Ảnh tĩnh được tự thu nhỏ còn 160 px.</p>
-<div id="stk_list" class="stkl"></div>
-<div class="acts"><label class="sec stkup">Thêm nhãn dán<input type="file" id="stk_in" accept="image/gif,image/png,image/webp,image/jpeg" multiple hidden></label></div>
+<h4>Emote cho bình luận</h4><p class="mu">Mỗi bộ emote là một tab trong khung bình luận, giống Discord. Chỉ dùng emote do nhóm tự làm hoặc được phép dùng.</p>
+<div class="stkg"><div><b>Lấy emote từ server Discord</b><p class="mu" style="margin:4px 0 8px">Trong Discord, gõ dấu \ ngay trước emote rồi gửi, ví dụ <code>\:meo_cuoi:</code>, Discord sẽ hiện mã dạng &lt;:meo_cuoi:123456789&gt;. Gửi nhiều emote trong một tin nhắn, sao chép cả tin nhắn rồi dán vào đây. Dán link ảnh cdn.discordapp.com/emojis/... cũng được.</p>
+<textarea id="dc_in" placeholder="<:meo_cuoi:123456789012345678> <a:meo_nhay:234567890123456789>" style="min-height:70px"></textarea></div>
+<div class="g2"><div><label for="stk_g">Tên bộ emote</label><input id="stk_g" list="stk_gs" placeholder="Ví dụ: Discord Kenrori"><datalist id="stk_gs"></datalist></div><div class="acts" style="align-self:end"><button type="button" class="sec" id="dc_go">Lấy emote từ mã Discord</button><label class="sec stkup">Tải ảnh từ máy<input type="file" id="stk_in" accept="image/gif,image/png,image/webp,image/jpeg" multiple hidden></label></div></div>
+<div class="acts" style="margin-top:4px"><button type="button" class="sec" id="kemo_go">Thêm bộ emote Kenrori có sẵn (12 emote)</button></div></div>
+<div id="stk_list"></div>
 <h4>Thống kê lượt xem (GoatCounter)</h4><p class="mu">Đăng ký miễn phí tại goatcounter.com, rồi nhập mã trang của bạn (phần đứng trước .goatcounter.com). Để trống để tắt. Lượt xem trên máy đã đăng nhập quản trị không được tính.</p>
 <label for="gc_code">Mã GoatCounter</label><input id="gc_code" placeholder="kenrori">
 <h4>Địa chỉ web cho RSS</h4><label for="w_url">Để trống nếu dùng địa chỉ github.io mặc định</label><input id="w_url" placeholder="https://username.github.io/kho-game/">
@@ -871,20 +882,51 @@ $("#cm_pwgo").onclick = () => run(async () => {
   localStorage.setItem("cmtMod", pw); log("✅ Mật khẩu đúng và đã lưu trên máy này. Trên web bạn sẽ thấy nút kiểm duyệt dưới mỗi bình luận.");
 });
 $("#cm_pwx").onclick = () => { try { localStorage.removeItem("cmtMod") } catch (e) {} $("#cm_pw").value = ""; log("✅ Đã xóa mật khẩu kiểm duyệt khỏi máy này.") };
-function stkRender() { const L = data.site.stickers || []; $("#stk_list").innerHTML = L.map((x, i) => `<div class="stki" title="${esc(x.n || "")}"><img src="${esc(x.p)}" alt="${esc(x.n || "")}" loading="lazy"><button type="button" class="dng" data-stx="${i}" title="Gỡ nhãn dán" aria-label="Gỡ nhãn dán">✕</button></div>`).join("") || '<p class="mu" style="margin:0">Chưa có nhãn dán nào. Người đọc vẫn dùng được biểu cảm và GIF.</p>' }
-$("#stk_in").onchange = e => { const fs = [...e.target.files]; e.target.value = ""; if (!fs.length) return; run(async () => {
-  const L = data.site.stickers = data.site.stickers || []; let n = 0;
-  try {
-    for (const f of fs) {
-      if (f.size > 1.5e6) { log(`Bỏ qua ${f.name}: lớn hơn 1,5 MB`); continue }
-      n++; log(`Đang tải nhãn dán ${n}/${fs.length}...`);
-      let b64 = null, ext = (f.name.split(".").pop() || "png").toLowerCase().replace("jpeg", "jpg"); const r = await squeeze(f, 160, .9); if (r) { b64 = r.b64; ext = r.ext } if (!b64) b64 = await fileB64(f);
-      const nm = (slugify(f.name.replace(/\.[^.]+$/, "")) || "nhan").slice(0, 30), p = `stickers/${nm}-${rid()}.${ext}`; await put(p, b64, "Nhãn dán: " + nm); L.push({ p, n: nm });
-    }
-  } finally { if (n) { await save("Thêm nhãn dán bình luận"); stkRender() } }
-  done(`✅ Đã thêm ${n} nhãn dán. Web cập nhật sau 1–2 phút.`);
+const KEMO = [{"k": "cuoi", "n": "Cười", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"160\" height=\"160\"><g transform=\"rotate(0 50 55)\"><rect x=\"22\" y=\"12\" width=\"58\" height=\"80\" rx=\"9\" fill=\"#000\" opacity=\".18\" transform=\"translate(2 3)\"/><path d=\"M26 12h46a8 8 0 0 1 8 8v64a8 8 0 0 1-8 8H26a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z\" fill=\"#ff00ff\"/><rect x=\"22\" y=\"12\" width=\"7\" height=\"80\" rx=\"3\" fill=\"#000\" opacity=\".16\"/><rect x=\"18\" y=\"67\" width=\"66\" height=\"13\" rx=\"2\" fill=\"#ffd84d\"/><path d=\"M37 40q4-6 8 0M55 40q4-6 8 0\" stroke=\"#2a1630\" stroke-width=\"3.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><path d=\"M38 48h24q-2 12-12 12t-12-12z\" fill=\"#2a1630\"/><path d=\"M43 55q7 4 14 0\" stroke=\"#ff6b9a\" stroke-width=\"3\" fill=\"none\"/><\/g><\/svg>"}, {"k": "khoc", "n": "Khóc", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"160\" height=\"160\"><g transform=\"rotate(0 50 55)\"><rect x=\"22\" y=\"12\" width=\"58\" height=\"80\" rx=\"9\" fill=\"#000\" opacity=\".18\" transform=\"translate(2 3)\"/><path d=\"M26 12h46a8 8 0 0 1 8 8v64a8 8 0 0 1-8 8H26a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z\" fill=\"#ff00ff\"/><rect x=\"22\" y=\"12\" width=\"7\" height=\"80\" rx=\"3\" fill=\"#000\" opacity=\".16\"/><rect x=\"18\" y=\"67\" width=\"66\" height=\"13\" rx=\"2\" fill=\"#ffd84d\"/><path d=\"M36 41q4 4 9 0M55 41q4 4 9 0\" stroke=\"#2a1630\" stroke-width=\"3.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><path d=\"M40 44v14M60 44v14\" stroke=\"#5ab8ff\" stroke-width=\"5\" stroke-linecap=\"round\"/><path d=\"M43 58q7-6 14 0\" stroke=\"#2a1630\" stroke-width=\"3.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><\/g><circle cx=\"40\" cy=\"64\" r=\"3\" fill=\"#5ab8ff\"/><circle cx=\"60\" cy=\"64\" r=\"3\" fill=\"#5ab8ff\"/><\/svg>"}, {"k": "soc", "n": "Sốc", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"160\" height=\"160\"><g transform=\"rotate(0 50 55)\"><rect x=\"22\" y=\"12\" width=\"58\" height=\"80\" rx=\"9\" fill=\"#000\" opacity=\".18\" transform=\"translate(2 3)\"/><path d=\"M26 12h46a8 8 0 0 1 8 8v64a8 8 0 0 1-8 8H26a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z\" fill=\"#ff00ff\"/><rect x=\"22\" y=\"12\" width=\"7\" height=\"80\" rx=\"3\" fill=\"#000\" opacity=\".16\"/><rect x=\"18\" y=\"67\" width=\"66\" height=\"13\" rx=\"2\" fill=\"#ffd84d\"/><circle cx=\"40\" cy=\"40\" r=\"8\" fill=\"#fff\"/><circle cx=\"60\" cy=\"40\" r=\"8\" fill=\"#fff\"/><circle cx=\"40\" cy=\"40\" r=\"2.6\" fill=\"#2a1630\"/><circle cx=\"60\" cy=\"40\" r=\"2.6\" fill=\"#2a1630\"/><ellipse cx=\"50\" cy=\"56\" rx=\"5\" ry=\"6.5\" fill=\"#2a1630\"/><\/g><path d=\"M14 18l6 6M50 3v8M86 18l-6 6\" stroke=\"#ffd84d\" stroke-width=\"4\" stroke-linecap=\"round\"/><\/svg>"}, {"k": "ngai", "n": "Ngại", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"160\" height=\"160\"><g transform=\"rotate(0 50 55)\"><rect x=\"22\" y=\"12\" width=\"58\" height=\"80\" rx=\"9\" fill=\"#000\" opacity=\".18\" transform=\"translate(2 3)\"/><path d=\"M26 12h46a8 8 0 0 1 8 8v64a8 8 0 0 1-8 8H26a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z\" fill=\"#ff33ff\"/><rect x=\"22\" y=\"12\" width=\"7\" height=\"80\" rx=\"3\" fill=\"#000\" opacity=\".16\"/><rect x=\"18\" y=\"67\" width=\"66\" height=\"13\" rx=\"2\" fill=\"#ffd84d\"/><path d=\"M35 36l8 5-8 5M65 36l-8 5 8 5\" stroke=\"#2a1630\" stroke-width=\"3.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"35\" cy=\"52\" rx=\"6\" ry=\"3.5\" fill=\"#ff8fc0\"/><ellipse cx=\"65\" cy=\"52\" rx=\"6\" ry=\"3.5\" fill=\"#ff8fc0\"/><path d=\"M45 54q5 4 10 0\" stroke=\"#2a1630\" stroke-width=\"3.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><\/g><\/svg>"}, {"k": "gian", "n": "Giận", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"160\" height=\"160\"><g transform=\"rotate(0 50 55)\"><rect x=\"22\" y=\"12\" width=\"58\" height=\"80\" rx=\"9\" fill=\"#000\" opacity=\".18\" transform=\"translate(2 3)\"/><path d=\"M26 12h46a8 8 0 0 1 8 8v64a8 8 0 0 1-8 8H26a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z\" fill=\"#e600c8\"/><rect x=\"22\" y=\"12\" width=\"7\" height=\"80\" rx=\"3\" fill=\"#000\" opacity=\".16\"/><rect x=\"18\" y=\"67\" width=\"66\" height=\"13\" rx=\"2\" fill=\"#ffd84d\"/><path d=\"M34 33l11 5M66 33l-11 5\" stroke=\"#2a1630\" stroke-width=\"3.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><circle cx=\"41\" cy=\"43\" r=\"3.4\" fill=\"#2a1630\"/><circle cx=\"59\" cy=\"43\" r=\"3.4\" fill=\"#2a1630\"/><path d=\"M42 58q8-7 16 0\" stroke=\"#2a1630\" stroke-width=\"3.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><\/g><path d=\"M78 14l4 7 7-3-3 7 7 4-7 2 2 7-6-4-4 6-1-7-7-1 6-4z\" fill=\"#ff3b3b\"/><\/svg>"}, {"k": "tim", "n": "Thả tim", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"160\" height=\"160\"><g transform=\"rotate(0 50 55)\"><rect x=\"22\" y=\"12\" width=\"58\" height=\"80\" rx=\"9\" fill=\"#000\" opacity=\".18\" transform=\"translate(2 3)\"/><path d=\"M26 12h46a8 8 0 0 1 8 8v64a8 8 0 0 1-8 8H26a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z\" fill=\"#ff00ff\"/><rect x=\"22\" y=\"12\" width=\"7\" height=\"80\" rx=\"3\" fill=\"#000\" opacity=\".16\"/><rect x=\"18\" y=\"67\" width=\"66\" height=\"13\" rx=\"2\" fill=\"#ffd84d\"/><path transform=\"translate(32 34) scale(1.15)\" d=\"M0 3C0-1 5-3 7 1c2-4 7-2 7 2 0 4-7 8-7 8S0 7 0 3z\" fill=\"#ff2d55\" stroke=\"#fff\" stroke-width=\"1\"/><path transform=\"translate(52 34) scale(1.15)\" d=\"M0 3C0-1 5-3 7 1c2-4 7-2 7 2 0 4-7 8-7 8S0 7 0 3z\" fill=\"#ff2d55\" stroke=\"#fff\" stroke-width=\"1\"/><path d=\"M41 53q9 8 18 0\" stroke=\"#2a1630\" stroke-width=\"3.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><\/g><path transform=\"translate(76 8) scale(1.0)\" d=\"M0 3C0-1 5-3 7 1c2-4 7-2 7 2 0 4-7 8-7 8S0 7 0 3z\" fill=\"#ff2d55\" stroke=\"#fff\" stroke-width=\"1\"/><path transform=\"translate(10 16) scale(0.75)\" d=\"M0 3C0-1 5-3 7 1c2-4 7-2 7 2 0 4-7 8-7 8S0 7 0 3z\" fill=\"#ff2d55\" stroke=\"#fff\" stroke-width=\"1\"/><\/svg>"}, {"k": "ngu", "n": "Buồn ngủ", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"160\" height=\"160\"><g transform=\"rotate(0 50 55)\"><rect x=\"22\" y=\"12\" width=\"58\" height=\"80\" rx=\"9\" fill=\"#000\" opacity=\".18\" transform=\"translate(2 3)\"/><path d=\"M26 12h46a8 8 0 0 1 8 8v64a8 8 0 0 1-8 8H26a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z\" fill=\"#ff00ff\"/><rect x=\"22\" y=\"12\" width=\"7\" height=\"80\" rx=\"3\" fill=\"#000\" opacity=\".16\"/><rect x=\"18\" y=\"67\" width=\"66\" height=\"13\" rx=\"2\" fill=\"#ffd84d\"/><path d=\"M35 42h10M55 42h10\" stroke=\"#2a1630\" stroke-width=\"3.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"50\" cy=\"55\" rx=\"4\" ry=\"3\" fill=\"#2a1630\"/><\/g><text x=\"70\" y=\"22\" font-family=\"Arial Black,Arial,sans-serif\" font-weight=\"900\" font-size=\"14\" fill=\"#7ab8ff\">z<\/text><text x=\"80\" y=\"12\" font-family=\"Arial Black,Arial,sans-serif\" font-weight=\"900\" font-size=\"10\" fill=\"#7ab8ff\">z<\/text><\/svg>"}, {"k": "suy-nghi", "n": "Suy nghĩ", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"160\" height=\"160\"><g transform=\"rotate(0 50 55)\"><rect x=\"22\" y=\"12\" width=\"58\" height=\"80\" rx=\"9\" fill=\"#000\" opacity=\".18\" transform=\"translate(2 3)\"/><path d=\"M26 12h46a8 8 0 0 1 8 8v64a8 8 0 0 1-8 8H26a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z\" fill=\"#ff00ff\"/><rect x=\"22\" y=\"12\" width=\"7\" height=\"80\" rx=\"3\" fill=\"#000\" opacity=\".16\"/><rect x=\"18\" y=\"67\" width=\"66\" height=\"13\" rx=\"2\" fill=\"#ffd84d\"/><path d=\"M35 33q5-4 10 0\" stroke=\"#2a1630\" stroke-width=\"3.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><circle cx=\"41\" cy=\"42\" r=\"3.2\" fill=\"#2a1630\"/><circle cx=\"60\" cy=\"42\" r=\"3.2\" fill=\"#2a1630\"/><path d=\"M45 56h10\" stroke=\"#2a1630\" stroke-width=\"3.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><\/g><text x=\"74\" y=\"26\" font-family=\"Arial Black,Arial,sans-serif\" font-weight=\"900\" font-size=\"22\" fill=\"#ffd84d\" stroke=\"#2a1630\" stroke-width=\"1.2\">?<\/text><\/svg>"}, {"k": "ok", "n": "OK", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"160\" height=\"160\"><g transform=\"rotate(0 50 55)\"><rect x=\"22\" y=\"12\" width=\"58\" height=\"80\" rx=\"9\" fill=\"#000\" opacity=\".18\" transform=\"translate(2 3)\"/><path d=\"M26 12h46a8 8 0 0 1 8 8v64a8 8 0 0 1-8 8H26a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z\" fill=\"#ff00ff\"/><rect x=\"22\" y=\"12\" width=\"7\" height=\"80\" rx=\"3\" fill=\"#000\" opacity=\".16\"/><rect x=\"18\" y=\"67\" width=\"66\" height=\"13\" rx=\"2\" fill=\"#ffd84d\"/><text x=\"50\" y=\"76.5\" text-anchor=\"middle\" font-family=\"Arial Black,Arial,sans-serif\" font-weight=\"900\" font-size=\"10\" fill=\"#2a1630\">OK!<\/text><path d=\"M36 41q4-5 8 0M56 41q4-5 8 0\" stroke=\"#2a1630\" stroke-width=\"3.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><path d=\"M41 52q9 8 18 0\" stroke=\"#2a1630\" stroke-width=\"3.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><\/g><\/svg>"}, {"k": "hong", "n": "Hóng", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"160\" height=\"160\"><g transform=\"rotate(0 50 55)\"><rect x=\"22\" y=\"12\" width=\"58\" height=\"80\" rx=\"9\" fill=\"#000\" opacity=\".18\" transform=\"translate(2 3)\"/><path d=\"M26 12h46a8 8 0 0 1 8 8v64a8 8 0 0 1-8 8H26a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z\" fill=\"#ff00ff\"/><rect x=\"22\" y=\"12\" width=\"7\" height=\"80\" rx=\"3\" fill=\"#000\" opacity=\".16\"/><rect x=\"18\" y=\"67\" width=\"66\" height=\"13\" rx=\"2\" fill=\"#ffd84d\"/><text x=\"50\" y=\"76.5\" text-anchor=\"middle\" font-family=\"Arial Black,Arial,sans-serif\" font-weight=\"900\" font-size=\"10\" fill=\"#2a1630\">HÓNG<\/text><circle cx=\"40\" cy=\"41\" r=\"7\" fill=\"#2a1630\"/><circle cx=\"60\" cy=\"41\" r=\"7\" fill=\"#2a1630\"/><path transform=\"translate(41 40)\" d=\"M0-7l2 5 5 2-5 2-2 5-2-5-5-2 5-2z\" fill=\"#fff\"/><path transform=\"translate(61 40)\" d=\"M0-7l2 5 5 2-5 2-2 5-2-5-5-2 5-2z\" fill=\"#fff\"/><path d=\"M44 53q6 6 12 0\" stroke=\"#2a1630\" stroke-width=\"3.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><\/g><path d=\"M12 30l5 2M10 44h6M88 30l-5 2M90 44h-6\" stroke=\"#ffd84d\" stroke-width=\"3.5\" stroke-linecap=\"round\"/><\/svg>"}, {"k": "cam-on", "n": "Cảm ơn", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"160\" height=\"160\"><g transform=\"rotate(-10 50 55)\"><rect x=\"22\" y=\"12\" width=\"58\" height=\"80\" rx=\"9\" fill=\"#000\" opacity=\".18\" transform=\"translate(2 3)\"/><path d=\"M26 12h46a8 8 0 0 1 8 8v64a8 8 0 0 1-8 8H26a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z\" fill=\"#ff00ff\"/><rect x=\"22\" y=\"12\" width=\"7\" height=\"80\" rx=\"3\" fill=\"#000\" opacity=\".16\"/><rect x=\"18\" y=\"67\" width=\"66\" height=\"13\" rx=\"2\" fill=\"#ffd84d\"/><text x=\"50\" y=\"76.5\" text-anchor=\"middle\" font-family=\"Arial Black,Arial,sans-serif\" font-weight=\"900\" font-size=\"8\" fill=\"#2a1630\">CẢM ƠN<\/text><path d=\"M36 42q4-4 8 0M56 42q4-4 8 0\" stroke=\"#2a1630\" stroke-width=\"3.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><path d=\"M44 53q6 5 12 0\" stroke=\"#2a1630\" stroke-width=\"3.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><ellipse cx=\"34\" cy=\"50\" rx=\"5\" ry=\"3\" fill=\"#ff8fc0\"/><ellipse cx=\"66\" cy=\"50\" rx=\"5\" ry=\"3\" fill=\"#ff8fc0\"/><\/g><path transform=\"translate(76 10) scale(0.9)\" d=\"M0 3C0-1 5-3 7 1c2-4 7-2 7 2 0 4-7 8-7 8S0 7 0 3z\" fill=\"#ff2d55\" stroke=\"#fff\" stroke-width=\"1\"/><\/svg>"}, {"k": "can-loi", "n": "Cạn lời", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"160\" height=\"160\"><g transform=\"rotate(0 50 55)\"><rect x=\"22\" y=\"12\" width=\"58\" height=\"80\" rx=\"9\" fill=\"#000\" opacity=\".18\" transform=\"translate(2 3)\"/><path d=\"M26 12h46a8 8 0 0 1 8 8v64a8 8 0 0 1-8 8H26a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z\" fill=\"#ff00ff\"/><rect x=\"22\" y=\"12\" width=\"7\" height=\"80\" rx=\"3\" fill=\"#000\" opacity=\".16\"/><rect x=\"18\" y=\"67\" width=\"66\" height=\"13\" rx=\"2\" fill=\"#ffd84d\"/><text x=\"50\" y=\"76.5\" text-anchor=\"middle\" font-family=\"Arial Black,Arial,sans-serif\" font-weight=\"900\" font-size=\"10\" fill=\"#2a1630\">...<\/text><path d=\"M35 41h10M55 41h10M44 56h12\" stroke=\"#2a1630\" stroke-width=\"3.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" fill=\"none\"/><\/g><path d=\"M74 22q5 8 0 11-5-3 0-11z\" fill=\"#7ab8ff\"/><\/svg>"}];
+const stkOk = p => /^stickers\/[A-Za-z0-9._-]+\.(gif|png|webp|jpg|svg)$/.test(p) || /^https:\/\/cdn\.discordapp\.com\/emojis\/\d{15,21}\.(png|gif|webp)$/.test(p);
+const stkG = x => (x.g || "Nhãn dán").trim() || "Nhãn dán";
+function stkRender() {
+  const L = (data.site.stickers || []).map((x, i) => ({ ...x, i })), G = [...new Set(L.map(stkG))];
+  $("#stk_gs").innerHTML = G.map(g => `<option value="${esc(g)}">`).join("");
+  $("#stk_list").innerHTML = G.map(g => { const A = L.filter(x => stkG(x) === g); return `<div class="stkh"><b>${esc(g)}</b><small>${A.length} emote</small><button type="button" class="dng sm" data-stgx="${esc(g)}">Gỡ cả bộ</button></div><div class="stkl">${A.map(x => `<div class="stki" title="${esc(x.n || "")}"><img src="${esc(x.p)}" alt="${esc(x.n || "")}" loading="lazy"><button type="button" class="dng" data-stx="${x.i}" title="Gỡ emote" aria-label="Gỡ emote ${esc(x.n || "")}">✕</button></div>`).join("")}</div>` }).join("") || '<p class="mu">Chưa có bộ emote nào. Người đọc vẫn dùng được emoji, kaomoji và GIF.</p>';
+}
+async function stkAdd(items, msg) { // items: [{n, g, make: async () => ({ p })}]
+  const L = data.site.stickers = data.site.stickers || []; let n = 0, k = 0;
+  try { for (const it of items) { k++; log(`Đang thêm emote ${k}/${items.length}...`); try { const r = await it.make(); if (r && stkOk(r.p) && !L.some(x => x.p === r.p)) { L.push({ p: r.p, n: it.n, g: it.g }); n++ } } catch (e) { log(`Bỏ qua ${it.n}: ${e.message}`) } } }
+  finally { if (n) { await save(msg); stkRender() } }
+  return n;
+}
+$("#stk_in").onchange = e => { const fs = [...e.target.files], g = $("#stk_g").value.trim() || "Nhãn dán"; e.target.value = ""; if (!fs.length) return; run(async () => {
+  const n = await stkAdd(fs.map(f => ({ n: (slugify(f.name.replace(/\.[^.]+$/, "")) || "emote").slice(0, 30), g, make: async () => {
+    if (f.size > 1.5e6) throw new Error("lớn hơn 1,5 MB");
+    let b64 = null, ext = (f.name.split(".").pop() || "png").toLowerCase().replace("jpeg", "jpg"); const r = await squeeze(f, 160, .9); if (r) { b64 = r.b64; ext = r.ext } if (!b64) b64 = await fileB64(f);
+    const p = `stickers/${(slugify(f.name.replace(/\.[^.]+$/, "")) || "emote").slice(0, 30)}-${rid()}.${ext}`; await put(p, b64, "Emote: " + f.name); return { p };
+  } })), "Thêm emote bình luận");
+  done(`✅ Đã thêm ${n} emote vào bộ "${g}". Web cập nhật sau 1–2 phút.`);
 }) };
-$("#stk_list").onclick = e => { const b = e.target.closest("[data-stx]"); if (!b || !confirm("Gỡ nhãn dán này? Bình luận cũ đã dùng nó sẽ không hiện ảnh nữa.")) return; run(async () => { data.site.stickers.splice(+b.dataset.stx, 1); await save("Gỡ nhãn dán bình luận"); stkRender(); done("✅ Đã gỡ nhãn dán.") }) };
+$("#dc_go").onclick = () => run(async () => {
+  const t = $("#dc_in").value, g = $("#stk_g").value.trim() || "Discord", seen = new Set(), items = [];
+  for (const m of t.matchAll(/<(a?):(\w{2,32}):(\d{15,21})>|https:\/\/(?:cdn|media)\.discordapp\.(?:com|net)\/emojis\/(\d{15,21})\.(png|gif|webp)/g)) {
+    const id = m[3] || m[4], anim = m[1] === "a" || m[5] === "gif", nm = m[2] || "emote"; if (seen.has(id)) continue; seen.add(id);
+    items.push({ n: nm, g, make: async () => {
+      const ext = anim ? "gif" : "png", src = `https://cdn.discordapp.com/emojis/${id}.${ext}`;
+      try { const r = await fetch(src + "?size=128&quality=lossless"); if (!r.ok) throw new Error("HTTP " + r.status); const b = await r.blob(); if (b.size > 1.5e6) throw new Error("ảnh quá lớn"); const b64 = await fileB64(b), p = `stickers/dc-${slugify(nm) || "emote"}-${id.slice(-6)}.${ext}`; await put(p, b64, "Emote Discord: " + nm); return { p } }
+      catch (e) { return { p: src } } // Không tải về được thì dùng thẳng link Discord
+    } });
+  }
+  if (!items.length) throw new Error("Không thấy mã emote Discord nào. Mã có dạng <:ten:123456789012345678>.");
+  const n = await stkAdd(items, "Thêm emote từ Discord"); $("#dc_in").value = "";
+  done(`✅ Đã thêm ${n} emote vào bộ "${g}"${n < items.length ? ` (${items.length - n} emote trùng hoặc lỗi đã bỏ qua)` : ""}. Web cập nhật sau 1–2 phút.`);
+});
+$("#kemo_go").onclick = () => run(async () => {
+  const n = await stkAdd(KEMO.map(e => ({ n: e.n, g: "Kenrori", make: async () => { const p = `stickers/kenrori-${e.k}.svg`; await put(p, b64t(e.svg), "Emote Kenrori: " + e.n); return { p } } })), "Thêm bộ emote Kenrori");
+  done(n ? `✅ Đã thêm ${n} emote Kenrori. Web cập nhật sau 1–2 phút.` : "✅ Bộ emote Kenrori đã có sẵn.");
+});
+$("#stk_list").onclick = e => {
+  const b = e.target.closest("[data-stx]"), bg = e.target.closest("[data-stgx]");
+  if (b) { if (!confirm("Gỡ emote này? Bình luận cũ đã dùng nó sẽ không hiện ảnh nữa.")) return; run(async () => { data.site.stickers.splice(+b.dataset.stx, 1); await save("Gỡ emote bình luận"); stkRender(); done("✅ Đã gỡ emote.") }) }
+  if (bg) { const g = bg.dataset.stgx; if (!confirm(`Gỡ cả bộ "${g}"?`)) return; run(async () => { data.site.stickers = data.site.stickers.filter(x => stkG(x) !== g); await save("Gỡ bộ emote: " + g); stkRender(); done(`✅ Đã gỡ bộ "${g}".`) }) }
+};
 let ve = null;
 $("#manage").addEventListener("click", e => {
   const b = e.target.closest("button[data-v]"); if (!b) return; const [k, i] = b.dataset.v.split("|"); ve = { k, i: +i }; const s = data[k][+i];
@@ -960,7 +1002,7 @@ const trWords = t => t.trim() ? t.trim().split(/\s+/).length : 0;
 const trGl = () => $("#t_gl").value.split("\n").map(l => l.split("=")).filter(p => p.length >= 2 && p[0].trim()).map(([x, ...y]) => [x.trim(), y.join("=").trim()]);
 const trCount = () => { $("#t_sc").textContent = "· " + $("#t_in").value.replace(/\s/g, "").length.toLocaleString("vi-VN") + " ký tự"; $("#t_oc").textContent = "· " + trWords($("#t_out").value).toLocaleString("vi-VN") + " chữ" };
 const trBusy = on => document.querySelectorAll(".trb").forEach(b => b.disabled = on);
-const trDraft = () => { if (trSlug) ls.set("dr:" + trSlug, JSON.stringify({ t: $("#t_title").value, v: $("#t_vol").value, i: $("#t_in").value, o: $("#t_out").value, n: trNext })) };
+const trDraft = () => { if (trSlug) ls.set("dr:" + trSlug, JSON.stringify({ t: $("#t_title").value, v: $("#t_vol").value, i: $("#t_in").value, o: $("#t_out").value, b: $("#t_brief").value, p: TRP })) };
 function trFill() {
   const cur = $("#t_ser").value;
   $("#t_ser").innerHTML = data.novels.map((s, i) => `<option value="${i}">${esc(s.title)}</option>`).join("") || "<option value=''>(chưa có novel, hãy tạo ở tab Bộ truyện)</option>";
@@ -971,14 +1013,16 @@ function trSer() {
   let d = {}; try { d = JSON.parse(ls.get("dr:" + s.slug) || "{}") } catch (e) {}
   const vs = [...new Set(s.chapters.map(c => (c.vol || "").trim()).filter(Boolean))]; $("#t_vols").innerHTML = vs.map(v => `<option value="${esc(v)}">`).join("");
   $("#t_title").value = d.t || ""; $("#t_vol").value = d.v ?? (s.chapters.length ? (s.chapters[s.chapters.length - 1].vol || "") : "");
-  $("#t_in").value = d.i || ""; $("#t_out").value = d.o || ""; trNext = d.n || 0; $("#t_gl").value = ls.get("gl:" + s.slug) || GL[s.slug] || ""; $("#t_notes").value = ls.get("nt:" + s.slug) ?? (GL[s.slug + "#notes"] || ""); trCount();
+  $("#t_in").value = d.i || ""; $("#t_out").value = d.o || ""; $("#t_brief").value = d.b || ""; $("#t_bw").hidden = !d.b; TRP = d.p && Array.isArray(d.p.parts) ? d.p : { k: "", parts: [] }; $("#t_gl").value = ls.get("gl:" + s.slug) || GL[s.slug] || ""; $("#t_notes").value = ls.get("nt:" + s.slug) ?? (GL[s.slug + "#notes"] || ""); trCount();
   $("#t_prog").textContent = d.i ? "Đã khôi phục bản nháp." : "";
 }
 $("#t_ser").onchange = () => { trExitRV(); trSer() };
 $("#t_gl").addEventListener("input", () => { if (trSlug) ls.set("gl:" + trSlug, $("#t_gl").value) });
-["t_in", "t_out", "t_title", "t_vol"].forEach(id => $("#" + id).addEventListener("input", () => { trCount(); clearTimeout(trTimer); trTimer = setTimeout(trDraft, 600) }));
-(function () { let S = {}; try { S = JSON.parse(ls.get("trset") || "{}") } catch (e) {} if (S.src) $("#t_src").value = S.src; if (S.style) $("#t_style").value = S.style })();
-["t_src", "t_style"].forEach(id => $("#" + id).addEventListener("change", () => ls.set("trset", JSON.stringify({ src: $("#t_src").value, style: $("#t_style").value }))));
+$("#t_in").addEventListener("input", () => { if ($("#t_brief").value && !$("#t_in").value.trim()) { $("#t_brief").value = ""; $("#t_bw").hidden = true } });
+["t_in", "t_out", "t_title", "t_vol", "t_brief"].forEach(id => $("#" + id).addEventListener("input", () => { trCount(); clearTimeout(trTimer); trTimer = setTimeout(trDraft, 600) }));
+const TRSET = ["t_src", "t_genre", "t_dlg", "t_hon", "t_mode", "t_style", "t_bon", "t_pol2"];
+(function () { let S = {}; try { S = JSON.parse(ls.get("trset") || "{}") } catch (e) {} if (S.style === "tự nhiên, mượt mà, đúng chất light novel") delete S.style; TRSET.forEach(id => { const k = id.slice(2), el = $("#" + id); if (S[k] == null) return; if (el.type === "checkbox") el.checked = !!S[k]; else el.value = S[k] }) })();
+TRSET.forEach(id => $("#" + id).addEventListener("change", () => { const S = {}; TRSET.forEach(x => { const el = $("#" + x); S[x.slice(2)] = el.type === "checkbox" ? el.checked : el.value }); ls.set("trset", JSON.stringify(S)) }));
 $("#t_notes").addEventListener("input", () => { if (trSlug) ls.set("nt:" + trSlug, $("#t_notes").value) });
 /* ----- Nhiều dịch vụ AI ----- */
 const PV = {
@@ -1034,35 +1078,55 @@ $("#pv_list").addEventListener("click", async e => {
 });
 $("#pv_list").addEventListener("change", async e => { const c = e.target.closest("[data-pon]"); if (!c) return; PROV[+c.dataset.pon].on = c.checked; try { await pvSave() } catch (err) { log("❌ " + err.message) } });
 class PvErr extends Error { constructor(m, st) { super(m); this.st = st } }
-async function callOne(p, prompt) {
-  let url, headers = { "Content-Type": "application/json" }, body, pick;
+const NOX = new Set(); // dịch vụ không nhận tham số tăng tốc
+async function callOne(p, prompt, o = {}) {
+  const sys = o.sys || "", stream = !!o.onDelta, xk = p.type + "|" + p.model, extra = !NOX.has(xk); let url, headers = { "Content-Type": "application/json" }, body, pick, dpick, hasX = false;
   if (p.type === "gemini") {
-    url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(p.model)}:generateContent`; headers["x-goog-api-key"] = p.key;
-    body = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { temperature: 0.4 } }; pick = j => (j.candidates?.[0]?.content?.parts || []).map(x => x.text || "").join("");
+    url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(p.model)}:${stream ? "streamGenerateContent?alt=sse" : "generateContent"}`; headers["x-goog-api-key"] = p.key;
+    body = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { temperature: 0.4 } }; if (sys) body.systemInstruction = { parts: [{ text: sys }] };
+    if (extra && /2\.5-flash/.test(p.model)) { body.generationConfig.thinkingConfig = { thinkingBudget: 0 }; hasX = true } else if (extra && /gemini-3/.test(p.model)) { body.generationConfig.thinkingConfig = { thinkingLevel: "low" }; hasX = true }
+    pick = dpick = j => (j.candidates?.[0]?.content?.parts || []).filter(x => !x.thought).map(x => x.text || "").join("");
   } else if (p.type === "anthropic") {
     url = "https://api.anthropic.com/v1/messages"; Object.assign(headers, { "x-api-key": p.key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" });
-    body = { model: p.model, max_tokens: 8000, messages: [{ role: "user", content: prompt }] }; pick = j => (j.content || []).map(x => x.text || "").join("");
+    body = { model: p.model, max_tokens: 12000, messages: [{ role: "user", content: prompt }] }; if (sys) body.system = sys; if (stream) body.stream = true;
+    pick = j => (j.content || []).map(x => x.text || "").join(""); dpick = j => j.type === "content_block_delta" ? j.delta?.text || "" : "";
   } else {
     url = (p.type === "openai" ? "https://api.openai.com/v1" : p.type === "openrouter" ? "https://openrouter.ai/api/v1" : p.type === "groq" ? PV.groq.url : p.url) + "/chat/completions";
     if (p.key) headers.Authorization = "Bearer " + p.key; if (p.type === "openrouter") headers["X-Title"] = "Kenrori";
-    body = { model: p.model, messages: [{ role: "user", content: prompt }] }; if (p.type !== "openai") body.temperature = 0.4; pick = j => j.choices?.[0]?.message?.content || "";
+    body = { model: p.model, messages: [...(sys ? [{ role: "system", content: sys }] : []), { role: "user", content: prompt }] }; if (p.type !== "openai") body.temperature = 0.4; if (stream) body.stream = true;
+    if (extra && p.type === "openai" && /^(gpt-5|gpt-6|o\d)/.test(p.model)) { body.reasoning_effort = "low"; hasX = true }
+    pick = j => j.choices?.[0]?.message?.content || ""; dpick = j => j.choices?.[0]?.delta?.content || "";
   }
-  let r, j;
-  try { r = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) }); j = await r.json().catch(() => ({})) }
+  let r;
+  try { r = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) }) }
   catch (e) { throw new PvErr("Không kết nối được (mạng, trình chặn quảng cáo, hoặc dịch vụ không cho gọi từ trình duyệt)", 0) }
-  if (!r.ok) throw new PvErr((r.status === 401 || r.status === 403 ? "Key sai hoặc không có quyền. " : r.status === 404 ? "Không tìm thấy model, kiểm tra tên model. " : r.status === 429 ? "Hết hạn mức tạm thời. " : "") + (j.error?.message || j.message || "Lỗi " + r.status), r.status);
-  const t = String(pick(j) || "").trim(); if (!t) throw new PvErr("Không trả về nội dung (có thể bị bộ lọc nội dung chặn)", -1);
+  if (!r.ok) {
+    const j = await r.json().catch(() => ({}));
+    if (r.status === 400 && hasX) { NOX.add(xk); return callOne(p, prompt, o) }
+    throw new PvErr((r.status === 401 || r.status === 403 ? "Key sai hoặc không có quyền. " : r.status === 404 ? "Không tìm thấy model, kiểm tra tên model. " : r.status === 429 ? "Hết hạn mức tạm thời. " : "") + (j.error?.message || j.message || (Array.isArray(j) && j[0]?.error?.message) || "Lỗi " + r.status), r.status);
+  }
+  let t = "";
+  if (stream && r.body) {
+    const rd = r.body.getReader(), dec = new TextDecoder(); let buf = "";
+    try {
+      for (;;) {
+        const { done, value } = await rd.read(); if (done) break; buf += dec.decode(value, { stream: true }); let n;
+        while ((n = buf.indexOf("\n")) >= 0) { const line = buf.slice(0, n).trim(); buf = buf.slice(n + 1); if (!line.startsWith("data:")) continue; const d = line.slice(5).trim(); if (!d || d === "[DONE]") continue; let j; try { j = JSON.parse(d) } catch (e) { continue } if (j.error) throw new PvErr(j.error.message || "Dịch vụ báo lỗi giữa chừng", -2); const x = dpick(j); if (x) { t += x; o.onDelta(t) } }
+      }
+    } catch (e) { if (e instanceof PvErr) throw e; throw new PvErr("Mất kết nối giữa chừng", 0) }
+  } else t = pick(await r.json().catch(() => ({})));
+  t = String(t || "").trim(); if (!t) throw new PvErr("Không trả về nội dung (có thể bị bộ lọc nội dung chặn)", -1);
   return t;
 }
-async function gem(prompt) {
+async function gem(prompt, o = {}) {
   const L = PROV.map((p, i) => [p, i]).filter(([p]) => p.on);
   if (!L.length) throw new Error("Chưa có dịch vụ AI nào đang bật. Mở Cài đặt dịch tự động để thêm.");
   const errs = new Map();
   for (let round = 0; round < 3; round++) {
     for (const [p, i] of L) {
       if ((pvCool[i] || 0) > Date.now()) continue;
-      try { const t = await callOne(p, prompt); trLastBy = pvName(p); return t }
-      catch (e) { errs.set(i, pvName(p) + ": " + e.message); pvCool[i] = Date.now() + (e.st === 429 || e.st >= 500 || e.st === 0 ? 60e3 : e.st === -1 ? 0 : 600e3); if (trStop) throw new Error([...errs.values()].join(" | ")) }
+      try { const t = await callOne(p, prompt, o); trLastBy = pvName(p); return t }
+      catch (e) { errs.set(i, pvName(p) + ": " + e.message); pvCool[i] = Date.now() + (e.st === 429 || e.st >= 500 || e.st === 0 || e.st === -2 ? 60e3 : e.st === -1 ? 0 : 600e3); if (trStop) throw new Error([...errs.values()].join(" | ")) }
     }
     const wait = Math.ceil((Math.min(...L.map(([, i]) => pvCool[i] || 0)) - Date.now()) / 1000);
     if (wait > 90 || trStop || round === 2) break;
@@ -1070,40 +1134,131 @@ async function gem(prompt) {
   }
   throw new Error([...errs.values()].join(" | ") || "Tất cả dịch vụ đang tạm khóa, thử lại sau ít phút.");
 }
-const trPrompt = (txt, ctx = "") => { const nt = $("#t_notes").value.trim(); return `Bạn là dịch giả light novel chuyên nghiệp. Hãy dịch đoạn văn ${$("#t_src").value} dưới đây sang tiếng Việt.
-Yêu cầu:
-- Văn phong: ${$("#t_style").value}.
-- Giữ nguyên cấu trúc đoạn: mỗi đoạn gốc tương ứng một đoạn dịch, cách nhau bằng một dòng trống. Không gộp hay tách đoạn, không bỏ sót câu nào.
-- Giữ lời thoại trong dấu ngoặc kép.
-${trGl().length ? "- Dùng đúng bảng tên riêng sau, xưng hô nhất quán:\n" + trGl().map(([x, y]) => x + " = " + y).join("\n") + "\n" : ""}${nt ? "- Ghi chú của người dịch cho bộ này, phải tuân theo:\n" + nt + "\n" : ""}- Chỉ trả về bản dịch, không giải thích, không ghi chú, không thêm tiêu đề.
-${ctx ? `\nĐoạn đã dịch ngay trước đó (chỉ để giữ mạch văn và cách xưng hô, KHÔNG dịch lại và KHÔNG đưa vào kết quả):\n"""\n${ctx}\n"""\n` : ""}
-Đoạn cần dịch:
-"""
-${txt}
-"""` };
-const chunks = txt => { const ps = txt.replace(/\r/g, "").split(/\n+/).map(x => x.trim()).filter(Boolean), out = []; let cur = ""; for (const p of ps) { if (cur && cur.length + p.length > 1800) { out.push(cur); cur = "" } cur += (cur ? "\n" : "") + p } if (cur) out.push(cur); return out };
-async function trRun(from) {
-  const src = $("#t_in").value; if (!src.trim()) throw new Error("Hãy dán bản gốc vào ô bên trái");
-  const cs = chunks(src); trStop = false; if (from === 0 || from >= cs.length) { from = 0; $("#t_out").value = "" }
-  for (let k = from; k < cs.length; k++) {
-    if (trStop) { trNext = k; trDraft(); $("#t_prog").textContent = `⏹ Đã dừng ở đoạn ${k}/${cs.length}. Bấm ▶ Dịch tiếp để tiếp tục.`; return }
-    $("#t_prog").textContent = `Đang dịch ${k + 1}/${cs.length}${trLastBy ? ", đoạn trước dùng " + trLastBy : ""}...`;
-    let t; try { t = await gem(trPrompt(cs[k], $("#t_out").value.trim().split(/\n+/).slice(-3).join("\n").slice(-900))) } catch (e) { trNext = k; trDraft(); throw new Error(`Lỗi ở đoạn ${k + 1}/${cs.length}: ${e.message} (bấm ▶ Dịch tiếp để thử lại từ đoạn này)`) }
-    const o = $("#t_out"); o.value += (o.value.trim() ? "\n\n" : "") + t.split(/\n+/).map(x => x.trim()).filter(Boolean).join("\n\n"); trNext = k + 1; trDraft(); trCount();
-  }
-  trNext = 0; trDraft(); $("#t_prog").textContent = `✅ Đã dịch xong ${cs.length} đoạn (dịch vụ cuối cùng dùng: ${trLastBy}). Hãy đọc lại và chỉnh sửa trước khi đăng.`;
+/* ===== Dịch: lời dặn cho AI ===== */
+const TRG = {
+  auto: ["Tự nhận theo nội dung", "Tự nhận thể loại: bối cảnh cổ đại phương Đông dùng Hán Việt vừa phải; hiện đại hoặc phương Tây dùng thuần Việt."],
+  ln: ["Light novel học đường, romcom, đời thường", "Thuần Việt, giọng trẻ trung, câu ngắn, nhịp nhanh, đọc như truyện teen Việt viết hay. Giữ chất châm chọc (tsukkomi) của lời kể. Cảm thán tự nhiên (Hả?, Ơ…, Thôi xong, Trời ạ), không phiên âm kiểu \"Ehh\". Xưng hô gợi ý: bạn bè tớ/cậu hoặc tôi/cậu; bạn thân con trai tao/mày hoặc tôi/ông; người yêu anh/em; hậu bối với senpai em/anh(chị); thầy cô thầy(cô)/em; người kể ngôi thứ nhất thường xưng tôi."],
+  isekai: ["Isekai, fantasy", "Thuần Việt, pha Hán Việt cho tước vị và ma pháp khi nghe hay (Ma Vương, Dũng Giả, Thánh Nữ, Công tước). Tên phương Tây viết dạng Latin chuẩn (アリシア → Alicia). Bảng trạng thái, tên skill giữ định dạng. Xưng hô gợi ý: thường dân với quý tộc tôi/ngài; quý tộc kiêu ngạo, ma vương, rồng ta/ngươi; mạo hiểm giả ngang hàng tôi/cậu; hầu gái với chủ tôi(em)/chủ nhân, cậu chủ, tiểu thư; thần linh ta/ngươi."],
+  tienhiep: ["Tiên hiệp, huyền huyễn, kiếm hiệp, cổ đại", "Hán Việt cho tên người, địa danh, môn phái, công pháp, cảnh giới, pháp bảo (筑基 → Trúc Cơ, 青云门 → Thanh Vân Môn) và vài từ tạo khí chất (khí tức, linh lực, thần thức, uy áp, sát ý). Câu văn vẫn là tiếng Việt tự nhiên, gọn, dứt khoát khi đánh nhau; không biến cả câu thành Hán Việt. Xưng hô gợi ý: ta/ngươi, tại hạ/đạo hữu, sư huynh/sư đệ/sư tỷ/sư muội, vi sư/đồ nhi, lão phu/tiểu tử, vãn bối/tiền bối, trẫm/khanh. Ngôi ba trong lời kể: hắn (nam, trung tính), nàng (nữ), lão (người già); tránh anh ta, cô ta. Định ngữ đặt sau danh từ, không viết kiểu convert."],
+  dothi: ["Đô thị, ngôn tình hiện đại", "Thuần Việt, tên nhân vật Hán Việt. Xưng hô hiện đại anh/em, tôi/cô, tôi/cậu. Nam chính dịu dàng, kể từ góc nhìn nữ chính thì gọi là anh thay vì hắn."],
+  litrpg: ["Web novel tiếng Anh (litRPG, hệ thống)", "Thuần Việt; giữ thuật ngữ game người Việt quen dùng (level, HP, MP, buff, debuff, skill, dungeon có thể dịch hầm ngục). Thông báo hệ thống trong [ ] dịch và giữ định dạng."]
+};
+const TRL = {
+  "tiếng Nhật": "Đặc thù tiếng Nhật: chủ ngữ hay bị lược, hãy xác định ai làm gì qua kính ngữ và động từ cho/nhận (くれる: người khác làm cho mình; あげる: mình làm cho người khác; もらう: mình nhận). Đại từ ngôi một là manh mối giọng nhân vật (俺 suồng sã, 僕 hiền, 私 lịch sự, あたし nữ cá tính, わし ông già). Đuôi câu như わ, のよ, ぜ, ぞ, じゃ, っす thể hiện bằng trợ từ cuối câu tiếng Việt (nhé, nha, đấy, cơ, chứ, mà, ạ). Ruby dạng 漢字《よみ》: nếu là cách đọc thì dùng để lấy tên đúng; nếu là chữ khác nghĩa (本気《マジ》) thì dịch theo nghĩa hợp nhất; không để sót 《》. …… thành …, ―― thành — hoặc …, ！？ thành ?!. Tên Nhật viết Romaji Hepburn, không kéo dài nguyên âm (Sato Yuki), tên katakana của người phương Tây chuyển về dạng Latin.",
+  "tiếng Trung": "Đặc thù tiếng Trung: tên riêng, địa danh, môn phái chuyển Hán Việt, viết hoa từng âm tiết (林动 → Lâm Động), cẩn thận chữ đa âm và họ kép (欧阳 Âu Dương, 上官 Thượng Quan). Tên phương Tây phiên âm Trung chuyển về dạng Latin gốc. Định ngữ đặt sau danh từ (一个很漂亮的女子 → một cô gái rất đẹp). Không dịch 了/过/着 thành đã/rồi/đang ở mọi chỗ; 被 không phải lúc nào cũng là bị. Từ đệm lặp dày (不禁, 顿时, 微微, 淡淡) dịch đa dạng hoặc bỏ. Bỏ các dòng tác giả xin phiếu, cảm ơn ủng hộ.",
+  "tiếng Anh": "Đặc thù tiếng Anh: bỏ đã/đang/sẽ trừ khi cần rõ thời gian; he/she/it mỗi câu thì bỏ bớt hoặc thay bằng tên, ngôi ba hợp bối cảnh; bị động chuyển chủ động; danh từ hóa chuyển thành động từ (His realization… → Mãi sau hắn mới nhận ra…); It was cold → Trời lạnh; thành ngữ, slang dịch bằng cách nói Việt tương đương; câu dài nhiều mệnh đề thì tách. Nếu là bản Anh của truyện Trung: pinyin chuyển Hán Việt, thuật ngữ tu tiên (Foundation Establishment, Golden Core) chuyển Hán Việt (Trúc Cơ, Kim Đan).",
+  "tiếng Hàn": "Đặc thù tiếng Hàn: tên người giữ dạng Romanization (Kim Dokja); hyung, noona, sunbae chuyển anh, chị, tiền bối theo quan hệ; kính ngữ là dấu hiệu dùng cặp xưng hô lịch sự."
+};
+const TRH = { keep3: "giữ -senpai, -sama, -chan khi mang sắc thái; bỏ -san, -kun và thay bằng xưng hô Việt", keep: "giữ nguyên các hậu tố -san, -kun, -chan, -senpai, -sama", drop: "bỏ hết các hậu tố, thay bằng xưng hô Việt" };
+const trDlg = () => $("#t_dlg").value === "dash" ? "mỗi lời thoại mở đầu bằng gạch ngang và dấu cách \"– \"; chuyển 「」“” sang quy ước này; thoại và hành động trong cùng một đoạn gốc vẫn giữ trong một đoạn (– Muốn chết! – Hắn nổi giận, vung tay…)" : "lời thoại đặt trong ngoặc kép \"…\"; chuyển 「」“” thành ngoặc kép; 『』 (tên riêng, trích dẫn, giọng qua điện thoại) dùng ngoặc kép bên trong";
+function trSys() {
+  const src = $("#t_src").value, g = TRG[$("#t_genre").value] || TRG.auto, gl = trGl(), nt = $("#t_notes").value.trim(), br = $("#t_brief").value.trim(), st = $("#t_style").value.trim();
+  return `Bạn là dịch giả truyện chuyên nghiệp, dịch ${src} sang tiếng Việt. Bản dịch phải đọc như truyện viết bằng tiếng Việt: đúng nghĩa, đúng giọng nhân vật, nhất quán từ đầu đến cuối.
+
+NGUYÊN TẮC
+1. Dịch ý theo câu, không dịch từng chữ. Được đảo trật tự, tách câu dài, gộp câu vụn cho tự nhiên, nhưng không thêm, không bớt ý, không bỏ sót câu nào.
+2. Giữ đúng số đoạn: mỗi đoạn gốc thành đúng một đoạn dịch, các đoạn cách nhau một dòng trống.
+3. Xưng hô quan trọng nhất: chọn cặp xưng và gọi theo bối cảnh, tuổi, vai vế, mức thân thiết và thái độ trong cảnh; mỗi cặp nhân vật giữ nhất quán (có thể bất đối xứng, ví dụ A gọi B là cậu xưng tôi, B gọi A là anh xưng em). Câu thoại không có chủ ngữ thì suy ra người nói từ ngữ cảnh.
+4. Bỏ đại từ thừa. Tránh văn dịch: "một cách + tính từ", "việc" đầu câu, nhiều "của" liên tiếp, "bị/được" thừa, "điều đó", "nó" chỉ sự việc, "đã" ở mọi câu, lặp "anh ấy/cô ấy", lặp dẫn thoại "cô ấy nói", lặp một từ cảm xúc trong cùng đoạn.
+5. Từ tượng thanh, tượng hình chuyển thành từ Việt (ドキドキ → thình thịch, ニヤニヤ → cười nham nhở, ぎゅっ → ôm chặt), không phiên âm. Chơi chữ: ưu tiên giữ được cái hay, cái buồn cười.
+6. Hội thoại: ${trDlg()}.
+7. Câu quá mơ hồ: dịch theo cách hiểu hợp lý nhất và thêm [?] ở cuối câu đó.
+${TRL[src] ? "8. " + TRL[src] + "\n" : ""}${/Nhật/.test(src) ? "9. Hậu tố gọi tên tiếng Nhật: " + (TRH[$("#t_hon").value] || TRH.keep3) + ".\n" : ""}
+THỂ LOẠI VÀ VĂN PHONG: ${g[1]}${st ? "\nYÊU CẦU THÊM VỀ VĂN PHONG: " + st : ""}
+${gl.length ? "\nBẢNG TÊN RIÊNG, BẮT BUỘC DÙNG ĐÚNG:\n" + gl.map(([x, y]) => x + " = " + y).join("\n") + "\n" : ""}${nt ? "\nGHI CHÚ CỦA NGƯỜI DỊCH CHO BỘ NÀY, BẮT BUỘC THEO:\n" + nt + "\n" : ""}${br ? "\nPHÂN TÍCH CHƯƠNG NÀY (nhân vật và xưng hô đã chốt, dùng thống nhất cho mọi phần):\n" + br + "\n" : ""}
+Chỉ trả về bản dịch. Không giải thích, không ghi chú, không tiêu đề, không lặp lại bản gốc, không bọc trong dấu \`\`\`.`;
 }
-async function trGo(from) { trBusy(true); $("#t_stop").hidden = false; try { await trRun(from) } catch (e) { $("#t_prog").textContent = "❌ " + e.message; log("❌ " + e.message) } trBusy(false); $("#t_stop").hidden = true }
-$("#t_all").onclick = () => { if ($("#t_out").value.trim() && !confirm("Ô bản dịch đang có nội dung, dịch lại từ đầu sẽ ghi đè. Tiếp tục?")) return; trGo(0) };
-$("#t_resume").onclick = () => trGo(trNext);
-$("#t_stop").onclick = () => { trStop = true; $("#t_prog").textContent = "Đang dừng sau khi xong đoạn hiện tại..." };
+const trUser = (txt, ctx) => `${ctx ? `Ngữ cảnh ngay trước (chỉ để giữ mạch văn và xưng hô, KHÔNG dịch lại, KHÔNG đưa vào kết quả):\n"""\n${ctx}\n"""\n\n` : ""}Dịch đoạn sau. Đoạn gốc có ${trParas(txt).length} đoạn văn, bản dịch phải có đúng ${trParas(txt).length} đoạn:\n"""\n${txt}\n"""`;
+const trPolishUser = (src, draft) => `Dưới đây là bản gốc và bản dịch nháp. Hãy biên tập bản dịch như một biên tập viên truyện: sửa chỗ sai nghĩa hoặc sót ý so với bản gốc, sửa câu còn mùi văn dịch, thống nhất xưng hô và tên riêng, làm câu mượt, tự nhiên hơn. Giữ đúng số đoạn của bản nháp. Chỉ trả về bản dịch đã biên tập.\n\nBẢN GỐC:\n"""\n${src}\n"""\n\nBẢN DỊCH NHÁP:\n"""\n${draft}\n"""`;
+/* Làm sạch bản gốc và kết quả */
+const trPre = t => String(t).replace(/\r/g, "").replace(/^[\u3000 \t]+/gm, "").replace(/[|｜](?=[^\n|｜《]{1,20}《)/g, "");
+function trClean(t) {
+  t = String(t).trim().replace(/^```[\w-]*\s*\n?/, "").replace(/\n?```\s*$/, "").replace(/^(bản dịch|dịch)\s*:\s*\n/i, "");
+  t = t.replace(/\u3000/g, " ").replace(/……/g, "…").replace(/！？|！\?|!？/g, "?!").replace(/！/g, "!").replace(/？/g, "?").replace(/：/g, ": ").replace(/；/g, "; ").replace(/，/g, ", ").replace(/（/g, " (").replace(/）/g, ")").replace(/《[\u3040-\u30ffー・]{1,20}》/g, "");
+  if ($("#t_dlg").value === "dash") t = t.replace(/^[「“"『]([^\n]*?)[」”"』]$/gm, "– $1");
+  else t = t.replace(/[「『]/g, "\"").replace(/[」』]/g, "\"");
+  return trParas(t.replace(/[ \t]{2,}/g, " ")).join("\n\n");
+}
+const chunks = (txt, max = 2400) => { const ps = trParas(txt), out = []; let cur = ""; for (const p of ps) { if (cur && cur.length + p.length > max) { out.push(cur); cur = "" } cur += (cur ? "\n" : "") + p } if (cur) out.push(cur); return out };
+const hashS = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = (h * 33 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36) };
+let TRP = { k: "", parts: [] };
+const trSec = t0 => { const s = Math.round((Date.now() - t0) / 1000); return s < 60 ? s + " giây" : Math.floor(s / 60) + " phút " + (s % 60) + " giây" };
+/* Phân tích chương trước khi dịch: nhân vật, xưng hô, thuật ngữ mới */
+async function trBrief(src) {
+  const gl = trGl(), nt = $("#t_notes").value.trim(), g = TRG[$("#t_genre").value] || TRG.auto;
+  const sys = `Bạn là biên tập viên truyện dịch ${$("#t_src").value} sang tiếng Việt. Đọc chương truyện và chuẩn bị ghi chú để dịch nhất quán. Trả lời ngắn gọn, đúng định dạng, dưới 300 chữ, không giải thích thêm.`;
+  const user = `${gl.length ? "Bảng tên đã chốt (tên nào có ở đây thì dùng đúng như vậy):\n" + gl.map(([x, y]) => x + " = " + y).join("\n") + "\n\n" : ""}${nt ? "Ghi chú của người dịch:\n" + nt + "\n\n" : ""}Thể loại người dịch chọn: ${g[0]}.\n\nViết ghi chú theo đúng mẫu sau:
+Thể loại: <thể loại và văn phong nên dùng>
+Giọng kể: <ngôi kể; nếu ngôi thứ nhất thì người kể xưng gì>
+Nhân vật:
+- <tên gốc> = <tên tiếng Việt> (<giới tính>, <vai trò hoặc quan hệ, rất ngắn>)
+Xưng hô:
+- <A> → <B>: xưng <...>, gọi <...>
+Thuật ngữ mới:
+- <từ gốc> = <bản dịch>
+Chỉ liệt kê nhân vật có tên và thuật ngữ thật sự có trong chương; không liệt kê đại từ (俺, 私, 他, I, he...). Tên và thuật ngữ đã có trong bảng tên thì không liệt kê lại.
+
+Chương truyện:
+"""
+${src.slice(0, 14000)}
+"""`;
+  const t = await gem(user, { sys }); $("#t_brief").value = t.replace(/^```[\w-]*\s*\n?|\n?```\s*$/g, "").trim(); $("#t_bw").hidden = false; trDraft();
+}
+async function trRun(fresh) {
+  const raw = $("#t_in").value; if (!raw.trim()) throw new Error("Hãy dán bản gốc vào ô bên trái");
+  const src = trPre(raw), fast = $("#t_mode").value === "fast", cs = chunks(src, fast ? 4200 : 2400), key = hashS(src) + ":" + cs.length + ":" + (fast ? 1 : 0), polish = $("#t_pol2").checked;
+  if (fresh || TRP.k !== key || TRP.parts.length !== cs.length) TRP = { k: key, parts: Array(cs.length).fill("") };
+  trStop = false; const t0 = Date.now(), out = $("#t_out"), prog = m => $("#t_prog").textContent = m;
+  if ($("#t_bon").checked && !$("#t_brief").value.trim()) { prog("Đang đọc trước cả chương để chốt nhân vật, xưng hô và thuật ngữ..."); try { await trBrief(src) } catch (e) { log("Bỏ qua bước phân tích chương: " + e.message) } }
+  const sys = trSys(), live = {}, todo = cs.map((_, k) => k).filter(k => !TRP.parts[k]); let raf = 0, err = null;
+  const paint = () => { raf = 0; out.value = cs.map((_, k) => TRP.parts[k] || live[k] || "").filter(x => x.trim()).map(x => trParas(x).join("\n\n")).join("\n\n"); out.scrollTop = out.scrollHeight; trCount() };
+  const paintSoon = () => { if (!raf) raf = requestAnimationFrame(paint) };
+  const doneN = () => TRP.parts.filter(Boolean).length, status = () => prog(`Đang dịch: xong ${doneN()}/${cs.length} phần, ${trSec(t0)}${trLastBy ? ". Dịch vụ: " + trLastBy : ""}`);
+  out.readOnly = true; status();
+  const worker = async () => {
+    while (todo.length && !trStop && !err) {
+      const k = todo.shift(), ctx = fast ? (cs[k - 1] ? trParas(cs[k - 1]).slice(-2).join("\n").slice(-600) : "") : (TRP.parts[k - 1] ? trParas(TRP.parts[k - 1]).slice(-3).join("\n").slice(-900) : "");
+      try {
+        let t = await gem(trUser(cs[k], ctx), { sys, onDelta: s => { live[k] = s; paintSoon() } });
+        if (polish && !trStop) { prog(`Đang trau chuốt phần ${k + 1}/${cs.length}...`); try { t = await gem(trPolishUser(cs[k], trClean(t)), { sys, onDelta: s => { live[k] = s; paintSoon() } }) } catch (e) {} }
+        TRP.parts[k] = trClean(t); delete live[k]; paintSoon(); trDraft(); status();
+      } catch (e) { delete live[k]; err = err || new Error(`Lỗi ở phần ${k + 1}/${cs.length}: ${e.message}`); paintSoon() }
+    }
+  };
+  try { await Promise.all(Array.from({ length: fast ? Math.min(3, todo.length || 1) : 1 }, worker)) } finally { cancelAnimationFrame(raf); paint(); out.readOnly = false; trDraft() }
+  const miss = cs.length - doneN();
+  if (err) throw new Error(err.message.replace(/[.\s]*$/, ".") + (miss ? ` Còn ${miss} phần chưa dịch, bấm Dịch tiếp để dịch nốt.` : ""));
+  if (miss) { prog(`Đã dừng. Xong ${doneN()}/${cs.length} phần, bấm Dịch tiếp để dịch nốt.`); return }
+  prog(`✅ Đã dịch xong ${cs.length} phần trong ${trSec(t0)} (dịch vụ cuối: ${trLastBy}). Đọc lại và chỉnh sửa trước khi đăng.`);
+}
+async function trGo(fresh) { trBusy(true); $("#t_stop").hidden = false; try { await trRun(fresh) } catch (e) { $("#t_prog").textContent = "❌ " + e.message; log("❌ " + e.message) } trBusy(false); $("#t_stop").hidden = true }
+$("#t_all").onclick = () => { if ($("#t_out").value.trim() && !confirm("Ô bản dịch đang có nội dung, dịch lại từ đầu sẽ ghi đè. Tiếp tục?")) return; if ($("#t_bon").checked) $("#t_brief").value = ""; trGo(true) };
+$("#t_resume").onclick = () => trGo(false);
+$("#t_stop").onclick = () => { trStop = true; $("#t_prog").textContent = "Đang dừng sau khi xong các phần đang dịch..." };
 $("#t_sel").onclick = async () => {
-  const ta = $("#t_in"), sel = ta.value.slice(ta.selectionStart, ta.selectionEnd).trim(); if (!sel) return log("Hãy bôi đen đoạn gốc cần dịch ở ô bên trái");
-  trBusy(true); try { log("Đang dịch đoạn đã chọn..."); const t = await gem(trPrompt(sel)), o = $("#t_out"), p = o.selectionStart ?? o.value.length; o.value = o.value.slice(0, p) + t + o.value.slice(p); trDraft(); trCount(); log("✅ Đã chèn bản dịch tại vị trí con trỏ trong ô bên phải.") } catch (e) { log("❌ " + e.message) } trBusy(false);
+  const ta = $("#t_in"), sel = trPre(ta.value.slice(ta.selectionStart, ta.selectionEnd)).trim(); if (!sel) return log("Hãy bôi đen đoạn gốc cần dịch ở ô bên trái");
+  trBusy(true); try { log("Đang dịch đoạn đã chọn..."); const t = trClean(await gem(trUser(sel, ""), { sys: trSys() })), o = $("#t_out"), p = o.selectionStart ?? o.value.length; o.value = o.value.slice(0, p) + t + o.value.slice(p); trDraft(); trCount(); log("✅ Đã chèn bản dịch tại vị trí con trỏ trong ô bên phải.") } catch (e) { log("❌ " + e.message) } trBusy(false);
+};
+$("#t_polish").onclick = async () => {
+  const o = $("#t_out"), a = o.selectionStart, b = o.selectionEnd, whole = a === b, txt = (whole ? o.value : o.value.slice(a, b)).trim(); if (!txt) return log("Chưa có bản dịch để trau chuốt");
+  if (whole && !confirm("Trau chuốt toàn bộ bản dịch? (Muốn trau chuốt một đoạn, bôi đen đoạn đó trong ô bản dịch trước.)")) return;
+  trBusy(true); const sys = trSys(), cs = chunks(txt, 3000), res = [];
+  try {
+    for (let k = 0; k < cs.length; k++) { $("#t_prog").textContent = `Đang trau chuốt ${k + 1}/${cs.length}...`; res.push(trClean(await gem(`Biên tập đoạn dịch tiếng Việt sau cho mượt và tự nhiên như truyện viết bằng tiếng Việt: sửa câu còn mùi văn dịch, lặp từ, xưng hô thiếu nhất quán. Không đổi nghĩa, không thêm hay bớt ý, giữ đúng số đoạn. Chỉ trả về đoạn đã biên tập.\n"""\n${cs[k]}\n"""`, { sys }))) }
+    const t = res.join("\n\n"); o.value = whole ? t : o.value.slice(0, a) + t + o.value.slice(b); trDraft(); trCount(); $("#t_prog").textContent = "✅ Đã trau chuốt. Bấm Ctrl+Z trong ô bản dịch nếu muốn quay lại bản cũ."; log("✅ Đã trau chuốt bản dịch.");
+  } catch (e) { $("#t_prog").textContent = "❌ " + e.message } trBusy(false);
+};
+$("#t_bnew").onclick = async () => { const src = trPre($("#t_in").value); if (!src.trim()) return log("Hãy dán bản gốc trước"); trBusy(true); $("#t_prog").textContent = "Đang phân tích chương..."; try { await trBrief(src); $("#t_prog").textContent = "✅ Đã phân tích chương. Sửa lại nếu cần, bản dịch sẽ theo ghi chú này." } catch (e) { $("#t_prog").textContent = "❌ " + e.message } trBusy(false) };
+$("#t_badd").onclick = () => {
+  const have = new Set(trGl().map(([x]) => x)), add = [];
+  let sec = ""; for (const l of $("#t_brief").value.split("\n")) { const h = /^\s*(Nhân vật|Thuật ngữ mới|Xưng hô|Thể loại|Giọng kể)\s*:/i.exec(l); if (h) { sec = h[1].toLowerCase(); continue } if (!/nhân vật|thuật ngữ/.test(sec)) continue; const m = /^\s*[-•*]\s*(.+?)\s*=\s*(.+?)\s*(?:\(.*)?$/.exec(l); if (m && !have.has(m[1]) && m[1] !== m[2] && !/^(tôi|tớ|ta|mình|anh|em|chị|cậu|ngươi|hắn|nàng|cô|nó|họ|bọn họ|chúng ta)$/i.test(m[2])) { have.add(m[1]); add.push(m[1] + " = " + m[2]) } }
+  if (!add.length) return log("Không có tên mới nào để thêm (hoặc bảng tên đã có hết).");
+  if (!confirm("Thêm vào bảng tên riêng:\n" + add.join("\n"))) return;
+  const g = $("#t_gl"); g.value = (g.value.trim() ? g.value.trim() + "\n" : "") + add.join("\n"); if (trSlug) ls.set("gl:" + trSlug, g.value); $("#t_set").open = true; log(`✅ Đã thêm ${add.length} tên vào bảng tên. Nhớ bấm Lưu bảng tên lên repo để dùng ở máy khác.`);
 };
 $("#t_join").onclick = () => { const sp = /Nhật|Trung|Hàn/.test($("#t_src").value) ? "" : " "; $("#t_in").value = $("#t_in").value.replace(/\r/g, "").replace(/([^\n])\n(?!\n)/g, "$1" + sp); trCount(); trDraft() };
 $("#t_apply").onclick = () => { let t = $("#t_out").value; trGl().forEach(([x, y]) => t = t.split(x).join(y)); $("#t_out").value = t; trDraft(); log("✅ Đã áp dụng bảng tên riêng cho bản dịch.") };
-$("#t_clear").onclick = () => { if (!confirm("Xóa bản gốc, bản dịch và tên chương đang soạn?")) return; ["t_in", "t_out", "t_title"].forEach(id => $("#" + id).value = ""); trNext = 0; trDraft(); trCount(); $("#t_prog").textContent = "" };
+$("#t_clear").onclick = () => { if (!confirm("Xóa bản gốc, bản dịch và tên chương đang soạn?")) return; ["t_in", "t_out", "t_title"].forEach(id => $("#" + id).value = ""); TRP = { k: "", parts: [] }; $("#t_brief").value = ""; $("#t_bw").hidden = true; trDraft(); trCount(); $("#t_prog").textContent = "" };
 $("#t_pub").onclick = () => run(async () => {
   if (trRV) trSync();
   const s = data.novels[+$("#t_ser").value]; if (!s) throw new Error("Hãy chọn bộ truyện (novel)");
@@ -1114,7 +1269,7 @@ $("#t_pub").onclick = () => run(async () => {
   log("Đang tải chương lên..."); await put(p, b64t(body), "Chương: " + t); ch.file = p; ch.words = trWords(body);
   if (vol) { const at = s.chapters.map(c => (c.vol || "").trim()).lastIndexOf(vol); if (at >= 0) s.chapters.splice(at + 1, 0, ch); else s.chapters.push(ch) } else s.chapters.push(ch);
   await save("Thêm chương: " + s.title + " - " + t);
-  ["t_in", "t_out", "t_title"].forEach(x => $("#" + x).value = ""); trNext = 0; trDraft(); $("#t_prog").textContent = "";
+  ["t_in", "t_out", "t_title"].forEach(x => $("#" + x).value = ""); TRP = { k: "", parts: [] }; $("#t_brief").value = ""; $("#t_bw").hidden = true; trDraft(); $("#t_prog").textContent = "";
   done("✅ Đã đăng chương. Web cập nhật sau 1–2 phút.");
 });
 
@@ -1165,7 +1320,7 @@ $("#t_rows").addEventListener("click", async e => {
   else if (act === "re") {
     if (!trS[i]) return log("Dòng này không có bản gốc để dịch lại.");
     b.disabled = true; log("Đang dịch lại đoạn " + (i + 1) + "...");
-    try { const t = (await gem(trPrompt(trS[i]))).split(/\n+/).map(x => x.trim()).filter(Boolean).join(" "), ta = $(`#t_rows textarea[data-i="${i}"]`); trO[i] = t; if (ta) { ta.value = t; autosize(ta); ta.closest(".rv").className = "rv " + trFlag(t) } trSync(); log("✅ Đã dịch lại đoạn " + (i + 1) + ".") } catch (err) { log("❌ " + err.message) }
+    try { const t = trParas(trClean(await gem(trUser(trS[i], ""), { sys: trSys() }))).join(" "), ta = $(`#t_rows textarea[data-i="${i}"]`); trO[i] = t; if (ta) { ta.value = t; autosize(ta); ta.closest(".rv").className = "rv " + trFlag(t) } trSync(); log("✅ Đã dịch lại đoạn " + (i + 1) + ".") } catch (err) { log("❌ " + err.message) }
     b.disabled = false;
   }
 });
