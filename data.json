@@ -138,7 +138,10 @@
    "prog": "",
    "sched": "",
    "format": "Light Novel",
-   "cover": "images/cubexcursedxcurious-bia.jpg"
+   "cover": "images/cubexcursedxcurious-bia.jpg",
+   "vc": {
+    "Tập 1": "images/cubexcursedxcurious-tap-1-mwxvn9zc.jpg"
+   }
   },
   {
    "slug": "zero-no-tsukaima",
