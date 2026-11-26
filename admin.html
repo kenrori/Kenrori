@@ -87,6 +87,24 @@ main.wide{max-width:none}
 .qa{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-top:10px}
 .qa button{margin:0;justify-content:flex-start;background:var(--s1);color:var(--tx);padding:14px;font-weight:600}.qa button:hover{background:var(--acs);color:var(--ac)}
 .qa button svg{color:var(--ac)}
+.dgrid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:28px;align-items:start;max-width:1280px}.dmain{min-width:0;max-width:900px}.dmain .stats{margin-top:0}.dmain>h4:first-of-type{margin-top:22px}
+.stp{position:sticky;top:18px;background:var(--s1);border-radius:14px;padding:18px 18px 14px;border-top:4px solid var(--ac)}
+.stph{display:flex;align-items:center;justify-content:space-between;gap:10px}.stph h3{margin:0;font-size:1.15rem}
+.stp h4{margin:18px 0 8px;font-size:.92rem;color:var(--mu)}
+.stpg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.stpk{background:var(--bg);border-radius:10px;padding:10px 12px;min-width:0}.stpk b{display:block;font-size:1.35rem;line-height:1.2}.stpk span{display:block;font-size:.82rem;color:var(--mu)}.stpk small{display:block;font-size:.75rem;color:var(--ok);margin-top:2px}
+.stpk.hot{background:var(--ac);color:#fff}.stpk.hot span{color:#ffffffd0}
+.stpl{display:flex;flex-direction:column;gap:6px}
+.stpr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:9px 11px;border-radius:8px;background:var(--bg);color:var(--tx);text-decoration:none;border-left:3px solid var(--ac)}.stpr b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.9rem}.stpr span{grid-column:1/-1;font-size:.82rem;color:var(--mu);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.stpr small{grid-row:1;grid-column:2;color:var(--mu);font-size:.75rem}.stpr:hover{background:var(--s2)}
+.stpw{display:flex;align-items:center;gap:10px;padding:6px;border-radius:8px;color:var(--tx);text-decoration:none}.stpw:hover{background:var(--bg)}
+.stpc{flex:none;width:34px;aspect-ratio:7/10;border-radius:2px 5px 5px 2px;overflow:hidden;background:linear-gradient(160deg,var(--ac),#5b1a6b)}.stpc img{width:100%;height:100%;object-fit:cover;display:block}
+.stpt{flex:1;min-width:0;display:flex;flex-direction:column}.stpt b{font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stpt small{color:var(--mu);font-size:.78rem}
+.stpw em{font-style:normal;font-size:.72rem;padding:1px 7px;border-radius:4px;background:var(--s2);color:var(--mu)}.stpw em.bad{background:var(--errb);color:var(--err)}
+.stpa{display:flex;flex-direction:column;gap:6px;margin-top:16px}.stpa a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:var(--bg);color:var(--tx);text-decoration:none}.stpa a:first-child{background:var(--ac);color:#fff}.stpa a:hover{filter:brightness(1.08)}.stpa a span{flex:1}.stpa a b{background:var(--ac);color:#fff;border-radius:999px;font-size:.75rem;padding:1px 8px}.stpa svg{width:18px;height:18px}
+.stpn{background:var(--bg);border-radius:8px;padding:12px;margin:14px 0 0;font-size:.88rem}.stpn p{margin:4px 0 0;color:var(--mu)}.stpn button{margin-top:10px}.stpn.err{color:var(--err)}
+button.lnk{background:none;color:var(--ac);padding:0;margin:0;font-weight:500}button.lnk:hover{background:none;text-decoration:underline}
+.stpok{margin:14px 0 0;color:var(--ok);font-size:.88rem}.stpre{display:block;margin:12px auto 0;font-size:.82rem}
+@media(max-width:1180px){.dgrid{grid-template-columns:minmax(0,1fr)}.stp{position:static}.dmain{max-width:none}}
 .lst{display:flex;flex-direction:column;gap:4px;margin-top:8px}
 .li{display:flex;align-items:center;gap:12px;padding:8px 10px;background:var(--s1);border-radius:6px;min-width:0}
 .li .lt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.li .lt em{font-style:normal;color:var(--mu)}
@@ -595,7 +613,7 @@ const NI = {
 const TABS = [["dash", "Tổng quan"], ["—", "Truyện"], ["ws", "Quản lý bộ"], ["series", "Bộ truyện"], ["chap", "Thêm chương"], ["tr", "Dịch chương"], ["imp", "Nhập từ file"], ["—", "Game và công cụ"], ["proj", "Dự án"], ["tip", "Mẹo game"], ["—", "Khác"], ["link", "Liên kết"], ["vid", "Video"], ["—", "Hệ thống"], ["site", "Cài đặt trang web"], ["man", "Quản lý"]];
 const PT = { edit: "Sửa chương", vol: "Tập và bìa tập" };
 $("#tabs").innerHTML = TABS.map(([k, l]) => k === "—" ? `<div class="tg">${l}</div>` : `<button type="button" data-k="${k}"><svg class="i" viewBox="0 0 24 24">${NI[k]}</svg>${l}</button>`).join("");
-const tab = k => { if (k !== "ws") wsPark(); $("#retbar").hidden = !(RET === "ws" && k !== "ws" && WS.k); if (!$("#retbar").hidden) $("#ret_go span").textContent = data[WS.k]?.[WS.i]?.title || ""; document.querySelector("main").classList.toggle("wide", k === "tr"); $("#ptitle").textContent = PT[k] || (TABS.find(x => x[0] === k) || [])[1] || ""; scrollTo(0, 0); [...TABS.map(x => x[0]).filter(x => x !== "—"), "edit", "vol"].forEach(t => $("#p-" + t).classList.toggle("on", t === k)); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)); if ($("#p-chap").classList.contains("inws")) $("#p-chap").classList.add("on") };
+const tab = k => { if (k !== "ws") wsPark(); $("#retbar").hidden = !(RET === "ws" && k !== "ws" && WS.k); if (!$("#retbar").hidden) $("#ret_go span").textContent = data[WS.k]?.[WS.i]?.title || ""; document.querySelector("main").classList.toggle("wide", k === "tr" || k === "dash"); $("#ptitle").textContent = PT[k] || (TABS.find(x => x[0] === k) || [])[1] || ""; scrollTo(0, 0); [...TABS.map(x => x[0]).filter(x => x !== "—"), "edit", "vol"].forEach(t => $("#p-" + t).classList.toggle("on", t === k)); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)); if ($("#p-chap").classList.contains("inws")) $("#p-chap").classList.add("on") };
 let RET = null; const WS = { k: null, i: -1, W: null, dirty: false, f: "all", open: null, last: null };
 $("#tabs").onclick = e => { const b = e.target.closest("button[data-k]"); if (!b) return; if (WS.dirty && !confirm("Bỏ các thay đổi chưa lưu ở trang Quản lý bộ?")) return; WS.dirty = false; RET = null; tab(b.dataset.k); if (b.dataset.k === "ws") wsHome() }; tab("dash");
 
@@ -871,7 +889,9 @@ $("#ws_edit").onclick = () => { if (WS.dirty) return log("❌ Hãy Lưu thay đ�
 $("#ws_cvf").onchange = e => { const f = e.target.files[0], s = wsS(); if (!f || !s) return; run(async () => { log("Đang tải ảnh bìa..."); const p = `images/${s.slug}-bia-${rid()}.jpg`; await put(p, await resize(f), "Bìa: " + s.title); s.cover = p; await save("Đổi bìa: " + s.title); try { await writeShare(WS.k === "manga" ? "manga" : "novel", s) } catch (err) {} e.target.value = ""; done("✅ Đã đổi ảnh bìa. Web cập nhật sau 1–2 phút."); wsDraw() }) };
 addEventListener("beforeunload", e => { if (WS.dirty) { e.preventDefault(); e.returnValue = "" } });
 function deepLink() {
-  const [a, k, slug, j] = decodeURIComponent(location.hash.slice(1)).split("/"); if (!a || !KEYS[k]) return;
+  const [a, k, slug, j] = decodeURIComponent(location.hash.slice(1)).split("/");
+  if (TABS.some(x => x[0] === a && a !== "—")) { tab(a); if (a === "site" && k === "mk") setTimeout(() => { const x = $("#cm_pw"); if (x) { x.closest("details")?.setAttribute("open", ""); x.scrollIntoView({ block: "center" }); x.focus() } }, 50); return }
+  if (!a || !KEYS[k]) return;
   const key = KEYS[k], i = data[key].findIndex(x => x.slug === slug); if (i < 0) { log("Không tìm thấy bộ truyện này trong dữ liệu."); return }
   if (a === "chap") { $("#c_ser").value = k + "|" + i; chapUI(); tab("chap"); $("#c_title").focus(); log("Thêm chương cho: " + data[key][i].title) }
   else if (a === "series") $(`#manage button[data-s="${key}|${i}"]`)?.click();
@@ -1388,12 +1408,41 @@ function dash() {
   const rec = []; S.forEach(([k, s, i]) => s.chapters.forEach((c, j) => rec.push({ k, s, i, c, j }))); rec.sort((a, b) => (b.c.date || "").localeCompare(a.c.date || "") || b.j - a.j);
   const drafts = []; try { for (let x = 0; x < localStorage.length; x++) { const key = localStorage.key(x); if (!key.startsWith("dr:")) continue; const d = JSON.parse(localStorage.getItem(key) || "{}"); if ((d.i || "").trim() || (d.o || "").trim()) drafts.push({ s: data.novels.find(n => n.slug === key.slice(3)), slug: key.slice(3), d }) } } catch (e) {}
   const qa = [["series", "Thêm bộ truyện mới", "s_new"], ["chap", "Đăng chương"], ["tr", "Dịch chương mới"], ["man", "Quản lý nội dung"]];
-  el.innerHTML = `<div class="stats"><div class="stat"><b>${data.novels.filter(s => s.format !== "Web Novel").length}</b><span>Light Novel</span></div><div class="stat"><b>${data.novels.filter(s => s.format === "Web Novel").length}</b><span>Web Novel</span></div><div class="stat"><b>${data.manga.length}</b><span>Manga</span></div><div class="stat"><b>${nch.toLocaleString("vi-VN")}</b><span>Chương đã đăng</span></div><div class="stat"><b>${nw.toLocaleString("vi-VN")}</b><span>Chữ đã dịch</span></div></div>
+  el.innerHTML = `<div class="dgrid"><div class="dmain"><div class="stats"><div class="stat"><b>${data.novels.filter(s => s.format !== "Web Novel").length}</b><span>Light Novel</span></div><div class="stat"><b>${data.novels.filter(s => s.format === "Web Novel").length}</b><span>Web Novel</span></div><div class="stat"><b>${data.manga.length}</b><span>Manga</span></div><div class="stat"><b>${nch.toLocaleString("vi-VN")}</b><span>Chương đã đăng</span></div><div class="stat"><b>${nw.toLocaleString("vi-VN")}</b><span>Chữ đã dịch</span></div></div>
 <h4>Làm nhanh</h4><div class="qa">${qa.map(([k, l, x]) => `<button type="button" onclick="${x ? `$('#${x}').click();` : ""}tab('${k}')"><svg class="i" viewBox="0 0 24 24">${NI[k]}</svg>${l}</button>`).join("")}</div>
-${data.site?.st && data.site?.sb?.url ? `<h4>Khu Sáng tác</h4><div class="acts" style="margin-top:8px"><a class="btn sbtn2" href="index.html#kiem-duyet/tai-khoan" target="_blank" rel="noopener">Quản lý tài khoản tác giả</a><a class="btn sbtn2 sec" href="index.html#kiem-duyet" target="_blank" rel="noopener">Báo cáo vi phạm và truyện bị ẩn</a></div>` : ""}
 <h4>Bảo trì</h4><div class="acts" style="margin-top:8px"><button type="button" onclick="backupDl()">Tải bản sao lưu</button><button type="button" class="sec" onclick="$('#bk_in').click()">Khôi phục từ bản sao lưu</button><button type="button" class="sec" onclick="regenShare()">Tạo lại trang chia sẻ cho tất cả bộ</button>${/^[a-z0-9-]+$/i.test(data.site?.gc || "") ? `<a class="btnl" href="https://${data.site.gc}.goatcounter.com" target="_blank" rel="noopener">Xem thống kê lượt xem</a>` : ""}</div><p class="mu" style="margin-top:6px">Nên tải bản sao lưu trước những thay đổi lớn như gộp thể loại hay gỡ bộ truyện.</p><p class="mu" style="margin-top:6px">Trang chia sẻ giúp link từng bộ hiện đúng bìa, tên và tóm tắt khi dán lên Discord, Facebook. Bộ mới hoặc vừa sửa được tạo tự động; nút này dùng cho các bộ đăng từ trước.</p>
 ${drafts.length ? `<h4>Bản dịch đang dở trên máy này</h4><div class="lst">${drafts.map(({ s, slug, d }) => `<div class="li"><span class="lt">${esc(s ? s.title : slug)}${d.t ? ` <em>${esc(d.t)}</em>` : ""}</span><small>${(d.o || "").trim() ? d.o.trim().split(/\s+/).length.toLocaleString("vi-VN") + " chữ" : "chưa dịch"}</small><button type="button" class="sec sm" onclick="openDraft('${esc(slug)}')">Mở</button></div>`).join("")}</div>` : ""}
-<h4>Chương mới đăng</h4>${rec.length ? `<div class="lst">${rec.slice(0, 8).map(r => `<div class="li">${thumb(r.s)}<span class="lt">${esc(r.s.title)} <em>${r.c.vol ? esc(r.c.vol) + ", " : ""}${esc(r.c.t)}</em></span><small>${r.c.date || ""}</small><button type="button" class="sec sm" onclick="goEdit('${r.k}',${r.i},${r.j})">Sửa</button></div>`).join("")}</div>` : '<p class="mu">Chưa có chương nào. Tạo bộ truyện rồi đăng chương đầu tiên.</p>'}`;
+<h4>Chương mới đăng</h4>${rec.length ? `<div class="lst">${rec.slice(0, 8).map(r => `<div class="li">${thumb(r.s)}<span class="lt">${esc(r.s.title)} <em>${r.c.vol ? esc(r.c.vol) + ", " : ""}${esc(r.c.t)}</em></span><small>${r.c.date || ""}</small><button type="button" class="sec sm" onclick="goEdit('${r.k}',${r.i},${r.j})">Sửa</button></div>`).join("")}</div>` : '<p class="mu">Chưa có chương nào. Tạo bộ truyện rồi đăng chương đầu tiên.</p>'}</div>
+<aside class="stp" id="stp" aria-label="Khu Sáng tác"></aside></div>`;
+  stPanel();
+}
+/* ===== Bảng Khu Sáng tác bên phải trang Tổng quan ===== */
+let STP = null;
+async function stPanel(force) {
+  const el = $("#stp"); if (!el) return;
+  const sb = data.site?.sb || {}, on = !!data.site?.st, ok = /^https:\/\//.test(sb.url || "") && !!sb.key, pw = localStorage.getItem("cmtMod") || "";
+  const site = "index.html", ln = (h, t, c = "") => `<a class="${c}" href="${site}${h}" target="_blank" rel="noopener">${t}</a>`;
+  const head = `<div class="stph"><h3>Khu Sáng tác</h3><span class="lc ${on && ok ? "ok" : ""}">${on && ok ? "Đang bật" : "Đang tắt"}</span></div>`;
+  if (!ok) { el.innerHTML = head + `<p class="mu">Kết nối Supabase để người đọc tự đăng truyện, bình luận và để bạn quản lý tài khoản tác giả ở đây.</p><button type="button" onclick="tab('site')">Mở Cài đặt trang web</button>`; return }
+  const links = `<div class="stpa">${ln("#kiem-duyet/tai-khoan", `<svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6M16 4a4 4 0 0 1 0 8M22 21c0-3-2-5-4-5.5"/></svg><span>Quản lý tài khoản</span>`)}${ln("#kiem-duyet", `<svg class="i" viewBox="0 0 24 24"><path d="M4 21V4h11l-1 4h6v9h-9l1-4H4"/></svg><span>Báo cáo và truyện bị ẩn</span><b id="stp_rc" hidden></b>`)}${ln("#sang-tac", `<svg class="i" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg><span>Xem khu Sáng tác</span>`)}</div>`;
+  const off = on ? "" : `<p class="stpn">Khu Sáng tác đang tắt nên người đọc chưa thấy mục này. <button type="button" class="lnk" onclick="tab('site')">Bật trong Cài đặt</button></p>`;
+  if (!pw) { el.innerHTML = head + off + `<div class="stpn"><b>Nhập mật khẩu kiểm duyệt để xem số liệu</b><p>Mật khẩu này cũng cho bạn vào trang quản lý tài khoản mà không cần tài khoản Sáng tác.</p><button type="button" onclick="location.hash='site/mk';deepLink()">Nhập mật khẩu</button></div>` + links; return }
+  el.innerHTML = head + off + `<div class="stpg">${'<div class="stpk"><b>…</b><span>&nbsp;</span></div>'.repeat(6)}</div>` + links;
+  try {
+    if (!STP || force) {
+      const r = await fetch(sb.url.replace(/\/+$/, "") + "/rest/v1/rpc/st_admin", { method: "POST", headers: { apikey: sb.key, "Content-Type": "application/json" }, body: JSON.stringify({ p: pw, act: "summary", a: {} }) });
+      const j = await r.json().catch(() => null);
+      if (!r.ok) throw new Error(r.status === 404 ? "Máy chủ chưa có hàm st_admin. Hãy chạy lại supabase-setup.sql mới." : (j && j.message) || "Supabase báo lỗi " + r.status);
+      STP = j;
+    }
+    const S = STP, n = x => (+x || 0).toLocaleString("vi-VN"), ago = t => { const d = (Date.now() - new Date(t)) / 864e5; return d < 1 / 24 ? "vừa xong" : d < 1 ? Math.floor(d * 24) + " giờ trước" : d < 2 ? "hôm qua" : Math.floor(d) + " ngày trước" };
+    const K = [["users", "Tài khoản", S.new7 ? `+${n(S.new7)} trong 7 ngày` : ""], ["writers", "Tác giả", ""], ["published", "Truyện công khai", S.works > S.published ? `${n(S.works - S.published)} nháp hoặc bị ẩn` : ""], ["chapters", "Chương", ""], ["reports", "Báo cáo chờ xử lý", "", S.reports > 0], ["banned", "Tài khoản bị khóa", ""]];
+    el.querySelector(".stpg").outerHTML = `<div class="stpg">${K.map(([k, l, sub, hot]) => `<div class="stpk${hot ? " hot" : ""}"><b>${n(S[k])}</b><span>${l}</span>${sub ? `<small>${sub}</small>` : ""}</div>`).join("")}</div>`
+      + (S.open && S.open.length ? `<h4>Cần xử lý</h4><div class="stpl">${S.open.map(r => `<a class="stpr" href="${site}#kiem-duyet" target="_blank" rel="noopener"><b>${esc(r.work || "Truyện đã bị xóa")}</b><span>${esc(r.reason)}</span><small>${ago(r.created_at)}</small></a>`).join("")}</div>` : `<p class="stpok">Không có báo cáo nào đang chờ.</p>`)
+      + (S.recent && S.recent.length ? `<h4>Truyện mới cập nhật</h4><div class="stpl">${S.recent.map(w => `<a class="stpw" href="${site}#st/${esc(w.id)}" target="_blank" rel="noopener"><span class="stpc">${/^https:\/\//.test(w.cover_url || "") ? `<img src="${esc(w.cover_url)}" alt="" loading="lazy">` : ""}</span><span class="stpt"><b>${esc(w.title)}</b><small>${esc(w.author)}, ${ago(w.updated_at)}</small></span>${w.hidden ? '<em class="bad">Bị ẩn</em>' : w.visibility !== "published" ? "<em>Nháp</em>" : ""}</a>`).join("")}</div>` : "");
+    const rc = $("#stp_rc"); if (rc && S.reports > 0) { rc.hidden = false; rc.textContent = S.reports }
+    el.insertAdjacentHTML("beforeend", `<button type="button" class="lnk stpre" onclick="stPanel(true)">Tải lại số liệu</button>`);
+  } catch (e) { el.querySelector(".stpg").outerHTML = `<p class="stpn err">${esc(/mật khẩu|kiểm duyệt/i.test(e.message) ? "Mật khẩu kiểm duyệt lưu trên máy này không còn đúng. Hãy nhập lại trong Cài đặt." : e.message)}</p>` }
 }
 function openDraft(slug) { const i = data.novels.findIndex(n => n.slug === slug); if (i >= 0) { $("#t_ser").value = i; $("#t_ser").dispatchEvent(new Event("change")) } tab("tr") }
 

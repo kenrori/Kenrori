@@ -15,7 +15,7 @@
   const enabled = () => { try { return sbOk() && DATA.site.st === true } catch (e) { return false } };
   const isMod = () => !!(prof && !prof.banned && (prof.role === "mod" || prof.role === "admin"));
   const ss = { get: k => { try { return sessionStorage.getItem(k) } catch (e) {} }, set: (k, v) => { try { sessionStorage.setItem(k, v) } catch (e) {} } };
-  const day = t => t ? String(t).slice(0, 10) : "";
+  const day = t => lday(t);
   const stS = s => { const [l, c] = STS[s] || STS.ongoing; return `<span class="st ${c}">${l}</span>` };
   const cnt = w => (w.chapters && w.chapters[0] && w.chapters[0].count) || 0;
   const aName = w => (w.author && w.author.display_name) || "Tác giả";
@@ -151,11 +151,15 @@
       return [...g].map(([v, a]) => { const ic0 = a.find(c => IM[c.id]), cv = ic0 ? IM[ic0.id][0] : "", cut = a.length > 6;
         return `<section class="vblk"><div class="vhd">${cv ? `<img class="vmini" src="${esc(cv)}" alt="" loading="lazy" onerror="this.remove()">` : ""}<b>${esc(v)}</b><span>${a.length} chương</span></div><div class="vbd${cv ? "" : " nocv"}">${cv ? `<button class="vcv" style="--h:${hue(w.title + v)}" onclick="LBL=[this.querySelector('img').src];lbShow(0)" aria-label="Xem bìa ${esc(v)}"><img src="${esc(cv)}" alt="Bìa ${esc(v)}" loading="lazy"></button>` : ""}<div class="vlw"><div class="vls${cut ? " cut" : ""}">${a.map(row).join("")}</div>${cut ? `<button class="vmore" data-n="${a.length - 6}" onclick="const c=this.previousElementSibling.classList.toggle('cut');this.textContent=c?'Xem tiếp ('+this.dataset.n+' chương)':'Thu gọn'">Xem tiếp (${a.length - 6} chương)</button>` : ""}</div></div></section>` }).join("");
     };
+    const lc = pub[pub.length - 1], fav = isFav("st", id), lu = (lc && lc.updated_at) || w.updated_at;
+    const meta = { t: w.title, c: w.cover_url, a: aName(w), n: pub.length, s: pub.length, u: w.updated_at, l: lc ? ((lc.vol || "").trim() ? lc.vol.trim() + " - " : "") + lc.title : "" };
+    ST._meta = [id, meta]; if (fav) ls.set("stm:" + id, JSON.stringify(meta));
+    const upd = `<div class="cr cru${(Date.now() - new Date(lu)) / 864e5 < 3 ? " fresh" : ""}" title="Cập nhật ngày ${fmtD(day(lu))}"><span>Cập nhật</span><b>${ago(day(lu))}</b></div>`;
     const lastOk = last && pub.some(c => c.id === last), tw = pub.reduce((a, c) => a + (c.words || 0), 0), bg = isCover(w.cover_url) ? `;background-image:url(&quot;${esc(w.cover_url)}&quot;)` : "";
     app.innerHTML = `<div class="tpb"><div class="hb" style="--h:${hue(w.title)}${bg}"></div></div>
 <div class="tp"><div class="tph"><div class="cover tpcv" style="--h:${hue(w.title)}">${isCover(w.cover_url) ? imgTag(w.cover_url) : ""}<b>${esc(w.title)}</b></div>
-<div class="tpt"><h1>${esc(w.title)}</h1><div class="crs"><a class="cr" href="#tg/${esc(w.author_id)}"><span>Tác giả</span><b>${esc(aName(w))}</b></a></div></div>
-<div class="tpm"><div class="acts tpa2">${pub.length ? `<a class="btn pri big" href="#st/${esc(id)}/${esc(lastOk ? last : pub[0].id)}">${ic(I.play)}${lastOk ? "Đọc tiếp" : "Đọc từ đầu"}</a>` : ""}<button class="btn ico" title="Chia sẻ" aria-label="Chia sẻ" onclick="ST.share()">${ic(I.share)}</button>${pub.length > 1 ? `<span class="subl">${lastOk ? `<a href="#st/${esc(id)}/${esc(pub[0].id)}">Đọc từ đầu</a>` : ""}<a href="#st/${esc(id)}/${esc(pub[pub.length - 1].id)}">Chương mới nhất</a></span>` : ""}<span class="admb">${own ? `<a class="btn" href="#viet/w/${esc(id)}">${ic(I.edit)}Sửa truyện</a>` : me ? `<button class="btn" onclick="ST.report('${esc(id)}')">Báo cáo vi phạm</button>` : ""}</span></div>
+<div class="tpt"><h1>${esc(w.title)}</h1><div class="crs"><a class="cr" href="#tg/${esc(w.author_id)}"><span>Tác giả</span><b>${esc(aName(w))}</b></a>${upd}</div></div>
+<div class="tpm"><div class="acts tpa2">${pub.length ? `<a class="btn pri big" href="#st/${esc(id)}/${esc(lastOk ? last : pub[0].id)}">${ic(I.play)}${lastOk ? "Đọc tiếp" : "Đọc từ đầu"}</a>` : ""}<button class="btn flw${fav ? " on" : ""}" id="fvb" title="${fav ? "Bỏ theo dõi" : "Theo dõi để biết khi có chương mới"}" aria-pressed="${fav}" onclick="ST.follow()">${favLabel(fav)}</button><button class="btn ico" title="Chia sẻ" aria-label="Chia sẻ" onclick="ST.share()">${ic(I.share)}</button>${pub.length > 1 ? `<span class="subl">${lastOk ? `<a href="#st/${esc(id)}/${esc(pub[0].id)}">Đọc từ đầu</a>` : ""}<a href="#st/${esc(id)}/${esc(pub[pub.length - 1].id)}">Chương mới nhất</a></span>` : ""}<span class="admb">${own ? `<a class="btn" href="#viet/w/${esc(id)}">${ic(I.edit)}Sửa truyện</a>` : me ? `<button class="btn" onclick="ST.report('${esc(id)}')">Báo cáo vi phạm</button>` : ""}</span></div>
 <div class="tptg">${stS(w.status)}${w.mature ? '<span class="pill m18p">18+</span>' : ""}${(w.genres || []).map(g => `<span class="pill">${esc(g)}</span>`).join("")}</div>${own && (w.visibility !== "published" || w.hidden) ? `<div class="prog"><span><i>Trạng thái</i>${w.hidden ? "Đã bị ban kiểm duyệt ẩn" : "Bản nháp, chỉ bạn thấy được"}</span></div>` : ""}</div></div>
 <div class="tpd"><p class="sum clamp" id="dsc">${esc(w.summary) || "Chưa có tóm tắt."}</p><button class="lnk" id="dmore" hidden>Xem thêm</button></div>
 <div class="tpc"><div class="tpl"><div class="sh"><h2>Danh sách chương</h2></div><div id="cl">${ch.length ? chList() : '<p class="empty">Truyện chưa có chương nào.</p>'}</div></div>
@@ -169,7 +173,7 @@
     if (error) { app.innerHTML = errBox(error); return } if (!w || !c) { app.innerHTML = notice("Không tìm thấy chương này."); return }
     if (gate(w)) { app.innerHTML = gate(w); return }
     document.title = `${c.title}, ${w.title} | Kenrori`;
-    ls.set("st:" + wid, cid); const rs = readSet(wid); if (!rs.includes(cid)) { rs.push(cid); ls.set("str:" + wid, JSON.stringify(rs)) }
+    ls.set("st:" + wid, cid); const rs = readSet(wid); { const m = stMeta(wid), np = ch.filter(x => x.published).length; if (m && isFav("st", wid)) { m.n = Math.max(m.n || 0, np); m.s = m.n; ls.set("stm:" + wid, JSON.stringify(m)); navBadge() } } if (!rs.includes(cid)) { rs.push(cid); ls.set("str:" + wid, JSON.stringify(rs)) }
     const L = ch.filter(x => x.published || x.id === cid), i = L.findIndex(x => x.id === cid), base = `#st/${esc(wid)}`, prv = L[i - 1], nx = L[i + 1];
     RDKEY = d => { const t = L[i + d]; if (t) location.hash = `#st/${wid}/${t.id}` };
     const B = rbody(c.content), op = x => `<option value="${esc(x.id)}" ${x.id === cid ? "selected" : ""}>${esc(x.title)}</option>`;
@@ -425,21 +429,25 @@ ${hasDr ? `<p class="stwarn" id="c_dr">Có bản nháp chưa lưu trên máy nà
   /* ---------- Kiểm duyệt ---------- */
   const modTabs = cur => `<div class="utabs mtabs" role="tablist"><a role="tab" class="${cur === "bc" ? "on" : ""}" href="#kiem-duyet">Báo cáo và truyện bị ẩn</a><a role="tab" class="${cur === "tk" ? "on" : ""}" href="#kiem-duyet/tai-khoan">Tài khoản</a></div>`;
   const RL = { user: "Thành viên", mod: "Kiểm duyệt viên", admin: "Quản trị viên" };
+  // Mọi thao tác kiểm duyệt đi qua hàm st_admin: mod/admin đã đăng nhập, hoặc chủ web có mật khẩu kiểm duyệt
+  const A = async (act, a = {}) => { const r = await sb.rpc("st_admin", { p: modPw() || null, act, a }); if (r.error && /st_admin|function|schema cache/i.test(r.error.message || "")) r.error = { message: "Máy chủ chưa có bảng điều khiển kiểm duyệt. Hãy chạy lại file supabase-setup.sql mới trong Supabase." }; return r };
+  const noMod = () => `<section class="sec"><div class="stmodg"><h2>Trang dành cho ban kiểm duyệt</h2>${ADM ? `<p>Bạn đang mở trang quản trị trên máy này nhưng chưa nhập mật khẩu kiểm duyệt, hoặc mật khẩu chưa đúng.</p><ol><li>Trong Supabase › SQL Editor, chạy <code>select public.set_comment_password('mật-khẩu-của-bạn');</code> (cần chạy binh-luan.sql trước).</li><li>Mở <a class="al" href="admin.html#site/mk">Quản trị › Cài đặt</a>, nhập đúng mật khẩu đó vào ô Mật khẩu kiểm duyệt và lưu.</li><li>Quay lại trang này.</li></ol>` : `<p>Đăng nhập bằng tài khoản đã được cấp quyền kiểm duyệt hoặc quản trị để tiếp tục.</p>`}<div class="acts">${me ? "" : '<a class="btn pri" href="#viet/dang-nhap">Đăng nhập</a>'}<a class="btn" href="#home">Về trang chủ</a></div></div></section>`;
   const relT = ts => { if (!ts) return "chưa đăng nhập lần nào"; const d = (Date.now() - new Date(ts)) / 864e5; return d < 1 ? "hoạt động hôm nay" : d < 2 ? "hoạt động hôm qua" : d < 30 ? `hoạt động ${Math.floor(d)} ngày trước` : `hoạt động ${new Date(ts).toLocaleDateString("vi-VN")}` };
   async function pAccounts() {
     document.title = "Quản lý tài khoản | Kenrori";
-    if (!me) return pAuth("login"); await loadProf(); if (!isMod()) { app.innerHTML = notice("Chỉ ban kiểm duyệt mới vào được trang này."); return }
-    const adm = prof.role === "admin", ref = (/^https:\/\/([a-z0-9-]+)\.supabase\.(co|in)/.exec(cfg().url || "") || [])[1];
+    await loadProf(); if (!isMod() && !modPw()) { app.innerHTML = noMod(); return }
+    const who = await A("whoami"); if (who.error) { app.innerHTML = /mật khẩu|kiểm duyệt/i.test(who.error.message || "") ? noMod() : errBox(who.error); return }
+    const adm = !!who.data.admin, ref = (/^https:\/\/([a-z0-9-]+)\.supabase\.(co|in)/.exec(cfg().url || "") || [])[1];
     let q = "", f = "all", page = 0, rows = [], total = 0, tmr = null;
     app.innerHTML = `<section class="sec"><div class="sh"><h2>Kiểm duyệt</h2><a class="more all" href="#viet">Về Góc tác giả</a></div>${modTabs("tk")}
 <div class="acf"><input id="ac_q" type="search" placeholder="${adm ? "Tìm theo tên hoặc email" : "Tìm theo tên hiển thị"}" aria-label="Tìm tài khoản"><div class="acc" role="group" aria-label="Lọc">${[["all", "Tất cả"], ["writers", "Đã viết truyện"], ["new", "Mới 7 ngày"], ["mod", "Ban kiểm duyệt"], ["banned", "Bị khóa"]].map(([k, l]) => `<button type="button" class="fc${k === "all" ? " on" : ""}" data-af="${k}">${l}</button>`).join("")}</div></div>
 <p class="mu" id="ac_n"></p><div id="ac_l" class="acl"><p class="mu">Đang tải...</p></div><div class="acts" style="justify-content:center;margin-top:14px"><button class="btn" id="ac_more" hidden>Xem thêm</button></div>
-<p class="mu acnote">${adm ? "Bạn là quản trị viên: đổi được vai trò và thấy email. " : "Kiểm duyệt viên khóa được tài khoản và ẩn truyện; chỉ quản trị viên đổi được vai trò. "}Muốn xóa hẳn một tài khoản, vào Supabase › Authentication › Users${ref ? ` (<a class="al" href="https://supabase.com/dashboard/project/${esc(ref)}/auth/users" target="_blank" rel="noopener">mở trang đó</a>)` : ""}.</p></section>`;
-    const row = u => { const self = u.id === me.id, isAdm = u.role === "admin"; return `<div class="acr${u.banned ? " ban" : ""}" data-u="${esc(u.id)}">${avHtml(u, "acav")}<div class="acb"><div class="act"><a href="#tg/${esc(u.id)}"><b>${esc(u.display_name)}</b></a>${u.role !== "user" ? `<em class="okb">${RL[u.role]}</em>` : ""}${u.banned ? '<em class="bad">Bị khóa</em>' : ""}${self ? '<em class="drf">Bạn</em>' : ""}</div><small>${u.email ? esc(u.email) + ", " : ""}tham gia ${new Date(u.created_at).toLocaleDateString("vi-VN")}, ${relT(u.last_sign_in_at)}</small><small>${u.works} truyện (${u.published} công khai), ${u.chapters} chương</small></div>
+<p class="mu acnote">${who.data.owner ? "Bạn đang quản lý bằng mật khẩu kiểm duyệt của chủ web: có toàn quyền, đổi được vai trò và thấy email. " : adm ? "Bạn là quản trị viên: đổi được vai trò và thấy email. " : "Kiểm duyệt viên khóa được tài khoản và ẩn truyện; chỉ quản trị viên đổi được vai trò. "}Muốn xóa hẳn một tài khoản, vào Supabase › Authentication › Users${ref ? ` (<a class="al" href="https://supabase.com/dashboard/project/${esc(ref)}/auth/users" target="_blank" rel="noopener">mở trang đó</a>)` : ""}.</p></section>`;
+    const row = u => { const self = !!me && u.id === me.id, isAdm = u.role === "admin"; return `<div class="acr${u.banned ? " ban" : ""}" data-u="${esc(u.id)}">${avHtml(u, "acav")}<div class="acb"><div class="act"><a href="#tg/${esc(u.id)}"><b>${esc(u.display_name)}</b></a>${u.role !== "user" ? `<em class="okb">${RL[u.role]}</em>` : ""}${u.banned ? '<em class="bad">Bị khóa</em>' : ""}${self ? '<em class="drf">Bạn</em>' : ""}</div><small>${u.email ? esc(u.email) + ", " : ""}tham gia ${new Date(u.created_at).toLocaleDateString("vi-VN")}, ${relT(u.last_sign_in_at)}</small><small>${u.works} truyện (${u.published} công khai), ${u.chapters} chương</small></div>
 <div class="aca">${adm && !self ? `<select data-arole aria-label="Vai trò của ${esc(u.display_name)}">${Object.entries(RL).map(([k, l]) => `<option value="${k}" ${k === u.role ? "selected" : ""}>${l}</option>`).join("")}</select>` : ""}${!self && (adm || !isAdm) ? `<button class="btn sm${u.banned ? "" : " dngb"}" data-aban="${u.banned ? 0 : 1}">${u.banned ? "Mở khóa" : "Khóa"}</button>` : ""}${!self && u.published ? `<button class="btn sm" data-ahide>Ẩn hết truyện</button>` : ""}</div></div>` };
     const load = async more => {
-      page = more ? page + 1 : 0; const { data, error } = await sb.rpc("admin_users", { q, f, lim: 30, off: page * 30 });
-      if (error) { $("#ac_l").innerHTML = errBox(/admin_users|function/i.test(error.message || "") ? { message: "Máy chủ chưa có trang quản lý tài khoản. Hãy chạy lại file supabase-setup.sql mới trong Supabase." } : error); return }
+      page = more ? page + 1 : 0; const { data, error } = await A("users", { q, f, lim: 30, off: page * 30 });
+      if (error) { $("#ac_l").innerHTML = errBox(error); return }
       rows = more ? rows.concat(data || []) : (data || []); total = (data && data[0] && +data[0].total) || (more ? total : 0);
       $("#ac_n").textContent = total ? `${total.toLocaleString("vi-VN")} tài khoản` : ""; $("#ac_l").innerHTML = rows.map(row).join("") || '<p class="empty">Không có tài khoản nào khớp.</p>'; $("#ac_more").hidden = rows.length >= total;
     };
@@ -448,23 +456,20 @@ ${hasDr ? `<p class="stwarn" id="c_dr">Có bản nháp chưa lưu trên máy nà
     $("#ac_more").onclick = () => load(true);
     $("#ac_l").addEventListener("change", async e => { const s = e.target.closest("[data-arole]"); if (!s) return; const id = s.closest(".acr").dataset.u, u = rows.find(x => x.id === id), nr = s.value;
       if (!confirm(`Đổi vai trò của ${u.display_name} thành ${RL[nr]}?${nr === "admin" ? "\nQuản trị viên có toàn quyền, kể cả đổi vai trò của người khác." : ""}`)) { s.value = u.role; return }
-      const { error } = await sb.from("profiles").update({ role: nr }).eq("id", id); if (error) { s.value = u.role; return toast(viMsg(error)) } u.role = nr; toast("Đã đổi vai trò"); s.closest(".acr").outerHTML = row(u) });
+      const { error } = await A("set_role", { id, role: nr }); if (error) { s.value = u.role; return toast(viMsg(error)) } u.role = nr; toast("Đã đổi vai trò"); s.closest(".acr").outerHTML = row(u) });
     $("#ac_l").addEventListener("click", async e => {
       const b = e.target.closest("[data-aban],[data-ahide]"); if (!b) return; const id = b.closest(".acr").dataset.u, u = rows.find(x => x.id === id);
-      if (b.dataset.aban != null) { const on = b.dataset.aban === "1"; if (on && !confirm(`Khóa tài khoản ${u.display_name}? Họ không đăng, sửa truyện hay bình luận được, và truyện của họ bị ẩn khỏi web.`)) return; const { error } = await sb.from("profiles").update({ banned: on }).eq("id", id); if (error) return toast(viMsg(error)); u.banned = on; toast(on ? "Đã khóa tài khoản" : "Đã mở khóa tài khoản") }
-      else { if (!confirm(`Ẩn toàn bộ ${u.published} truyện công khai của ${u.display_name}? Bạn bỏ ẩn lại được ở tab Báo cáo và truyện bị ẩn.`)) return; const { error } = await sb.from("works").update({ hidden: true }).eq("author_id", id).eq("hidden", false); if (error) return toast(viMsg(error)); u.published = 0; toast("Đã ẩn các truyện của tài khoản này") }
+      if (b.dataset.aban != null) { const on = b.dataset.aban === "1"; if (on && !confirm(`Khóa tài khoản ${u.display_name}? Họ không đăng, sửa truyện hay bình luận được, và truyện của họ bị ẩn khỏi web.`)) return; const { error } = await A("set_ban", { id, on }); if (error) return toast(viMsg(error)); u.banned = on; toast(on ? "Đã khóa tài khoản" : "Đã mở khóa tài khoản") }
+      else { if (!confirm(`Ẩn toàn bộ ${u.published} truyện công khai của ${u.display_name}? Bạn bỏ ẩn lại được ở tab Báo cáo và truyện bị ẩn.`)) return; const { error } = await A("hide_author", { id }); if (error) return toast(viMsg(error)); u.published = 0; toast("Đã ẩn các truyện của tài khoản này") }
       b.closest(".acr").outerHTML = row(u);
     });
     await load(false);
   }
   async function pMod() {
     document.title = "Kiểm duyệt | Kenrori";
-    if (!me) return pAuth("login"); await loadProf(); if (!isMod()) { app.innerHTML = notice("Chỉ ban kiểm duyệt mới vào được trang này."); return }
-    const [rp, hw, bu] = await Promise.all([
-      sb.from("reports").select("id,reason,created_at,work_id,chapter_id,reporter:profiles(display_name),work:works(id,title,hidden,author_id),chapter:chapters(id,title)").eq("resolved", false).order("created_at", { ascending: false }).limit(100),
-      sb.from("works").select("id,title,author_id,author:profiles(display_name)").eq("hidden", true).limit(100),
-      sb.from("profiles").select("id,display_name").eq("banned", true).limit(100)]);
-    const R = rp.data || [], H = hw.data || [], B = bu.data || [];
+    await loadProf(); if (!isMod() && !modPw()) { app.innerHTML = noMod(); return }
+    const rp = await A("queue"); if (rp.error && /mật khẩu|kiểm duyệt/i.test(rp.error.message || "") && !/Máy chủ/.test(rp.error.message)) { app.innerHTML = noMod(); return }
+    const Q = rp.data || {}, R = (Q.reports || []).map(r => ({ ...r, reporter: { display_name: r.reporter }, work: r.work_id ? { id: r.work_id, title: r.work, hidden: r.work_hidden, author_id: r.author_id } : null, chapter: r.chapter_id ? { id: r.chapter_id, title: r.chapter } : null })), H = (Q.hidden || []).map(w => ({ ...w, author: { display_name: w.author } })), B = Q.banned || [];
     app.innerHTML = `<section class="sec"><div class="sh"><h2>Kiểm duyệt</h2><a class="more all" href="#viet">Về Góc tác giả</a></div>${modTabs("bc")}${rp.error ? errBox(rp.error) : ""}
 <h3>Báo cáo chưa xử lý (${R.length})</h3>${R.length ? `<div class="stl">${R.map(r => `<div class="stli col"><span class="stb"><b>${r.work ? `<a class="al" href="#st/${esc(r.work.id)}${r.chapter ? "/" + esc(r.chapter.id) : ""}" target="_blank">${esc(r.work.title)}${r.chapter ? ", " + esc(r.chapter.title) : ""}</a>` : "Truyện đã bị xóa"}</b><small>${esc((r.reporter && r.reporter.display_name) || "Ẩn danh")} báo cáo ${ago(day(r.created_at)).toLowerCase()}: ${esc(r.reason)}</small></span><span class="acts" style="margin:0">${r.work ? (r.work.hidden ? `<button class="btn sm" onclick="ST.hide('${esc(r.work.id)}',false)">Bỏ ẩn truyện</button>` : `<button class="btn sm dngb" onclick="ST.hide('${esc(r.work.id)}',true)">Ẩn truyện</button>`) + `<button class="btn sm dngb" onclick="ST.ban('${esc(r.work.author_id)}',true)">Khóa tác giả</button>` : ""}<button class="btn sm" onclick="ST.resolve(${+r.id})">Đã xử lý</button></span></div>`).join("")}</div>` : '<p class="mu">Không có báo cáo nào.</p>'}
 <h3>Truyện đang bị ẩn (${H.length})</h3>${H.length ? `<div class="stl">${H.map(w => `<div class="stli"><span class="stb"><b><a class="al" href="#st/${esc(w.id)}">${esc(w.title)}</a></b><small>${esc(aName(w))}</small></span><button class="btn sm" onclick="ST.hide('${esc(w.id)}',false)">Bỏ ẩn</button></div>`).join("")}</div>` : '<p class="mu">Không có truyện nào bị ẩn.</p>'}
@@ -516,12 +521,51 @@ Ban quản trị có quyền ẩn truyện hoặc khóa tài khoản vi phạm m
     location.replace(location.pathname + (/type=recovery/.test(h) ? "#viet/doi-mat-khau" : "#viet"));
   }
 
+  /* ---------- Đưa truyện Sáng tác vào khung lớn đầu trang chủ ---------- */
+  async function heroAdd(ws) {
+    ws = (ws || []).filter(w => !w.mature).slice(0, 6); if (!ws.length) return;
+    const { data: cs } = await sb.from("chapters").select("id,work_id,title,vol,ord").in("work_id", ws.map(w => w.id)).eq("published", true);
+    const H0 = ws.map(w => { const L = (cs || []).filter(c => c.work_id === w.id).sort((a, b) => (a.ord || 0) - (b.ord || 0)); return L.length ? { w, L } : null }).filter(Boolean);
+    if (!H0.length || !/^#?(home)?$/.test(location.hash)) return;
+    let hero = $("#hero"), fresh = false;
+    if (!hero) { app.insertAdjacentHTML("afterbegin", '<section class="hero" id="hero" aria-label="Truyện mới cập nhật"></section>'); hero = $("#hero"); fresh = true }
+    let hn = hero.querySelector(".hn"); if (!hn) { hero.insertAdjacentHTML("beforeend", '<div class="hn" role="tablist" aria-label="Chọn truyện nổi bật"></div>'); hn = hero.querySelector(".hn") }
+    const S0 = [...hero.querySelectorAll(".hs")], D0 = [...hn.querySelectorAll(".hdot")], dm = new Map(); S0.forEach((x, i) => { if (D0[i]) dm.set(x, D0[i]) });
+    for (const { w, L } of H0) {
+      const id = esc(w.id), t = esc(w.title), cov = isCover(w.cover_url) ? w.cover_url : "", lc = L[L.length - 1], cont = ls.get("st:" + w.id), goId = cont && L.some(c => c.id === cont) ? cont : L[0].id, u = day(w.updated_at);
+      const sl = document.createElement("div"); sl.className = "hs"; sl.dataset.u = u;
+      sl.innerHTML = `<div class="hb" style="--h:${hue(w.title)}${cov ? `;background-image:url(&quot;${esc(cov)}&quot;)` : ""}"></div><div class="hw"><a class="book" href="#st/${id}" aria-label="${t}"><span class="cover" style="--h:${hue(w.title)}">${cov ? imgTag(cov) : ""}<b>${t}</b></span><span class="obi"><small>Mới nhất</small><b>${esc(((lc.vol || "").trim() ? lc.vol.trim() + " - " : "") + lc.title)}</b></span></a><div class="hi"><a href="#st/${id}"><h2>${t}</h2></a><div class="hau"><span>Tác giả</span><b>${esc(aName(w))}</b></div><div class="htg"><span class="hst">Sáng tác</span>${(w.genres || []).slice(0, 5).map(g => `<span>${esc(g)}</span>`).join("")}</div><p>${esc(w.summary)}</p><div class="hcta"><a class="btn pri" href="#st/${id}/${esc(goId)}">${ic(I.play)}${cont ? "Đọc tiếp" : "Đọc ngay"}</a><a class="btn hsec" href="#st/${id}">Xem chi tiết</a></div></div></div>`;
+      const dt = document.createElement("button"); dt.className = "hdot"; dt.setAttribute("role", "tab"); dt.setAttribute("aria-selected", "false"); dt.title = w.title; dt.setAttribute("aria-label", w.title); dt.style.setProperty("--h", hue(w.title)); dt.setAttribute("onclick", "heroTo([...this.parentNode.children].indexOf(this))"); dt.innerHTML = cov ? imgTag(cov) : "";
+      const at = [...hero.querySelectorAll(".hs")].find(x => (x.dataset.u || "") < u); hero.insertBefore(sl, at || hn); dm.set(sl, dt);
+    }
+    let all = [...hero.querySelectorAll(".hs")];
+    while (all.length > 10) { const x = [...all].reverse().find(y => !y.classList.contains("on")); x.remove(); dm.get(x)?.remove(); all = [...hero.querySelectorAll(".hs")] }
+    all.forEach(x => { const d = dm.get(x); if (d) hn.appendChild(d) });
+    if (!all.some(x => x.classList.contains("on"))) all[0].classList.add("on");
+    HI = all.findIndex(x => x.classList.contains("on")); [...hn.children].forEach((d, i) => { d.classList.toggle("on", i === HI); d.setAttribute("aria-selected", i === HI) });
+    hn.hidden = all.length < 2; if (all.length > 1) heroTo(HI); if (fresh && typeof setClear === "function") setClear();
+  }
+
   /* ---------- Hành động gọi từ nút ---------- */
   window.ST = {
     enabled, handles: a => ST_ROUTES.includes(a) || /^(access_token|error|type)=/.test(a || ""), route,
     async homeShelf() {
       const el = $("#st_home"); if (!el) return; if (!enabled()) return el.remove();
-      try { await init(); const { data } = await sb.from("works").select(WSEL).eq("visibility", "published").eq("hidden", false).order("updated_at", { ascending: false }).limit(18); if (!$("#st_home")) return; if (!(data || []).length) return el.remove(); el.outerHTML = shelfSec("Sáng tác mới", "sang-tac", data.map(wCard)); shArrows() } catch (e) { el.remove() }
+      try { await init(); const { data } = await sb.from("works").select(WSEL).eq("visibility", "published").eq("hidden", false).order("updated_at", { ascending: false }).limit(18); if (!$("#st_home")) return; if (!(data || []).length) return el.remove(); el.outerHTML = shelfSec("Sáng tác mới", "sang-tac", data.map(wCard)); shArrows(); await heroAdd(data) } catch (e) { const x = $("#st_home"); if (x) x.remove() }
+      if (stFavs().length) ST.libRefresh();
+    },
+    follow() { const [id, m] = ST._meta || []; if (id) toggleFav("st", id, m) },
+    async libRefresh() { // cập nhật số chương của truyện Sáng tác đang theo dõi
+      const F = stFavs(); if (!F.length || !enabled()) return;
+      try {
+        await init(); const ids = F.map(x => x.id);
+        const [{ data: ws }, { data: cs }] = await Promise.all([sb.from("works").select("id,title,cover_url,updated_at,author:profiles(display_name)").in("id", ids), sb.from("chapters").select("work_id,title,vol,ord,published").in("work_id", ids).eq("published", true)]);
+        let ch = false;
+        for (const { id, m } of F) { const w = (ws || []).find(x => x.id === id); if (!w) continue; const L = (cs || []).filter(c => c.work_id === id).sort((a, b) => (a.ord || 0) - (b.ord || 0)), lc = L[L.length - 1];
+          const nm = { ...m, t: w.title, c: w.cover_url, a: aName(w), n: L.length, u: w.updated_at, l: lc ? ((lc.vol || "").trim() ? lc.vol.trim() + " - " : "") + lc.title : "" };
+          if (JSON.stringify(nm) !== JSON.stringify(m)) { ls.set("stm:" + id, JSON.stringify(nm)); ch = true } }
+        if (ch) { navBadge(); if (location.hash === "#library") app.innerHTML = P.library() }
+      } catch (e) {}
     },
     initBtn() { authBtn(); if (enabled()) { try { if (Object.keys(localStorage).some(k => /^sb-.*-auth-token$/.test(k))) init().catch(() => {}) } catch (e) {} } },
     ok18() { ss.set("st18", "1"); route() },
@@ -538,9 +582,9 @@ Ban quản trị có quyền ẩn truyện hoặc khóa tài khoản vi phạm m
       if (r1.error || r2.error) return toast(viMsg(r1.error || r2.error)); route();
     },
     async delCh(cid, wid) { if (!confirm("Xóa chương này? Không thể khôi phục.")) return; const { error } = await sb.from("chapters").delete().eq("id", cid); if (error) return toast(viMsg(error)); toast("Đã xóa chương"); route() },
-    async hide(wid, on) { const { error } = await sb.from("works").update({ hidden: on }).eq("id", wid); toast(error ? viMsg(error) : on ? "Đã ẩn truyện" : "Đã bỏ ẩn truyện"); if (!error) route() },
-    async ban(uid, on) { if (on && !confirm("Khóa tài khoản này? Người dùng sẽ không đăng hoặc sửa được truyện, và truyện của họ bị ẩn khỏi web.")) return; const { error } = await sb.from("profiles").update({ banned: on }).eq("id", uid); toast(error ? viMsg(error) : on ? "Đã khóa tài khoản" : "Đã mở khóa tài khoản"); if (!error) route() },
-    async resolve(id) { const { error } = await sb.from("reports").update({ resolved: true }).eq("id", id); toast(error ? viMsg(error) : "Đã đánh dấu đã xử lý"); if (!error) route() }
+    async hide(wid, on) { const { error } = await A("set_hidden", { id: wid, on }); toast(error ? viMsg(error) : on ? "Đã ẩn truyện" : "Đã bỏ ẩn truyện"); if (!error) route() },
+    async ban(uid, on) { if (on && !confirm("Khóa tài khoản này? Người dùng sẽ không đăng hoặc sửa được truyện, và truyện của họ bị ẩn khỏi web.")) return; const { error } = await A("set_ban", { id: uid, on }); toast(error ? viMsg(error) : on ? "Đã khóa tài khoản" : "Đã mở khóa tài khoản"); if (!error) route() },
+    async resolve(id) { const { error } = await A("resolve", { id }); toast(error ? viMsg(error) : "Đã đánh dấu đã xử lý"); if (!error) route() }
   };
 
 
@@ -692,6 +736,8 @@ Ban quản trị có quyền ẩn truyện hoặc khóa tài khoản vi phạm m
   const css = document.createElement("style");
   css.textContent = `.avs{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:.9rem;background:linear-gradient(160deg,hsl(var(--h) 55% 50%),hsl(calc(var(--h) + 50) 55% 32%))}
 .m18{left:auto;right:6px;background:#d93636}
+.htg span.hst{background:var(--ac);color:#fff}
+.stmodg{max-width:640px;border:1px solid var(--bd);border-radius:12px;padding:22px 24px;background:var(--s1)}.stmodg h2{margin:0 0 8px}.stmodg ol{padding-left:20px;line-height:1.7}.stmodg code{background:var(--bg);padding:1px 6px;border-radius:4px;font-size:.85em}
 .sttb{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0 0 8px}.sttb small{color:var(--mu);font-size:.82rem}.sttb code{font-size:.8rem;background:var(--s1);padding:0 4px;border-radius:3px}
 .stbig.drop{outline:2px dashed var(--ac);outline-offset:2px}
 .stims{margin-top:10px;background:var(--s1);border-radius:8px;padding:10px 12px}.stims>b{display:block;font-size:.85rem;margin-bottom:8px}.stims>div{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
