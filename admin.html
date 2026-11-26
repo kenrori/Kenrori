@@ -171,6 +171,12 @@ details.ms>summary::-webkit-details-marker{display:none}
 .pvhd{text-align:center;margin-bottom:26px}.pvhd h1{font-size:1.8rem;font-weight:800;line-height:1.3;margin:0 0 8px;text-wrap:balance}.pvv{color:var(--ac);font-weight:700;font-size:.9rem;margin-bottom:4px}
 .pvt{max-width:720px;margin:0 auto;font-size:18px;line-height:1.9}.pvt p{margin:0 0 1em}
 .pvg{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}.pvg img{width:100%;aspect-ratio:7/10;object-fit:cover;border-radius:6px;background:var(--s1)}
+.ilist{display:flex;flex-direction:column;gap:6px;margin-top:10px;max-height:62vh;overflow-y:auto;padding-right:4px}
+.irow{display:grid;grid-template-columns:24px 34px 130px minmax(0,1fr) auto auto;gap:4px 8px;align-items:center;background:var(--s1);border-radius:6px;padding:6px 8px}
+.irow.off{opacity:.5}.irow input[type=text]{padding:6px 9px;background:var(--bg)}.irow .n{color:var(--mu);font-size:.8rem;text-align:right}.irow small{color:var(--mu);white-space:nowrap;font-size:.8rem}
+.irow .sn{grid-column:3 / -1;color:var(--mu);font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#i_opt{background:var(--s1);border-radius:8px;padding:10px 14px;margin-top:14px}#i_opt summary{cursor:pointer;font-weight:600}#i_opt input:not([type=checkbox]),#i_opt select{background:var(--bg)}
+@media(max-width:900px){.irow{grid-template-columns:24px minmax(0,1fr) auto auto;grid-template-areas:"c v w b" "t t t t" "s s s s"}.irow .n{display:none}.irow>input[type=checkbox]{grid-area:c}.irow .vi{grid-area:v}.irow small{grid-area:w}.irow button{grid-area:b}.irow input[data-it]{grid-area:t}.irow .sn{grid-area:s}}
 </style>
 </head>
 <body>
@@ -256,6 +262,24 @@ details.ms>summary::-webkit-details-marker{display:none}
 <div class="trbar"><button type="button" id="t_all" class="trb">Dịch tất cả</button><button type="button" id="t_resume" class="trb sec">Dịch tiếp</button><button type="button" id="t_sel" class="trb sec">Dịch đoạn bôi đen</button><button type="button" id="t_view" class="trb sec">Đối chiếu</button><button type="button" id="t_stop" class="dng" hidden>Dừng</button>
 <button type="button" id="t_join" class="trb sec">Nối dòng gốc</button><button type="button" id="t_apply" class="trb sec">Áp dụng bảng tên</button><button type="button" id="t_clear" class="trb dng">Xóa nháp</button><span class="sp"></span><button type="button" id="t_pv" class="trb sec">Xem trước</button><button type="button" id="t_pub" class="trb">Đăng chương lên web</button></div></div>
 
+<div class="panel" id="p-imp"><h3>Nhập từ file</h3><p class="mu">Tải lên cả bộ trong một file Word (.docx) hoặc văn bản (.txt), công cụ tự chia thành từng chương theo tiêu đề hoặc theo các dòng như "Chương 1", "Tập 2". Bạn xem lại danh sách, sửa tên, bỏ chọn phần thừa rồi mới đăng.</p>
+<div class="g2"><div class="full"><label for="i_ser">Bộ truyện (Novel)</label><select id="i_ser"></select></div>
+<div><label for="i_file">File .docx, .txt hoặc .md</label><input id="i_file" type="file" accept=".docx,.txt,.md,text/plain"></div>
+<div><label for="i_url">Hoặc link Google Docs</label><input id="i_url" placeholder="https://docs.google.com/document/d/..."></div>
+<div class="full"><label for="i_paste">Hoặc dán toàn bộ nội dung <small>(mở Google Docs, Ctrl+A, Ctrl+C rồi dán vào đây)</small></label><textarea id="i_paste" style="min-height:90px"></textarea></div></div>
+<details id="i_opt"><summary>Cách chia chương</summary><div class="g2">
+<div><label for="i_mode">Chia theo</label><select id="i_mode"><option value="auto">Tự nhận (khuyên dùng)</option><option value="h">Tiêu đề trong Word (Heading)</option><option value="kw">Dòng bắt đầu bằng từ khóa</option></select></div>
+<div><label for="i_date">Ngày đăng</label><input id="i_date" type="date"></div>
+<div class="full"><label for="i_kw">Từ khóa mở đầu chương <small>(cách nhau bằng dấu phẩy)</small></label><input id="i_kw" value="Chương, Chapter, Chap, Hồi, Phần, Mở đầu, Lời mở đầu, Prologue, Epilogue, Vĩ thanh, Lời bạt, Lời tác giả, Afterword, Ngoại truyện, Phụ lục, Minh họa, Illustrations"></div>
+<div class="full"><label for="i_vkw">Từ khóa tập <small>(dòng như "Tập 2" sẽ được dùng làm tên tập, không thành chương)</small></label><input id="i_vkw" value="Tập, Volume, Vol, Quyển"></div></div>
+<label class="ck"><input type="checkbox" id="i_dup" checked> Bỏ qua chương trùng tên (và trùng tập) đã có trong bộ</label>
+<label class="ck"><input type="checkbox" id="i_cz" checked> Nén ảnh minh họa trong file trước khi đăng</label></details>
+<div class="acts"><button type="button" id="i_go">Đọc và chia chương</button></div>
+<div id="i_res" hidden><h4 id="i_sum"></h4><p class="mu" id="i_note"></p>
+<div class="acts" style="margin-top:6px"><button type="button" class="sec sm" id="i_all">Chọn tất cả</button><button type="button" class="sec sm" id="i_none">Bỏ chọn tất cả</button></div>
+<div id="i_list" class="ilist"></div>
+<div class="acts"><button type="button" id="i_pub">Đăng các chương đã chọn</button></div></div></div>
+
 <form class="panel" id="p-proj"><h3>Dự án</h3><p class="mu">Thêm dự án mới, hoặc bấm Sửa ở mục Quản lý để chỉnh dự án có sẵn.</p>
 <div class="g2"><div class="full"><label for="j_title">Tên dự án</label><input id="j_title"></div>
 <div><label for="j_type">Loại</label><input id="j_type" list="j_types" placeholder="Userscript, Mod, Công cụ..."><datalist id="j_types"><option>Userscript</option><option>Mod</option><option>Công cụ</option><option>Bản dịch game</option></datalist></div>
@@ -295,6 +319,9 @@ details.ms>summary::-webkit-details-marker{display:none}
 <h4>Bình luận (Giscus)</h4><p class="mu">Lấy 4 giá trị tại giscus.app. Để trống để tắt bình luận.</p>
 <div class="g2"><div><label for="g_repo">Repo <small>(tên-người-dùng/tên-repo)</small></label><input id="g_repo"></div><div><label for="g_rid">Repo ID</label><input id="g_rid"></div>
 <div><label for="g_cat">Tên danh mục</label><input id="g_cat"></div><div><label for="g_cid">Category ID</label><input id="g_cid"></div></div>
+<h4>Khu Sáng tác (Supabase)</h4><p class="mu">Điền sau khi tạo project Supabase và chạy file supabase-setup.sql. Để trống để tắt khu Sáng tác. Key dùng loại "publishable" (hoặc "anon"), tuyệt đối không dùng key "secret" hay "service_role".</p>
+<div class="g2"><div><label for="sb_url">Project URL</label><input id="sb_url" placeholder="https://abcxyz.supabase.co"></div><div><label for="sb_key">Publishable key</label><input id="sb_key" placeholder="sb_publishable_..."></div>
+<div class="full"><label for="st_rules">Nội quy Sáng tác <small>(mỗi dòng một điều; để trống để dùng nội quy mặc định)</small></label><textarea id="st_rules" style="min-height:120px"></textarea></div></div>
 <h4>Thống kê lượt xem (GoatCounter)</h4><p class="mu">Đăng ký miễn phí tại goatcounter.com, rồi nhập mã trang của bạn (phần đứng trước .goatcounter.com). Để trống để tắt. Lượt xem trên máy đã đăng nhập quản trị không được tính.</p>
 <label for="gc_code">Mã GoatCounter</label><input id="gc_code" placeholder="kenrori">
 <h4>Địa chỉ web cho RSS</h4><label for="w_url">Để trống nếu dùng địa chỉ github.io mặc định</label><input id="w_url" placeholder="https://username.github.io/kho-game/">
@@ -423,12 +450,13 @@ $("#l_out").onclick = () => location.reload();
 const NI = {
   dash: '<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
   series: '<path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2.5zM20 19v3H6"/>', chap: '<path d="M12 5v14M5 12h14"/>',
+  imp: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M12 18v-6M9 15l3 3 3-3"/>',
   tr: '<path d="M4 5h8M8 3v2M10 5c-1 4-3.5 7-6 8.5M6 9c1 2 3 3.5 5 4.5M13 21l4-9 4 9M14.5 18h5"/>', proj: '<path d="M10 3H5a2 2 0 0 0-2 2v5h3a2 2 0 1 1 0 4H3v5a2 2 0 0 0 2 2h5v-3a2 2 0 1 1 4 0v3h5a2 2 0 0 0 2-2v-5h-3a2 2 0 1 1 0-4h3V5a2 2 0 0 0-2-2h-5v3a2 2 0 1 1-4 0z"/>',
   tip: '<path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/>', link: '<path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>',
   vid: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/>', site: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
   man: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>'
 };
-const TABS = [["dash", "Tổng quan"], ["—", "Truyện"], ["series", "Bộ truyện"], ["chap", "Thêm chương"], ["tr", "Dịch chương"], ["—", "Game và công cụ"], ["proj", "Dự án"], ["tip", "Mẹo game"], ["—", "Khác"], ["link", "Liên kết"], ["vid", "Video"], ["—", "Hệ thống"], ["site", "Cài đặt trang web"], ["man", "Quản lý"]];
+const TABS = [["dash", "Tổng quan"], ["—", "Truyện"], ["series", "Bộ truyện"], ["chap", "Thêm chương"], ["tr", "Dịch chương"], ["imp", "Nhập từ file"], ["—", "Game và công cụ"], ["proj", "Dự án"], ["tip", "Mẹo game"], ["—", "Khác"], ["link", "Liên kết"], ["vid", "Video"], ["—", "Hệ thống"], ["site", "Cài đặt trang web"], ["man", "Quản lý"]];
 const PT = { edit: "Sửa chương", vol: "Tập và bìa tập" };
 $("#tabs").innerHTML = TABS.map(([k, l]) => k === "—" ? `<div class="tg">${l}</div>` : `<button type="button" data-k="${k}"><svg class="i" viewBox="0 0 24 24">${NI[k]}</svg>${l}</button>`).join("");
 const tab = k => { document.querySelector("main").classList.toggle("wide", k === "tr"); $("#ptitle").textContent = PT[k] || (TABS.find(x => x[0] === k) || [])[1] || ""; scrollTo(0, 0); [...TABS.map(x => x[0]).filter(x => x !== "—"), "edit", "vol"].forEach(t => $("#p-" + t).classList.toggle("on", t === k)); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)) };
@@ -436,7 +464,7 @@ $("#tabs").onclick = e => { const b = e.target.closest("button[data-k]"); if (b)
 
 function fillSel() {
   const o = []; for (const k of ["novel", "manga"]) data[KEYS[k]].forEach((s, i) => o.push(`<option value="${k}|${i}">${k === "novel" ? "📖" : "🖼️"} ${esc(s.title)}</option>`));
-  $("#c_ser").innerHTML = o.join("") || "<option value=''>(chưa có bộ nào)</option>"; chapUI(); gChips(); trFill();
+  $("#c_ser").innerHTML = o.join("") || "<option value=''>(chưa có bộ nào)</option>"; chapUI(); gChips(); trFill(); impFill();
 }
 const cType = () => (document.querySelector('input[name="c_type"]:checked') || {}).value || "text";
 function chapUI() { const k = $("#c_ser").value.split("|")[0], img = k === "novel" && cType() === "img"; $("#c_typew").hidden = k !== "novel"; $("#c_novel").hidden = k !== "novel" || img; $("#c_manga").hidden = !(k === "manga" || img); $("#c_firstw").hidden = !img; $("#c_imgl").textContent = img ? "Ảnh minh họa" : "Ảnh các trang"; $("#c_title").placeholder = img ? "Minh họa" : "Chương 12: ..."; volList() }
@@ -608,12 +636,14 @@ function siteLoad() {
   const S = data.site, A = S.about || {}, G = S.giscus || {};
   $("#a_text").value = S.announce?.text || ""; $("#a_url").value = S.announce?.url || ""; $("#b_name").value = A.name || ""; $("#b_intro").value = A.intro || ""; $("#b_dc").value = A.discord || "";
   $("#b_ct").value = (A.contacts || []).map(c => c.label + " | " + c.url).join("\n");
-  $("#g_repo").value = G.repo || ""; $("#g_rid").value = G.repoId || ""; $("#g_cat").value = G.category || ""; $("#g_cid").value = G.categoryId || ""; $("#w_url").value = S.url || ""; $("#b_rep").value = S.report || ""; $("#gc_code").value = S.gc || "";
+  $("#g_repo").value = G.repo || ""; $("#g_rid").value = G.repoId || ""; $("#g_cat").value = G.category || ""; $("#g_cid").value = G.categoryId || ""; $("#w_url").value = S.url || ""; $("#b_rep").value = S.report || ""; $("#gc_code").value = S.gc || ""; $("#sb_url").value = (S.sb || {}).url || ""; $("#sb_key").value = (S.sb || {}).key || ""; $("#st_rules").value = S.rules || "";
 }
 $("#p-site").onsubmit = e => { e.preventDefault(); run(async () => {
   const t = id => $("#" + id).value.trim(), ok = v => !v || /^https?:\/\//.test(v);
+  if (/service_role|sb_secret_/.test(t("sb_key")) || (t("sb_key").split(".").length === 3 && /service_role/.test((() => { try { return atob((t("sb_key").split(".")[1] || "").replace(/-/g, "+").replace(/_/g, "/")) } catch (e) { return "" } })()))) throw new Error("Đây là key bí mật (secret/service_role). Hãy dùng publishable key hoặc anon key.");
+  if (t("sb_url") && !/^https:\/\/[a-z0-9-]+\.supabase\.(co|in)\/?$/i.test(t("sb_url"))) throw new Error("Project URL Supabase có dạng https://xxxx.supabase.co");
   if (!ok(t("b_dc")) || !ok(t("a_url")) || !ok(t("w_url")) || !ok(t("b_rep"))) throw new Error("Link phải bắt đầu bằng https://");
-  data.site = { announce: { text: t("a_text"), url: t("a_url") }, about: { name: t("b_name"), intro: t("b_intro"), discord: t("b_dc"), contacts: $("#b_ct").value.split("\n").map(l => { const [x, ...y] = l.split("|"); return { label: (x || "").trim(), url: y.join("|").trim() } }).filter(c => c.label) }, giscus: { repo: t("g_repo"), repoId: t("g_rid"), category: t("g_cat"), categoryId: t("g_cid") }, url: t("w_url"), report: t("b_rep"), gc: t("gc_code").replace(/^https?:\/\//, "").replace(/\.goatcounter\.com.*$/, "") };
+  data.site = { announce: { text: t("a_text"), url: t("a_url") }, about: { name: t("b_name"), intro: t("b_intro"), discord: t("b_dc"), contacts: $("#b_ct").value.split("\n").map(l => { const [x, ...y] = l.split("|"); return { label: (x || "").trim(), url: y.join("|").trim() } }).filter(c => c.label) }, giscus: { repo: t("g_repo"), repoId: t("g_rid"), category: t("g_cat"), categoryId: t("g_cid") }, url: t("w_url"), report: t("b_rep"), sb: { url: t("sb_url").replace(/\/+$/, ""), key: t("sb_key") }, rules: $("#st_rules").value.trim(), gc: t("gc_code").replace(/^https?:\/\//, "").replace(/\.goatcounter\.com.*$/, "") };
   await save("Cập nhật cài đặt trang web"); done("✅ Đã lưu cài đặt. Web cập nhật sau 1–2 phút.");
 }) };
 let ve = null;
@@ -972,6 +1002,107 @@ $("#bk_in").onchange = async e => {
     await save("Khôi phục từ bản sao lưu");
     if (b.glossary && Object.keys(b.glossary).length) { await put("glossary.json", b64t(JSON.stringify(b.glossary, null, 1)), "Khôi phục bảng tên"); GL = b.glossary }
     siteLoad(); done(`✅ Đã khôi phục ${cnt} bộ truyện. Web cập nhật sau 1–2 phút.`);
+  });
+};
+
+/* ===== Nhập cả bộ từ file ===== */
+let IMP = [];
+function impFill() { const cur = $("#i_ser").value; $("#i_ser").innerHTML = data.novels.map((s, i) => `<option value="${i}">${esc(s.title)}</option>`).join("") || "<option value=''>(chưa có novel, hãy tạo ở mục Bộ truyện)</option>"; if (cur && data.novels[+cur]) $("#i_ser").value = cur; if (!$("#i_date").value) $("#i_date").value = new Date().toISOString().slice(0, 10) }
+const rxq = x => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const NUMKW = /^(chương|chapter|chap|ch|hồi|phần|episode|tập|volume|vol|quyển)$/i;
+function loadMammoth() { return window.mammoth ? Promise.resolve() : new Promise((res, rej) => { const sc = document.createElement("script"); sc.src = "https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.13.0/mammoth.browser.min.js"; sc.onload = res; sc.onerror = () => rej(new Error("Không tải được thư viện đọc file Word. Kiểm tra mạng rồi thử lại.")); document.head.appendChild(sc) }) }
+const linesToBlocks = t => String(t).replace(/\r/g, "").normalize("NFC").split("\n").map(l => l.trim()).filter(Boolean).map(l => { const m = /^(#{1,6})\s+(.+)$/.exec(l); return m ? { h: m[1].length, t: m[2].trim() } : { h: 0, t: l } });
+async function impBlocks() {
+  const f = $("#i_file").files[0], url = $("#i_url").value.trim(), paste = $("#i_paste").value;
+  if (f && /\.docx$/i.test(f.name)) {
+    log("Đang đọc file Word..."); await loadMammoth();
+    const r = await mammoth.convertToHtml({ arrayBuffer: await f.arrayBuffer() }), doc = new DOMParser().parseFromString(r.value, "text/html"), out = [], pushImg = im => { const u = im.getAttribute("src") || ""; if (/^data:image\/(png|jpe?g|gif|webp);base64,/.test(u)) out.push({ img: u }) };
+    const walk = el => {
+      for (const n of el.children) {
+        const tg = n.tagName;
+        if (/^H[1-6]$/.test(tg)) { const t = n.textContent.trim(); if (t) out.push({ h: +tg[1], t: t.normalize("NFC") }); n.querySelectorAll("img").forEach(im => pushImg(im)); continue }
+        if (tg === "UL" || tg === "OL" || tg === "TABLE") { n.querySelectorAll("li, tr").forEach(x => { const t = x.textContent.trim(); if (t) out.push({ h: 0, t: t.normalize("NFC") }) }); continue }
+        n.querySelectorAll("img").forEach(im => pushImg(im));
+        const t = n.textContent.replace(/\s+/g, " ").trim(); if (t) out.push({ h: 0, t: t.normalize("NFC") });
+      }
+    };
+    walk(doc.body); return out;
+  }
+  if (f) return linesToBlocks(await f.text());
+  if (url) {
+    const id = (/\/document\/d\/([\w-]+)/.exec(url) || [])[1]; if (!id) throw new Error("Link Google Docs không hợp lệ");
+    try { const r = await fetch(`https://docs.google.com/document/d/${id}/export?format=txt`); if (!r.ok) throw 0; return linesToBlocks(await r.text()) }
+    catch (e) { throw new Error("Google không cho tải trực tiếp file từ link. Trong Google Docs, chọn Tệp → Tải xuống → Microsoft Word (.docx) rồi chọn file đó ở ô bên trên, hoặc chọn tất cả nội dung và dán vào ô bên dưới.") }
+  }
+  if (paste.trim()) return linesToBlocks(paste);
+  throw new Error("Hãy chọn file, dán link Google Docs hoặc dán nội dung");
+}
+function impSplit(B) {
+  const kws = $("#i_kw").value.split(",").map(x => x.trim()).filter(Boolean), vkws = $("#i_vkw").value.split(",").map(x => x.trim()).filter(Boolean);
+  const volRe = vkws.length ? new RegExp(`^(${vkws.map(rxq).join("|")})\\.?\\s*([0-9]+|[IVXLC]+)\\b`, "i") : null;
+  const isChap = t => t.length <= 120 && kws.some(k => { const m = new RegExp(`^${rxq(k)}(?=$|[\\s\\d:.\\-–—)])(.*)$`, "i").exec(t); if (!m) return false; if (!NUMKW.test(k)) return t.length <= 80; return /^\s*([0-9]+|[IVXLCivxlc]+\b|[:.\-–—])/.test(m[1]) || m[1].trim() === "" });
+  const isVol = t => volRe && t.length <= 100 && volRe.test(t);
+  const volName = t => { const m = volRe.exec(t); if (t.length <= 60 && t !== t.toUpperCase()) return t; return /^(tập|quyển)$/i.test(m[1]) ? `${m[1][0].toUpperCase() + m[1].slice(1).toLowerCase()} ${m[2]}` : `${m[1]} ${m[2]}` };
+  const H = B.filter(b => b.h && !isVol(b.t)), cnt = {}; H.forEach(b => cnt[b.h] = (cnt[b.h] || 0) + 1);
+  const lv = Object.entries(cnt).filter(([, n]) => n >= 2).sort((a, b) => b[1] - a[1] || a[0] - b[0])[0];
+  const mode = $("#i_mode").value, useH = mode === "h" || (mode === "auto" && !!lv), chapLv = lv ? +lv[0] : 0;
+  const segs = []; let vol = "", cur = { t: "Mở đầu", vol: "", body: [], imgs: [], pre: true };
+  for (const b of B) {
+    if (b.img) { cur.imgs.push(b.img); continue }
+    if (isVol(b.t) && (b.h || b.t.length <= 60)) { if (cur.body.length || cur.imgs.length) segs.push(cur); vol = volName(b.t); cur = { t: "Mở đầu", vol, body: [], imgs: [], pre: true }; continue }
+    const head = useH ? (b.h && b.h <= chapLv) : isChap(b.t);
+    if (head) { if (cur.body.length || cur.imgs.length || !cur.pre) segs.push(cur); cur = { t: b.t.slice(0, 200), vol, body: [], imgs: [] } }
+    else cur.body.push(b.t);
+  }
+  if (cur.body.length || cur.imgs.length || !cur.pre) segs.push(cur);
+  return { useH, segs: segs.map(g => { const w = g.body.join(" ").split(/\s+/).filter(Boolean).length, img = g.imgs.length > 0 && w < 30; return { ...g, w, type: img ? "img" : "text", on: g.pre ? (w >= 50 || img) : (w > 0 || img), t: g.pre && img ? "Minh họa" : g.t } }) };
+}
+function impRender() {
+  const sel = IMP.filter(x => x.on), lost = IMP.filter(x => x.type === "text" && x.imgs.length).reduce((a, x) => a + x.imgs.length, 0);
+  $("#i_sum").textContent = `Tìm thấy ${IMP.length} phần, đã chọn ${sel.length} để đăng`;
+  $("#i_note").textContent = lost ? `Có ${lost} ảnh nằm giữa các chương chữ sẽ không được đăng (chương chữ chỉ chứa chữ). Ảnh nằm riêng trong phần "Minh họa" vẫn được đăng thành chương minh họa.` : "";
+  $("#i_list").innerHTML = IMP.map((x, i) => `<div class="irow${x.on ? "" : " off"}"><input type="checkbox" data-ion="${i}" ${x.on ? "checked" : ""} aria-label="Chọn"><span class="n">${i + 1}</span><input type="text" class="vi" data-ivol="${i}" value="${esc(x.vol)}" placeholder="Tập"><input type="text" data-it="${i}" value="${esc(x.t)}"><small>${x.type === "img" ? x.imgs.length + " ảnh" : x.w.toLocaleString("vi-VN") + " chữ"}</small><button type="button" class="sec sm" data-ipv="${i}">Xem</button><span class="sn">${esc(x.type === "img" ? "Chương minh họa" : (x.body[0] || "").slice(0, 140))}</span></div>`).join("");
+}
+$("#i_go").onclick = () => run(async () => {
+  if (!data.novels[+$("#i_ser").value]) throw new Error("Hãy tạo bộ truyện (novel) trước ở mục Bộ truyện");
+  const B = await impBlocks(); if (!B.length) throw new Error("File không có nội dung");
+  const r = impSplit(B); IMP = r.segs; if (!IMP.length) throw new Error("Không tìm thấy nội dung để chia");
+  $("#i_res").hidden = false; impRender();
+  log(`✅ Đã chia thành ${IMP.length} phần (${r.useH ? "theo tiêu đề trong Word" : "theo từ khóa"}). Hãy xem lại trước khi đăng.`);
+  if (IMP.length === 1) log("Chỉ tìm thấy 1 phần. Thử đổi cách chia hoặc thêm từ khóa trong mục Cách chia chương.");
+});
+$("#i_list").addEventListener("input", e => { const t = e.target; if (t.dataset.it != null) IMP[+t.dataset.it].t = t.value; if (t.dataset.ivol != null) IMP[+t.dataset.ivol].vol = t.value });
+$("#i_list").addEventListener("change", e => { const t = e.target; if (t.dataset.ion != null) { IMP[+t.dataset.ion].on = t.checked; t.closest(".irow").classList.toggle("off", !t.checked); $("#i_sum").textContent = `Tìm thấy ${IMP.length} phần, đã chọn ${IMP.filter(x => x.on).length} để đăng` } });
+$("#i_list").addEventListener("click", e => { const b = e.target.closest("button[data-ipv]"); if (!b) return; const x = IMP[+b.dataset.ipv]; x.type === "img" ? preview({ title: x.t, vol: x.vol, imgs: x.imgs }) : preview({ title: x.t, vol: x.vol, text: x.body.join("\n") }) });
+$("#i_all").onclick = () => { IMP.forEach(x => x.on = true); impRender() }; $("#i_none").onclick = () => { IMP.forEach(x => x.on = false); impRender() };
+$("#i_pub").onclick = () => {
+  const s = data.novels[+$("#i_ser").value]; if (!s) return log("❌ Hãy chọn bộ truyện");
+  let L = IMP.filter(x => x.on && x.t.trim()); const dup = $("#i_dup").checked, have = new Set(s.chapters.map(c => (c.vol || "") + "|" + c.t)), skip = dup ? L.filter(x => have.has(x.vol.trim() + "|" + x.t.trim())).length : 0;
+  if (dup) L = L.filter(x => !have.has(x.vol.trim() + "|" + x.t.trim()));
+  if (!L.length) return log(skip ? "❌ Tất cả chương đã chọn đều đã có trong bộ" : "❌ Chưa chọn chương nào");
+  if (!confirm(`Đăng ${L.length} chương vào "${s.title}"?${skip ? `\n(Bỏ qua ${skip} chương trùng tên đã có.)` : ""}`)) return;
+  run(async () => {
+    const date = $("#i_date").value, cz = $("#i_cz").checked; let n = 0, added = 0;
+    try {
+      for (const x of L) {
+        n++; const id = `c${s.chapters.length + 1}_${rid()}`, ch = { t: x.t.trim(), date }; if (x.vol.trim()) ch.vol = x.vol.trim();
+        if (x.type === "img") {
+          ch.type = "img"; ch.pages = [];
+          for (let j = 0; j < x.imgs.length; j++) {
+            log(`Đang đăng ${n}/${L.length}: ${ch.t}, ảnh ${j + 1}/${x.imgs.length}...`);
+            const blob = await (await fetch(x.imgs[j])).blob(); let b64 = null, ext = (blob.type.split("/")[1] || "jpg").replace("jpeg", "jpg");
+            if (cz) { const r = await squeeze(blob); if (r) { b64 = r.b64; ext = r.ext } }
+            if (!b64) b64 = x.imgs[j].split(",")[1];
+            const p = `novels/${s.slug}/${id}/${String(j + 1).padStart(3, "0")}.${ext}`; await put(p, b64, `${s.title} ${ch.t} ảnh ${j + 1}`); ch.pages.push(p);
+          }
+        } else {
+          const text = x.body.join("\n"); log(`Đang đăng ${n}/${L.length}: ${ch.t}...`);
+          const p = `novels/${s.slug}/${id}.txt`; await put(p, b64t(text), "Chương: " + ch.t); ch.file = p; ch.words = text.split(/\s+/).filter(Boolean).length;
+        }
+        s.chapters.push(ch); added++; x.on = false;
+      }
+    } finally { if (added) { log("Đang lưu danh sách chương..."); await save(`Nhập ${added} chương: ${s.title}`); impFill() } }
+    impRender(); done(`✅ Đã đăng ${L.length} chương vào "${s.title}". Web cập nhật sau 1–2 phút.`);
   });
 };
 </script>
