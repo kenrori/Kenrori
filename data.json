@@ -205,7 +205,29 @@
   },
   {
    "slug": "youkoso-jitsuryoku-shijou-shugi",
-   "chapters": [],
+   "chapters": [
+    {
+     "t": "Minh Họa",
+     "date": "2026-11-26",
+     "pages": [
+      "novels/youkoso-jitsuryoku-shijou-shugi/c1_mwxiw66q/001.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c1_mwxiw66q/002.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c1_mwxiw66q/003.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c1_mwxiw66q/004.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c1_mwxiw66q/005.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c1_mwxiw66q/006.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c1_mwxiw66q/007.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c1_mwxiw66q/008.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c1_mwxiw66q/009.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c1_mwxiw66q/010.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c1_mwxiw66q/011.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c1_mwxiw66q/012.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c1_mwxiw66q/013.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c1_mwxiw66q/014.webp"
+     ],
+     "type": "img"
+    }
+   ],
    "title": "Youkoso Jitsuryoku Shijou Shugi",
    "orig": "ようこそ実力至上主義の教室へ",
    "alts": [
