@@ -9,11 +9,11 @@
 <link rel="icon" type="image/png" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/icon-192.png">
 <meta name="description" content="Light novel, web novel, manga dịch tiếng Việt, video Vietsub và công cụ game.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=M+PLUS+1:wght@500;700;800&family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#fff;--s1:#f2f1f7;--s2:#e6e4ef;--tx:#14131a;--mu:#6c6a7a;--ac:#6b5cf0;--ach:#5847e0;--acs:#ebe8ff;--bd:#e3e1ec;--on:#04a74b;--done:#2f7de1;--pause:#e89a00;--side:256px;--top:56px}
-:root[data-theme=dark]{--bg:#17161f;--s1:#25232f;--s2:#34313f;--tx:#f3f2f7;--mu:#a6a3b4;--ac:#8376ff;--ach:#958aff;--acs:#2d2850;--bd:#2f2c3b}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#17161f;--s1:#25232f;--s2:#34313f;--tx:#f3f2f7;--mu:#a6a3b4;--ac:#8376ff;--ach:#958aff;--acs:#2d2850;--bd:#2f2c3b}}
+:root{--fd:"M PLUS 1","Be Vietnam Pro",system-ui,sans-serif;--ink:#15131f;--obi:#ffd84d;--bg:#fbfaff;--s1:#f0eef8;--s2:#e4e1f0;--tx:#16141f;--mu:#6c6a7a;--ac:#6b5cf0;--ach:#5847e0;--acs:#ebe8ff;--bd:#e3e0ee;--on:#04a74b;--done:#2f7de1;--pause:#e89a00;--side:256px;--top:56px}
+:root[data-theme=dark]{--bg:#15131f;--s1:#201d2d;--s2:#2d2940;--tx:#f3f2f8;--mu:#a7a3b8;--ac:#8376ff;--ach:#958aff;--acs:#2d2850;--bd:#2c2939}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#15131f;--s1:#201d2d;--s2:#2d2940;--tx:#f3f2f8;--mu:#a7a3b8;--ac:#8376ff;--ach:#958aff;--acs:#2d2850;--bd:#2c2939}}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{scroll-behavior:smooth}
@@ -297,6 +297,76 @@ iframe.ytf{width:100%;aspect-ratio:16/9;margin:0;border-radius:8px}
 .dcta{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin:36px 0 10px;padding:24px 26px;border-radius:12px;background:linear-gradient(120deg,#5865f2,#7c5cf0);color:#fff}
 .dcta h2{margin:0 0 6px;font-size:1.35rem}.dcta p{margin:0;max-width:60ch;opacity:.92}.dcta .btn{background:#ffffff26;color:#fff}.dcta .btn:hover{background:#ffffff40}.dcta .dcbtn{background:#fff;color:#4752c4}.dcta .dcbtn:hover{background:#eef}
 @media(max-width:700px){.hcta .btn{padding:8px 12px;font-size:.88rem}.hero{height:430px}.dcta{padding:20px}}
+
+/* =================== Kenrori: giao diện "kệ sách" =================== */
+.logo,.sh h2,.hi h2,.tpt h1,.rh h1,.ap h1,.dcta h2,.vhd b,#nv .sg,.cover b{font-family:var(--fd)}
+.logo{font-weight:800;letter-spacing:-.01em}.logo i{font-family:var(--fd);font-weight:800;border-radius:3px 8px 8px 3px;box-shadow:inset 4px 0 0 #0003}
+.sh h2{font-size:1.4rem;font-weight:800;letter-spacing:0}
+#side{background:var(--s1)}
+#nv a.on{background:var(--ac);color:#fff;box-shadow:inset 3px 0 0 var(--obi)}
+
+/* Bìa = một cuốn sách: gáy bên trái, góc gáy vuông, bóng đổ */
+.cover,.th,.vcv,.vth{border-radius:2px 7px 7px 2px}
+.cover{box-shadow:0 1px 1px #0002,0 10px 18px -10px #0007}
+.cover::before,.th::before,.vcv::before{content:"";position:absolute;inset:0 auto 0 0;width:8%;max-width:14px;z-index:1;pointer-events:none;background:linear-gradient(90deg,#00000059,#ffffff2b 45%,#0000)}
+.cover b{inset:0 0 auto;padding:12px 12px 0 16px;background:none;font-size:1.02rem;font-weight:800;line-height:1.2;text-shadow:0 1px 6px #0006;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+/* Obi: đai giấy quấn quanh bìa */
+.obi{position:absolute;left:0;right:0;bottom:9%;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:4px 8px 4px 12px;background:var(--ac);color:#fff;font-style:normal;font-size:.72rem;font-weight:700;line-height:1.3;box-shadow:0 3px 8px #0005;white-space:nowrap}
+.obi em{font-style:normal;background:var(--obi);color:#1b1630;padding:0 6px;border-radius:2px;font-weight:800}
+.obi.soon{background:var(--ink);color:#fff}
+.sc:hover .cover{transform:translateY(-3px)}.cover{transition:transform .18s ease}
+.sc:hover .obi{background:var(--ach)}
+.ct{font-weight:700;font-size:.92rem}
+.nwt,.kd{display:none}
+
+/* Hero: kệ sách ban đêm, không dùng ảnh nền làm mờ */
+.hero{height:520px;background:var(--ink)}
+.hb{filter:blur(7px) saturate(1.15);transform:scale(1.12);background-color:var(--ink);background-size:cover;background-position:center 25%}
+.hs::after,.tpb::after{background:radial-gradient(80% 110% at 15% 35%,hsl(var(--h,250) 60% 30% / .35),transparent 70%),linear-gradient(180deg,#15131fd9 0%,#15131fa6 50%,color-mix(in srgb,var(--bg) 55%,#15131fa6) 86%,var(--bg) 100%)}
+.hv{position:absolute;z-index:1;top:calc(var(--top) + 8px);right:3%;bottom:40px;writing-mode:vertical-rl;font-family:var(--fd);font-weight:800;font-size:clamp(52px,7.4vw,112px);line-height:1;letter-spacing:.04em;white-space:nowrap;color:#fff;opacity:.07;overflow:hidden;pointer-events:none;user-select:none}
+.hw{align-items:center;padding-bottom:84px;gap:44px;padding-right:clamp(32px,11vw,150px)}
+.book{position:relative;flex:none;width:220px;transform:rotate(-2deg);transform-origin:bottom left}
+.book .cover{display:block;width:100%;box-shadow:0 2px 2px #0003,18px 26px 40px -12px #000c}
+.book .obi{bottom:12%;left:-10px;right:-10px;padding:7px 12px 7px 18px;flex-direction:column;align-items:flex-start;gap:0;font-size:.82rem;white-space:normal}
+.book .obi small{font-size:.68rem;font-weight:600;opacity:.85}.book .obi b{font-weight:800;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hi h2{font-weight:800;font-size:clamp(1.7rem,3.6vw,3.1rem);line-height:1.12;letter-spacing:-.01em;text-wrap:balance}
+.hor{font-family:var(--fd);font-weight:500;opacity:.85}
+.htg span{background:#ffffff1a;border:1px solid #ffffff26;border-radius:999px;padding:2px 10px}
+.hi p{max-width:62ch}
+.hcta .btn.pri{background:#fff;color:#1b1630}.hcta .btn.pri:hover{background:var(--obi)}
+.hsec{background:#ffffff1a!important;color:#fff;border:1px solid #ffffff30}.hsec:hover{background:#ffffff2e!important}
+.hs.on .book{animation:bookIn .7s cubic-bezier(.2,.8,.2,1) both}.hs.on .book .obi{animation:obiIn .6s .25s cubic-bezier(.2,.8,.2,1) both}
+@keyframes bookIn{from{opacity:0;transform:translateY(18px) rotate(-6deg)}to{opacity:1;transform:rotate(-2deg)}}
+@keyframes obiIn{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.hn{right:auto;left:calc(32px + 220px + 44px);bottom:22px;gap:10px}
+.hdot{width:34px!important;height:48px!important;padding:0;border-radius:2px 5px 5px 2px!important;overflow:hidden;position:relative;background:linear-gradient(160deg,hsl(var(--h) 55% 48%),hsl(calc(var(--h) + 50) 55% 26%))!important;opacity:.45;transition:opacity .2s,transform .2s;outline-offset:3px}
+.hdot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.hdot.on{opacity:1;transform:translateY(-6px);box-shadow:0 0 0 2px var(--obi)}.hdot:hover{opacity:.9}
+
+/* Trang truyện: cùng ngôn ngữ với hero */
+.tpb{background:var(--ink)}
+.tpb .hv{top:calc(var(--top) + 6px);bottom:auto;height:260px;opacity:.07}
+.tpcv{border-radius:2px 8px 8px 2px;box-shadow:0 2px 2px #0003,14px 20px 34px -12px #000a}
+.tpt h1{font-weight:800;letter-spacing:-.01em;line-height:1.12}
+.tpo{font-family:var(--fd)}
+.vhd b{font-weight:800}
+.ch{border-left-width:4px}
+
+/* Mới cập nhật */
+.lui{background:var(--s1);border-radius:10px;padding:12px}
+.lut{font-family:var(--fd);font-weight:800}
+.th{box-shadow:0 6px 12px -6px #0006}
+
+.dcta{border-radius:14px;background:radial-gradient(120% 140% at 0% 0%,#7c6cff,transparent 60%),linear-gradient(120deg,#5865f2,#6b5cf0)}
+@media(max-width:700px){
+  .hero{height:auto;min-height:490px}.hi p{-webkit-line-clamp:2}.htg{margin-bottom:8px}.hw{padding:calc(var(--top) + 18px) 16px 84px;gap:18px;align-items:flex-start}
+  .book{width:122px;transform:rotate(-2deg)}.book .obi{left:-6px;right:-6px;padding:4px 8px 4px 12px;font-size:.7rem}.book .obi small{display:none}
+  .hero .hv{display:none}.hw{padding-right:16px}.hi h2{-webkit-line-clamp:3;font-size:1.45rem}
+  .hn{left:16px;bottom:18px}.hdot{width:28px!important;height:40px!important}
+  .tpb .hv{display:none}
+  .obi{font-size:.66rem;padding:3px 6px 3px 10px}
+  .cover b{font-size:.88rem;padding:10px 10px 0 13px}
+}
+@media(prefers-reduced-motion:reduce){.hs.on .book,.hs.on .book .obi{animation:none}}
 </style>
 </head>
 <body>
@@ -401,7 +471,9 @@ const credit = (lbl, t) => people(t).map(n => `<a class="cr" href="${aHref(n)}">
 const pLinks = t => people(t).map(n => `<a class="al" href="${aHref(n)}">${esc(n)}</a>`).join(", ");
 const isNew = s => { const d = first(s); if (!d) return false; const t = new Date(); return (Date.UTC(t.getFullYear(), t.getMonth(), t.getDate()) - Date.parse(d)) / 864e5 <= 14 };
 const isImgCh = c => c.type === "img";
-const card = (k, s) => `<a class="sc" href="#${k}/${s.slug}"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b><i class="kd">${fmtOf(k, s)}</i>${isNew(s) ? '<i class="nwt">Mới</i>' : ""}</div><div class="ct" title="${esc(s.title)}${s.orig ? "\n" + esc(s.orig) : ""}">${esc(s.title)}</div><small>${stDot(s)}<span>${s.chapters.length ? s.chapters.length + " chương" : "Chưa có chương"}</span></small></a>`;
+const obi = s => s.chapters.length ? `<i class="obi"><span>${s.chapters.length} chương</span>${isNew(s) ? "<em>Mới</em>" : ""}</i>` : '<i class="obi soon">Sắp ra mắt</i>';
+const hasJP = t => /[\u3040-\u30ff\u3400-\u9fff]/.test(t || "");
+const card = (k, s) => `<a class="sc" href="#${k}/${s.slug}"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b>${obi(s)}</div><div class="ct" title="${esc(s.title)}${s.orig ? "\n" + esc(s.orig) : ""}">${esc(s.title)}</div><small>${stDot(s)}<span>${fmtOf(k, s)}</span></small></a>`;
 const gridOf = (k, a) => a.length ? `<div class="series">${byNew(a).map(s => card(k, s)).join("")}</div>` : EMPTY;
 const recent = n => { const a = []; for (const { k, s } of allS()) s.chapters.forEach((c, i) => a.push({ k, s, c, i })); return a.sort((x, y) => (y.c.date || "").localeCompare(x.c.date || "") || y.i - x.i).slice(0, n) };
 const rdSet = (k, s) => { try { return JSON.parse(ls.get("r:" + k + ":" + s.slug) || "[]") } catch (e) { return [] } };
@@ -414,12 +486,13 @@ function latestUpdates(f = "all") {
 let HI = 0, HT = null;
 function heroHtml() {
   const byU = (x, y) => latest(y.s).localeCompare(latest(x.s)), F = allS().filter(x => x.s.feat).sort(byU), L = (F.length ? F : allS().filter(x => x.s.chapters.length).sort(byU)).slice(0, 6); if (!L.length) return "";
-  return `<section class="hero" id="hero" aria-label="Truyện mới cập nhật">${L.map(({ k, s }, i) => `<div class="hs${i ? "" : " on"}"><div class="hb" ${bgStyle(s)}></div><div class="hw"><a class="cover" href="#${k}/${s.slug}" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></a><div class="hi"><a href="#${k}/${s.slug}"><h2>${esc(s.title)}</h2></a>${s.orig ? `<div class="hor" lang="ja">${esc(s.orig)}</div>` : ""}<div class="hau">${s.author ? `<span>Tác giả</span><b>${esc(s.author)}</b>` : ""}${s.artist && s.artist !== s.author ? `<span>Minh họa</span><b>${esc(s.artist)}</b>` : ""}</div><div class="htg">${(s.genres || []).slice(0, 6).map(g => `<span>${esc(g)}</span>`).join("")}</div><p>${esc(s.desc)}</p><div class="hcta">${s.chapters.length ? (l => `<a class="btn pri" href="#${k}/${s.slug}/${l ?? 0}">${ic(I.play)}${l != null ? "Đọc tiếp" : "Đọc ngay"}</a>`)(ls.get(k + ":" + s.slug)) : ""}<a class="btn hsec" href="#${k}/${s.slug}">Xem chi tiết</a></div></div></div></div>`).join("")}${L.length > 1 ? `<div class="hn"><button onclick="heroGo(-1)" title="Trước">${ic(I.prev)}</button><button onclick="heroGo(1)" title="Sau">${ic(I.next)}</button></div>` : ""}</section>`;
+  return `<section class="hero" id="hero" aria-label="Truyện mới cập nhật">${L.map(({ k, s }, i) => `<div class="hs${i ? "" : " on"}"><div class="hb" ${bgStyle(s)}></div>${hasJP(s.orig) ? `<div class="hv" lang="ja" aria-hidden="true">${esc(s.orig)}</div>` : ""}<div class="hw"><a class="book" href="#${k}/${s.slug}" aria-label="${esc(s.title)}"><span class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></span>${s.chapters.length ? `<span class="obi"><small>Mới nhất</small><b>${esc(s.chapters[s.chapters.length - 1].t)}</b></span>` : '<span class="obi soon"><b>Sắp ra mắt</b></span>'}</a><div class="hi"><a href="#${k}/${s.slug}"><h2>${esc(s.title)}</h2></a>${s.orig ? `<div class="hor" lang="ja">${esc(s.orig)}</div>` : ""}<div class="hau">${s.author ? `<span>Tác giả</span><b>${esc(s.author)}</b>` : ""}${s.artist && s.artist !== s.author ? `<span>Minh họa</span><b>${esc(s.artist)}</b>` : ""}</div><div class="htg">${(s.genres || []).slice(0, 6).map(g => `<span>${esc(g)}</span>`).join("")}</div><p>${esc(s.desc)}</p><div class="hcta">${s.chapters.length ? (l => `<a class="btn pri" href="#${k}/${s.slug}/${l ?? 0}">${ic(I.play)}${l != null ? "Đọc tiếp" : "Đọc ngay"}</a>`)(ls.get(k + ":" + s.slug)) : ""}<a class="btn hsec" href="#${k}/${s.slug}">Xem chi tiết</a></div></div></div></div>`).join("")}${L.length > 1 ? `<div class="hn" role="tablist" aria-label="Chọn truyện nổi bật">${L.map(({ s }, i) => `<button class="hdot${i ? "" : " on"}" role="tab" aria-selected="${!i}" style="--h:${hue(s.title)}" onclick="heroTo(${i})" title="${esc(s.title)}" aria-label="${esc(s.title)}">${imgTag(s.cover)}</button>`).join("")}</div>` : ""}</section>`;
 }
-function heroGo(d) { const ss = document.querySelectorAll(".hs"); if (ss.length < 2) return; ss[HI].classList.remove("on"); HI = (HI + d + ss.length) % ss.length; ss[HI].classList.add("on");  clearInterval(HT); HT = setInterval(() => heroGo(1), 8000) }
+function heroTo(n) { const ss = document.querySelectorAll(".hs"), ds = document.querySelectorAll(".hdot"); if (ss.length < 2) return; ss[HI].classList.remove("on"); HI = (n + ss.length) % ss.length; ss[HI].classList.add("on"); ds.forEach((d, i) => { d.classList.toggle("on", i === HI); d.setAttribute("aria-selected", i === HI) }); clearInterval(HT); HT = setInterval(() => heroGo(1), 8000) }
+function heroGo(d) { heroTo(HI + d) }
 const projCard = d => `<div class="card pj">${d.img ? `<img class="pi" src="${esc(d.img)}" alt="" loading="lazy" onerror="this.remove()">` : ""}<h3>${esc(d.title)}</h3><div class="meta">${d.status ? `<span class="st ${STC(d.status)}">${esc(d.status)}</span>` : ""}${d.type ? `<span class="pill">${esc(d.type)}</span>` : ""}${d.version ? `<span>v${esc(d.version)}</span>` : ""}${d.date ? `<span>Cập nhật ${fmtD(d.date)}</span>` : ""}</div><p>${esc(d.desc)}</p><div class="acts">${(d.links || []).filter(l => /^https?:\/\//.test(l.url)).map((l, i) => `<a class="btn${i ? "" : " pri"}" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join("")}</div>${d.howto ? `<details><summary>Hướng dẫn sử dụng</summary><p class="sum">${esc(d.howto)}</p></details>` : ""}</div>`;
 const reading = (n = 8) => { const a = []; for (const { k, s } of allS()) { const l = ls.get(k + ":" + s.slug); if (l != null && s.chapters[+l]) a.push({ k, s, l: +l, t: +(ls.get("t:" + k + ":" + s.slug) || 0) }) } return a.sort((x, y) => y.t - x.t).slice(0, n) };
-const rdCard = r => { const n = r.s.chapters.length, nw = n - 1 - r.l, pct = Math.round(rdSet(r.k, r.s).length / n * 100); return `<div class="rcs"><a class="sc" href="#${r.k}/${r.s.slug}/${r.l}"><div class="cover" style="--h:${hue(r.s.title)}">${imgTag(r.s.cover)}<b>${esc(r.s.title)}</b>${nw > 0 ? `<i class="nwb">+${nw} chương</i>` : ""}</div><div class="ct">${esc(r.s.title)}</div><small><span>${esc(r.s.chapters[r.l].t)}</span></small><i class="pb"><i style="width:${pct}%"></i></i></a><button class="fg" title="Bỏ khỏi danh sách đang đọc" onclick="forget('${r.k}','${esc(r.s.slug)}')">✕</button></div>` };
+const rdCard = r => { const n = r.s.chapters.length, nw = n - 1 - r.l, pct = Math.round(rdSet(r.k, r.s).length / n * 100); return `<div class="rcs"><a class="sc" href="#${r.k}/${r.s.slug}/${r.l}"><div class="cover" style="--h:${hue(r.s.title)}">${imgTag(r.s.cover)}<b>${esc(r.s.title)}</b>${nw > 0 ? `<i class="obi"><span>Chương mới</span><em>+${nw}</em></i>` : ""}</div><div class="ct">${esc(r.s.title)}</div><small><span>${esc(r.s.chapters[r.l].t)}</span></small><i class="pb"><i style="width:${pct}%"></i></i></a><button class="fg" title="Bỏ khỏi danh sách đang đọc" onclick="forget('${r.k}','${esc(r.s.slug)}')">✕</button></div>` };
 function forget(k, slug) { ["", "t:", "r:"].forEach(p => ls.del(p + k + ":" + slug)); route() }
 let RDKEY = null;
 const favs = () => { try { return JSON.parse(ls.get("favs") || "[]") } catch (e) { return [] } };
@@ -544,7 +617,7 @@ function detail(kind, s) {
   const team = (s.team || []).filter(t => t.n), vc = s.vc || {};
   const info = [["Tác giả", pLinks(s.author) || "Chưa rõ"], s.artist ? ["Họa sĩ minh họa", pLinks(s.artist)] : null, /^https?:\/\//.test(s.src || "") ? ["Tác phẩm gốc", `<a class="al" href="${esc(s.src)}" target="_blank" rel="noopener">${esc(s.src.replace(/^https?:\/\//, "").slice(0, 40))}</a>`] : null, team.length ? ["Nhóm thực hiện", team.map(t => `<div><span class="tr">${esc(t.r || "Thành viên")}</span> ${esc(t.n)}</div>`).join("")] : null, alt.length ? ["Tên khác", alt.map(x => `<div>${esc(x)}</div>`).join("")] : null, ["Loại", fmtOf(kind, s)], ["Tình trạng", stDot(s) || "Chưa rõ"], ["Số chương", n], nv ? ["Số tập", nv] : null, kind === "novel" ? ["Tổng số chữ", fmtN(sum(s)) || "Chưa rõ"] : null, ["Cập nhật", fmtD(latest(s)) || "Chưa có"]].filter(Boolean);
   const fav = isFav(kind, s.slug);
-  app.innerHTML = `<div class="tpb"><div class="hb" ${bgStyle(s)}></div></div>
+  app.innerHTML = `<div class="tpb"><div class="hb" ${bgStyle(s)}></div>${hasJP(s.orig) ? `<div class="hv" lang="ja" aria-hidden="true">${esc(s.orig)}</div>` : ""}</div>
 <div class="tp"><div class="tph"><div class="cover tpcv" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></div>
 <div class="tpt"><h1>${esc(s.title)}</h1>${s.orig || (s.alts || [])[0] ? `<div class="tpo" lang="${s.orig ? "ja" : "vi"}">${esc(s.orig || s.alts[0])}</div>` : ""}${s.author || s.artist ? `<div class="crs">${credit("Tác giả", s.author)}${s.artist && s.artist !== s.author ? credit("Minh họa", s.artist) : ""}</div>` : ""}</div>
 <div class="tpm"><div class="acts tpa2">${n ? `<a class="btn pri big" href="#${kind}/${s.slug}/${last ?? 0}">${ic(I.play)}${last != null ? "Đọc tiếp" : "Đọc từ đầu"}</a>` : ""}<button class="btn ico${fav ? " on" : ""}" id="fvb" title="${fav ? "Bỏ khỏi thư viện" : "Thêm vào thư viện"}" aria-label="Thư viện" aria-pressed="${fav}" onclick="toggleFav('${kind}','${esc(s.slug)}')">${ic(I.star)}</button><button class="btn ico" title="Chia sẻ" aria-label="Chia sẻ" onclick="shareS('${kind}','${esc(s.slug)}')">${ic(I.share)}</button>${n ? `<span class="subl">${last != null ? `<a href="#${kind}/${s.slug}/0">Đọc từ đầu</a>` : ""}<a href="#${kind}/${s.slug}/${n - 1}">Chương mới nhất</a></span>` : ""}${ADM ? `<span class="admb"><a class="btn ico sm" title="Thêm chương" href="admin.html#chap/${kind}/${s.slug}">${ic(I.plus)}</a><a class="btn ico sm" title="Quản lý bộ này" href="admin.html#bo/${kind}/${s.slug}">${ic(I.edit)}</a></span>` : ""}</div><div class="tptg">${stDot(s)}${tags}</div>${s.prog || s.sched ? `<div class="prog">${s.prog ? `<span><i>Tiến độ</i>${esc(s.prog)}</span>` : ""}${s.sched ? `<span><i>Lịch ra chương</i>${esc(s.sched)}</span>` : ""}</div>` : ""}</div></div>
