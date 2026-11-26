@@ -123,6 +123,8 @@ details.ms>summary::-webkit-details-marker{display:none}
 #t_set{background:var(--s1);border-radius:8px;padding:12px 16px;margin:16px 0}
 #t_set>summary{cursor:pointer;font-weight:600}
 #t_set input,#t_set select,#t_set textarea{background:var(--bg)}
+#pv_list .li{background:var(--bg)}#pv_list .li input{width:auto;margin:0}.pvs{font-size:.8rem;color:var(--mu);max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pvs.ok{color:var(--ok)}.pvs.err{color:var(--err)}
+.pvadd{margin-top:10px}
 .trgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
 .trta{min-height:460px;font-size:15px;line-height:1.75}
 .trbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px;padding:10px;background:var(--s1);border-radius:8px;position:sticky;bottom:12px;z-index:5;box-shadow:0 6px 20px #0002}
@@ -209,15 +211,22 @@ details.ms>summary::-webkit-details-marker{display:none}
 <div class="panel" id="p-tr"><h3>Dịch chương</h3><p class="mu">Dán bản gốc bên trái, dịch tay hoặc dịch tự động sang bên phải, soát lại rồi đăng. Bản nháp tự lưu trên máy này.</p>
 <div class="g4"><div><label for="t_ser">Bộ truyện (Novel)</label><select id="t_ser"></select></div><div><label for="t_title">Tên chương</label><input id="t_title" placeholder="Chương 1: ..."></div>
 <div><label for="t_vol">Tập</label><input id="t_vol" list="t_vols"><datalist id="t_vols"></datalist></div><div><label for="t_date">Ngày</label><input id="t_date" type="date"></div></div>
-<details id="t_set"><summary>Cài đặt dịch tự động và bảng tên riêng</summary>
+<details id="t_set"><summary>Cài đặt dịch tự động, bảng tên riêng và ghi chú</summary>
 <div class="g2"><div><label for="t_src">Ngôn ngữ gốc</label><select id="t_src"><option>tiếng Nhật</option><option>tiếng Anh</option><option>tiếng Trung</option><option>tiếng Hàn</option></select></div>
-<div><label for="t_model">Tên model <small>(đổi nếu Google đổi tên)</small></label><input id="t_model"></div>
-<div class="full"><label for="t_style">Văn phong</label><input id="t_style" value="tự nhiên, mượt mà, đúng chất light novel"></div>
-<div class="full"><label for="t_key">Gemini API key <small>(lưu mã hóa bằng PIN trên máy này)</small></label><input id="t_key" type="password" autocomplete="off" placeholder="Dán key lấy từ aistudio.google.com/apikey"></div></div>
-<div class="acts"><button type="button" id="t_keysave" class="trb">Lưu key</button><button type="button" id="t_keydel" class="sec">Xóa key</button></div>
-<label for="t_gl">Bảng tên riêng của bộ này <small>(mỗi dòng: gốc = bản dịch)</small></label><textarea id="t_gl" placeholder="アリス = Alice&#10;魔王 = Ma Vương"></textarea>
-<div class="acts"><button type="button" id="gl_push">Lưu bảng tên lên repo</button><button type="button" id="gl_pull" class="sec">Lấy từ repo</button></div>
-<p class="mu" style="margin-top:10px">Bảng tên lưu trong file glossary.json của repo, dùng chung giữa các máy. Repo công khai thì file này cũng công khai.</p></details>
+<div><label for="t_style">Văn phong</label><input id="t_style" value="tự nhiên, mượt mà, đúng chất light novel"></div></div>
+<h4>Dịch vụ AI</h4><p class="mu">Thêm một hoặc nhiều dịch vụ. Công cụ dùng dịch vụ đầu tiên đang bật; dịch vụ nào lỗi hoặc hết hạn mức thì tự chuyển sang dịch vụ kế tiếp. Key được mã hóa bằng PIN và chỉ lưu trên máy này.</p>
+<div id="pv_list" class="lst"></div>
+<div class="pvadd"><div class="g2">
+<div><label for="pv_type">Thêm dịch vụ</label><select id="pv_type"><option value="gemini">Google Gemini</option><option value="anthropic">Anthropic Claude</option><option value="openai">OpenAI</option><option value="openrouter">OpenRouter (nhiều model, có model miễn phí)</option><option value="custom">Dịch vụ khác tương thích OpenAI (DeepSeek, xAI, Ollama...)</option></select></div>
+<div><label for="pv_model">Model <small>(đổi được nếu nhà cung cấp đổi tên)</small></label><input id="pv_model"></div>
+<div class="full" id="pv_urlw" hidden><label for="pv_url">Địa chỉ API <small>(phần trước /chat/completions)</small></label><input id="pv_url" placeholder="https://api.deepseek.com/v1"></div>
+<div class="full"><label for="pv_key">API key <small id="pv_hint"></small></label><input id="pv_key" type="password" autocomplete="off"></div></div>
+<div class="acts"><button type="button" id="pv_add">Thêm dịch vụ</button></div></div>
+<h4>Bảng tên riêng và ghi chú của bộ này</h4>
+<label for="t_gl">Bảng tên riêng <small>(mỗi dòng: gốc = bản dịch)</small></label><textarea id="t_gl" placeholder="アリス = Alice&#10;魔王 = Ma Vương"></textarea>
+<label for="t_notes">Ghi chú cho AI <small>(xưng hô, giọng nhân vật, thuật ngữ; được đưa vào mọi yêu cầu dịch của bộ này)</small></label><textarea id="t_notes" placeholder="Alice gọi nhân vật chính là anh, xưng em.&#10;Ma Vương nói giọng cổ, xưng ta, gọi người khác là ngươi."></textarea>
+<div class="acts"><button type="button" id="gl_push">Lưu bảng tên và ghi chú lên repo</button><button type="button" id="gl_pull" class="sec">Lấy từ repo</button></div>
+<p class="mu" style="margin-top:10px">Bảng tên và ghi chú lưu trong file glossary.json của repo, dùng chung giữa các máy. Repo công khai thì file này cũng công khai.</p></details>
 <div class="trgrid"><div><label for="t_in">Bản gốc <span class="mu" id="t_sc"></span></label><textarea id="t_in" class="trta" placeholder="Dán nội dung gốc, mỗi đoạn một dòng"></textarea></div>
 <div><label for="t_out">Bản dịch <span class="mu" id="t_oc"></span></label><textarea id="t_out" class="trta" placeholder="Bản dịch tiếng Việt"></textarea></div></div>
 <div id="t_rv" hidden><div class="rvh"><span id="t_rvs" class="mu"></span><label><input type="checkbox" id="t_only"> Chỉ hiện dòng cần chú ý</label></div><div id="t_rows"></div></div>
@@ -563,60 +572,113 @@ function trSer() {
   let d = {}; try { d = JSON.parse(ls.get("dr:" + s.slug) || "{}") } catch (e) {}
   const vs = [...new Set(s.chapters.map(c => (c.vol || "").trim()).filter(Boolean))]; $("#t_vols").innerHTML = vs.map(v => `<option value="${esc(v)}">`).join("");
   $("#t_title").value = d.t || ""; $("#t_vol").value = d.v ?? (s.chapters.length ? (s.chapters[s.chapters.length - 1].vol || "") : "");
-  $("#t_in").value = d.i || ""; $("#t_out").value = d.o || ""; trNext = d.n || 0; $("#t_gl").value = ls.get("gl:" + s.slug) || GL[s.slug] || ""; trCount();
+  $("#t_in").value = d.i || ""; $("#t_out").value = d.o || ""; trNext = d.n || 0; $("#t_gl").value = ls.get("gl:" + s.slug) || GL[s.slug] || ""; $("#t_notes").value = ls.get("nt:" + s.slug) ?? (GL[s.slug + "#notes"] || ""); trCount();
   $("#t_prog").textContent = d.i ? "Đã khôi phục bản nháp." : "";
 }
 $("#t_ser").onchange = () => { trExitRV(); trSer() };
 $("#t_gl").addEventListener("input", () => { if (trSlug) ls.set("gl:" + trSlug, $("#t_gl").value) });
 ["t_in", "t_out", "t_title", "t_vol"].forEach(id => $("#" + id).addEventListener("input", () => { trCount(); clearTimeout(trTimer); trTimer = setTimeout(trDraft, 600) }));
-(function () { let S = {}; try { S = JSON.parse(ls.get("trset") || "{}") } catch (e) {} if (S.src) $("#t_src").value = S.src; if (S.style) $("#t_style").value = S.style; $("#t_model").value = ls.get("gmodel") || "gemini-3.6-flash" })();
+(function () { let S = {}; try { S = JSON.parse(ls.get("trset") || "{}") } catch (e) {} if (S.src) $("#t_src").value = S.src; if (S.style) $("#t_style").value = S.style })();
 ["t_src", "t_style"].forEach(id => $("#" + id).addEventListener("change", () => ls.set("trset", JSON.stringify({ src: $("#t_src").value, style: $("#t_style").value }))));
-$("#t_model").addEventListener("change", () => ls.set("gmodel", $("#t_model").value.trim()));
-async function trLoadKey() { try { const o = JSON.parse(ls.get("gem2") || "null"); if (o && sessionPin) { trKey = await unseal(sessionPin, o); $("#t_key").value = "••••••••" } } catch (e) {} }
-$("#t_keysave").onclick = async () => {
-  const k = $("#t_key").value.trim(); if (!k || /^•+$/.test(k)) return log("Hãy dán API key vào ô trước");
-  if (!sessionPin) return log("Hãy đăng nhập lại bằng PIN để lưu key");
-  try { needHttps(); ls.set("gem2", JSON.stringify(await seal(sessionPin, k))); trKey = k; $("#t_key").value = "••••••••"; log("✅ Đã lưu key (mã hóa bằng PIN).") } catch (e) { log("❌ " + e.message) }
+$("#t_notes").addEventListener("input", () => { if (trSlug) ls.set("nt:" + trSlug, $("#t_notes").value) });
+/* ----- Nhiều dịch vụ AI ----- */
+const PV = {
+  gemini: { n: "Gemini", m: "gemini-3.6-flash", h: "(lấy tại aistudio.google.com/apikey)" },
+  anthropic: { n: "Claude", m: "claude-sonnet-5-5", h: "(lấy tại console.anthropic.com)" },
+  openai: { n: "OpenAI", m: "gpt-6-luna", h: "(lấy tại platform.openai.com)" },
+  openrouter: { n: "OpenRouter", m: "openrouter/free", h: "(lấy tại openrouter.ai/keys)" },
+  custom: { n: "Tùy chỉnh", m: "", h: "(key của dịch vụ đó; Ollama chạy trên máy thì để trống)" }
 };
-$("#t_keydel").onclick = () => { ls.del("gem2"); trKey = ""; $("#t_key").value = ""; log("Đã xóa key.") };
-const trPrompt = txt => `Bạn là dịch giả light novel chuyên nghiệp. Hãy dịch đoạn văn ${$("#t_src").value} dưới đây sang tiếng Việt.
+let PROV = [], pvCool = {}, trLastBy = "";
+const pvName = p => `${PV[p.type]?.n || p.type}, ${p.model}`;
+async function pvSave() { if (!sessionPin) throw new Error("Hãy đăng nhập lại bằng PIN để lưu dịch vụ"); needHttps(); ls.set("llm2", JSON.stringify(await seal(sessionPin, JSON.stringify(PROV)))); pvCool = {}; pvRender() }
+async function trLoadKey() {
+  try { const o = JSON.parse(ls.get("llm2") || "null"); if (o && sessionPin) PROV = JSON.parse(await unseal(sessionPin, o)) } catch (e) {}
+  if (!PROV.length) { try { const o = JSON.parse(ls.get("gem2") || "null"); if (o && sessionPin) { PROV = [{ type: "gemini", key: await unseal(sessionPin, o), model: ls.get("gmodel") || PV.gemini.m, url: "", on: true }]; await pvSave(); ls.del("gem2") } } catch (e) {} }
+  pvRender();
+}
+function pvRender() {
+  $("#pv_list").innerHTML = PROV.map((p, i) => `<div class="li"><input type="checkbox" data-pon="${i}" ${p.on ? "checked" : ""} title="Bật hoặc tắt dịch vụ này"><span class="lt">${i + 1}. ${esc(pvName(p))} <em>${p.key ? "key …" + esc(p.key.slice(-4)) : "không có key"}${p.url ? ", " + esc(p.url) : ""}</em></span><span class="pvs" id="pvs${i}"></span><button type="button" class="sec sm" data-pt="${i}">Kiểm tra</button><button type="button" class="sec sm" data-pm="${i}|-1" title="Ưu tiên lên"${i ? "" : " disabled"}>↑</button><button type="button" class="sec sm" data-pm="${i}|1" title="Ưu tiên xuống"${i < PROV.length - 1 ? "" : " disabled"}>↓</button><button type="button" class="dng sm" data-px="${i}">Xóa</button></div>`).join("") || '<p class="mu">Chưa có dịch vụ nào. Thêm ít nhất một dịch vụ bên dưới để dùng dịch tự động.</p>';
+}
+const pvTypeUI = () => { const t = $("#pv_type").value; $("#pv_model").value = PV[t].m; $("#pv_model").placeholder = t === "custom" ? "deepseek-chat, llama3.1..." : ""; $("#pv_urlw").hidden = t !== "custom"; $("#pv_hint").textContent = PV[t].h };
+$("#pv_type").onchange = pvTypeUI; pvTypeUI();
+$("#pv_add").onclick = async () => {
+  try {
+    const type = $("#pv_type").value, key = $("#pv_key").value.trim(), model = $("#pv_model").value.trim(), url = $("#pv_url").value.trim().replace(/\/+$/, "").replace(/\/chat\/completions$/, "");
+    if (!model) throw new Error("Hãy nhập tên model"); if (type !== "custom" && !key) throw new Error("Hãy dán API key");
+    if (type === "custom" && !/^https?:\/\//.test(url)) throw new Error("Địa chỉ API phải bắt đầu bằng http:// hoặc https://");
+    PROV.push({ type, key, model, url: type === "custom" ? url : "", on: true }); await pvSave(); $("#pv_key").value = "";
+    log("✅ Đã thêm " + pvName(PROV[PROV.length - 1]) + ". Bấm Kiểm tra để thử.");
+  } catch (e) { log("❌ " + e.message) }
+};
+$("#pv_list").addEventListener("click", async e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.pt != null) { const i = +b.dataset.pt, st = $("#pvs" + i); st.className = "pvs"; st.textContent = "Đang thử..."; const t0 = Date.now(); try { const r = await callOne(PROV[i], 'Dịch câu sau sang tiếng Việt, chỉ trả về bản dịch: "Good morning, everyone."'); st.className = "pvs ok"; st.textContent = `Hoạt động, ${((Date.now() - t0) / 1000).toFixed(1)}s: ${r.slice(0, 60)}`; st.title = r } catch (err) { st.className = "pvs err"; st.textContent = err.message; st.title = err.message } return }
+  try {
+    if (b.dataset.px != null) { const i = +b.dataset.px; if (!confirm("Xóa dịch vụ " + pvName(PROV[i]) + "?")) return; PROV.splice(i, 1); await pvSave() }
+    else if (b.dataset.pm) { const [i, d] = b.dataset.pm.split("|").map(Number); [PROV[i], PROV[i + d]] = [PROV[i + d], PROV[i]]; await pvSave() }
+  } catch (err) { log("❌ " + err.message) }
+});
+$("#pv_list").addEventListener("change", async e => { const c = e.target.closest("[data-pon]"); if (!c) return; PROV[+c.dataset.pon].on = c.checked; try { await pvSave() } catch (err) { log("❌ " + err.message) } });
+class PvErr extends Error { constructor(m, st) { super(m); this.st = st } }
+async function callOne(p, prompt) {
+  let url, headers = { "Content-Type": "application/json" }, body, pick;
+  if (p.type === "gemini") {
+    url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(p.model)}:generateContent`; headers["x-goog-api-key"] = p.key;
+    body = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { temperature: 0.4 } }; pick = j => (j.candidates?.[0]?.content?.parts || []).map(x => x.text || "").join("");
+  } else if (p.type === "anthropic") {
+    url = "https://api.anthropic.com/v1/messages"; Object.assign(headers, { "x-api-key": p.key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" });
+    body = { model: p.model, max_tokens: 8000, messages: [{ role: "user", content: prompt }] }; pick = j => (j.content || []).map(x => x.text || "").join("");
+  } else {
+    url = (p.type === "openai" ? "https://api.openai.com/v1" : p.type === "openrouter" ? "https://openrouter.ai/api/v1" : p.url) + "/chat/completions";
+    if (p.key) headers.Authorization = "Bearer " + p.key; if (p.type === "openrouter") headers["X-Title"] = "Kenrori";
+    body = { model: p.model, messages: [{ role: "user", content: prompt }] }; if (p.type !== "openai") body.temperature = 0.4; pick = j => j.choices?.[0]?.message?.content || "";
+  }
+  let r, j;
+  try { r = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) }); j = await r.json().catch(() => ({})) }
+  catch (e) { throw new PvErr("Không kết nối được (mạng, trình chặn quảng cáo, hoặc dịch vụ không cho gọi từ trình duyệt)", 0) }
+  if (!r.ok) throw new PvErr((r.status === 401 || r.status === 403 ? "Key sai hoặc không có quyền. " : r.status === 404 ? "Không tìm thấy model, kiểm tra tên model. " : r.status === 429 ? "Hết hạn mức tạm thời. " : "") + (j.error?.message || j.message || "Lỗi " + r.status), r.status);
+  const t = String(pick(j) || "").trim(); if (!t) throw new PvErr("Không trả về nội dung (có thể bị bộ lọc nội dung chặn)", -1);
+  return t;
+}
+async function gem(prompt) {
+  const L = PROV.map((p, i) => [p, i]).filter(([p]) => p.on);
+  if (!L.length) throw new Error("Chưa có dịch vụ AI nào đang bật. Mở Cài đặt dịch tự động để thêm.");
+  const errs = new Map();
+  for (let round = 0; round < 3; round++) {
+    for (const [p, i] of L) {
+      if ((pvCool[i] || 0) > Date.now()) continue;
+      try { const t = await callOne(p, prompt); trLastBy = pvName(p); return t }
+      catch (e) { errs.set(i, pvName(p) + ": " + e.message); pvCool[i] = Date.now() + (e.st === 429 || e.st >= 500 || e.st === 0 ? 60e3 : e.st === -1 ? 0 : 600e3); if (trStop) throw new Error([...errs.values()].join(" | ")) }
+    }
+    const wait = Math.ceil((Math.min(...L.map(([, i]) => pvCool[i] || 0)) - Date.now()) / 1000);
+    if (wait > 90 || trStop || round === 2) break;
+    for (let s = Math.max(wait, 1); s > 0 && !trStop; s--) { $("#t_prog").textContent = `Các dịch vụ đang bận hoặc hết hạn mức, thử lại sau ${s}s...`; await new Promise(z => setTimeout(z, 1000)) }
+  }
+  throw new Error([...errs.values()].join(" | ") || "Tất cả dịch vụ đang tạm khóa, thử lại sau ít phút.");
+}
+const trPrompt = (txt, ctx = "") => { const nt = $("#t_notes").value.trim(); return `Bạn là dịch giả light novel chuyên nghiệp. Hãy dịch đoạn văn ${$("#t_src").value} dưới đây sang tiếng Việt.
 Yêu cầu:
 - Văn phong: ${$("#t_style").value}.
 - Giữ nguyên cấu trúc đoạn: mỗi đoạn gốc tương ứng một đoạn dịch, cách nhau bằng một dòng trống. Không gộp hay tách đoạn, không bỏ sót câu nào.
 - Giữ lời thoại trong dấu ngoặc kép.
-${trGl().length ? "- Dùng đúng bảng tên riêng sau, xưng hô nhất quán:\n" + trGl().map(([x, y]) => x + " = " + y).join("\n") + "\n" : ""}- Chỉ trả về bản dịch, không giải thích, không ghi chú, không thêm tiêu đề.
-
+${trGl().length ? "- Dùng đúng bảng tên riêng sau, xưng hô nhất quán:\n" + trGl().map(([x, y]) => x + " = " + y).join("\n") + "\n" : ""}${nt ? "- Ghi chú của người dịch cho bộ này, phải tuân theo:\n" + nt + "\n" : ""}- Chỉ trả về bản dịch, không giải thích, không ghi chú, không thêm tiêu đề.
+${ctx ? `\nĐoạn đã dịch ngay trước đó (chỉ để giữ mạch văn và cách xưng hô, KHÔNG dịch lại và KHÔNG đưa vào kết quả):\n"""\n${ctx}\n"""\n` : ""}
 Đoạn cần dịch:
 """
 ${txt}
-"""`;
-async function gem(prompt) {
-  if (!trKey) throw new Error("Chưa có Gemini API key. Mở ⚙️ Cài đặt dịch tự động để nhập.");
-  const model = $("#t_model").value.trim() || "gemini-3.6-flash";
-  for (let a = 0; a < 3; a++) {
-    let r, j;
-    try {
-      r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": trKey }, body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { temperature: 0.4 } }) });
-      j = await r.json().catch(() => ({}));
-    } catch (e) { throw new Error("Không kết nối được tới Gemini. Kiểm tra mạng hoặc tắt trình chặn quảng cáo/VPN rồi thử lại.") }
-    if (r.status === 429 && a < 2) { for (let s = 25; s > 0 && !trStop; s--) { $("#t_prog").textContent = `Hết hạn mức tạm thời, chờ ${s}s rồi thử lại...`; await new Promise(z => setTimeout(z, 1000)) } continue }
-    if (!r.ok) throw new Error(j.error?.message || "Lỗi " + r.status);
-    const t = (j.candidates?.[0]?.content?.parts || []).map(p => p.text || "").join("").trim();
-    if (!t) throw new Error("Model không trả về nội dung (có thể bị bộ lọc chặn). Thử chia nhỏ đoạn hoặc đổi model.");
-    return t;
-  }
-}
+"""` };
 const chunks = txt => { const ps = txt.replace(/\r/g, "").split(/\n+/).map(x => x.trim()).filter(Boolean), out = []; let cur = ""; for (const p of ps) { if (cur && cur.length + p.length > 1800) { out.push(cur); cur = "" } cur += (cur ? "\n" : "") + p } if (cur) out.push(cur); return out };
 async function trRun(from) {
   const src = $("#t_in").value; if (!src.trim()) throw new Error("Hãy dán bản gốc vào ô bên trái");
   const cs = chunks(src); trStop = false; if (from === 0 || from >= cs.length) { from = 0; $("#t_out").value = "" }
   for (let k = from; k < cs.length; k++) {
     if (trStop) { trNext = k; trDraft(); $("#t_prog").textContent = `⏹ Đã dừng ở đoạn ${k}/${cs.length}. Bấm ▶ Dịch tiếp để tiếp tục.`; return }
-    $("#t_prog").textContent = `Đang dịch ${k + 1}/${cs.length}...`;
-    let t; try { t = await gem(trPrompt(cs[k])) } catch (e) { trNext = k; trDraft(); throw new Error(`Lỗi ở đoạn ${k + 1}/${cs.length}: ${e.message} (bấm ▶ Dịch tiếp để thử lại từ đoạn này)`) }
+    $("#t_prog").textContent = `Đang dịch ${k + 1}/${cs.length}${trLastBy ? ", đoạn trước dùng " + trLastBy : ""}...`;
+    let t; try { t = await gem(trPrompt(cs[k], $("#t_out").value.trim().split(/\n+/).slice(-3).join("\n").slice(-900))) } catch (e) { trNext = k; trDraft(); throw new Error(`Lỗi ở đoạn ${k + 1}/${cs.length}: ${e.message} (bấm ▶ Dịch tiếp để thử lại từ đoạn này)`) }
     const o = $("#t_out"); o.value += (o.value.trim() ? "\n\n" : "") + t.split(/\n+/).map(x => x.trim()).filter(Boolean).join("\n\n"); trNext = k + 1; trDraft(); trCount();
   }
-  trNext = 0; trDraft(); $("#t_prog").textContent = `✅ Đã dịch xong ${cs.length} đoạn. Hãy đọc lại và chỉnh sửa trước khi đăng.`;
+  trNext = 0; trDraft(); $("#t_prog").textContent = `✅ Đã dịch xong ${cs.length} đoạn (dịch vụ cuối cùng dùng: ${trLastBy}). Hãy đọc lại và chỉnh sửa trước khi đăng.`;
 }
 async function trGo(from) { trBusy(true); $("#t_stop").hidden = false; try { await trRun(from) } catch (e) { $("#t_prog").textContent = "❌ " + e.message; log("❌ " + e.message) } trBusy(false); $("#t_stop").hidden = true }
 $("#t_all").onclick = () => { if ($("#t_out").value.trim() && !confirm("Ô bản dịch đang có nội dung, dịch lại từ đầu sẽ ghi đè. Tiếp tục?")) return; trGo(0) };
@@ -646,16 +708,16 @@ $("#t_pub").onclick = () => run(async () => {
 /* ===== Bảng tên trên repo ===== */
 let GL = {};
 async function glFetch() { const r = await api("glossary.json", { q: "?ref=" + cfg.b }); if (r.status === 404) return {}; if (!r.ok) throw new Error("Không đọc được glossary.json (" + r.status + ")"); return JSON.parse(t64((await r.json()).content)) }
-async function glLoad() { try { GL = await glFetch(); if (trSlug && !$("#t_gl").value.trim() && GL[trSlug]) { $("#t_gl").value = GL[trSlug]; ls.set("gl:" + trSlug, GL[trSlug]) } } catch (e) { GL = {} } }
+async function glLoad() { try { GL = await glFetch(); if (trSlug && !$("#t_gl").value.trim() && GL[trSlug]) { $("#t_gl").value = GL[trSlug]; ls.set("gl:" + trSlug, GL[trSlug]) } if (trSlug && !$("#t_notes").value.trim() && GL[trSlug + "#notes"]) { $("#t_notes").value = GL[trSlug + "#notes"]; ls.set("nt:" + trSlug, GL[trSlug + "#notes"]) } } catch (e) { GL = {} } }
 $("#gl_push").onclick = () => run(async () => {
   if (!trSlug) throw new Error("Hãy chọn bộ truyện"); log("Đang lưu bảng tên lên repo...");
-  const cur = await glFetch(), t = $("#t_gl").value; if (t.trim()) cur[trSlug] = t; else delete cur[trSlug];
-  await put("glossary.json", b64t(JSON.stringify(cur, null, 1)), "Bảng tên riêng: " + trSlug); GL = cur; log("✅ Đã lưu bảng tên của bộ này lên repo.");
+  const cur = await glFetch(), t = $("#t_gl").value, nt = $("#t_notes").value; if (t.trim()) cur[trSlug] = t; else delete cur[trSlug]; if (nt.trim()) cur[trSlug + "#notes"] = nt; else delete cur[trSlug + "#notes"];
+  await put("glossary.json", b64t(JSON.stringify(cur, null, 1)), "Bảng tên riêng: " + trSlug); GL = cur; log("✅ Đã lưu bảng tên và ghi chú của bộ này lên repo.");
 });
 $("#gl_pull").onclick = () => run(async () => {
-  if (!trSlug) throw new Error("Hãy chọn bộ truyện"); GL = await glFetch(); const t = GL[trSlug]; if (!t) throw new Error("Repo chưa có bảng tên cho bộ này");
-  if ($("#t_gl").value.trim() && !confirm("Ghi đè bảng tên đang có trên máy này bằng bản trên repo?")) return;
-  $("#t_gl").value = t; ls.set("gl:" + trSlug, t); log("✅ Đã lấy bảng tên từ repo.");
+  if (!trSlug) throw new Error("Hãy chọn bộ truyện"); GL = await glFetch(); const t = GL[trSlug] || "", nt = GL[trSlug + "#notes"] || ""; if (!t && !nt) throw new Error("Repo chưa có bảng tên hay ghi chú cho bộ này");
+  if (($("#t_gl").value.trim() || $("#t_notes").value.trim()) && !confirm("Ghi đè bảng tên và ghi chú đang có trên máy này bằng bản trên repo?")) return;
+  $("#t_gl").value = t; ls.set("gl:" + trSlug, t); $("#t_notes").value = nt; ls.set("nt:" + trSlug, nt); log("✅ Đã lấy bảng tên và ghi chú từ repo.");
 });
 
 /* ===== Chế độ đối chiếu ===== */
