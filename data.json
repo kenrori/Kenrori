@@ -259,7 +259,10 @@
    "prog": "",
    "sched": "",
    "format": "Light Novel",
-   "cover": "images/youkoso-jitsuryoku-shijou-shugi-bia.jpg"
+   "cover": "images/youkoso-jitsuryoku-shijou-shugi-bia.jpg",
+   "vc": {
+    "Tập 1": "images/youkoso-jitsuryoku-shijou-shugi-tap-1-mwxj7c5z.jpg"
+   }
   }
  ],
  "manga": [],
