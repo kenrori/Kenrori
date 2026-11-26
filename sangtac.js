@@ -22,6 +22,17 @@
   const words = t => (String(t || "").trim().match(/\S+/g) || []).length;
   const paras = t => String(t || "").normalize("NFC").split(/\n+/).map(x => x.trim()).filter(Boolean).map(x => `<p>${esc(x)}</p>`).join("");
   const isCover = u => /^https:\/\//.test(u || "");
+  const avHtml = (p, cls = "") => `<span class="avs ${cls}" style="--h:${hue((p && p.display_name) || "?")}" aria-hidden="true">${p && isCover(p.avatar_url) ? `<img src="${esc(p.avatar_url)}" alt="" loading="lazy">` : esc([...((p && p.display_name) || "?")][0] || "?")}</span>`;
+  const LINKT = [["facebook", "Facebook"], ["discord", "Discord"], ["x", "X (Twitter)"], ["youtube", "YouTube"], ["tiktok", "TikTok"], ["web", "Trang web"], ["khac", "Khác"]];
+  const linksOf = p => (Array.isArray(p && p.links) ? p.links : []).filter(l => l && /^https:\/\/[^\s"<>]{3,300}$/.test(l.u || ""));
+  const linkLabel = l => (LINKT.find(x => x[0] === l.k) || [])[1] || l.t || "Liên kết";
+  async function shrinkImg(f, w, h) { // cắt giữa theo tỉ lệ w:h rồi thu nhỏ
+    const bm = await createImageBitmap(f), r = w / h, sw = Math.min(bm.width, bm.height * r), sh = sw / r, sx = (bm.width - sw) / 2, sy = (bm.height - sh) / 2, k = Math.min(1, w / sw), c = document.createElement("canvas");
+    c.width = Math.round(sw * k); c.height = Math.round(sh * k); c.getContext("2d").drawImage(bm, sx, sy, sw, sh, 0, 0, c.width, c.height); bm.close?.();
+    let b = await new Promise(z => c.toBlob(z, "image/webp", .86)); if (!b || b.type !== "image/webp") b = await new Promise(z => c.toBlob(z, "image/jpeg", .86)); return b;
+  }
+  async function upImg(blob, name) { const ext = blob.type === "image/webp" ? "webp" : "jpg", path = `${me.id}/${name}-${Date.now()}.${ext}`, up = await sb.storage.from("covers").upload(path, blob, { contentType: blob.type, upsert: false }); if (up.error) throw up.error; return sb.storage.from("covers").getPublicUrl(path).data.publicUrl }
+  async function rmImg(url) { try { const m = /\/storage\/v1\/object\/public\/covers\/(.+)$/.exec(url || ""); if (m && m[1].startsWith(me.id + "/")) await sb.storage.from("covers").remove([decodeURIComponent(m[1])]) } catch (e) {} }
   const busy = (b, on) => { if (b) { b.disabled = on; b.dataset.l ??= b.textContent; b.textContent = on ? "Đang xử lý..." : b.dataset.l } };
   const go = h => { if (location.hash === h) route(); else location.hash = h };
   const viMsg = e => {
@@ -58,7 +69,7 @@
   function authBtn() {
     const el = $("#stu"); if (!el) return; el.hidden = !enabled();
     el.title = prof ? "Góc tác giả: " + prof.display_name : "Đăng nhập Góc tác giả";
-    el.innerHTML = prof ? `<span class="avs" style="--h:${hue(prof.display_name)}">${esc([...prof.display_name][0] || "?")}</span>` : ic('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>');
+    el.innerHTML = prof ? avHtml(prof) : ic('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>');
   }
 
   /* ---------- Thẻ truyện ---------- */
@@ -131,10 +142,15 @@
 
   /* ---------- Trang tác giả ---------- */
   async function pWriter(uid) {
-    const [{ data: p }, { data: ws, error }] = await Promise.all([sb.from("profiles").select("id,display_name,bio,banned,created_at").eq("id", uid).maybeSingle(), sb.from("works").select(WSEL).eq("author_id", uid).eq("visibility", "published").eq("hidden", false).order("updated_at", { ascending: false })]);
+    const [{ data: p }, { data: ws, error }] = await Promise.all([sb.from("profiles").select("*").eq("id", uid).maybeSingle(), sb.from("works").select(WSEL).eq("author_id", uid).eq("visibility", "published").eq("hidden", false).order("updated_at", { ascending: false })]);
     if (error) { app.innerHTML = errBox(error); return } if (!p) { app.innerHTML = notice("Không tìm thấy tác giả."); return }
     document.title = `${p.display_name} | Kenrori`;
-    app.innerHTML = `<section class="ap"><div class="av" style="--h:${hue(p.display_name)}">${esc([...p.display_name][0] || "?")}</div><div><h1>${esc(p.display_name)}</h1><p>Tác giả Sáng tác, tham gia từ ${fmtD(day(p.created_at))}${p.banned ? ". Tài khoản đang bị khóa" : ""}</p></div></section>${p.bio ? `<p class="sum" style="max-width:72ch;color:var(--mu)">${esc(p.bio)}</p>` : ""}` + sec("Truyện đã đăng", null, (ws || []).length ? `<div class="series">${ws.map(wCard).join("")}</div>` : '<p class="empty">Tác giả chưa đăng truyện công khai nào.</p>');
+    const W = ws || [], nch = W.reduce((a, w) => a + ((w.chapters && w.chapters[0] && w.chapters[0].count) || 0), 0), joined = new Date(p.created_at), L = linksOf(p), mine = me && me.id === p.id;
+    app.innerHTML = `<section class="tgp"><div class="tgb" style="--h:${hue(p.display_name)}">${isCover(p.banner_url) ? `<img src="${esc(p.banner_url)}" alt="">` : ""}</div>
+<div class="tgh">${avHtml(p, "tga")}<div class="tgi"><h1>${esc(p.display_name)}</h1><p class="tgm">Tác giả Sáng tác, tham gia từ tháng ${joined.getMonth() + 1}/${joined.getFullYear()}${p.banned ? ". Tài khoản đang bị khóa" : ""}</p></div>${mine ? `<a class="btn" href="#viet/ho-so">${ic(I.edit)}Sửa hồ sơ</a>` : ""}</div>
+<div class="tgs"><span><b>${W.length}</b> truyện</span><span><b>${nch.toLocaleString("vi-VN")}</b> chương</span>${W.some(w => w.status === "completed") ? `<span><b>${W.filter(w => w.status === "completed").length}</b> đã hoàn thành</span>` : ""}</div>
+${p.bio ? `<p class="tgbio">${esc(p.bio)}</p>` : mine ? '<p class="tgbio mu">Bạn chưa viết giới thiệu. Bấm Sửa hồ sơ để thêm vài dòng về mình.</p>' : ""}
+${L.length ? `<div class="tgl">${L.map(l => `<a class="btn sm" href="${esc(l.u)}" target="_blank" rel="noopener nofollow ugc">${ic('<path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>')}${esc(linkLabel(l))}</a>`).join("")}</div>` : ""}</section>` + sec("Truyện đã đăng", null, W.length ? `<div class="series">${W.map(wCard).join("")}</div>` : `<p class="empty">${mine ? 'Bạn chưa đăng truyện công khai nào. <a class="al" href="#viet/moi">Viết truyện mới</a>' : "Tác giả chưa đăng truyện công khai nào."}</p>`);
   }
 
   /* ---------- Góc tác giả: đăng nhập, đăng ký ---------- */
@@ -267,12 +283,42 @@ ${hasDr ? `<p class="stwarn" id="c_dr">Có bản nháp chưa lưu trên máy nà
   /* ---------- Hồ sơ ---------- */
   function pProfile() {
     document.title = "Hồ sơ | Kenrori";
-    app.innerHTML = `<section class="sec stf" style="max-width:640px"><div class="sh"><h2>Hồ sơ tác giả</h2><a class="more all" href="#viet">Về Góc tác giả</a></div>
-<label for="p_n">Tên hiển thị</label><input id="p_n" maxlength="40" value="${esc(prof ? prof.display_name : "")}">
-<label for="p_b">Giới thiệu bản thân <small>(hiện trên trang tác giả)</small></label><textarea id="p_b" maxlength="1000" rows="5">${esc(prof ? prof.bio : "")}</textarea>
+    const P = prof || {}, L = linksOf(P).slice(), st = { av: null, bn: null, avDel: false, bnDel: false };
+    const linkRow = (l, i) => `<div class="pfl" data-i="${i}"><select aria-label="Loại liên kết">${LINKT.map(([k, n]) => `<option value="${k}" ${k === (l.k || "khac") ? "selected" : ""}>${n}</option>`).join("")}</select><input type="url" placeholder="https://..." value="${esc(l.u || "")}" aria-label="Địa chỉ liên kết"><button type="button" class="btn sm" data-lx="${i}" aria-label="Bỏ liên kết này">✕</button></div>`;
+    app.innerHTML = `<section class="sec stf pfw"><div class="sh"><h2>Hồ sơ tác giả</h2><a class="more all" href="#viet">Về Góc tác giả</a></div>
+<div class="pfh"><label class="pfb" style="--h:${hue(P.display_name || "?")}" title="Đổi ảnh bìa"><img id="pf_bimg" alt="" ${isCover(P.banner_url) ? `src="${esc(P.banner_url)}"` : "hidden"}><span class="pfc">${ic('<path d="M4 7h3l2-3h6l2 3h3v13H4z"/><circle cx="12" cy="13" r="4"/>')}Đổi ảnh bìa</span><input type="file" id="pf_bin" accept="image/jpeg,image/png,image/webp" hidden></label>
+<label class="pfa" title="Đổi ảnh đại diện">${avHtml(P, "tga")}<span class="pfc">${ic('<path d="M4 7h3l2-3h6l2 3h3v13H4z"/><circle cx="12" cy="13" r="4"/>')}</span><input type="file" id="pf_ain" accept="image/jpeg,image/png,image/webp" hidden></label></div>
+<div class="pfx"><button type="button" class="lnk" id="pf_adel" ${isCover(P.avatar_url) ? "" : "hidden"}>Bỏ ảnh đại diện</button><button type="button" class="lnk" id="pf_bdel" ${isCover(P.banner_url) ? "" : "hidden"}>Bỏ ảnh bìa</button><small class="mu">Ảnh đại diện được cắt vuông, ảnh bìa cắt tỉ lệ 3:1. Ảnh JPG, PNG hoặc WebP.</small></div>
+<label for="p_n">Tên hiển thị</label><input id="p_n" maxlength="40" value="${esc(P.display_name || "")}">
+<label for="p_b">Giới thiệu bản thân <small id="p_bc">(hiện trên trang tác giả)</small></label><textarea id="p_b" maxlength="1000" rows="5" placeholder="Bạn thích viết thể loại gì, lịch đăng chương, lời nhắn cho người đọc...">${esc(P.bio || "")}</textarea>
+<label>Liên kết <small>(Facebook, Discord, trang web... tối đa 6)</small></label><div id="pf_ls"></div><button type="button" class="btn sm" id="pf_ladd">Thêm liên kết</button>
 <p class="aerr" id="p_err" role="alert"></p><div class="acts"><button class="btn pri" id="p_save">Lưu hồ sơ</button><a class="btn" href="#tg/${esc(me.id)}">Xem trang tác giả</a><a class="btn" href="#viet/doi-mat-khau">Đổi mật khẩu</a></div></section>`;
-    $("#p_save").onclick = async e => { const n = $("#p_n").value.trim(); if (n.length < 2) { $("#p_err").textContent = "Tên hiển thị cần ít nhất 2 ký tự."; return } busy(e.currentTarget, true); const { error } = await sb.from("profiles").update({ display_name: n, bio: $("#p_b").value.trim() }).eq("id", me.id); if (error) { $("#p_err").textContent = viMsg(error); busy(e.currentTarget, false); return } await loadProf(); authBtn(); toast("Đã lưu hồ sơ"); busy(e.currentTarget, false) };
+    const drawL = () => { $("#pf_ls").innerHTML = L.map(linkRow).join(""); $("#pf_ladd").hidden = L.length >= 6 };
+    const syncL = () => document.querySelectorAll("#pf_ls .pfl").forEach(r => { const i = +r.dataset.i; L[i] = { k: r.querySelector("select").value, u: r.querySelector("input").value.trim() } });
+    drawL();
+    $("#pf_ladd").onclick = () => { syncL(); L.push({ k: "facebook", u: "" }); drawL(); document.querySelector("#pf_ls .pfl:last-child input").focus() };
+    $("#pf_ls").onclick = e => { const b = e.target.closest("[data-lx]"); if (!b) return; syncL(); L.splice(+b.dataset.lx, 1); drawL() };
+    const pick = (inp, key, show) => inp.onchange = () => { const f = inp.files[0]; inp.value = ""; if (!f) return; if (!/^image\/(jpeg|png|webp)$/.test(f.type)) { $("#p_err").textContent = "Chỉ dùng ảnh JPG, PNG hoặc WebP."; return } st[key] = f; st[key + "Del"] = false; show(URL.createObjectURL(f)) };
+    pick($("#pf_ain"), "av", u => { $(".pfa .avs").innerHTML = `<img src="${u}" alt="">`; $("#pf_adel").hidden = false });
+    pick($("#pf_bin"), "bn", u => { const im = $("#pf_bimg"); im.src = u; im.hidden = false; $("#pf_bdel").hidden = false });
+    $("#pf_adel").onclick = () => { st.av = null; st.avDel = true; $(".pfa .avs").textContent = [...($("#p_n").value.trim() || "?")][0]; $("#pf_adel").hidden = true };
+    $("#pf_bdel").onclick = () => { st.bn = null; st.bnDel = true; $("#pf_bimg").hidden = true; $("#pf_bimg").removeAttribute("src"); $("#pf_bdel").hidden = true };
+    $("#p_b").oninput = () => { const n = $("#p_b").value.length; $("#p_bc").textContent = n > 800 ? `(${n}/1000)` : "(hiện trên trang tác giả)" };
+    $("#p_save").onclick = async e => {
+      const n = $("#p_n").value.trim(), er = m => $("#p_err").textContent = m; if (n.length < 2) return er("Tên hiển thị cần ít nhất 2 ký tự.");
+      syncL(); const links = L.filter(l => l.u).map(l => ({ k: l.k, u: l.u })); const bad = links.find(l => !/^https:\/\/[^\s"<>]{3,300}$/.test(l.u)); if (bad) return er("Liên kết phải bắt đầu bằng https://, ví dụ https://facebook.com/ten-ban");
+      busy(e.currentTarget, true); er("");
+      try {
+        const row = { display_name: n, bio: $("#p_b").value.trim(), links }, old = { a: P.avatar_url, b: P.banner_url };
+        if (st.av) row.avatar_url = await upImg(await shrinkImg(st.av, 320, 320), "avatar"); else if (st.avDel) row.avatar_url = null;
+        if (st.bn) row.banner_url = await upImg(await shrinkImg(st.bn, 1500, 500), "banner"); else if (st.bnDel) row.banner_url = null;
+        const { error } = await sb.from("profiles").update(row).eq("id", me.id); if (error) throw error;
+        if ("avatar_url" in row && old.a) rmImg(old.a); if ("banner_url" in row && old.b) rmImg(old.b);
+        await loadProf(); authBtn(); toast("Đã lưu hồ sơ"); go("#tg/" + me.id);
+      } catch (x) { er(/column .* does not exist|schema cache/i.test(x.message || "") ? "Máy chủ chưa có chỗ lưu ảnh đại diện. Quản trị viên cần chạy lại file supabase-setup.sql mới." : viMsg(x)); busy(e.currentTarget, false) }
+    };
   }
+
 
   /* ---------- Kiểm duyệt ---------- */
   async function pMod() {
@@ -370,10 +416,14 @@ Ban quản trị có quyền ẩn truyện hoặc khóa tài khoản vi phạm m
     "Kaomoji": "(◕‿◕)|(｡♥‿♥｡)|(≧▽≦)|ヾ(≧▽≦*)o|(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧|(๑•̀ㅂ•́)و✧|(ง •̀_•́)ง|(￣▽￣)|(¬‿¬)|(⊙_⊙)|(・_・;)|(；一_一)|(╥﹏╥)|(ಥ﹏ಥ)|(｡•́︿•̀｡)|(*/ω＼*)|(´｡• ω •｡`)|ʕ•ᴥ•ʔ|(=^･ω･^=)|(っ˘ω˘ς )|ヽ(°〇°)ﾉ|¯\\_(ツ)_/¯|(╯°□°）╯︵ ┻━┻|┬─┬ノ( º _ ºノ)"
   };
   const emoList = k => k === "Kaomoji" ? EMO[k].split("|") : EMO[k].split(" ");
-  const stickers = () => { try { return (DATA.site.stickers || []).filter(x => /^stickers\/[A-Za-z0-9._-]+\.(gif|png|webp|jpg)$/.test(x.p || "")) } catch (e) { return [] } };
+  const STK = "stickers\\/[A-Za-z0-9._-]+\\.(?:gif|png|webp|jpg|svg)|https:\\/\\/cdn\\.discordapp\\.com\\/emojis\\/\\d{15,21}\\.(?:png|gif|webp)";
+  const stickers = () => { try { const re = new RegExp("^(?:" + STK + ")$"); return (DATA.site.stickers || []).filter(x => re.test(x.p || "")) } catch (e) { return [] } };
+  const packs = () => { const m = new Map(); stickers().forEach(x => { const g = (x.g || "Nhãn dán").trim() || "Nhãn dán"; if (!m.has(g)) m.set(g, []); m.get(g).push(x) }); return m };
+  const recent = () => { try { return JSON.parse(ls.get("cmtRecent") || "[]") } catch (e) { return [] } };
+  const useRecent = (k, v) => { const L = [{ k, v }, ...recent().filter(x => !(x.k === k && x.v === v))].slice(0, 24); ls.set("cmtRecent", JSON.stringify(L)) };
   const gkey = () => { try { return (DATA.site.giphy || "").trim() } catch (e) { return "" } };
   const modPw = () => { try { return ADM ? ls.get("cmtMod") || "" : "" } catch (e) { return "" } };
-  const MRE = /\[s:(stickers\/[A-Za-z0-9._-]+\.(?:gif|png|webp|jpg))\]|(https:\/\/media\.giphy\.com\/media\/[A-Za-z0-9]+\/(?:200|giphy)\.gif|https:\/\/media\d*\.tenor\.com\/(?:m\/)?[A-Za-z0-9_-]+\/[A-Za-z0-9._-]+\.gif)/g;
+  const MRE = /\[s:(stickers\/[A-Za-z0-9._-]+\.(?:gif|png|webp|jpg|svg)|https:\/\/cdn\.discordapp\.com\/emojis\/\d{15,21}\.(?:png|gif|webp))\]|(https:\/\/media\.giphy\.com\/media\/[A-Za-z0-9]+\/(?:200|giphy)\.gif|https:\/\/media\d*\.tenor\.com\/(?:m\/)?[A-Za-z0-9_-]+\/[A-Za-z0-9._-]+\.gif)/g;
   const BIG = /^(?:\p{Extended_Pictographic}|\p{Emoji_Modifier}|‍|️|\s){1,24}$/u;
   function cBody(t) {
     let out = "", last = 0, n = 0, txt = ""; t = String(t);
@@ -397,14 +447,22 @@ Ban quản trị có quyền ẩn truyện hoặc khóa tài khoản vi phạm m
   const rel = ts => { const d = new Date(ts), m = Math.round((Date.now() - d) / 6e4); return m < 1 ? "Vừa xong" : m < 60 ? m + " phút trước" : m < 1440 ? Math.floor(m / 60) + " giờ trước" : m < 10080 ? Math.floor(m / 1440) + " ngày trước" : d.toLocaleDateString("vi-VN") };
   const sha = async t => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)))].map(b => b.toString(16).padStart(2, "0")).join("");
   const newTok = () => { const a = new Uint8Array(24); crypto.getRandomValues(a); return btoa(String.fromCharCode(...a)).replace(/[+/=]/g, c => ({ "+": "-", "/": "_", "=": "" })[c]) };
-  const cItem = (c, M, mod, reply) => { const b = cBody(c.body); return `<article class="cmi${c.hidden ? " cmhid" : ""}" data-cid="${c.id}"><span class="cav" style="--h:${hue(c.name)}" aria-hidden="true">${esc([...c.name][0] || "?")}</span><div class="cmc"><div class="cmh"><b>${esc(c.name)}</b>${c.user_id ? '<em class="cmu" title="Đã đăng nhập tài khoản Kenrori">Thành viên</em>' : ""}<time datetime="${esc(c.created_at)}" title="${esc(new Date(c.created_at).toLocaleString("vi-VN"))}">${rel(c.created_at)}</time>${c.hidden ? '<em class="cmu cmx2">Đã ẩn</em>' : ""}</div><div class="cmt${b.big ? " big" : ""}">${b.html}</div><div class="cma">${reply ? "" : '<button type="button" data-crep>Trả lời</button>'}${M[c.id] && !mod ? '<button type="button" data-cdel>Xóa</button>' : ""}${mod ? `<button type="button" data-cmod="${c.hidden ? "show" : "hide"}">${c.hidden ? "Hiện lại" : "Ẩn"}</button><button type="button" data-cmod="delete">Xóa</button><button type="button" data-cmod="ban">Chặn người này</button>` : ""}</div>${reply ? "" : '<div class="cmrs"></div><div class="cmrf"></div>'}</div></article>` };
+  const AVM = {};
+  const cItem = (c, M, mod, reply) => { const b = cBody(c.body), u = c.user_id && AVM[c.user_id]; return `<article class="cmi${c.hidden ? " cmhid" : ""}" data-cid="${c.id}"><span class="cav" style="--h:${hue(c.name)}" aria-hidden="true">${u && isCover(u.avatar_url) ? `<img src="${esc(u.avatar_url)}" alt="" loading="lazy">` : esc([...c.name][0] || "?")}</span><div class="cmc"><div class="cmh">${u ? `<a href="#tg/${esc(c.user_id)}"><b>${esc(c.name)}</b></a>` : `<b>${esc(c.name)}</b>`}${c.user_id ? '<em class="cmu" title="Đã đăng nhập tài khoản Kenrori">Thành viên</em>' : ""}<time datetime="${esc(c.created_at)}" title="${esc(new Date(c.created_at).toLocaleString("vi-VN"))}">${rel(c.created_at)}</time>${c.hidden ? '<em class="cmu cmx2">Đã ẩn</em>' : ""}</div><div class="cmt${b.big ? " big" : ""}">${b.html}</div><div class="cma">${reply ? "" : '<button type="button" data-crep>Trả lời</button>'}${M[c.id] && !mod ? '<button type="button" data-cdel>Xóa</button>' : ""}${mod ? `<button type="button" data-cmod="${c.hidden ? "show" : "hide"}">${c.hidden ? "Hiện lại" : "Ẩn"}</button><button type="button" data-cmod="delete">Xóa</button><button type="button" data-cmod="ban">Chặn người này</button>` : ""}</div>${reply ? "" : '<div class="cmrs"></div><div class="cmrf"></div>'}</div></article>` };
   const SMILE = '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0M9 9.5h.01M15 9.5h.01"/></svg>';
   const cForm = reply => `<form class="cmf${reply ? " cmf2" : ""}" novalidate><div class="cmr"><input name="n" maxlength="40" placeholder="Tên của bạn" aria-label="Tên của bạn" autocomplete="nickname" required><input name="w" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true"></div><textarea name="b" maxlength="2000" rows="${reply ? 2 : 3}" placeholder="${reply ? "Viết câu trả lời" : "Viết bình luận của bạn"}" aria-label="Nội dung bình luận" required></textarea><div class="cmtb"><button type="button" class="cmtool" data-cpick="emo" aria-expanded="false" aria-label="Chèn biểu cảm">${SMILE}<span class="cmtl">Biểu cảm</span></button><button type="button" class="cmtool" data-cpick="gif" aria-expanded="false" aria-label="Chèn GIF"><b class="gifb">GIF</b></button><span class="cmk"></span>${reply ? '<button type="button" class="btn sm" data-ccancel>Hủy</button>' : ""}<button class="btn pri${reply ? " sm" : ""}">${reply ? "Trả lời" : "Gửi bình luận"}</button></div><div class="cmp" hidden></div>${reply ? "" : '<small class="cmhint">Không cần tài khoản. Hãy lịch sự và đừng tiết lộ nội dung chương sau.</small>'}<p class="cme" role="alert"></p></form>`;
   const insertAt = (ta, t, own) => { const s = ta.selectionStart ?? ta.value.length, e = ta.selectionEnd ?? s, pre = ta.value.slice(0, s), post = ta.value.slice(e); const ins = own ? (pre && !/\n$/.test(pre) ? "\n" : "") + t + "\n" : t; ta.value = (pre + ins + post).slice(0, 2000); const p = Math.min(2000, pre.length + ins.length); ta.focus(); ta.setSelectionRange(p, p); ta.dispatchEvent(new Event("input", { bubbles: true })) };
   function emoPanel(pn) {
-    const st = stickers(), tabs = [...Object.keys(EMO), ...(st.length ? ["Nhãn dán"] : [])], cur = pn.dataset.tab && tabs.includes(pn.dataset.tab) ? pn.dataset.tab : tabs[0];
-    pn.dataset.tab = cur;
-    pn.innerHTML = `<div class="cmpt" role="tablist">${tabs.map(t => `<button type="button" role="tab" aria-selected="${t === cur}" class="${t === cur ? "on" : ""}" data-ctab="${esc(t)}">${esc(t)}</button>`).join("")}</div><div class="cmpg ${cur === "Kaomoji" ? "kao" : cur === "Nhãn dán" ? "stk" : "emo"}">${cur === "Nhãn dán" ? st.map(x => `<button type="button" data-cstk="${esc(x.p)}" title="${esc(x.n || "")}" aria-label="Nhãn dán ${esc(x.n || "")}"><img src="${esc(x.p)}" alt="" loading="lazy"></button>`).join("") : emoList(cur).map(x => `<button type="button" data-cemo="${esc(x)}">${esc(x)}</button>`).join("")}</div>`;
+    const P = packs(), stOk = new Set(stickers().map(x => x.p)), R = recent().filter(x => x.k === "e" || stOk.has(x.v));
+    const tabs = [...(R.length ? [{ id: "\u0001recent", l: "Hay dùng" }] : []), ...Object.keys(EMO).map(k => ({ id: k, l: k })), ...[...P].map(([g, a]) => ({ id: "\u0002" + g, l: g, ic: a[0].p }))];
+    const cur = tabs.some(t => t.id === pn.dataset.tab) ? pn.dataset.tab : (tabs.find(t => t.id === ls.get("cmtTab")) || tabs[0]).id;
+    pn.dataset.tab = cur; ls.set("cmtTab", cur);
+    const stBtn = x => `<button type="button" data-cstk="${esc(x.p)}" title="${esc(x.n || "")}" aria-label="Emote ${esc(x.n || "")}"><img src="${esc(x.p)}" alt="" loading="lazy"></button>`, emBtn = x => `<button type="button" data-cemo="${esc(x)}">${esc(x)}</button>`;
+    let body, cls;
+    if (cur === "\u0001recent") { cls = "mix"; body = R.map(x => x.k === "e" ? emBtn(x.v) : stBtn(stickers().find(s => s.p === x.v))).join("") }
+    else if (cur[0] === "\u0002") { cls = "stk"; body = (P.get(cur.slice(1)) || []).map(stBtn).join("") }
+    else { cls = cur === "Kaomoji" ? "kao" : "emo"; body = emoList(cur).map(emBtn).join("") }
+    pn.innerHTML = `<div class="cmpt" role="tablist">${tabs.map(t => `<button type="button" role="tab" aria-selected="${t.id === cur}" class="${t.id === cur ? "on" : ""}" data-ctab="${esc(t.id)}" title="${esc(t.l)}">${t.ic ? `<img src="${esc(t.ic)}" alt="">` : ""}<span>${esc(t.l)}</span></button>`).join("")}</div><div class="cmpg ${cls}">${body}</div>`;
   }
   const gcache = {};
   async function gifSearch(pn, q) {
@@ -436,6 +494,8 @@ Ban quản trị có quyền ẩn truyện hoặc khóa tài khoản vi phạm m
         const [{ data: top, error }, { count }] = await Promise.all([sb.from("comments").select(CSEL).eq("thread", thread).is("parent_id", null).order("created_at", { ascending: false }).range(page * CPAGE, page * CPAGE + CPAGE - 1), sb.from("comments").select("id", { count: "exact", head: true }).eq("thread", thread)]);
         if (error) { $(".cml", box).innerHTML = `<p class="mu">${esc(/comments|relation|schema cache/i.test(error.message || "") ? "Bình luận chưa được bật trên máy chủ. Quản trị viên cần chạy file binh-luan.sql trong Supabase." : viMsg(error))}</p>`; return }
         const ids = (top || []).map(c => c.id), { data: reps } = ids.length ? await sb.from("comments").select(CSEL).in("parent_id", ids).order("created_at", { ascending: true }) : { data: [] };
+        const uids = [...new Set([...(top || []), ...(reps || [])].map(c => c.user_id).filter(Boolean))];
+        if (uids.length) { try { const { data: ps } = await sb.from("profiles").select("id,display_name,avatar_url").in("id", uids); (ps || []).forEach(p => AVM[p.id] = p) } catch (e) {} }
         const M = mine(), mod = isMd(), html = (top || []).map(c => cItem(c, M, mod, false)).join("");
         if (!box.isConnected) return; const L = $(".cml", box);
         if (more) L.insertAdjacentHTML("beforeend", html); else L.innerHTML = html || '<p class="mu cm0">Chưa có bình luận nào. Hãy là người đầu tiên.</p>';
@@ -473,8 +533,8 @@ Ban quản trị có quyền ẩn truyện hoặc khóa tài khoản vi phạm m
         const pk = t.closest("[data-cpick]");
         if (pk) { const pn = $(".cmp", f), kind = pk.dataset.cpick, open = !pn.hidden && pn.dataset.kind === kind; closePick(f); if (open) return; pn.dataset.kind = kind; kind === "emo" ? emoPanel(pn) : gifPanel(pn); pn.hidden = false; pk.setAttribute("aria-expanded", "true"); return }
         const tb = t.closest("[data-ctab]"); if (tb) { const pn = tb.closest(".cmp"); pn.dataset.tab = tb.dataset.ctab; emoPanel(pn); return }
-        const em = t.closest("[data-cemo]"); if (em) return insertAt(f.b, em.dataset.cemo, false);
-        const sk = t.closest("[data-cstk]"); if (sk) { insertAt(f.b, `[s:${sk.dataset.cstk}]`, true); return closePick(f) }
+        const em = t.closest("[data-cemo]"); if (em) { useRecent("e", em.dataset.cemo); return insertAt(f.b, em.dataset.cemo, false) }
+        const sk = t.closest("[data-cstk]"); if (sk) { useRecent("s", sk.dataset.cstk); insertAt(f.b, `[s:${sk.dataset.cstk}]`, true); return closePick(f) }
         const gf = t.closest("[data-cgif]"); if (gf) { insertAt(f.b, `https://media.giphy.com/media/${gf.dataset.cgif}/200.gif`, true); return closePick(f) }
         if (t.closest("[data-cgadd]")) { const pn = t.closest(".cmp"), u = gifUrl($(".cmgu", pn).value); if (!u) { $(".cme", f).textContent = "Chỉ nhận link GIF từ GIPHY hoặc Tenor (link kết thúc bằng .gif, hoặc link trang giphy.com/gifs/...)."; return } $(".cme", f).textContent = ""; insertAt(f.b, u, true); return closePick(f) }
         if (t.closest("[data-crep]")) { const h = $(".cmrf", it); if (!h.innerHTML) { h.innerHTML = cForm(true); h.querySelector('input[name="n"]').value = nameOf() || ($('input[name="n"]', box) || {}).value || "" } h.querySelector("textarea").focus(); return }
@@ -515,7 +575,19 @@ em.okb,em.drf,em.bad{font-style:normal;font-weight:700;font-size:.75rem;padding:
 .stcv img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.stcv:hover{border-color:var(--ac)}
 .stchips{display:flex;flex-wrap:wrap;gap:6px}.stchips .fc{background:var(--s1)}.stchips .fc.on{background:var(--ac)}
 .strules{max-width:72ch;line-height:1.8;padding-left:22px}.strules li{margin-bottom:8px}
-#stu{text-decoration:none}
+#stu{text-decoration:none}.avs{overflow:hidden;flex:none}.avs img{width:100%;height:100%;object-fit:cover;display:block}.cav{overflow:hidden}.cav img{width:100%;height:100%;object-fit:cover;display:block}.cmh a:hover b{color:var(--ac)}
+.tgp{margin:0 0 10px}.tgb{position:relative;aspect-ratio:3/1;max-height:300px;width:100%;border-radius:14px;overflow:hidden;background:linear-gradient(120deg,hsl(var(--h) 60% 42%),hsl(calc(var(--h) + 60) 60% 26%))}.tgb img{width:100%;height:100%;object-fit:cover;display:block}
+.tgh{display:flex;align-items:flex-start;gap:18px;padding:0 20px;margin-top:-52px;position:relative}.tgh .btn{margin-left:auto;margin-top:62px}
+.avs.tga{width:116px;height:116px;font-size:2.8rem;border:5px solid var(--bg);box-shadow:0 8px 24px -10px #0008}
+.tgi{min-width:0;padding-top:60px}.tgi h1{margin:0;font-family:var(--fd,inherit);font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;line-height:1.15;overflow-wrap:anywhere}.tgm{margin:4px 0 0;color:var(--mu);font-size:.9rem}
+.tgs{display:flex;flex-wrap:wrap;gap:8px;margin:16px 20px 0}.tgs span{background:var(--s1);border-radius:999px;padding:5px 14px;font-size:.88rem;color:var(--mu)}.tgs b{color:var(--tx);margin-right:3px}
+.tgbio{margin:14px 20px 0;max-width:72ch;white-space:pre-line;line-height:1.7}.tgl{display:flex;flex-wrap:wrap;gap:8px;margin:14px 20px 0}.tgl svg{width:16px;height:16px}
+.pfw{max-width:720px}.pfh{position:relative;margin:6px 0 64px}.pfb{position:relative;display:block;aspect-ratio:3/1;border-radius:12px;overflow:hidden;cursor:pointer;background:linear-gradient(120deg,hsl(var(--h) 60% 42%),hsl(calc(var(--h) + 60) 60% 26%));margin:0!important}.pfb img{width:100%;height:100%;object-fit:cover;display:block}
+.pfc{position:absolute;display:inline-flex;align-items:center;gap:6px;background:#000000a6;color:#fff;font-size:.82rem;font-weight:600;padding:6px 11px;border-radius:999px;pointer-events:none}.pfc svg{width:16px;height:16px}.pfb .pfc{right:12px;bottom:12px}
+.pfa{position:absolute;left:20px;bottom:-56px;cursor:pointer;margin:0!important;border-radius:50%}.pfa .pfc{right:2px;bottom:4px;padding:7px;border-radius:50%}.pfa:hover .avs,.pfb:hover img{filter:brightness(.88)}
+.pfx{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;margin:0 0 4px 156px;min-height:24px}.pfx small{flex-basis:100%}.lnk{border:0;background:none;color:var(--ac);font-weight:600;padding:0;cursor:pointer}
+.pfl{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:8px;margin-bottom:8px}.pfl .btn{margin:0}
+@media(max-width:700px){.tgh{flex-direction:column;align-items:flex-start;padding:0 12px;margin-top:-44px;gap:10px}.avs.tga{width:88px;height:88px;font-size:2.1rem}.tgi{padding-top:0}.tgh .btn{margin:0}.tgs,.tgbio,.tgl{margin-left:12px;margin-right:12px}.pfx{margin-left:0;margin-top:8px}.pfl{grid-template-columns:110px minmax(0,1fr) auto}}
 .cmw{max-width:var(--rw,760px);margin:40px auto 10px}.cmw .sh h2 .cmn{color:var(--mu);font-weight:600;font-size:1rem}
 .cmf{position:relative;display:flex;flex-direction:column;gap:8px;background:var(--s1);border-radius:12px;padding:12px}
 .cmf input,.cmf textarea{width:100%;font:inherit;color:var(--tx);background:var(--bg);border:1px solid transparent;border-radius:8px;padding:8px 11px;outline:none}.cmf input:focus,.cmf textarea:focus{border-color:var(--ac)}
@@ -526,11 +598,11 @@ em.okb,em.drf,em.bad{font-style:normal;font-weight:700;font-size:.75rem;padding:
 .gifb{font-size:.66rem;font-weight:800;border:1.6px solid currentColor;border-radius:4px;padding:1px 4px;line-height:1.3}
 .cmhint{color:var(--mu);font-size:.8rem}
 .cmp{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:8px}
-.cmpt{display:flex;gap:4px;overflow-x:auto;margin-bottom:6px;scrollbar-width:none}.cmpt button{border:0;background:none;color:var(--mu);font-weight:700;font-size:.82rem;padding:5px 10px;border-radius:999px;white-space:nowrap;cursor:pointer}.cmpt button.on{background:var(--acs);color:var(--ac)}
+.cmpt{display:flex;gap:4px;overflow-x:auto;margin-bottom:6px;scrollbar-width:none}.cmpt button{border:0;background:none;color:var(--mu);font-weight:700;font-size:.82rem;padding:5px 10px;border-radius:999px;white-space:nowrap;cursor:pointer}.cmpt button.on{background:var(--acs);color:var(--ac)}.cmpt button{display:inline-flex;align-items:center;gap:5px}.cmpt img{width:20px;height:20px;object-fit:contain}
 .cmpg{display:grid;gap:2px;max-height:216px;overflow-y:auto}.cmpg button{border:0;background:none;border-radius:8px;cursor:pointer;color:var(--tx)}.cmpg button:hover{background:var(--s1)}
 .cmpg.emo{grid-template-columns:repeat(auto-fill,minmax(40px,1fr))}.cmpg.emo button{font-size:1.45rem;height:42px}
 .cmpg.kao{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}.cmpg.kao button{font-size:.92rem;padding:8px 6px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cmpg.stk{grid-template-columns:repeat(auto-fill,minmax(68px,1fr))}.cmpg.stk button{height:72px;display:grid;place-items:center}.cmpg.stk img{max-width:60px;max-height:60px}
+.cmpg.stk,.cmpg.mix{grid-template-columns:repeat(auto-fill,minmax(68px,1fr))}.cmpg.mix button{font-size:1.6rem;height:72px;display:grid;place-items:center}.cmpg.mix img{max-width:60px;max-height:60px}.cmpg.stk button{height:72px;display:grid;place-items:center}.cmpg.stk img{max-width:60px;max-height:60px}
 .cmpg.gif{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px;margin-top:8px}.cmpg.gif button{padding:0;height:90px;overflow:hidden;background:var(--s1)}.cmpg.gif img{width:100%;height:100%;object-fit:cover;display:block}
 .cmpw{margin:6px 0 0;text-align:right;font-size:.7rem;font-weight:700;color:var(--mu)}
 .cmgl{display:flex;gap:6px;margin:8px 0 4px}.cmgl input{flex:1;background:var(--s1)!important}.cmp small{font-size:.78rem}
