@@ -27,6 +27,7 @@ button:disabled{opacity:.5}
 .row{padding:8px 0;border-bottom:1px solid var(--bd)}.row button,.sub button{margin:0 0 0 8px;padding:2px 10px;background:#d33}.sub{margin-left:20px;color:var(--mu);font-size:.9rem;padding:2px 0}
 .row button.ok,.sub button.ok{background:var(--ac)}
 button.chip{background:var(--bg);color:var(--tx);border:1px solid var(--bd);padding:3px 11px;margin:0 6px 6px 0;border-radius:999px;font-size:.85rem}button.chip.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.vc{margin:2px 0;font-weight:400}#p-vol .vc input{width:auto;margin-right:6px}h4{margin:20px 0 0}
 </style>
 </head>
 <body>
@@ -90,6 +91,24 @@ button.chip{background:var(--bg);color:var(--tx);border:1px solid var(--bd);padd
 <label>Ảnh minh họa (không bắt buộc)</label><input id="j_img" type="file" accept="image/*">
 <button>Lưu dự án</button></form>
 
+<form class="panel" id="p-site"><h3>⚙️ Cài đặt trang web</h3>
+<h4>📢 Thông báo đầu trang</h4><p class="mu">Để trống nội dung để tắt thông báo.</p>
+<label>Nội dung</label><input id="a_text" placeholder="Ví dụ: Đã ra Tập 3!"><label>Link (không bắt buộc)</label><input id="a_url" placeholder="https://...">
+<h4>ℹ️ Giới thiệu & liên hệ</h4>
+<label>Tên nhóm dịch</label><input id="b_name"><label>Giới thiệu nhóm</label><textarea id="b_intro"></textarea>
+<label>Link Discord</label><input id="b_dc" placeholder="https://discord.gg/...">
+<label>Nguồn liên hệ (mỗi dòng: Tên | link hoặc email)</label><textarea id="b_ct" placeholder="Facebook | https://facebook.com/...&#10;Email | ten@mail.com"></textarea>
+<h4>💬 Bình luận (Giscus)</h4><p class="mu">Lấy 4 giá trị dưới đây tại giscus.app. Để trống để tắt bình luận.</p>
+<label>Repo (tên-người-dùng/tên-repo)</label><input id="g_repo"><label>Repo ID</label><input id="g_rid"><label>Tên danh mục (Category)</label><input id="g_cat"><label>Category ID</label><input id="g_cid">
+<h4>🔗 Địa chỉ web (cho RSS)</h4><label>Để trống nếu dùng địa chỉ github.io mặc định</label><input id="w_url" placeholder="https://username.github.io/kho-game/">
+<button>Lưu cài đặt</button></form>
+
+<form class="panel" id="p-vol"><h3>📦 Gán tập hàng loạt</h3><p class="mu" id="v_info"></p>
+<label>Tên tập (để trống = bỏ chương khỏi tập)</label><input id="v_name" placeholder="Tập 1">
+<div style="margin:12px 0">Từ chương số <input id="v_from" type="number" min="1" style="width:80px;display:inline-block"> đến <input id="v_to" type="number" min="1" style="width:80px;display:inline-block">
+<button type="button" id="v_range" style="margin-top:0">Chọn khoảng</button> <button type="button" id="v_all" style="margin-top:0">Chọn tất cả</button> <button type="button" id="v_none" style="margin-top:0;background:#888">Bỏ chọn</button></div>
+<div id="v_list"></div><button>Áp dụng</button> <button type="button" id="v_cancel" style="background:#888">Hủy</button></form>
+
 <form class="panel" id="p-edit"><h3>Sửa chương</h3><p class="mu" id="e_info"></p>
 <label>Tên chương</label><input id="e_title"><label>Tập (để trống nếu không chia tập)</label><input id="e_vol"><label>Ngày cập nhật</label><input id="e_date" type="date">
 <div id="e_novel"><label>Nội dung</label><textarea id="e_text" style="min-height:280px"></textarea></div>
@@ -124,7 +143,20 @@ async function put(path, content, msg) {
     throw new Error(j.message || "Lỗi " + r.status);
   }
 }
-const save = msg => put("data.json", b64t(JSON.stringify(data, null, 1)), msg);
+const feedXml = () => {
+  const S = data.site || {}; let base = (S.url || "").trim();
+  if (!base) base = cfg.r.toLowerCase() === (cfg.u + ".github.io").toLowerCase() ? `https://${cfg.u}.github.io/` : `https://${cfg.u}.github.io/${cfg.r}/`;
+  if (!base.endsWith("/")) base += "/";
+  const x = t => String(t ?? "").replace(/[<>&"']/g, c => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&apos;" }[c]));
+  const items = []; for (const k of ["novel", "manga"]) data[KEYS[k]].forEach(s => s.chapters.forEach((c, i) => items.push({ k, s, c, i })));
+  items.sort((p, q) => (q.c.date || "").localeCompare(p.c.date || "") || q.i - p.i);
+  const it = items.slice(0, 30).map(({ k, s, c, i }) => `<item><title>${x(s.title)} – ${x((c.vol ? c.vol + " · " : "") + c.t)}</title><link>${x(base + "#" + k + "/" + s.slug + "/" + i)}</link><guid isPermaLink="false">${x(k + ":" + s.slug + ":" + (c.file || (c.pages && c.pages[0]) || c.t))}</guid>${c.date ? `<pubDate>${new Date(c.date + "T00:00:00Z").toUTCString()}</pubDate>` : ""}</item>`).join("");
+  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Kenrori</title><link>${x(base)}</link><description>Chương mới cập nhật</description><language>vi</language>${it}</channel></rss>`;
+};
+async function save(msg) {
+  await put("data.json", b64t(JSON.stringify(data, null, 1)), msg);
+  try { await put("feed.xml", b64t(feedXml()), "Cập nhật RSS") } catch (e) { log("Đã lưu, nhưng chưa cập nhật được RSS: " + e.message) }
+}
 async function run(fn) { const bs = [...document.querySelectorAll("button")]; bs.forEach(b => b.disabled = true); try { await fn() } catch (e) { log("❌ " + e.message) } bs.forEach(b => b.disabled = false) }
 const done = m => { log(m); fillSel(); manage() };
 
@@ -141,10 +173,10 @@ async function connect(c, after) {
     if (!rp.ok) throw new Error("Không vào được repo (" + rp.status + "). Kiểm tra tên người dùng, tên repo và token.");
     const r = await api("data.json", { q: "?ref=" + cfg.b });
     if (r.status === 404) data = {}; else if (r.ok) data = JSON.parse(t64((await r.json()).content)); else throw new Error("Không đọc được data.json (" + r.status + ")");
-    for (const k of ["tips", "links", "novels", "manga", "videos", "projects"]) data[k] ??= [];
+    for (const k of ["tips", "links", "novels", "manga", "videos", "projects"]) data[k] ??= []; data.site ??= {};
     if (after) await after();
     $("#login").hidden = $("#setup").hidden = true; $("#bye").hidden = false; $("#app").hidden = false; $("#c_date").value = $("#j_date").value = new Date().toISOString().slice(0, 10);
-    fillSel(); manage(); log("✅ Đã đăng nhập. Chọn mục cần thêm."); deepLink();
+    fillSel(); manage(); siteLoad(); log("✅ Đã đăng nhập. Chọn mục cần thêm."); deepLink();
   });
 }
 let sealed = null; try { sealed = JSON.parse(ls.get("cfg2") || "null") } catch (e) {}
@@ -164,9 +196,9 @@ $("#g_go").onclick = async () => {
 };
 $("#l_out").onclick = () => location.reload();
 
-const TABS = [["series", "📚 Bộ truyện"], ["chap", "➕ Chương"], ["tip", "💡 Mẹo"], ["link", "🔗 Liên kết"], ["vid", "🎵 Video"], ["proj", "🧩 Dự án"], ["man", "🗂️ Quản lý"]];
+const TABS = [["series", "📚 Bộ truyện"], ["chap", "➕ Chương"], ["tip", "💡 Mẹo"], ["link", "🔗 Liên kết"], ["vid", "🎵 Video"], ["proj", "🧩 Dự án"], ["site", "⚙️ Trang web"], ["man", "🗂️ Quản lý"]];
 $("#tabs").innerHTML = TABS.map(([k, l]) => `<button type="button" data-k="${k}">${l}</button>`).join("");
-const tab = k => { [...TABS.map(x => x[0]), "edit"].forEach(t => $("#p-" + t).classList.toggle("on", t === k)); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)) };
+const tab = k => { [...TABS.map(x => x[0]), "edit", "vol"].forEach(t => $("#p-" + t).classList.toggle("on", t === k)); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)) };
 $("#tabs").onclick = e => { const b = e.target.closest("button"); if (b) tab(b.dataset.k) }; tab("series");
 
 function fillSel() {
@@ -227,7 +259,7 @@ $("#p-vid").onsubmit = e => { e.preventDefault(); run(async () => {
 
 function manage() {
   const out = [];
-  for (const k of ["novels", "manga"]) data[k].forEach((s, i) => out.push(`<div class="row"><b>${k === "novels" ? "📖" : "🖼️"} ${esc(s.title)}</b><button class="ok" data-s="${k}|${i}">✎ Sửa bộ</button><button data-d="${k}|${i}">✕ Xóa bộ</button>${s.chapters.map((c, j) => `<div class="sub">${c.vol ? "<b>" + esc(c.vol) + "</b> · " : ""}${esc(c.t)} <span class="mu">${c.date ? "· " + c.date : ""}</span><button class="ok" data-e="${k}|${i}|${j}">✎ Sửa</button><button class="ok" data-m="${k}|${i}|${j}|-1">↑</button><button class="ok" data-m="${k}|${i}|${j}|1">↓</button><button data-d="${k}|${i}|${j}">✕</button></div>`).join("")}</div>`));
+  for (const k of ["novels", "manga"]) data[k].forEach((s, i) => out.push(`<div class="row"><b>${k === "novels" ? "📖" : "🖼️"} ${esc(s.title)}</b><button class="ok" data-v="${k}|${i}">📦 Gán tập</button><button class="ok" data-s="${k}|${i}">✎ Sửa bộ</button><button data-d="${k}|${i}">✕ Xóa bộ</button>${s.chapters.map((c, j) => `<div class="sub">${c.vol ? "<b>" + esc(c.vol) + "</b> · " : ""}${esc(c.t)} <span class="mu">${c.date ? "· " + c.date : ""}</span><button class="ok" data-e="${k}|${i}|${j}">✎ Sửa</button><button class="ok" data-m="${k}|${i}|${j}|-1">↑</button><button class="ok" data-m="${k}|${i}|${j}|1">↓</button><button data-d="${k}|${i}|${j}">✕</button></div>`).join("")}</div>`));
   for (const [k, l] of [["tips", "💡"], ["links", "🔗"], ["videos", "🎵"], ["projects", "🧩"]]) data[k].forEach((d, i) => out.push(`<div class="row">${l} ${esc(d.title)}${k === "projects" ? `<button class="ok" data-p="${i}">✎ Sửa</button>` : ""}<button data-d="${k}|${i}">✕</button></div>`));
   $("#manage").innerHTML = out.join("") || "<p class='mu'>Chưa có gì.</p>";
 }
@@ -302,6 +334,35 @@ $("#manage").addEventListener("click", e => {
   $("#j_desc").value = d.desc || ""; $("#j_links").value = (d.links || []).map(l => l.label + " | " + l.url).join("\n"); $("#j_how").value = d.howto || ""; $("#j_img").value = "";
   tab("proj"); log("Đang sửa dự án: " + d.title + " (chọn ảnh mới nếu muốn đổi)");
 });
+
+function siteLoad() {
+  const S = data.site, A = S.about || {}, G = S.giscus || {};
+  $("#a_text").value = S.announce?.text || ""; $("#a_url").value = S.announce?.url || ""; $("#b_name").value = A.name || ""; $("#b_intro").value = A.intro || ""; $("#b_dc").value = A.discord || "";
+  $("#b_ct").value = (A.contacts || []).map(c => c.label + " | " + c.url).join("\n");
+  $("#g_repo").value = G.repo || ""; $("#g_rid").value = G.repoId || ""; $("#g_cat").value = G.category || ""; $("#g_cid").value = G.categoryId || ""; $("#w_url").value = S.url || "";
+}
+$("#p-site").onsubmit = e => { e.preventDefault(); run(async () => {
+  const t = id => $("#" + id).value.trim(), ok = v => !v || /^https?:\/\//.test(v);
+  if (!ok(t("b_dc")) || !ok(t("a_url")) || !ok(t("w_url"))) throw new Error("Link phải bắt đầu bằng https://");
+  data.site = { announce: { text: t("a_text"), url: t("a_url") }, about: { name: t("b_name"), intro: t("b_intro"), discord: t("b_dc"), contacts: $("#b_ct").value.split("\n").map(l => { const [x, ...y] = l.split("|"); return { label: (x || "").trim(), url: y.join("|").trim() } }).filter(c => c.label) }, giscus: { repo: t("g_repo"), repoId: t("g_rid"), category: t("g_cat"), categoryId: t("g_cid") }, url: t("w_url") };
+  await save("Cập nhật cài đặt trang web"); done("✅ Đã lưu cài đặt. Web cập nhật sau 1–2 phút.");
+}) };
+let ve = null;
+$("#manage").addEventListener("click", e => {
+  const b = e.target.closest("button[data-v]"); if (!b) return; const [k, i] = b.dataset.v.split("|"); ve = { k, i: +i }; const s = data[k][+i];
+  $("#v_info").textContent = s.title + " · " + s.chapters.length + " chương"; $("#v_name").value = ""; $("#v_from").value = $("#v_to").value = "";
+  $("#v_list").innerHTML = s.chapters.map((c, j) => `<label class="vc"><input type="checkbox" value="${j}"> ${j + 1}. ${c.vol ? "<b>" + esc(c.vol) + "</b> · " : ""}${esc(c.t)}</label>`).join(""); tab("vol");
+});
+const vbox = f => document.querySelectorAll("#v_list input").forEach((c, j) => c.checked = f(j));
+$("#v_all").onclick = () => vbox(() => true); $("#v_none").onclick = () => vbox(() => false);
+$("#v_range").onclick = () => { const x = +$("#v_from").value, y = +$("#v_to").value || x; vbox(j => j + 1 >= x && j + 1 <= y) };
+$("#v_cancel").onclick = () => { ve = null; tab("man") };
+$("#p-vol").onsubmit = e => { e.preventDefault(); run(async () => {
+  if (!ve) throw new Error("Chưa chọn bộ truyện"); const s = data[ve.k][ve.i], v = $("#v_name").value.trim(), sel = [...document.querySelectorAll("#v_list input:checked")].map(c => +c.value);
+  if (!sel.length) throw new Error("Hãy chọn ít nhất một chương");
+  sel.forEach(j => { if (v) s.chapters[j].vol = v; else delete s.chapters[j].vol });
+  await save("Gán tập: " + s.title); ve = null; done("✅ Đã gán " + (v || "không tập") + " cho " + sel.length + " chương."); tab("man");
+}) };
 </script>
 </body>
 </html>

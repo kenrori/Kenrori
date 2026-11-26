@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kenrori</title>
+<link rel="alternate" type="application/rss+xml" title="Kenrori" href="feed.xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -122,12 +123,17 @@ summary::before{content:"▸";display:inline-block;margin-right:8px;color:var(--
 details.vol,details.vol[open]{padding:0;border:0;border-radius:0;box-shadow:none;margin:0 0 10px;background:transparent}
 .vol summary{padding:10px 14px;background:var(--bg);border-radius:10px;border:1px solid var(--bd)}.vol summary b{font-size:1rem}.vol[open] summary{border-radius:10px 10px 0 0;border-color:color-mix(in srgb,var(--ac) 40%,var(--bd))}
 .vol .chr:last-child .ch{border-bottom:0}
+#ann{background:linear-gradient(90deg,var(--ac),var(--ac2));color:#fff;text-align:center;padding:8px 42px 8px 14px;position:relative;font-size:.92rem}#ann a{color:#fff;text-decoration:underline}
+#ann button{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:0;color:#fff;font-size:1.1rem;cursor:pointer}
+.btn.alt.on{background:var(--ac);color:#fff}.btn.dc{background:#5865f2;box-shadow:none;color:#fff}.cm{margin-top:16px}
+.pgv{position:relative;cursor:pointer;user-select:none}.pgv img{display:block;width:100%;max-height:calc(100vh - 110px);object-fit:contain;background:#000;border-radius:8px}.pgn{text-align:center;color:var(--mu);font-size:.85rem;margin-top:6px}
 </style>
 </head>
 <body>
+<div id="ann" hidden></div>
 <header class="nav"><div class="w"><a class="logo" href="#home">📚 <b>Kenrori</b></a><input id="q" type="search" placeholder="Tìm truyện, mẹo..."><a id="adm" href="admin.html" title="Đăng nhập quản trị">🔑 Admin</a><button id="th" title="Sáng/Tối">🌓</button><nav id="nv"></nav></div></header>
 <main class="w" id="app"></main>
-<footer>© Kenrori · Dịch phi lợi nhuận · Chạy trên GitHub Pages · <a href="admin.html">Quản trị</a></footer>
+<footer>© Kenrori · Dịch phi lợi nhuận · Chạy trên GitHub Pages · <a href="feed.xml">RSS</a> · <a href="admin.html">Quản trị</a></footer>
 <div id="pg"></div><button id="up" hidden>↑</button>
 <div id="lb"><img alt=""></div>
 <script>
@@ -189,8 +195,9 @@ const ls = { get: k => { try { return localStorage.getItem(k) } catch (e) {} }, 
 const ADM = !!ls.get("cfg2");
 const imgTag = s => s ? `<img src="${esc(s)}" alt="" loading="lazy" onerror="this.remove()">` : "";
 DATA.projects ??= [{ title: "Tên dự án (ví dụ)", type: "Userscript", status: "Đang phát triển", version: "1.0.0", date: "2026-11-01", desc: "Mô tả ngắn về dự án.", links: [{ label: "Cài đặt", url: "https://greasyfork.org/" }], howto: "Bước 1: ...\nBước 2: ...", img: "" }];
+DATA.site ??= {};
 const KEY = { novel: "novels", manga: "manga" }, app = $("#app"), EMPTY = '<p class="empty">Chưa có nội dung.</p>';
-const NAV = [["home", "🏠 Trang chủ"], ["novels", "📖 Novel"], ["manga", "🖼️ Manga"], ["the-loai", "🏷️ Thể loại"], ["projects", "🧩 Dự án"], ["tips", "💡 Mẹo game"], ["tools", "🛠️ Công cụ"], ["videos", "🎵 Video"], ["links", "🔗 Liên kết"]];
+const NAV = [["home", "🏠 Trang chủ"], ["novels", "📖 Novel"], ["manga", "🖼️ Manga"], ["the-loai", "🏷️ Thể loại"], ["projects", "🧩 Dự án"], ["tips", "💡 Mẹo game"], ["tools", "🛠️ Công cụ"], ["videos", "🎵 Video"], ["links", "🔗 Liên kết"], ["about", "ℹ️ Giới thiệu"]];
 $("#nv").innerHTML = NAV.map(([k, l]) => `<a href="#${k}" data-k="${k}">${l}</a>`).join("");
 const allG = (k = "all") => { const m = new Map(); for (const x of (k === "all" ? ["novel", "manga"] : [k])) DATA[KEY[x]].forEach(s => (s.genres || []).forEach(g => m.set(g, (m.get(g) || 0) + 1))); return [...m].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "vi")) };
 const gHref = (g, k = "all") => `#the-loai/${k}/${encodeURIComponent(g)}`;
@@ -207,6 +214,18 @@ const projCard = d => `<div class="card pj">${d.img ? `<img class="pi" src="${es
 const reading = () => { const a = []; for (const k of ["novel", "manga"]) DATA[KEY[k]].forEach(s => { const l = ls.get(k + ":" + s.slug); if (l != null && s.chapters[+l]) a.push({ k, s, l: +l, t: +(ls.get("t:" + k + ":" + s.slug) || 0) }) }); return a.sort((x, y) => y.t - x.t).slice(0, 6) };
 const rdCard = r => { const n = r.s.chapters.length, nw = n - 1 - r.l, pct = Math.round(rdSet(r.k, r.s).length / n * 100); return `<div class="rc"><a class="up" href="#${r.k}/${r.s.slug}/${r.l}"><div class="th" style="--h:${hue(r.s.title)}">${imgTag(r.s.cover)}</div><div class="ut"><b>${esc(r.s.title)}</b><span>Đang ở: ${esc(r.s.chapters[r.l].t)}</span><i class="pb"><i style="width:${pct}%"></i></i></div><small>${nw > 0 ? `<span class="nw">+${nw} chương mới</span>` : "Đọc tiếp →"}</small></a><button class="fg" title="Bỏ khỏi danh sách" onclick="forget('${r.k}','${esc(r.s.slug)}')">✕</button></div>` };
 function forget(k, slug) { ["", "t:", "r:"].forEach(p => ls.del(p + k + ":" + slug)); route() }
+let RDKEY = null;
+const favs = () => { try { return JSON.parse(ls.get("favs") || "[]") } catch (e) { return [] } };
+const isFav = (k, slug) => favs().includes(k + ":" + slug);
+function toggleFav(k, slug) { const f = favs(), id = k + ":" + slug, n = f.includes(id) ? f.filter(x => x !== id) : [...f, id]; ls.set("favs", JSON.stringify(n)); const b = $("#fvb"); if (b) { const on = n.includes(id); b.textContent = on ? "⭐ Đã yêu thích" : "☆ Yêu thích"; b.classList.toggle("on", on) } }
+const favList = () => favs().map(id => { const [k, slug] = id.split(":"); const s = (DATA[KEY[k]] || []).find(x => x.slug === slug); return s && { k, s } }).filter(Boolean);
+const favGrid = a => `<div class="series">${a.map(({ k, s }) => card(k, s)).join("")}</div>`;
+function renderAnn() {
+  const a = DATA.site.announce, el = $("#ann"); if (!a || !a.text) { el.hidden = true; return }
+  const key = "ann:" + a.text; if (ls.get(key)) { el.hidden = true; return }
+  el.hidden = false; el.innerHTML = `📢 ${esc(a.text)}${/^https?:\/\//.test(a.url || "") ? ` <a href="${esc(a.url)}" target="_blank" rel="noopener">Xem thêm</a>` : ""}<button title="Đóng">✕</button>`;
+  el.querySelector("button").onclick = () => { ls.set(key, "1"); el.hidden = true };
+}
 const R = {
   tips: d => `<details><summary>${esc(d.title)} <span class="tag">${esc(d.game)}</span></summary><p>${esc(d.text)}</p>${imgTag(d.img)}</details>`,
   links: d => `<div class="card"><h3><a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.title)}</a></h3><p>${esc(d.desc)}</p>${(d.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>`,
@@ -217,13 +236,20 @@ const toolUI = (t, i) => `<details class="tb"><summary>${esc(t.t)}</summary>${t.
 function runTool(i, b) { const d = b.closest(".tb"), o = $(".o", d); try { o.value = TOOLS[i].fn($(".i", d).value, $(".x", d)?.value || "") } catch (e) { o.value = "Lỗi: " + e.message } }
 function copyOut(b) { const o = $(".o", b.closest(".tb")); o.select(); navigator.clipboard?.writeText(o.value) }
 const P = {
-  home: () => `<div class="banner"><h1>Chào mừng đến với Kenrori</h1><p>Light novel &amp; manga dịch · Mod · Script · Công cụ game</p><div class="acts"><a class="btn" href="#novels">📖 Đọc Novel</a><a class="btn alt" href="#projects">🧩 Dự án</a></div></div>` + (reading().length ? sec("📖 Đang đọc dở", null, `<div class="ups">${reading().map(rdCard).join("")}</div>`) : "") + sec("📢 Mới cập nhật", null, `<div class="ups">${recent(10).map(row).join("") || EMPTY}</div>`) + sec("📖 Novel", "novels", gridOf("novel", DATA.novels.slice(0, 20)).replace(/(<a class="sc"[\s\S]*?<\/a>){6}[\s\S]*/, m => m)) + sec("🖼️ Manga", "manga", gridOf("manga", DATA.manga)) + (DATA.projects.length ? sec("🧩 Dự án", "projects", `<div class="grid pgrid">${DATA.projects.slice(0, 3).map(projCard).join("")}</div>`) : "") + (allG().length ? sec("🏷️ Thể loại", "the-loai", gChips("all")) : "") + sec("💡 Mẹo game mới", "tips", DATA.tips.slice(0, 3).map(R.tips).join("") || EMPTY),
+  home: () => `<div class="banner"><h1>Chào mừng đến với Kenrori</h1><p>Light novel &amp; manga dịch · Mod · Script · Công cụ game</p><div class="acts"><a class="btn" href="#novels">📖 Đọc Novel</a><a class="btn alt" href="#projects">🧩 Dự án</a>${/^https?:\/\//.test((DATA.site.about || {}).discord || "") ? `<a class="btn alt" href="${esc(DATA.site.about.discord)}" target="_blank" rel="noopener">💬 Discord</a>` : ""}</div></div>` + (reading().length ? sec("📖 Đang đọc dở", null, `<div class="ups">${reading().map(rdCard).join("")}</div>`) : "") + (favList().length ? sec("⭐ Yêu thích", "fav", favGrid(favList().slice(0, 6))) : "") + sec("📢 Mới cập nhật", null, `<div class="ups">${recent(10).map(row).join("") || EMPTY}</div>`) + sec("📖 Novel", "novels", gridOf("novel", DATA.novels.slice(0, 20)).replace(/(<a class="sc"[\s\S]*?<\/a>){6}[\s\S]*/, m => m)) + sec("🖼️ Manga", "manga", gridOf("manga", DATA.manga)) + (DATA.projects.length ? sec("🧩 Dự án", "projects", `<div class="grid pgrid">${DATA.projects.slice(0, 3).map(projCard).join("")}</div>`) : "") + (allG().length ? sec("🏷️ Thể loại", "the-loai", gChips("all")) : "") + sec("💡 Mẹo game mới", "tips", DATA.tips.slice(0, 3).map(R.tips).join("") || EMPTY),
   novels: () => sec("📖 Tất cả Novel", null, gChips("novel") + gridOf("novel", DATA.novels)),
   manga: () => sec("🖼️ Tất cả Manga", null, gChips("manga") + gridOf("manga", DATA.manga)),
   tips: () => sec("💡 Mẹo game", null, DATA.tips.map(R.tips).join("") || EMPTY),
   links: () => sec("🔗 Liên kết hữu ích", null, `<div class="grid">${DATA.links.map(R.links).join("") || EMPTY}</div>`),
   videos: () => sec("🎵 Video nhạc Vietsub", null, `<div class="grid">${DATA.videos.map(R.videos).join("") || EMPTY}</div>`),
   projects: () => sec("🧩 Dự án", null, `<p class="sum" style="color:var(--mu);margin-bottom:12px">Script, mod và công cụ do Kenrori làm.</p><div class="grid pgrid">${DATA.projects.map(projCard).join("") || EMPTY}</div>`),
+  fav: () => sec("⭐ Truyện yêu thích", null, favList().length ? favGrid(favList()) : '<p class="empty">Bạn chưa đánh dấu bộ nào. Vào trang truyện và bấm ☆ Yêu thích.</p>'),
+  about: () => {
+    const A = DATA.site.about || {}, isU = u => /^https?:\/\//.test(u || "");
+    const ct = (A.contacts || []).map(c => { const u = c.url || "", href = isU(u) ? u : (/@/.test(u) && !/\s/.test(u) ? "mailto:" + u : ""); return href ? `<a class="btn alt" href="${esc(href)}" target="_blank" rel="noopener">${esc(c.label)}</a>` : `<span class="tag">${esc(c.label)}${u ? ": " + esc(u) : ""}</span>` }).join("");
+    const dc = isU(A.discord) ? `<a class="btn dc" href="${esc(A.discord)}" target="_blank" rel="noopener">💬 Vào Discord</a>` : "";
+    return sec("ℹ️ Giới thiệu", null, (A.name || A.intro || dc || ct) ? `<h2 style="margin-top:0">${esc(A.name || "Nhóm dịch")}</h2><p class="sum">${esc(A.intro)}</p><div class="acts">${dc}</div>` + (ct ? `<h3>📬 Liên hệ</h3><div class="acts">${ct}</div>` : "") : '<p class="empty">Chưa có thông tin giới thiệu. Hãy điền trong trang quản trị → ⚙️ Trang web.</p>');
+  },
   genre: (k, g) => {
     if (!g) return sec("🏷️ Tất cả thể loại", null, gChips("all") || '<p class="empty">Chưa có thể loại nào. Hãy thêm thể loại cho truyện trong trang quản trị.</p>');
     const items = (k === "novel" || k === "manga" ? [k] : ["novel", "manga"]).flatMap(x => DATA[KEY[x]].filter(s => (s.genres || []).includes(g)).map(s => card(x, s)));
@@ -245,7 +271,7 @@ function detail(kind, s) {
   const last = ls.get(kind + ":" + s.slug), rs = rdSet(kind, s), n = s.chapters.length, nv = new Set(s.chapters.map(c => (c.vol || "").trim()).filter(Boolean)).size; let desc = true;
   const info = [["Tác giả", s.author], ["Tình trạng", s.status], ["Loại", kind === "novel" ? "Light Novel" : "Manga"], ["Số chương", n], nv ? ["Số tập", nv] : null, kind === "novel" ? ["Tổng số chữ", fmtN(sum(s))] : null, ["Cập nhật", fmtD(latest(s))]].filter(Boolean);
   app.innerHTML = `<div class="crumb"><a href="#home">Trang chủ</a> › <a href="#${KEY[kind]}">${kind === "novel" ? "Novel" : "Manga"}</a> › ${esc(s.title)}</div>
-<div class="sp"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></div><div class="si"><h1>${esc(s.title)}</h1><dl>${info.map(([a, b]) => `<dt>${a}</dt><dd>${esc(b || "—")}</dd>`).join("")}</dl>${(s.genres || []).map(g => `<a class="tag" href="${gHref(g)}">${esc(g)}</a>`).join("")}<div class="acts">${n ? `<a class="btn" href="#${kind}/${s.slug}/0">▶ Đọc từ đầu</a>${last != null ? `<a class="btn alt" href="#${kind}/${s.slug}/${last}">⏵ Đọc tiếp</a>` : ""}<a class="btn alt" href="#${kind}/${s.slug}/${n - 1}">Chương mới nhất</a>` : ""}${ADM ? `<a class="btn alt" href="admin.html#chap/${kind}/${s.slug}">➕ Thêm chương</a><a class="btn alt" href="admin.html#series/${kind}/${s.slug}">✎ Sửa bộ</a>` : ""}</div></div></div>
+<div class="sp"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></div><div class="si"><h1>${esc(s.title)}</h1><dl>${info.map(([a, b]) => `<dt>${a}</dt><dd>${esc(b || "—")}</dd>`).join("")}</dl>${(s.genres || []).map(g => `<a class="tag" href="${gHref(g)}">${esc(g)}</a>`).join("")}<div class="acts"><button class="btn alt${isFav(kind, s.slug) ? " on" : ""}" id="fvb" onclick="toggleFav('${kind}','${esc(s.slug)}')">${isFav(kind, s.slug) ? "⭐ Đã yêu thích" : "☆ Yêu thích"}</button>${n ? `<a class="btn" href="#${kind}/${s.slug}/0">▶ Đọc từ đầu</a>${last != null ? `<a class="btn alt" href="#${kind}/${s.slug}/${last}">⏵ Đọc tiếp</a>` : ""}<a class="btn alt" href="#${kind}/${s.slug}/${n - 1}">Chương mới nhất</a>` : ""}${ADM ? `<a class="btn alt" href="admin.html#chap/${kind}/${s.slug}">➕ Thêm chương</a><a class="btn alt" href="admin.html#series/${kind}/${s.slug}">✎ Sửa bộ</a>` : ""}</div></div></div>
 ${sec("📝 Tóm tắt", null, `<p class="sum">${esc(s.desc) || "Chưa có tóm tắt."}</p>`)}
 <section class="sec"><div class="sh"><h2>📑 Danh sách chương</h2></div><div class="bar2"><input id="cq" type="search" placeholder="Tìm chương (tên hoặc số)..."><button id="cs">↕ Mới nhất trước</button></div><div id="cl"></div></section>`;
   const volOf = c => (c.vol || "").trim();
@@ -271,9 +297,10 @@ async function read(kind, s, i) {
   const c = s.chapters[i]; if (!c) { location.hash = `#${kind}/${s.slug}`; return }
   ls.set(kind + ":" + s.slug, i); ls.set("t:" + kind + ":" + s.slug, Date.now()); const rs = rdSet(kind, s); if (!rs.includes(i)) { rs.push(i); ls.set("r:" + kind + ":" + s.slug, JSON.stringify(rs)) }
   const base = `#${kind}/${s.slug}`, n = s.chapters.length;
+  const goto = j => { if (j >= 0 && j < n) location.hash = `${base}/${j}` }; RDKEY = d => goto(i + d);
   const nav = `<div class="nv"><a class="btn" ${i > 0 ? `href="${base}/${i - 1}"` : "disabled"}>← Chương trước</a><a class="btn" ${i < n - 1 ? `href="${base}/${i + 1}"` : "disabled"}>Chương sau →</a></div>`;
   const opts = (() => { const o = j => `<option value="${j}" ${j == i ? "selected" : ""}>${esc(s.chapters[j].t)}</option>`; if (!s.chapters.some(x => (x.vol || "").trim())) return s.chapters.map((_, j) => o(j)).join(""); const g = new Map(); s.chapters.forEach((x, j) => { const v = (x.vol || "").trim() || "Chương lẻ"; if (!g.has(v)) g.set(v, []); g.get(v).push(j) }); return [...g].map(([v, a]) => `<optgroup label="${esc(v)}">${a.map(o).join("")}</optgroup>`).join("") })();
-  app.innerHTML = `<div class="rbar"><a class="t" href="${base}">← ${esc(s.title)}</a><select onchange="location.hash='${base}/'+this.value">${opts}</select>${kind === "novel" ? `<button onclick="$('#rp').hidden=!$('#rp').hidden">⚙ Cài đặt</button>` : ""}${ADM ? `<a class="btn alt" style="margin:0;padding:6px 12px" href="admin.html#editchap/${kind}/${s.slug}/${i}">✎ Sửa chương</a>` : ""}</div>
+  app.innerHTML = `<div class="rbar"><a class="t" href="${base}">← ${esc(s.title)}</a><select onchange="location.hash='${base}/'+this.value">${opts}</select>${kind === "novel" ? `<button onclick="$('#rp').hidden=!$('#rp').hidden">⚙ Cài đặt</button>` : `<button onclick="ls.set('mm', ls.get('mm') === 'page' ? 'scroll' : 'page'); route()">${ls.get("mm") === "page" ? "📜 Cuộn dọc" : "📄 Lật trang"}</button>`}${ADM ? `<a class="btn alt" style="margin:0;padding:6px 12px" href="admin.html#editchap/${kind}/${s.slug}/${i}">✎ Sửa chương</a>` : ""}</div>
 <div id="rp" hidden><button onclick="rset('fs',-1)">A−</button><button onclick="rset('fs',1)">A+</button><span>Giãn dòng</span><button onclick="rset('lh',-1)">−</button><button onclick="rset('lh',1)">+</button><span>Font</span><button onclick="rset('ff')">Aa</button><span>Nền</span><button onclick="rset('bg')">🎨</button></div>
 <h2 style="margin:6px 0">${esc(c.t)}</h2><p class="crumb" id="meta">${c.vol ? esc(c.vol) + " · " : ""}${fmtD(c.date)}</p>${nav}<article id="rd" class="rd ${kind} ${kind === "novel" ? RS.ff + " " + RS.bg : ""}"></article>${nav}`;
   const rd = $("#rd");
@@ -282,11 +309,25 @@ async function read(kind, s, i) {
     rd.innerHTML = t.split(/\n+/).filter(l => l.trim()).map(l => `<p>${esc(l)}</p>`).join(""); $("#meta").textContent += " · " + fmtN(c.words || W(t));
   } else {
     const pg = c.pages || Array.from({ length: c.n }, (_, k) => c.dir + String(k + 1).padStart(c.pad || 2, "0") + "." + (c.ext || "jpg"));
-    rd.innerHTML = pg.map(u => `<img src="${esc(u)}" alt="" loading="lazy">`).join("");
+    if (ls.get("mm") === "page") {
+      let pi = 0; rd.innerHTML = `<div class="pgv"><img id="pgimg" alt=""><div class="pgn"></div></div>`;
+      const show = () => { $("#pgimg").src = pg[pi]; $(".pgn").textContent = `Trang ${pi + 1} / ${pg.length}`; if (pg[pi + 1]) new Image().src = pg[pi + 1]; scrollTo({ top: Math.max(0, rd.offsetTop - 70) }) };
+      const step = d => { const x = pi + d; if (x < 0) goto(i - 1); else if (x >= pg.length) goto(i + 1); else { pi = x; show() } };
+      $(".pgv").onclick = e => { const r = e.currentTarget.getBoundingClientRect(); step(e.clientX < r.left + r.width / 2 ? -1 : 1) };
+      RDKEY = step; if (pg.length) show();
+    } else rd.innerHTML = pg.map(u => `<img src="${esc(u)}" alt="" loading="lazy">`).join("");
+  }
+  const G = DATA.site.giscus;
+  if (G && G.repo && G.repoId && G.category && G.categoryId && rd.isConnected) {
+    const box = document.createElement("section"); box.className = "sec cm"; box.innerHTML = '<div class="sh"><h2>💬 Bình luận</h2></div>'; app.appendChild(box);
+    const sc = document.createElement("script"); sc.src = "https://giscus.app/client.js";
+    Object.entries({ "data-repo": G.repo, "data-repo-id": G.repoId, "data-category": G.category, "data-category-id": G.categoryId, "data-mapping": "specific", "data-term": `${kind}/${s.slug}/${c.file || (c.pages && c.pages[0]) || c.t}`, "data-strict": "0", "data-reactions-enabled": "1", "data-emit-metadata": "0", "data-input-position": "top", "data-theme": "preferred_color_scheme", "data-lang": "vi", crossorigin: "anonymous" }).forEach(([k, v]) => sc.setAttribute(k, v));
+    sc.async = true; box.appendChild(sc);
   }
   scrollTo(0, 0);
 }
 function route() {
+  RDKEY = null;
   const [a, b, c] = decodeURIComponent(location.hash.slice(1)).split("/");
   document.querySelectorAll("#nv a").forEach(x => x.classList.toggle("on", x.dataset.k === (a === "novel" ? "novels" : a || "home")));
   if (a === "the-loai") { app.innerHTML = P.genre(b, c); scrollTo(0, 0); return }
@@ -307,9 +348,10 @@ const root = document.documentElement; if (ls.get("theme")) root.dataset.theme =
 $("#th").onclick = () => { const cur = root.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"), n = cur === "dark" ? "light" : "dark"; root.dataset.theme = n; ls.set("theme", n) };
 addEventListener("scroll", () => { const h = document.documentElement.scrollHeight - innerHeight; $("#pg").style.width = (h > 0 ? scrollY / h * 100 : 0) + "%"; $("#pg").style.opacity = $("#rd") ? 1 : 0; $("#up").hidden = scrollY < 600 }, { passive: true });
 $("#up").onclick = () => scrollTo({ top: 0, behavior: "smooth" });
+addEventListener("keydown", e => { if (!RDKEY || e.altKey || e.ctrlKey || e.metaKey || /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "")) return; if (e.key === "ArrowRight") RDKEY(1); else if (e.key === "ArrowLeft") RDKEY(-1) });
 addEventListener("hashchange", () => { $("#q").value = ""; route() });
 applyRS();
-(async () => { try { const r = await fetch("data.json?v=" + Date.now()); if (r.ok) Object.assign(DATA, await r.json()) } catch (e) {} route() })();
+(async () => { try { const r = await fetch("data.json?v=" + Date.now()); if (r.ok) Object.assign(DATA, await r.json()) } catch (e) {} DATA.site ??= {}; renderAnn(); route() })();
 </script>
 </body>
 </html>
