@@ -166,17 +166,19 @@ details.vol{margin-bottom:10px}
 /* ---------- Reader ---------- */
 .rbar{position:sticky;top:var(--top);z-index:20;display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--bd);margin-bottom:14px}
 .rbar .t{font-weight:700;flex:1;min-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rbar .t:hover{color:var(--ac)}
-.rbar select,.rbar button,#rp button{border:0;background:var(--s1);border-radius:6px;padding:7px 12px;max-width:240px}
-.rbar button:hover,#rp button:hover{background:var(--s2)}
-#rp{display:flex;gap:6px;align-items:center;flex-wrap:wrap;background:var(--s1);border-radius:8px;padding:10px 12px;margin-bottom:14px}#rp[hidden]{display:none}
-#rp button{background:var(--bg)}#rp span{color:var(--mu);margin-left:10px}
-.rh{max-width:760px;margin:0 auto}.rh h1{font-size:1.6rem;margin:6px 0 2px;line-height:1.25}.rh p{color:var(--mu);margin:0}
-.nv{display:flex;gap:8px;justify-content:space-between;max-width:760px;margin:16px auto}
-.rd.novel{font-size:var(--fs);line-height:var(--lh);max-width:760px;margin:0 auto;padding:8px 2px}
+.rbar select,.rbar button{border:0;background:var(--s1);border-radius:6px;padding:7px 12px;max-width:240px}
+.rbar button:hover{background:var(--s2)}
+.rh{max-width:var(--rw,760px);margin:34px auto 0;text-align:center}
+.rh .rs{display:inline-block;color:var(--mu);font-size:.9rem;font-weight:600;margin-bottom:10px}.rh .rs:hover{color:var(--ac)}
+.rh .rv{color:var(--ac);font-weight:700;font-size:.9rem;margin-bottom:4px}
+.rh h1{font-size:clamp(1.45rem,2.6vw,2rem);font-weight:800;line-height:1.3;letter-spacing:-.015em;margin:0 0 10px;text-wrap:balance}
+.rh p{color:var(--mu);margin:0;font-size:.9rem}
+.nv{display:flex;gap:8px;justify-content:space-between;max-width:var(--rw,760px);margin:26px auto 30px}
+.rd.novel{font-size:var(--fs);line-height:var(--lh);max-width:var(--rw,760px);margin:0 auto;padding:8px 2px}
 .rd.novel p{margin:0 0 1em}
 .rd.serif{font-family:"Noto Serif",Georgia,serif}
 .rd.sepia{background:#f4ecd8;color:#3b3226;padding:24px;border-radius:8px}.rd.night{background:#000;color:#c9cdd9;padding:24px;border-radius:8px}
-.rd.manga{max-width:860px;margin:0 auto}.rd.manga img{display:block;width:100%;min-height:200px}
+.rd.manga{max-width:var(--rw,860px);margin:0 auto}.rd.manga img{display:block;width:100%;min-height:200px}
 .pgv{position:relative;cursor:pointer;user-select:none}.pgv img{display:block;width:100%;max-height:calc(100vh - 140px);object-fit:contain;background:#000;border-radius:6px}
 .pgn{text-align:center;color:var(--mu);font-size:.85rem;margin-top:6px}
 #pg{position:fixed;top:0;left:0;height:3px;width:0;background:var(--ac);z-index:70;opacity:0}
@@ -219,6 +221,14 @@ textarea{width:100%;min-height:80px;margin-top:8px;border:0;border-radius:6px;pa
 a.al{color:var(--ac);font-weight:600}a.al:hover{text-decoration:underline}
 .ap{display:flex;gap:18px;align-items:center;margin:30px 0 6px}.ap h1{margin:0;font-size:clamp(1.6rem,3vw,2.3rem);font-weight:800;letter-spacing:-.02em}.ap p{margin:4px 0 0;color:var(--mu)}
 .av{flex:none;width:76px;height:76px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:2rem;font-weight:800;background:linear-gradient(160deg,hsl(var(--h) 55% 50%),hsl(calc(var(--h) + 50) 55% 30%))}
+.fab{position:fixed;right:18px;bottom:18px;z-index:45;width:46px;height:46px;border-radius:50%;border:0;background:var(--tx);color:var(--bg);display:grid;place-items:center;box-shadow:0 6px 18px #0004}
+.fab:hover,.fab[aria-expanded=true]{background:var(--ac);color:#fff}
+body.rdg #up{right:74px}
+.rsp{position:fixed;right:18px;bottom:74px;z-index:46;width:min(300px,calc(100vw - 36px));background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:12px 14px 16px;box-shadow:0 14px 40px #0004}
+.rsh{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}.rsh .x{border:0;background:none;color:var(--mu);font-size:1rem;padding:4px 6px;border-radius:6px}.rsh .x:hover{background:var(--s1)}
+.rsp label{display:block;font-size:.8rem;font-weight:600;color:var(--mu);margin:12px 0 6px}
+.seg{display:flex;background:var(--s1);border-radius:8px;padding:3px;gap:2px}.seg button{flex:1;border:0;background:none;border-radius:6px;padding:6px 4px;font-size:.85rem;font-weight:600;color:var(--tx)}.seg button.on{background:var(--bg);box-shadow:0 1px 4px #0002;color:var(--ac)}
+.stp{display:flex;align-items:center;background:var(--s1);border-radius:8px;padding:3px}.stp button{width:40px;height:32px;border:0;background:var(--bg);border-radius:6px;font-size:1.1rem;font-weight:700}.stp button:hover{color:var(--ac)}.stp b{flex:1;text-align:center;font-size:.95rem}
 </style>
 </head>
 <body>
@@ -405,8 +415,18 @@ const P = {
   },
   tools: () => sec("Công cụ", null, `<p class="lead">Dán nội dung, bấm Chạy rồi sao chép kết quả.</p>` + DATA.guides.map(R.guides).join("") + TOOLS.map(toolUI).join(""))
 };
-let RS = { fs: 18, lh: 1.9, ff: "sans", bg: "" }; try { Object.assign(RS, JSON.parse(ls.get("rs") || "{}")) } catch (e) {}
-function applyRS() { const st = document.documentElement.style; st.setProperty("--fs", RS.fs + "px"); st.setProperty("--lh", RS.lh); const r = $("#rd.novel"); if (r) r.className = `rd novel ${RS.ff} ${RS.bg}`; ls.set("rs", JSON.stringify(RS)) }
+let RS = { fs: 18, lh: 1.9, ff: "sans", bg: "", w: "m" }; try { Object.assign(RS, JSON.parse(ls.get("rs") || "{}")) } catch (e) {}
+function applyRS() { const st = document.documentElement.style; st.setProperty("--fs", RS.fs + "px"); st.setProperty("--lh", RS.lh); st.setProperty("--rw", { n: "640px", m: "760px", w: "960px" }[RS.w] || "760px"); const r = $("#rd.novel"); if (r) r.className = `rd novel ${RS.ff} ${RS.bg}`; ls.set("rs", JSON.stringify(RS)); rsPanel() }
+function rsetv(k, v) { RS[k] = v; applyRS() }
+function rsToggle(open) { const p = $("#rsp"), b = $("#rsb"); if (!p) return; const o = open ?? p.hidden; p.hidden = !o; b.setAttribute("aria-expanded", o); if (o) rsPanel() }
+function rsPanel() {
+  const p = $("#rsp"); if (!p || p.hidden) return;
+  const seg = (k, opts) => `<div class="seg">${opts.map(([v, l]) => `<button class="${RS[k] === v ? "on" : ""}" onclick="rsetv('${k}','${v}')">${l}</button>`).join("")}</div>`;
+  const step = (k, val, unit) => `<div class="stp"><button onclick="rset('${k}',-1)" aria-label="Giảm">−</button><b>${val}${unit}</b><button onclick="rset('${k}',1)" aria-label="Tăng">+</button></div>`;
+  p.innerHTML = `<div class="rsh"><b>Tùy chỉnh đọc</b><button class="x" onclick="rsToggle(false)" aria-label="Đóng">✕</button></div>` + (p.dataset.kind === "novel"
+    ? `<label>Cỡ chữ</label>${step("fs", RS.fs, "px")}<label>Giãn dòng</label>${step("lh", RS.lh, "")}<label>Kiểu chữ</label>${seg("ff", [["sans", "Không chân"], ["serif", "Có chân"]])}<label>Màu nền</label>${seg("bg", [["", "Mặc định"], ["sepia", "Giấy cũ"], ["night", "Đen"]])}<label>Độ rộng khung đọc</label>${seg("w", [["n", "Hẹp"], ["m", "Vừa"], ["w", "Rộng"]])}`
+    : `<label>Cách đọc</label><div class="seg"><button class="${ls.get("mm") === "page" ? "" : "on"}" onclick="ls.set('mm','scroll');route()">Cuộn dọc</button><button class="${ls.get("mm") === "page" ? "on" : ""}" onclick="ls.set('mm','page');route()">Lật trang</button></div><label>Độ rộng khung đọc</label>${seg("w", [["n", "Hẹp"], ["m", "Vừa"], ["w", "Rộng"]])}`);
+}
 function rset(k, d) {
   if (k === "fs") RS.fs = Math.min(32, Math.max(14, RS.fs + d * 2));
   if (k === "lh") RS.lh = Math.min(2.4, Math.max(1.4, +(RS.lh + d * .1).toFixed(1)));
@@ -452,13 +472,14 @@ async function read(kind, s, i) {
   const goto = j => { if (j >= 0 && j < n) location.hash = `${base}/${j}` }; RDKEY = d => goto(i + d);
   const nav = `<div class="nv"><a class="btn" ${i > 0 ? `href="${base}/${i - 1}"` : "disabled"}>${ic(I.prev)}Chương trước</a><a class="btn pri" ${i < n - 1 ? `href="${base}/${i + 1}"` : "disabled"}>Chương sau${ic(I.next)}</a></div>`;
   const opts = (() => { const o = j => `<option value="${j}" ${j == i ? "selected" : ""}>${esc(s.chapters[j].t)}</option>`; if (!s.chapters.some(x => (x.vol || "").trim())) return s.chapters.map((_, j) => o(j)).join(""); const g = new Map(); s.chapters.forEach((x, j) => { const v = (x.vol || "").trim() || "Chương lẻ"; if (!g.has(v)) g.set(v, []); g.get(v).push(j) }); return [...g].map(([v, a]) => `<optgroup label="${esc(v)}">${a.map(o).join("")}</optgroup>`).join("") })();
-  app.innerHTML = `<div class="rbar"><a class="t" href="${base}" title="Về trang truyện">${esc(s.title)}</a><select aria-label="Chọn chương" onchange="location.hash='${base}/'+this.value">${opts}</select>${kind === "novel" ? `<button onclick="$('#rp').hidden=!$('#rp').hidden">Tùy chỉnh đọc</button>` : `<button onclick="ls.set('mm', ls.get('mm') === 'page' ? 'scroll' : 'page'); route()">${ls.get("mm") === "page" ? "Chuyển sang cuộn dọc" : "Chuyển sang lật trang"}</button>`}${ADM ? `<a class="btn" href="admin.html#editchap/${kind}/${s.slug}/${i}">${ic(I.edit)}Sửa</a>` : ""}</div>
-<div id="rp" hidden><button onclick="rset('fs',-1)">A−</button><button onclick="rset('fs',1)">A+</button><span>Giãn dòng</span><button onclick="rset('lh',-1)">−</button><button onclick="rset('lh',1)">+</button><span>Font</span><button onclick="rset('ff')">Đổi font</button><span>Nền</span><button onclick="rset('bg')">Đổi nền</button></div>
-<div class="rh"><h1>${esc(c.t)}</h1><p id="meta">${c.vol ? esc(c.vol) + ", " : ""}${fmtD(c.date)}</p></div>${nav}<article id="rd" class="rd ${kind} ${kind === "novel" ? RS.ff + " " + RS.bg : ""}"></article>${nav}`;
+  app.innerHTML = `<div class="rbar"><a class="t" href="${base}" title="Về trang truyện">${esc(s.title)}</a><select aria-label="Chọn chương" onchange="location.hash='${base}/'+this.value">${opts}</select>${ADM ? `<a class="btn" href="admin.html#editchap/${kind}/${s.slug}/${i}">${ic(I.edit)}Sửa</a>` : ""}</div>
+<header class="rh"><a class="rs" href="${base}">${esc(s.title)}</a>${c.vol ? `<div class="rv">${esc(c.vol)}</div>` : ""}<h1>${esc(c.t)}</h1><p id="meta">${fmtD(c.date)}</p></header>${nav}<article id="rd" class="rd ${kind} ${kind === "novel" ? RS.ff + " " + RS.bg : ""}"></article>${nav}
+<button class="fab" id="rsb" title="Tùy chỉnh đọc" aria-label="Tùy chỉnh đọc" aria-expanded="false" onclick="rsToggle()"><svg class="i" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg></button>
+<div class="rsp" id="rsp" hidden data-kind="${kind}"></div>`;
   const rd = $("#rd");
   if (kind === "novel") {
     let t = c.text; if (t == null) { rd.textContent = "Đang tải chương..."; try { const r = await fetch(c.file); if (!r.ok) throw 0; t = await r.text() } catch (e) { rd.innerHTML = "<p>Không tải được chương. Hãy mở web qua GitHub Pages (không mở file trực tiếp từ máy).</p>"; return } }
-    rd.innerHTML = t.split(/\n+/).filter(l => l.trim()).map(l => `<p>${esc(l)}</p>`).join(""); $("#meta").textContent += ", " + fmtN(c.words || W(t));
+    rd.innerHTML = t.split(/\n+/).filter(l => l.trim()).map(l => `<p>${esc(l)}</p>`).join(""); $("#meta").textContent += " · " + fmtN(c.words || W(t));
   } else {
     const pg = c.pages || Array.from({ length: c.n }, (_, k) => c.dir + String(k + 1).padStart(c.pad || 2, "0") + "." + (c.ext || "jpg"));
     if (ls.get("mm") === "page") {
@@ -490,7 +511,7 @@ function route() {
   const s = b && ({ novel: DATA.novels, manga: DATA.manga }[a] || []).find(x => x.slug === b);
   const k = a === "novel" ? (s && isWN(s) ? "webnovel" : "novels") : a === "fav" ? "library" : a || "home";
   document.querySelectorAll("#nv a").forEach(x => x.classList.toggle("on", x.dataset.k === k));
-  reading_ = !!s && c !== undefined; sideMode();
+  reading_ = !!s && c !== undefined; sideMode(); document.body.classList.toggle("rdg", reading_);
   if (a === "the-loai") app.innerHTML = P.genre(b, c);
   else if (a === "tac-gia") app.innerHTML = P.author(b || "");
   else if (s) c !== undefined ? read(a, s, +c) : detail(a, s);
@@ -514,7 +535,8 @@ const root = document.documentElement; if (ls.get("theme")) root.dataset.theme =
 $("#th").onclick = () => { const cur = root.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"), n = cur === "dark" ? "light" : "dark"; root.dataset.theme = n; ls.set("theme", n) };
 addEventListener("scroll", () => { const h = document.documentElement.scrollHeight - innerHeight; $("#pg").style.width = (h > 0 ? scrollY / h * 100 : 0) + "%"; $("#pg").style.opacity = $("#rd") ? 1 : 0; $("#up").hidden = scrollY < 600; setClear() }, { passive: true });
 $("#up").onclick = () => scrollTo({ top: 0, behavior: "smooth" });
-addEventListener("keydown", e => { if (!RDKEY || e.altKey || e.ctrlKey || e.metaKey || /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "")) return; if (e.key === "ArrowRight") RDKEY(1); else if (e.key === "ArrowLeft") RDKEY(-1) });
+addEventListener("click", e => { const p = $("#rsp"), path = e.composedPath(); if (p && !p.hidden && !path.includes(p) && !path.includes($("#rsb"))) rsToggle(false) });
+addEventListener("keydown", e => { if (e.key === "Escape" && $("#rsp") && !$("#rsp").hidden) { rsToggle(false); return } if (!RDKEY || e.altKey || e.ctrlKey || e.metaKey || /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "")) return; if (e.key === "ArrowRight") RDKEY(1); else if (e.key === "ArrowLeft") RDKEY(-1) });
 addEventListener("hashchange", () => { $("#q").value = ""; route() });
 applyRS(); renderSide(); sideMode();
 (async () => { try { const r = await fetch("data.json?v=" + Date.now()); if (r.ok) Object.assign(DATA, await r.json()) } catch (e) {} DATA.site ??= {}; DATA.projects ??= []; renderSide(); renderAnn(); route() })();
