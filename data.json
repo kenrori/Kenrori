@@ -231,8 +231,14 @@
       "novels/youkoso-jitsuryoku-shijou-shugi/c1_mwxiw66q/013.webp",
       "novels/youkoso-jitsuryoku-shijou-shugi/c1_mwxiw66q/014.webp"
      ],
-     "type": "img",
-     "vol": "Tập 1"
+     "type": "img"
+    },
+    {
+     "t": "Mở Đầu: Cơ cấu xã hội Nhật Bản",
+     "date": "2026-11-26",
+     "vol": "Tập 1",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c2_mwxjqkk9.txt",
+     "words": 549
     }
    ],
    "title": "Youkoso Jitsuryoku Shijou Shugi",
@@ -259,10 +265,7 @@
    "prog": "",
    "sched": "",
    "format": "Light Novel",
-   "cover": "images/youkoso-jitsuryoku-shijou-shugi-bia.jpg",
-   "vc": {
-    "Tập 1": "images/youkoso-jitsuryoku-shijou-shugi-tap-1-mwxj7c5z.jpg"
-   }
+   "cover": "images/youkoso-jitsuryoku-shijou-shugi-bia.jpg"
   }
  ],
  "manga": [],
