@@ -87,6 +87,18 @@
    "desc": ""
   }
  ],
- "projects": [],
+ "projects": [
+  {
+   "title": "Battle Macros",
+   "type": "Công cụ",
+   "status": "Ổn định",
+   "version": "1.0.0",
+   "date": "2026-11-26",
+   "desc": "",
+   "links": [],
+   "howto": "Tải Tampermonkey\nCài đặt\nEnjoy",
+   "img": ""
+  }
+ ],
  "site": {}
 }
