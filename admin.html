@@ -79,7 +79,7 @@ main.wide{max-width:none}
 #log.ok{background:var(--ok);color:#fff}#log.err{background:var(--err);color:#fff}#log.fade{opacity:0;pointer-events:none}
 
 /* ---------- Dashboard ---------- */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0 6px}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:18px 0 6px}
 .stat{background:var(--s1);border-radius:8px;padding:14px 16px}.stat b{display:block;font-size:1.5rem;font-weight:800;letter-spacing:-.02em}.stat span{color:var(--mu);font-size:.85rem}
 .qa{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-top:10px}
 .qa button{margin:0;justify-content:flex-start;background:var(--s1);color:var(--tx);padding:14px;font-weight:600}.qa button:hover{background:var(--acs);color:var(--ac)}
@@ -186,13 +186,14 @@ details.ms>summary::-webkit-details-marker{display:none}
 <form class="panel" id="p-series"><h3>Bộ truyện</h3><p class="mu">Điền thông tin để tạo bộ mới. Muốn sửa bộ có sẵn, vào Quản lý và bấm Sửa bộ.</p>
 <div class="sf"><div><label class="cvl">Ảnh bìa</label><div class="cvbox"><img id="s_prev" alt="" hidden><span id="s_ph">Bấm để chọn ảnh bìa</span><input id="s_cover" type="file" accept="image/*" aria-label="Chọn ảnh bìa"></div><p class="mu" style="margin-top:6px">Ảnh tự được thu nhỏ khi lưu.</p></div>
 <div><div class="g2">
-<div><label for="s_kind">Loại</label><select id="s_kind"><option value="novel">Light Novel</option><option value="manga">Manga</option></select></div>
+<div><label for="s_kind">Loại</label><select id="s_kind"><option value="novel">Light Novel</option><option value="webnovel">Web Novel</option><option value="manga">Manga</option></select></div>
 <div><label for="s_status">Tình trạng</label><select id="s_status"><option>Đang dịch</option><option>Hoàn thành</option><option>Tạm ngưng</option></select></div>
 <div class="full"><label for="s_title">Tên truyện</label><input id="s_title" required></div>
 <div class="full"><label for="s_orig">Tên gốc <small>(không bắt buộc)</small></label><input id="s_orig" placeholder="勇者召喚に巻き込まれたけど…"></div>
 <div class="full"><label for="s_alts">Tên khác <small>(mỗi dòng một tên: romaji, tiếng Anh, viết tắt...)</small></label><textarea id="s_alts" style="min-height:64px"></textarea></div>
 <div><label for="s_author">Tác giả</label><input id="s_author"></div>
 <div><label for="s_artist">Họa sĩ minh họa <small>(không bắt buộc)</small></label><input id="s_artist"></div>
+<div class="full"><label for="s_src">Link tác phẩm gốc hoặc trang tác giả <small>(không bắt buộc, để độc giả ủng hộ tác giả)</small></label><input id="s_src" placeholder="https://..."></div>
 <div class="full"><label for="s_genres">Thể loại <small>(bấm để chọn, hoặc gõ thêm, cách nhau bằng dấu phẩy)</small></label><div id="g_chips"></div><input id="s_genres"></div>
 <div class="full"><label for="s_desc">Tóm tắt</label><textarea id="s_desc"></textarea></div>
 <div class="full"><label for="s_slug">Đường dẫn <small>(slug, để trống sẽ tự tạo từ tên)</small></label><input id="s_slug"></div>
@@ -217,8 +218,8 @@ details.ms>summary::-webkit-details-marker{display:none}
 <h4>Dịch vụ AI</h4><p class="mu">Thêm một hoặc nhiều dịch vụ. Công cụ dùng dịch vụ đầu tiên đang bật; dịch vụ nào lỗi hoặc hết hạn mức thì tự chuyển sang dịch vụ kế tiếp. Key được mã hóa bằng PIN và chỉ lưu trên máy này.</p>
 <div id="pv_list" class="lst"></div>
 <div class="pvadd"><div class="g2">
-<div><label for="pv_type">Thêm dịch vụ</label><select id="pv_type"><option value="gemini">Google Gemini</option><option value="anthropic">Anthropic Claude</option><option value="openai">OpenAI</option><option value="openrouter">OpenRouter (nhiều model, có model miễn phí)</option><option value="custom">Dịch vụ khác tương thích OpenAI (DeepSeek, xAI, Ollama...)</option></select></div>
-<div><label for="pv_model">Model <small>(đổi được nếu nhà cung cấp đổi tên)</small></label><input id="pv_model"></div>
+<div><label for="pv_type">Thêm dịch vụ</label><select id="pv_type"><option value="gemini">Google Gemini (có gói miễn phí)</option><option value="anthropic">Anthropic Claude</option><option value="openai">OpenAI</option><option value="groq">Groq (có gói miễn phí)</option><option value="openrouter">OpenRouter (nhiều model, có model miễn phí)</option><option value="custom">Dịch vụ khác tương thích OpenAI (DeepSeek, xAI, Ollama...)</option></select></div>
+<div><label for="pv_model">Model <small>(đổi được nếu nhà cung cấp đổi tên)</small></label><input id="pv_model" list="pv_models" autocomplete="off"><datalist id="pv_models"></datalist></div><div class="full mu" id="pv_free" style="margin-top:6px"></div>
 <div class="full" id="pv_urlw" hidden><label for="pv_url">Địa chỉ API <small>(phần trước /chat/completions)</small></label><input id="pv_url" placeholder="https://api.deepseek.com/v1"></div>
 <div class="full"><label for="pv_key">API key <small id="pv_hint"></small></label><input id="pv_key" type="password" autocomplete="off"></div></div>
 <div class="acts"><button type="button" id="pv_add">Thêm dịch vụ</button></div></div>
@@ -394,10 +395,10 @@ function volList() {
 $("#c_ser").onchange = chapUI;
 
 $("#p-series").onsubmit = e => { e.preventDefault(); run(async () => {
-  const kind = $("#s_kind").value, title = $("#s_title").value.trim(); if (!title) throw new Error("Hãy nhập tên truyện");
+  const fmt = $("#s_kind").value, kind = fmt === "webnovel" ? "novel" : fmt, title = $("#s_title").value.trim(), src = $("#s_src").value.trim(); if (src && !/^https?:\/\//.test(src)) throw new Error("Link tác phẩm gốc phải bắt đầu bằng https://"); if (!title) throw new Error("Hãy nhập tên truyện");
   const slug = slugify($("#s_slug").value || title), list = data[KEYS[kind]]; let s = list.find(x => x.slug === slug);
   if (!s) { s = { slug, chapters: [] }; list.push(s) }
-  Object.assign(s, { title, orig: $("#s_orig").value.trim(), alts: $("#s_alts").value.split("\n").map(x => x.trim()).filter(Boolean), artist: $("#s_artist").value.trim(), author: $("#s_author").value.trim(), status: $("#s_status").value, genres: $("#s_genres").value.split(",").map(x => x.trim()).filter(Boolean), desc: $("#s_desc").value.trim() });
+  Object.assign(s, { title, orig: $("#s_orig").value.trim(), alts: $("#s_alts").value.split("\n").map(x => x.trim()).filter(Boolean), artist: $("#s_artist").value.trim(), author: $("#s_author").value.trim(), status: $("#s_status").value, genres: $("#s_genres").value.split(",").map(x => x.trim()).filter(Boolean), desc: $("#s_desc").value.trim(), src }); if (kind === "novel") s.format = fmt === "webnovel" ? "Web Novel" : "Light Novel";
   const f = $("#s_cover").files[0];
   if (f) { log("Đang tải ảnh bìa..."); const p = `images/${slug}-bia.jpg`; await put(p, await resize(f), "Bìa: " + title); s.cover = p }
   await save("Thêm/sửa truyện: " + title); done("✅ Đã lưu bộ truyện. Web cập nhật sau 1–2 phút.");
@@ -444,7 +445,7 @@ function manage() {
   const q = ($("#m_q")?.value || "").trim().toLowerCase(), hit = o => !q || JSON.stringify(o).toLowerCase().includes(q), out = [];
   for (const k of ["novels", "manga"]) data[k].forEach((s, i) => {
     if (!hit([s.title, s.orig, s.alts, s.author])) return;
-    out.push(`<details class="ms"><summary>${thumb(s)}<span class="mti"><b>${esc(s.title)}</b><small>${k === "novels" ? "Light Novel" : "Manga"}, ${s.chapters.length} chương${s.status ? ", " + esc(s.status) : ""}</small></span><span class="mact"><button type="button" class="sec sm" data-s="${k}|${i}">Sửa bộ</button><button type="button" class="sec sm" data-v="${k}|${i}">Gán tập</button><button type="button" class="dng sm" data-d="${k}|${i}">Gỡ bộ</button></span></summary><div class="mch">${s.chapters.map((c, j) => `<div class="mc"><span class="mcn">${j + 1}</span><span class="mct">${c.vol ? `<em>${esc(c.vol)}, </em>` : ""}${esc(c.t)}</span><small>${c.date || ""}</small><span class="mca"><button type="button" data-e="${k}|${i}|${j}">Sửa</button><button type="button" data-m="${k}|${i}|${j}|-1" title="Chuyển lên"${j ? "" : " disabled"}>↑</button><button type="button" data-m="${k}|${i}|${j}|1" title="Chuyển xuống"${j < s.chapters.length - 1 ? "" : " disabled"}>↓</button><button type="button" class="dng" data-d="${k}|${i}|${j}" title="Gỡ chương">✕</button></span></div>`).join("") || '<p class="mu">Chưa có chương nào.</p>'}</div></details>`);
+    out.push(`<details class="ms"><summary>${thumb(s)}<span class="mti"><b>${esc(s.title)}</b><small>${k === "novels" ? (s.format || "Light Novel") : "Manga"}${s.author ? ", " + esc(s.author) : ""}, ${s.chapters.length} chương${s.status ? ", " + esc(s.status) : ""}</small></span><span class="mact"><button type="button" class="sec sm" data-s="${k}|${i}">Sửa bộ</button><button type="button" class="sec sm" data-v="${k}|${i}">Gán tập</button><button type="button" class="dng sm" data-d="${k}|${i}">Gỡ bộ</button></span></summary><div class="mch">${s.chapters.map((c, j) => `<div class="mc"><span class="mcn">${j + 1}</span><span class="mct">${c.vol ? `<em>${esc(c.vol)}, </em>` : ""}${esc(c.t)}</span><small>${c.date || ""}</small><span class="mca"><button type="button" data-e="${k}|${i}|${j}">Sửa</button><button type="button" data-m="${k}|${i}|${j}|-1" title="Chuyển lên"${j ? "" : " disabled"}>↑</button><button type="button" data-m="${k}|${i}|${j}|1" title="Chuyển xuống"${j < s.chapters.length - 1 ? "" : " disabled"}>↓</button><button type="button" class="dng" data-d="${k}|${i}|${j}" title="Gỡ chương">✕</button></span></div>`).join("") || '<p class="mu">Chưa có chương nào.</p>'}</div></details>`);
   });
   const grp = [];
   for (const [k, l] of [["projects", "Dự án"], ["tips", "Mẹo game"], ["links", "Liên kết"], ["videos", "Video"]]) {
@@ -466,7 +467,7 @@ $("#manage").addEventListener("click", e => {
   const bs = e.target.closest("button[data-s]"), bm = e.target.closest("button[data-m]"), be = e.target.closest("button[data-e]");
   if (bs) {
     const [k, i] = bs.dataset.s.split("|"), s = data[k][+i];
-    $("#s_kind").value = k === "novels" ? "novel" : "manga"; $("#s_title").value = s.title; $("#s_slug").value = s.slug; $("#s_author").value = s.author || ""; $("#s_orig").value = s.orig || ""; $("#s_alts").value = (s.alts || []).join("\n"); $("#s_artist").value = s.artist || "";
+    $("#s_kind").value = k === "novels" ? (s.format === "Web Novel" ? "webnovel" : "novel") : "manga"; $("#s_src").value = s.src || ""; $("#s_title").value = s.title; $("#s_slug").value = s.slug; $("#s_author").value = s.author || ""; $("#s_orig").value = s.orig || ""; $("#s_alts").value = (s.alts || []).join("\n"); $("#s_artist").value = s.artist || "";
     $("#s_status").value = s.status || "Đang dịch"; $("#s_desc").value = s.desc || ""; $("#s_genres").value = (s.genres || []).join(", "); gChips(); $("#s_cover").value = ""; cvPrev(s.cover); tab("series"); $("#ptitle").textContent = "Sửa bộ: " + s.title; log("Đang sửa bộ " + s.title + ". Chọn ảnh bìa mới nếu muốn đổi.");
   } else if (bm) {
     const [k, i, j, d] = bm.dataset.m.split("|"), a = data[k][+i].chapters, x = +j, y = x + +d; if (y < 0 || y >= a.length) return;
@@ -586,11 +587,25 @@ const PV = {
   gemini: { n: "Gemini", m: "gemini-3.6-flash", h: "(lấy tại aistudio.google.com/apikey)" },
   anthropic: { n: "Claude", m: "claude-sonnet-5-5", h: "(lấy tại console.anthropic.com)" },
   openai: { n: "OpenAI", m: "gpt-6-luna", h: "(lấy tại platform.openai.com)" },
+  groq: { n: "Groq", m: "openai/gpt-oss-120b", h: "(lấy tại console.groq.com)", url: "https://api.groq.com/openai/v1" },
   openrouter: { n: "OpenRouter", m: "openrouter/free", h: "(lấy tại openrouter.ai/keys)" },
   custom: { n: "Tùy chỉnh", m: "", h: "(key của dịch vụ đó; Ollama chạy trên máy thì để trống)" }
 };
 let PROV = [], pvCool = {}, trLastBy = "";
 const pvName = p => `${PV[p.type]?.n || p.type}, ${p.model}`;
+/* Gợi ý model; [id, mô tả]. Danh sách miễn phí thay đổi thường xuyên, kiểm tra lại trên trang của nhà cung cấp. */
+const PVM = {
+  gemini: [["gemini-3.6-flash", "có trong gói miễn phí"], ["gemini-3.8-flash", "có trong gói miễn phí"], ["gemini-2.5-flash", "có trong gói miễn phí"], ["gemini-2.5-flash-lite", "miễn phí, nhẹ, nhanh"]],
+  groq: [["openai/gpt-oss-120b", "miễn phí, giới hạn token mỗi ngày"], ["qwen/qwen3.8-27b", "miễn phí"], ["openai/gpt-oss-20b", "miễn phí, nhẹ"]],
+  openrouter: [["openrouter/free", "miễn phí, tự chọn ngẫu nhiên một model miễn phí"], ["google/gemma-4-26b-a4b-it:free", "miễn phí"], ["nvidia/nemotron-3-ultra-550b-a55b:free", "miễn phí"]],
+  anthropic: [["claude-sonnet-5-5", "trả phí"], ["claude-haiku-5-5", "trả phí, rẻ và nhanh"], ["claude-opus-5-5", "trả phí, mạnh nhất"]],
+  openai: [["gpt-6-luna", "trả phí, rẻ"], ["gpt-6.2-sol", "trả phí"]], custom: []
+};
+const PVF = {
+  gemini: "Gói miễn phí không cần thẻ. Lưu ý: Google dùng nội dung gửi qua gói miễn phí để cải thiện sản phẩm (trừ EU, Anh, Thụy Sĩ).",
+  groq: "Gói miễn phí không cần thẻ, giới hạn khoảng 30 yêu cầu/phút và theo số token mỗi ngày. Model mã nguồn mở, nên dịch thử để xem tiếng Việt có ổn không.",
+  openrouter: "Model có đuôi :free là miễn phí, giới hạn khoảng 20 yêu cầu/phút và 50 yêu cầu/ngày (1.000/ngày nếu tài khoản từng nạp 10 USD). Danh sách model miễn phí thay đổi thường xuyên."
+};
 async function pvSave() { if (!sessionPin) throw new Error("Hãy đăng nhập lại bằng PIN để lưu dịch vụ"); needHttps(); ls.set("llm2", JSON.stringify(await seal(sessionPin, JSON.stringify(PROV)))); pvCool = {}; pvRender() }
 async function trLoadKey() {
   try { const o = JSON.parse(ls.get("llm2") || "null"); if (o && sessionPin) PROV = JSON.parse(await unseal(sessionPin, o)) } catch (e) {}
@@ -600,7 +615,7 @@ async function trLoadKey() {
 function pvRender() {
   $("#pv_list").innerHTML = PROV.map((p, i) => `<div class="li"><input type="checkbox" data-pon="${i}" ${p.on ? "checked" : ""} title="Bật hoặc tắt dịch vụ này"><span class="lt">${i + 1}. ${esc(pvName(p))} <em>${p.key ? "key …" + esc(p.key.slice(-4)) : "không có key"}${p.url ? ", " + esc(p.url) : ""}</em></span><span class="pvs" id="pvs${i}"></span><button type="button" class="sec sm" data-pt="${i}">Kiểm tra</button><button type="button" class="sec sm" data-pm="${i}|-1" title="Ưu tiên lên"${i ? "" : " disabled"}>↑</button><button type="button" class="sec sm" data-pm="${i}|1" title="Ưu tiên xuống"${i < PROV.length - 1 ? "" : " disabled"}>↓</button><button type="button" class="dng sm" data-px="${i}">Xóa</button></div>`).join("") || '<p class="mu">Chưa có dịch vụ nào. Thêm ít nhất một dịch vụ bên dưới để dùng dịch tự động.</p>';
 }
-const pvTypeUI = () => { const t = $("#pv_type").value; $("#pv_model").value = PV[t].m; $("#pv_model").placeholder = t === "custom" ? "deepseek-chat, llama3.1..." : ""; $("#pv_urlw").hidden = t !== "custom"; $("#pv_hint").textContent = PV[t].h };
+const pvTypeUI = () => { const t = $("#pv_type").value; $("#pv_model").value = PV[t].m; $("#pv_models").innerHTML = (PVM[t] || []).map(([id, d]) => `<option value="${esc(id)}">${esc(d)}</option>`).join(""); $("#pv_free").textContent = PVF[t] || ""; $("#pv_model").placeholder = t === "custom" ? "deepseek-chat, llama3.1..." : ""; $("#pv_urlw").hidden = t !== "custom"; $("#pv_hint").textContent = PV[t].h };
 $("#pv_type").onchange = pvTypeUI; pvTypeUI();
 $("#pv_add").onclick = async () => {
   try {
@@ -630,7 +645,7 @@ async function callOne(p, prompt) {
     url = "https://api.anthropic.com/v1/messages"; Object.assign(headers, { "x-api-key": p.key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" });
     body = { model: p.model, max_tokens: 8000, messages: [{ role: "user", content: prompt }] }; pick = j => (j.content || []).map(x => x.text || "").join("");
   } else {
-    url = (p.type === "openai" ? "https://api.openai.com/v1" : p.type === "openrouter" ? "https://openrouter.ai/api/v1" : p.url) + "/chat/completions";
+    url = (p.type === "openai" ? "https://api.openai.com/v1" : p.type === "openrouter" ? "https://openrouter.ai/api/v1" : p.type === "groq" ? PV.groq.url : p.url) + "/chat/completions";
     if (p.key) headers.Authorization = "Bearer " + p.key; if (p.type === "openrouter") headers["X-Title"] = "Kenrori";
     body = { model: p.model, messages: [{ role: "user", content: prompt }] }; if (p.type !== "openai") body.temperature = 0.4; pick = j => j.choices?.[0]?.message?.content || "";
   }
@@ -771,7 +786,7 @@ function dash() {
   const rec = []; S.forEach(([k, s, i]) => s.chapters.forEach((c, j) => rec.push({ k, s, i, c, j }))); rec.sort((a, b) => (b.c.date || "").localeCompare(a.c.date || "") || b.j - a.j);
   const drafts = []; try { for (let x = 0; x < localStorage.length; x++) { const key = localStorage.key(x); if (!key.startsWith("dr:")) continue; const d = JSON.parse(localStorage.getItem(key) || "{}"); if ((d.i || "").trim() || (d.o || "").trim()) drafts.push({ s: data.novels.find(n => n.slug === key.slice(3)), slug: key.slice(3), d }) } } catch (e) {}
   const qa = [["series", "Thêm bộ truyện mới", "s_new"], ["chap", "Đăng chương"], ["tr", "Dịch chương mới"], ["man", "Quản lý nội dung"]];
-  el.innerHTML = `<div class="stats"><div class="stat"><b>${data.novels.length}</b><span>Light Novel</span></div><div class="stat"><b>${data.manga.length}</b><span>Manga</span></div><div class="stat"><b>${nch.toLocaleString("vi-VN")}</b><span>Chương đã đăng</span></div><div class="stat"><b>${nw.toLocaleString("vi-VN")}</b><span>Chữ đã dịch</span></div></div>
+  el.innerHTML = `<div class="stats"><div class="stat"><b>${data.novels.filter(s => s.format !== "Web Novel").length}</b><span>Light Novel</span></div><div class="stat"><b>${data.novels.filter(s => s.format === "Web Novel").length}</b><span>Web Novel</span></div><div class="stat"><b>${data.manga.length}</b><span>Manga</span></div><div class="stat"><b>${nch.toLocaleString("vi-VN")}</b><span>Chương đã đăng</span></div><div class="stat"><b>${nw.toLocaleString("vi-VN")}</b><span>Chữ đã dịch</span></div></div>
 <h4>Làm nhanh</h4><div class="qa">${qa.map(([k, l, x]) => `<button type="button" onclick="${x ? `$('#${x}').click();` : ""}tab('${k}')"><svg class="i" viewBox="0 0 24 24">${NI[k]}</svg>${l}</button>`).join("")}</div>
 ${drafts.length ? `<h4>Bản dịch đang dở trên máy này</h4><div class="lst">${drafts.map(({ s, slug, d }) => `<div class="li"><span class="lt">${esc(s ? s.title : slug)}${d.t ? ` <em>${esc(d.t)}</em>` : ""}</span><small>${(d.o || "").trim() ? d.o.trim().split(/\s+/).length.toLocaleString("vi-VN") + " chữ" : "chưa dịch"}</small><button type="button" class="sec sm" onclick="openDraft('${esc(slug)}')">Mở</button></div>`).join("")}</div>` : ""}
 <h4>Chương mới đăng</h4>${rec.length ? `<div class="lst">${rec.slice(0, 8).map(r => `<div class="li">${thumb(r.s)}<span class="lt">${esc(r.s.title)} <em>${r.c.vol ? esc(r.c.vol) + ", " : ""}${esc(r.c.t)}</em></span><small>${r.c.date || ""}</small><button type="button" class="sec sm" onclick="goEdit('${r.k}',${r.i},${r.j})">Sửa</button></div>`).join("")}</div>` : '<p class="mu">Chưa có chương nào. Tạo bộ truyện rồi đăng chương đầu tiên.</p>'}`;

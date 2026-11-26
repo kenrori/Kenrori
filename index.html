@@ -75,7 +75,7 @@ footer a:hover{color:var(--ac)}
 .hi h2{margin:0 0 12px;font-size:clamp(1.5rem,3.2vw,2.6rem);font-weight:800;line-height:1.1;letter-spacing:-.02em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .htg{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}.htg span{font-size:.75rem;font-weight:600;background:#ffffff24;padding:2px 9px;border-radius:5px}
 .hi p{margin:0;max-width:72ch;color:#ffffffd9;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-.hau{margin-top:14px;font-style:italic;color:#ffffffcc}
+.hau{margin-top:14px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;color:#fff}.hau span{font-size:.8rem;color:#ffffffb0}.hau b{font-size:1.05rem;margin-right:10px}
 .hn{position:absolute;right:32px;bottom:20px;z-index:2;display:flex;gap:8px;align-items:center}
 .hn span{font-weight:700;margin-right:6px}
 .hn button{width:38px;height:38px;border-radius:50%;border:0;background:var(--s1);display:grid;place-items:center}.hn button:hover{background:var(--ac);color:#fff}
@@ -212,6 +212,13 @@ textarea{width:100%;min-height:80px;margin-top:8px;border:0;border-radius:6px;pa
   .shelf{grid-auto-columns:128px}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+.crs{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.cr{display:inline-flex;flex-direction:column;line-height:1.25;padding:6px 13px;border-radius:8px;background:#0007;color:#fff;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);text-shadow:none}
+.cr span{font-size:.72rem;color:#ffffffb8}.cr b{font-size:1.05rem;font-weight:700}.cr:hover{background:var(--ac)}
+.ca{color:var(--mu);font-size:.8rem;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+a.al{color:var(--ac);font-weight:600}a.al:hover{text-decoration:underline}
+.ap{display:flex;gap:18px;align-items:center;margin:30px 0 6px}.ap h1{margin:0;font-size:clamp(1.6rem,3vw,2.3rem);font-weight:800;letter-spacing:-.02em}.ap p{margin:4px 0 0;color:var(--mu)}
+.av{flex:none;width:76px;height:76px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:2rem;font-weight:800;background:linear-gradient(160deg,hsl(var(--h) 55% 50%),hsl(calc(var(--h) + 50) 55% 30%))}
 </style>
 </head>
 <body>
@@ -298,7 +305,7 @@ const I = {
 DATA.projects ??= [{ title: "Tên dự án (ví dụ)", type: "Userscript", status: "Đang phát triển", version: "1.0.0", date: "2026-11-01", desc: "Mô tả ngắn về dự án.", links: [{ label: "Cài đặt", url: "https://greasyfork.org/" }], howto: "Bước 1: ...\nBước 2: ...", img: "" }];
 DATA.site ??= {};
 const KEY = { novel: "novels", manga: "manga" }, app = $("#app"), EMPTY = '<p class="empty">Chưa có nội dung.</p>';
-const NAV = [["home", "home", "Trang chủ"], ["—", "book", "Truyện"], ["novels", "", "Light Novel"], ["manga", "", "Manga"], ["the-loai", "", "Thể loại"], ["library", "", "Thư viện của tôi"], ["—", "game", "Game & công cụ"], ["projects", "", "Dự án"], ["tips", "", "Mẹo game"], ["tools", "", "Công cụ"], ["—", "more", "Khác"], ["videos", "", "Video Vietsub"], ["links", "", "Liên kết"], ["about", "", "Giới thiệu"]];
+const NAV = [["home", "home", "Trang chủ"], ["—", "book", "Truyện"], ["novels", "", "Light Novel"], ["webnovel", "", "Web Novel"], ["manga", "", "Manga"], ["the-loai", "", "Thể loại"], ["library", "", "Thư viện của tôi"], ["—", "game", "Game & công cụ"], ["projects", "", "Dự án"], ["tips", "", "Mẹo game"], ["tools", "", "Công cụ"], ["—", "more", "Khác"], ["videos", "", "Video Vietsub"], ["links", "", "Liên kết"], ["about", "", "Giới thiệu"]];
 function renderSide() {
   $("#nv").innerHTML = NAV.map(([k, icn, l]) => k === "—" ? `<div class="sg">${ic(I[icn])}${l}</div>` : `<a href="#${k}" data-k="${k}"${icn ? ' class="top"' : ""}>${icn ? ic(I[icn]) : ""}${l}</a>`).join("");
   const dc = (DATA.site.about || {}).discord;
@@ -317,7 +324,13 @@ const sum = s => s.chapters.reduce((a, c) => a + (c.words || (c.text ? W(c.text)
 const allS = () => [...DATA.novels.map(s => ({ k: "novel", s })), ...DATA.manga.map(s => ({ k: "manga", s }))];
 const byNew = a => [...a].sort((x, y) => latest(y.s || y).localeCompare(latest(x.s || x)));
 const sec = (t, more, body) => `<section class="sec"><div class="sh"><h2>${t}</h2>${more ? `<a class="more" href="#${more}" title="Xem tất cả">${ic(I.next)}</a>` : ""}</div>${body}</section>`;
-const card = (k, s) => `<a class="sc" href="#${k}/${s.slug}"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b><i class="kd">${k === "novel" ? "Novel" : "Manga"}</i></div><div class="ct" title="${esc(s.title)}${s.orig ? "\n" + esc(s.orig) : ""}">${esc(s.title)}</div><small>${stDot(s)}<span>${s.chapters.length} chương</span></small></a>`;
+const fmtOf = (k, s) => k === "manga" ? "Manga" : s.format === "Web Novel" ? "Web Novel" : "Light Novel";
+const isWN = s => s.format === "Web Novel";
+const people = t => String(t || "").split(/\s*[,、&]\s*/).map(x => x.trim()).filter(Boolean);
+const aHref = n => "#tac-gia/" + encodeURIComponent(n);
+const credit = (lbl, t) => people(t).map(n => `<a class="cr" href="${aHref(n)}"><span>${lbl}</span><b>${esc(n)}</b></a>`).join("");
+const pLinks = t => people(t).map(n => `<a class="al" href="${aHref(n)}">${esc(n)}</a>`).join(", ");
+const card = (k, s) => `<a class="sc" href="#${k}/${s.slug}"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b><i class="kd">${fmtOf(k, s)}</i></div><div class="ct" title="${esc(s.title)}${s.orig ? "\n" + esc(s.orig) : ""}">${esc(s.title)}</div>${s.author ? `<div class="ca">${esc(s.author)}</div>` : ""}<small>${stDot(s)}<span>${s.chapters.length} chương</span></small></a>`;
 const gridOf = (k, a) => a.length ? `<div class="series">${byNew(a).map(s => card(k, s)).join("")}</div>` : EMPTY;
 const recent = n => { const a = []; for (const { k, s } of allS()) s.chapters.forEach((c, i) => a.push({ k, s, c, i })); return a.sort((x, y) => (y.c.date || "").localeCompare(x.c.date || "") || y.i - x.i).slice(0, n) };
 const rdSet = (k, s) => { try { return JSON.parse(ls.get("r:" + k + ":" + s.slug) || "[]") } catch (e) { return [] } };
@@ -330,7 +343,7 @@ function latestUpdates() {
 let HI = 0, HT = null;
 function heroHtml() {
   const L = allS().sort((x, y) => latest(y.s).localeCompare(latest(x.s))).slice(0, 5); if (!L.length) return "";
-  return `<section class="hero" id="hero" aria-label="Truyện mới cập nhật">${L.map(({ k, s }, i) => `<div class="hs${i ? "" : " on"}"><div class="hb" ${bgStyle(s)}></div><div class="hw"><a class="cover" href="#${k}/${s.slug}" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></a><div class="hi"><a href="#${k}/${s.slug}"><h2>${esc(s.title)}</h2></a>${s.orig ? `<div class="hor" lang="ja">${esc(s.orig)}</div>` : ""}<div class="htg">${(s.genres || []).slice(0, 6).map(g => `<span>${esc(g)}</span>`).join("")}</div><p>${esc(s.desc)}</p><div class="hau">${esc(s.author || "")}${s.artist && s.artist !== s.author ? `${s.author ? ", " : ""}minh họa: ${esc(s.artist)}` : ""}</div></div></div></div>`).join("")}${L.length > 1 ? `<div class="hn"><span id="hno">Số 1</span><button onclick="heroGo(-1)" title="Trước">${ic(I.prev)}</button><button onclick="heroGo(1)" title="Sau">${ic(I.next)}</button></div>` : ""}</section>`;
+  return `<section class="hero" id="hero" aria-label="Truyện mới cập nhật">${L.map(({ k, s }, i) => `<div class="hs${i ? "" : " on"}"><div class="hb" ${bgStyle(s)}></div><div class="hw"><a class="cover" href="#${k}/${s.slug}" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></a><div class="hi"><a href="#${k}/${s.slug}"><h2>${esc(s.title)}</h2></a>${s.orig ? `<div class="hor" lang="ja">${esc(s.orig)}</div>` : ""}<div class="htg">${(s.genres || []).slice(0, 6).map(g => `<span>${esc(g)}</span>`).join("")}</div><p>${esc(s.desc)}</p><div class="hau">${s.author ? `<span>Tác giả</span><b>${esc(s.author)}</b>` : ""}${s.artist && s.artist !== s.author ? `<span>Minh họa</span><b>${esc(s.artist)}</b>` : ""}</div></div></div></div>`).join("")}${L.length > 1 ? `<div class="hn"><span id="hno">Số 1</span><button onclick="heroGo(-1)" title="Trước">${ic(I.prev)}</button><button onclick="heroGo(1)" title="Sau">${ic(I.next)}</button></div>` : ""}</section>`;
 }
 function heroGo(d) { const ss = document.querySelectorAll(".hs"); if (ss.length < 2) return; ss[HI].classList.remove("on"); HI = (HI + d + ss.length) % ss.length; ss[HI].classList.add("on"); $("#hno").textContent = "Số " + (HI + 1); clearInterval(HT); HT = setInterval(() => heroGo(1), 8000) }
 const projCard = d => `<div class="card pj">${d.img ? `<img class="pi" src="${esc(d.img)}" alt="" loading="lazy" onerror="this.remove()">` : ""}<h3>${esc(d.title)}</h3><div class="meta">${d.status ? `<span class="st ${STC(d.status)}">${esc(d.status)}</span>` : ""}${d.type ? `<span class="pill">${esc(d.type)}</span>` : ""}${d.version ? `<span>v${esc(d.version)}</span>` : ""}${d.date ? `<span>Cập nhật ${fmtD(d.date)}</span>` : ""}</div><p>${esc(d.desc)}</p><div class="acts">${(d.links || []).filter(l => /^https?:\/\//.test(l.url)).map((l, i) => `<a class="btn${i ? "" : " pri"}" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join("")}</div>${d.howto ? `<details><summary>Hướng dẫn sử dụng</summary><p class="sum">${esc(d.howto)}</p></details>` : ""}</div>`;
@@ -370,7 +383,9 @@ const P = {
       + (DATA.projects.length ? sec("Dự án", "projects", `<div class="grid">${DATA.projects.slice(0, 3).map(projCard).join("")}</div>`) : "")
       + (allG().length ? sec("Thể loại", "the-loai", gChips("all")) : "");
   },
-  novels: () => sec("Light Novel", null, gChips("novel") + gridOf("novel", DATA.novels)),
+  novels: () => sec("Light Novel", null, gridOf("novel", DATA.novels.filter(s => !isWN(s)))),
+  webnovel: () => sec("Web Novel", null, gridOf("novel", DATA.novels.filter(isWN))),
+  author: n => { const W = allS().filter(({ s }) => people(s.author).includes(n) || people(s.artist).includes(n)), wa = W.filter(({ s }) => people(s.author).includes(n)).length, wi = W.filter(({ s }) => people(s.artist).includes(n)).length, src = W.map(({ s }) => s.src).filter(u => /^https?:\/\//.test(u || "")); return `<section class="ap"><div class="av" style="--h:${hue(n)}">${esc([...n][0] || "?")}</div><div><h1>${esc(n)}</h1><p>${[wa ? `Tác giả của ${wa} bộ` : "", wi ? `Minh họa ${wi} bộ` : ""].filter(Boolean).join(", ")} được dịch tại Kenrori.</p></div></section>` + sec("Tác phẩm", null, W.length ? `<div class="series">${W.map(({ k, s }) => card(k, s)).join("")}</div>` : EMPTY) + (src.length ? `<p class="lead">Hãy ủng hộ ${esc(n)} bằng cách đọc bản gốc: ${[...new Set(src)].map(u => `<a class="al" href="${esc(u)}" target="_blank" rel="noopener">${esc(u.replace(/^https?:\/\//, "").slice(0, 50))}</a>`).join(", ")}</p>` : "") },
   manga: () => sec("Manga", null, gChips("manga") + gridOf("manga", DATA.manga)),
   library: () => { const rd = reading(100), fv = favList(); return sec("Đang đọc", null, rd.length ? `<div class="series">${rd.map(rdCard).join("")}</div>` : '<p class="empty">Bạn chưa đọc bộ nào. Chọn một bộ ở trang chủ để bắt đầu.</p>') + sec("Yêu thích", null, fv.length ? favGrid(fv) : '<p class="empty">Chưa có bộ nào. Mở trang truyện và bấm Thêm vào thư viện.</p>') + `<p class="lead">Thư viện lưu trên trình duyệt này.</p>` },
   tips: () => sec("Mẹo game", null, DATA.tips.map(R.tips).join("") || EMPTY),
@@ -403,12 +418,12 @@ function detail(kind, s) {
   const last = ls.get(kind + ":" + s.slug), rs = rdSet(kind, s), n = s.chapters.length, nv = new Set(s.chapters.map(c => (c.vol || "").trim()).filter(Boolean)).size; let desc = true;
   const tags = (s.genres || []).map(g => `<a class="pill" href="${gHref(g)}">${esc(g)}</a>`).join("");
   const alt = [s.orig, ...(s.alts || [])].filter(Boolean);
-  const info = [["Tác giả", esc(s.author || "Chưa rõ")], s.artist ? ["Họa sĩ minh họa", esc(s.artist)] : null, alt.length ? ["Tên khác", alt.map(x => `<div>${esc(x)}</div>`).join("")] : null, ["Loại", kind === "novel" ? "Light Novel" : "Manga"], ["Tình trạng", stDot(s) || "Chưa rõ"], ["Số chương", n], nv ? ["Số tập", nv] : null, kind === "novel" ? ["Tổng số chữ", fmtN(sum(s)) || "Chưa rõ"] : null, ["Cập nhật", fmtD(latest(s)) || "Chưa có"]].filter(Boolean);
+  const info = [["Tác giả", pLinks(s.author) || "Chưa rõ"], s.artist ? ["Họa sĩ minh họa", pLinks(s.artist)] : null, /^https?:\/\//.test(s.src || "") ? ["Tác phẩm gốc", `<a class="al" href="${esc(s.src)}" target="_blank" rel="noopener">${esc(s.src.replace(/^https?:\/\//, "").slice(0, 40))}</a>`] : null, alt.length ? ["Tên khác", alt.map(x => `<div>${esc(x)}</div>`).join("")] : null, ["Loại", fmtOf(kind, s)], ["Tình trạng", stDot(s) || "Chưa rõ"], ["Số chương", n], nv ? ["Số tập", nv] : null, kind === "novel" ? ["Tổng số chữ", fmtN(sum(s)) || "Chưa rõ"] : null, ["Cập nhật", fmtD(latest(s)) || "Chưa có"]].filter(Boolean);
   const fav = isFav(kind, s.slug);
   app.innerHTML = `<div class="tpb"><div class="hb" ${bgStyle(s)}></div></div>
 <div class="tp"><div class="tph"><div class="cover tpcv" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></div>
-<div class="tpt"><h1>${esc(s.title)}</h1>${s.orig || (s.alts || [])[0] ? `<div class="tpo" lang="${s.orig ? "ja" : "vi"}">${esc(s.orig || s.alts[0])}</div>` : ""}${s.author || s.artist ? `<div class="tpa">${esc(s.author || "")}${s.artist && s.artist !== s.author ? `${s.author ? ", " : ""}minh họa: ${esc(s.artist)}` : ""}</div>` : ""}</div>
-<div class="tpm"><div class="acts"><button class="btn ${fav ? "on" : "pri"}" id="fvb" onclick="toggleFav('${kind}','${esc(s.slug)}')">${favLabel(fav)}</button>${n ? (last != null ? `<a class="btn" href="#${kind}/${s.slug}/${last}">${ic(I.play)}Đọc tiếp</a><a class="btn" href="#${kind}/${s.slug}/0">Đọc từ đầu</a>` : `<a class="btn" href="#${kind}/${s.slug}/0">${ic(I.play)}Đọc từ đầu</a>`) + `<a class="btn" href="#${kind}/${s.slug}/${n - 1}">Chương mới nhất</a>` : ""}${ADM ? `<a class="btn" href="admin.html#chap/${kind}/${s.slug}">${ic(I.plus)}Thêm chương</a><a class="btn" href="admin.html#series/${kind}/${s.slug}">${ic(I.edit)}Sửa bộ</a>` : ""}</div><div class="tptg">${stDot(s)}${tags}</div></div></div>
+<div class="tpt"><h1>${esc(s.title)}</h1>${s.orig || (s.alts || [])[0] ? `<div class="tpo" lang="${s.orig ? "ja" : "vi"}">${esc(s.orig || s.alts[0])}</div>` : ""}${s.author || s.artist ? `<div class="crs">${credit("Tác giả", s.author)}${s.artist && s.artist !== s.author ? credit("Minh họa", s.artist) : ""}</div>` : ""}</div>
+<div class="tpm"><div class="acts"><button class="btn ${fav ? "on" : "pri"}" id="fvb" onclick="toggleFav('${kind}','${esc(s.slug)}')">${favLabel(fav)}</button>${n ? (last != null ? `<a class="btn" href="#${kind}/${s.slug}/${last}">${ic(I.play)}Đọc tiếp</a><a class="btn" href="#${kind}/${s.slug}/0">Đọc từ đầu</a>` : `<a class="btn" href="#${kind}/${s.slug}/0">${ic(I.play)}Đọc từ đầu</a>`) + `<a class="btn" href="#${kind}/${s.slug}/${n - 1}">Chương mới nhất</a>` : ""}${/^https?:\/\//.test(s.src || "") ? `<a class="btn" href="${esc(s.src)}" target="_blank" rel="noopener">Ủng hộ tác giả: đọc bản gốc</a>` : ""}${ADM ? `<a class="btn" href="admin.html#chap/${kind}/${s.slug}">${ic(I.plus)}Thêm chương</a><a class="btn" href="admin.html#series/${kind}/${s.slug}">${ic(I.edit)}Sửa bộ</a>` : ""}</div><div class="tptg">${stDot(s)}${tags}</div></div></div>
 <div class="tpd"><p class="sum clamp" id="dsc">${esc(s.desc) || "Chưa có tóm tắt."}</p><button class="lnk" id="dmore" hidden>Xem thêm</button></div>
 <div class="tpc"><div class="tpl"><div class="sh"><h2>Danh sách chương</h2></div><div class="bar2"><input id="cq" type="search" placeholder="Tìm chương theo tên hoặc số"><button id="cs">Mới nhất trước</button>${nv ? `<button id="cx">Mở tất cả tập</button>` : ""}</div><div id="cl"></div></div>
 <aside class="tpx">${info.map(([a, b]) => `<div class="ibx"><h4>${a}</h4><div>${b}</div></div>`).join("")}</aside></div></div>`;
@@ -472,11 +487,12 @@ addEventListener("resize", sideMode);
 function route() {
   RDKEY = null; clearInterval(HT); HI = 0; document.body.classList.remove("so");
   const [a, b, c] = decodeURIComponent(location.hash.slice(1)).split("/");
-  const k = a === "novel" ? "novels" : a === "fav" ? "library" : a || "home";
-  document.querySelectorAll("#nv a").forEach(x => x.classList.toggle("on", x.dataset.k === k));
   const s = b && ({ novel: DATA.novels, manga: DATA.manga }[a] || []).find(x => x.slug === b);
+  const k = a === "novel" ? (s && isWN(s) ? "webnovel" : "novels") : a === "fav" ? "library" : a || "home";
+  document.querySelectorAll("#nv a").forEach(x => x.classList.toggle("on", x.dataset.k === k));
   reading_ = !!s && c !== undefined; sideMode();
   if (a === "the-loai") app.innerHTML = P.genre(b, c);
+  else if (a === "tac-gia") app.innerHTML = P.author(b || "");
   else if (s) c !== undefined ? read(a, s, +c) : detail(a, s);
   else app.innerHTML = (P[k] || P.home)();
   scrollTo(0, 0); setClear();
