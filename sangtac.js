@@ -19,8 +19,21 @@
   const stS = s => { const [l, c] = STS[s] || STS.ongoing; return `<span class="st ${c}">${l}</span>` };
   const cnt = w => (w.chapters && w.chapters[0] && w.chapters[0].count) || 0;
   const aName = w => (w.author && w.author.display_name) || "Tác giả";
-  const words = t => (String(t || "").trim().match(/\S+/g) || []).length;
-  const paras = t => String(t || "").normalize("NFC").split(/\n+/).map(x => x.trim()).filter(Boolean).map(x => `<p>${esc(x)}</p>`).join("");
+  /* Ảnh minh họa trong chương: mỗi ảnh một dòng [img:đường-dẫn|chú thích]. Chỉ nhận ảnh tải lên kho ảnh Supabase của web. */
+  const lines = t => String(t || "").normalize("NFC").split(/\n+/).map(x => x.trim()).filter(Boolean);
+  const SBI = () => String(cfg().url || "").replace(/\/+$/, "") + "/storage/v1/object/public/covers/";
+  const IMTOK = /^\[img:[^\]]*\]$/i, IMRE = /^\[img:\s*(https:\/\/[^\s|\]"'<>]+)\s*(?:\|\s*([^\]]*))?\]$/i;
+  const imgOf = l => { const m = IMRE.exec(l); return m && m[1].startsWith(SBI()) && /\.(webp|jpe?g|png)$/i.test(m[1]) ? { u: m[1], c: (m[2] || "").trim() } : null };
+  const imgsIn = t => lines(t).map(imgOf).filter(Boolean);
+  const onlyImgs = t => { const L = lines(t); return L.length > 0 && L.every(imgOf) };
+  const words = t => (lines(t).filter(l => !IMTOK.test(l)).join(" ").match(/\S+/g) || []).length;
+  const paras = t => lines(t).map(x => `<p>${esc(x)}</p>`).join("");
+  function rbody(t, prev) { // trả về { gal, html, n }; gal = chương chỉ có ảnh (hiện dạng lưới)
+    const L = lines(t), IL = [];
+    if (L.length && L.every(imgOf)) { const G = L.map(imgOf); window.RIMG = G.map(x => x.u); return { gal: true, n: G.length, html: G.map((x, j) => `<button class="gi" type="button" onclick="LBL=RIMG;lbShow(${j})" aria-label="Xem ảnh ${j + 1}"><img src="${esc(x.u)}" alt="${esc(x.c || "Ảnh minh họa " + (j + 1))}" loading="lazy"></button>`).join("") } }
+    const html = L.map(l => { const m = imgOf(l); if (!m) return IMTOK.test(l) ? (prev ? '<p class="stbadimg">Ảnh này không hiện được: chỉ dùng ảnh tải lên bằng nút "Chèn ảnh minh họa".</p>' : "") : `<p>${esc(l)}</p>`; IL.push(m.u); return `<figure class="rimg"><button type="button" onclick="LBL=RIMG;lbShow(${IL.length - 1})" aria-label="Phóng to ảnh minh họa"><img src="${esc(m.u)}" alt="${esc(m.c || "Ảnh minh họa")}" loading="lazy"></button>${m.c ? `<figcaption>${esc(m.c)}</figcaption>` : ""}</figure>` }).join("");
+    window.RIMG = IL; return { gal: false, n: IL.length, html };
+  }
   const isCover = u => /^https:\/\//.test(u || "");
   const avHtml = (p, cls = "") => `<span class="avs ${cls}" style="--h:${hue((p && p.display_name) || "?")}" aria-hidden="true">${p && isCover(p.avatar_url) ? `<img src="${esc(p.avatar_url)}" alt="" loading="lazy">` : esc([...((p && p.display_name) || "?")][0] || "?")}</span>`;
   const LINKT = [["facebook", "Facebook"], ["discord", "Discord"], ["x", "X (Twitter)"], ["youtube", "YouTube"], ["tiktok", "TikTok"], ["web", "Trang web"], ["khac", "Khác"]];
@@ -31,7 +44,21 @@
     c.width = Math.round(sw * k); c.height = Math.round(sh * k); c.getContext("2d").drawImage(bm, sx, sy, sw, sh, 0, 0, c.width, c.height); bm.close?.();
     let b = await new Promise(z => c.toBlob(z, "image/webp", .86)); if (!b || b.type !== "image/webp") b = await new Promise(z => c.toBlob(z, "image/jpeg", .86)); return b;
   }
-  async function upImg(blob, name) { const ext = blob.type === "image/webp" ? "webp" : "jpg", path = `${me.id}/${name}-${Date.now()}.${ext}`, up = await sb.storage.from("covers").upload(path, blob, { contentType: blob.type, upsert: false }); if (up.error) throw up.error; return sb.storage.from("covers").getPublicUrl(path).data.publicUrl }
+  const IMGOK = f => /^image\/(jpeg|png|webp|gif|avif|bmp)$/.test(f.type);
+  async function fitImg(f, mw = 1280, mh = 1920) { // thu nhỏ ảnh minh họa, không cắt; giảm chất lượng đến khi dưới 1,9 MB
+    const bm = await createImageBitmap(f), k = Math.min(1, mw / bm.width, mh / bm.height), c = document.createElement("canvas");
+    c.width = Math.round(bm.width * k); c.height = Math.round(bm.height * k); c.getContext("2d").drawImage(bm, 0, 0, c.width, c.height); bm.close?.();
+    let b = null; for (const q of [.86, .76, .64, .5]) { b = await new Promise(z => c.toBlob(z, "image/webp", q)); if (!b || b.type !== "image/webp") b = await new Promise(z => c.toBlob(z, "image/jpeg", q)); if (b && b.size < 1.9e6) break }
+    if (!b || b.size >= 2e6) throw new Error("Ảnh quá lớn, hãy chọn ảnh nhỏ hơn"); return b;
+  }
+  async function upIll(files, step) { const out = []; for (let i = 0; i < files.length; i++) { step && step(i + 1, files.length); out.push(await upImg(await fitImg(files[i]), "ill")) } return out }
+  const VCMP = (a, b) => a.localeCompare(b, "vi", { numeric: true });
+  const volsOf = ch => [...new Set(ch.map(c => (c.vol || "").trim()).filter(Boolean))];
+  async function shiftOrd(wid, from, list) { // dời các chương có ord >= from xuống một bậc
+    const r = await sb.rpc("shift_chapters", { wid, from_ord: from }); if (!r.error) return;
+    for (const c of list.filter(c => (c.ord || 0) >= from).sort((a, b) => (b.ord || 0) - (a.ord || 0))) { const x = await sb.from("chapters").update({ ord: (c.ord || 0) + 1 }).eq("id", c.id); if (x.error) throw x.error }
+  }
+  async function upImg(blob, name) { const ext = blob.type === "image/webp" ? "webp" : "jpg", path = `${me.id}/${name}-${Date.now()}${Math.random().toString(36).slice(2, 6)}.${ext}`, up = await sb.storage.from("covers").upload(path, blob, { contentType: blob.type, upsert: false }); if (up.error) throw up.error; return sb.storage.from("covers").getPublicUrl(path).data.publicUrl }
   async function rmImg(url) { try { const m = /\/storage\/v1\/object\/public\/covers\/(.+)$/.exec(url || ""); if (m && m[1].startsWith(me.id + "/")) await sb.storage.from("covers").remove([decodeURIComponent(m[1])]) } catch (e) {} }
   const busy = (b, on) => { if (b) { b.disabled = on; b.dataset.l ??= b.textContent; b.textContent = on ? "Đang xử lý..." : b.dataset.l } };
   const go = h => { if (location.hash === h) route(); else location.hash = h };
@@ -104,13 +131,26 @@
 
   /* ---------- Trang truyện ---------- */
   const readSet = id => { try { return JSON.parse(ls.get("str:" + id) || "[]") } catch (e) { return [] } };
-  async function getChapters(wid) { const { data, error } = await sb.from("chapters").select("id,title,ord,words,published,updated_at").eq("work_id", wid).order("ord").order("created_at"); if (error) throw error; return data || [] }
+  async function getChapters(wid) { const { data, error } = await sb.from("chapters").select("id,title,ord,vol,words,published,updated_at").eq("work_id", wid).order("ord").order("created_at"); if (error) throw error; return data || [] }
+  async function illMap(ch) { // ảnh của các chương chỉ có ảnh (0 chữ): id -> [url]
+    const ids = ch.filter(c => !c.words).map(c => c.id); if (!ids.length) return {};
+    const { data } = await sb.from("chapters").select("id,content").in("id", ids); const M = {};
+    (data || []).forEach(c => { if (onlyImgs(c.content)) M[c.id] = imgsIn(c.content).map(x => x.u) }); return M;
+  }
   async function pWork(id) {
     const { data: w, error } = await sb.from("works").select(WSEL.replace(",chapters(count)", "") + ",visibility,hidden").eq("id", id).maybeSingle();
     if (error) { app.innerHTML = errBox(error); return } if (!w) { app.innerHTML = notice("Không tìm thấy truyện. Có thể truyện đã bị xóa, đang ở chế độ nháp hoặc đã bị ẩn."); return }
     document.title = `${w.title} | Kenrori`;
     if (gate(w)) { app.innerHTML = gate(w); return }
     const ch = await getChapters(id), own = me && me.id === w.author_id, pub = ch.filter(c => c.published), last = ls.get("st:" + id), rs = readSet(id);
+    const IM = await illMap(ch);
+    const row = c => `<div class="chr"><a class="ch${rs.includes(c.id) ? " done" : ""}${c.id === last ? " cur" : ""}" href="#st/${esc(id)}/${esc(c.id)}"><span class="eye"></span><span class="cht">${IM[c.id] ? `<span class="ill">${ic(I.img)}</span>` : ""}${esc(c.title)}${c.published ? "" : ' <em class="drf">Nháp</em>'}</span><small class="cw">${IM[c.id] ? IM[c.id].length + " ảnh" : fmtN(c.words) || ""}</small><small>${ago(day(c.updated_at))}</small></a></div>`;
+    const chList = () => {
+      if (!ch.some(c => (c.vol || "").trim())) return ch.map(row).join("");
+      const g = new Map(); ch.forEach(c => { const v = (c.vol || "").trim() || "Chương lẻ"; if (!g.has(v)) g.set(v, []); g.get(v).push(c) });
+      return [...g].map(([v, a]) => { const ic0 = a.find(c => IM[c.id]), cv = ic0 ? IM[ic0.id][0] : "", cut = a.length > 6;
+        return `<section class="vblk"><div class="vhd">${cv ? `<img class="vmini" src="${esc(cv)}" alt="" loading="lazy" onerror="this.remove()">` : ""}<b>${esc(v)}</b><span>${a.length} chương</span></div><div class="vbd${cv ? "" : " nocv"}">${cv ? `<button class="vcv" style="--h:${hue(w.title + v)}" onclick="LBL=[this.querySelector('img').src];lbShow(0)" aria-label="Xem bìa ${esc(v)}"><img src="${esc(cv)}" alt="Bìa ${esc(v)}" loading="lazy"></button>` : ""}<div class="vlw"><div class="vls${cut ? " cut" : ""}">${a.map(row).join("")}</div>${cut ? `<button class="vmore" data-n="${a.length - 6}" onclick="const c=this.previousElementSibling.classList.toggle('cut');this.textContent=c?'Xem tiếp ('+this.dataset.n+' chương)':'Thu gọn'">Xem tiếp (${a.length - 6} chương)</button>` : ""}</div></div></section>` }).join("");
+    };
     const lastOk = last && pub.some(c => c.id === last), tw = pub.reduce((a, c) => a + (c.words || 0), 0), bg = isCover(w.cover_url) ? `;background-image:url(&quot;${esc(w.cover_url)}&quot;)` : "";
     app.innerHTML = `<div class="tpb"><div class="hb" style="--h:${hue(w.title)}${bg}"></div></div>
 <div class="tp"><div class="tph"><div class="cover tpcv" style="--h:${hue(w.title)}">${isCover(w.cover_url) ? imgTag(w.cover_url) : ""}<b>${esc(w.title)}</b></div>
@@ -118,24 +158,26 @@
 <div class="tpm"><div class="acts tpa2">${pub.length ? `<a class="btn pri big" href="#st/${esc(id)}/${esc(lastOk ? last : pub[0].id)}">${ic(I.play)}${lastOk ? "Đọc tiếp" : "Đọc từ đầu"}</a>` : ""}<button class="btn ico" title="Chia sẻ" aria-label="Chia sẻ" onclick="ST.share()">${ic(I.share)}</button>${pub.length > 1 ? `<span class="subl">${lastOk ? `<a href="#st/${esc(id)}/${esc(pub[0].id)}">Đọc từ đầu</a>` : ""}<a href="#st/${esc(id)}/${esc(pub[pub.length - 1].id)}">Chương mới nhất</a></span>` : ""}<span class="admb">${own ? `<a class="btn" href="#viet/w/${esc(id)}">${ic(I.edit)}Sửa truyện</a>` : me ? `<button class="btn" onclick="ST.report('${esc(id)}')">Báo cáo vi phạm</button>` : ""}</span></div>
 <div class="tptg">${stS(w.status)}${w.mature ? '<span class="pill m18p">18+</span>' : ""}${(w.genres || []).map(g => `<span class="pill">${esc(g)}</span>`).join("")}</div>${own && (w.visibility !== "published" || w.hidden) ? `<div class="prog"><span><i>Trạng thái</i>${w.hidden ? "Đã bị ban kiểm duyệt ẩn" : "Bản nháp, chỉ bạn thấy được"}</span></div>` : ""}</div></div>
 <div class="tpd"><p class="sum clamp" id="dsc">${esc(w.summary) || "Chưa có tóm tắt."}</p><button class="lnk" id="dmore" hidden>Xem thêm</button></div>
-<div class="tpc"><div class="tpl"><div class="sh"><h2>Danh sách chương</h2></div><div id="cl">${ch.length ? ch.map(c => `<div class="chr"><a class="ch${rs.includes(c.id) ? " done" : ""}${c.id === last ? " cur" : ""}" href="#st/${esc(id)}/${esc(c.id)}"><span class="eye"></span><span class="cht">${esc(c.title)}${c.published ? "" : ' <em class="drf">Nháp</em>'}</span><small class="cw">${fmtN(c.words) || ""}</small><small>${ago(day(c.updated_at))}</small></a></div>`).join("") : '<p class="empty">Truyện chưa có chương nào.</p>'}</div></div>
+<div class="tpc"><div class="tpl"><div class="sh"><h2>Danh sách chương</h2></div><div id="cl">${ch.length ? chList() : '<p class="empty">Truyện chưa có chương nào.</p>'}</div></div>
 <aside class="tpx"><div class="ibx"><h4>Tác giả</h4><div><a class="al" href="#tg/${esc(w.author_id)}">${esc(aName(w))}</a></div></div><div class="ibx"><h4>Loại</h4><div>Sáng tác</div></div><div class="ibx"><h4>Tình trạng</h4><div>${stS(w.status)}</div></div><div class="ibx"><h4>Số chương</h4><div>${pub.length}</div></div><div class="ibx"><h4>Tổng số chữ</h4><div>${fmtN(tw) || "Chưa có"}</div></div><div class="ibx"><h4>Ngày đăng</h4><div>${fmtD(day(w.created_at))}</div></div><div class="ibx"><h4>Cập nhật</h4><div>${fmtD(day(w.updated_at))}</div></div></aside></div></div>`;
     const dsc = $("#dsc"); if (dsc.scrollHeight > dsc.clientHeight + 2) { $("#dmore").hidden = false; $("#dmore").onclick = e => { const c = dsc.classList.toggle("clamp"); e.target.textContent = c ? "Xem thêm" : "Thu gọn" } }
   }
 
   /* ---------- Đọc chương ---------- */
   async function pRead(wid, cid) {
-    const [{ data: w }, ch, { data: c, error }] = await Promise.all([sb.from("works").select("id,title,mature,author_id,author:profiles(display_name)").eq("id", wid).maybeSingle(), getChapters(wid), sb.from("chapters").select("id,title,content,words,updated_at,published").eq("id", cid).maybeSingle()]);
+    const [{ data: w }, ch, { data: c, error }] = await Promise.all([sb.from("works").select("id,title,mature,author_id,author:profiles(display_name)").eq("id", wid).maybeSingle(), getChapters(wid), sb.from("chapters").select("id,title,vol,content,words,updated_at,published").eq("id", cid).maybeSingle()]);
     if (error) { app.innerHTML = errBox(error); return } if (!w || !c) { app.innerHTML = notice("Không tìm thấy chương này."); return }
     if (gate(w)) { app.innerHTML = gate(w); return }
     document.title = `${c.title}, ${w.title} | Kenrori`;
     ls.set("st:" + wid, cid); const rs = readSet(wid); if (!rs.includes(cid)) { rs.push(cid); ls.set("str:" + wid, JSON.stringify(rs)) }
     const L = ch.filter(x => x.published || x.id === cid), i = L.findIndex(x => x.id === cid), base = `#st/${esc(wid)}`, prv = L[i - 1], nx = L[i + 1];
     RDKEY = d => { const t = L[i + d]; if (t) location.hash = `#st/${wid}/${t.id}` };
+    const B = rbody(c.content), op = x => `<option value="${esc(x.id)}" ${x.id === cid ? "selected" : ""}>${esc(x.title)}</option>`;
+    const opts = L.some(x => (x.vol || "").trim()) ? (() => { const g = new Map(); L.forEach(x => { const v = (x.vol || "").trim() || "Chương lẻ"; if (!g.has(v)) g.set(v, []); g.get(v).push(x) }); return [...g].map(([v, a]) => `<optgroup label="${esc(v)}">${a.map(op).join("")}</optgroup>`).join("") })() : L.map(op).join("");
     const nav = `<div class="nv"><a class="btn" ${prv ? `href="${base}/${esc(prv.id)}"` : "disabled"}>${ic(I.prev)}Chương trước</a><a class="btn pri" ${nx ? `href="${base}/${esc(nx.id)}"` : "disabled"}>Chương sau${ic(I.next)}</a></div>`;
-    app.innerHTML = `<div class="rbar"><a class="t" href="${base}" title="Về trang truyện">${esc(w.title)}</a><select aria-label="Chọn chương" onchange="location.hash='${base}/'+this.value">${L.map(x => `<option value="${esc(x.id)}" ${x.id === cid ? "selected" : ""}>${esc(x.title)}</option>`).join("")}</select>${me && me.id === w.author_id ? `<a class="btn" href="#viet/c/${esc(wid)}/${esc(cid)}">${ic(I.edit)}Sửa</a>` : ""}</div>
-<header class="rh"><a class="rs" href="${base}">${esc(w.title)}</a><h1>${esc(c.title)}</h1><p id="meta">${esc(aName(w))} · ${fmtD(day(c.updated_at))} · ${fmtN(c.words) || "0 chữ"}${c.published ? "" : " · Bản nháp"}</p></header>${nav}
-<article id="rd" class="rd novel ${RS.ff} ${RS.bg}">${paras(c.content) || '<p class="mu">Chương chưa có nội dung.</p>'}</article>
+    app.innerHTML = `<div class="rbar"><a class="t" href="${base}" title="Về trang truyện">${esc(w.title)}</a><select aria-label="Chọn chương" onchange="location.hash='${base}/'+this.value">${opts}</select>${me && me.id === w.author_id ? `<a class="btn" href="#viet/c/${esc(wid)}/${esc(cid)}">${ic(I.edit)}Sửa</a>` : ""}</div>
+<header class="rh"><a class="rs" href="${base}">${esc(w.title)}</a>${(c.vol || "").trim() ? `<div class="rv">${esc(c.vol)}</div>` : ""}<h1>${esc(c.title)}</h1><p id="meta">${esc(aName(w))} · ${fmtD(day(c.updated_at))} · ${B.gal ? B.n + " ảnh" : (fmtN(c.words) || "0 chữ") + (B.n ? ", " + B.n + " ảnh" : "")}${c.published ? "" : " · Bản nháp"}</p></header>${nav}
+<article id="rd" class="${B.gal ? "rd gal" : `rd novel ${RS.ff} ${RS.bg}`}">${B.html || '<p class="mu">Chương chưa có nội dung.</p>'}</article>
 <section class="endc"><div class="endr">${prv ? `<a class="btn" href="${base}/${esc(prv.id)}">${ic(I.prev)}Chương trước</a>` : ""}${nx ? `<a class="nxc" href="${base}/${esc(nx.id)}"><span>Chương tiếp theo</span><b>${esc(nx.title)}</b>${ic(I.next)}</a>` : `<div class="nxc last"><span>Bạn đã đọc đến chương mới nhất</span><b>Hãy quay lại sau để đọc chương mới</b></div>`}</div><div class="endf"><a href="${base}">Danh sách chương</a><a href="#tg/${esc(w.author_id)}">Truyện khác của ${esc(aName(w))}</a>${me && me.id !== w.author_id ? `<a href="javascript:void 0" onclick="ST.report('${esc(wid)}','${esc(cid)}')">Báo cáo vi phạm</a>` : ""}</div></section>
 <button class="fab" id="rsb" title="Tùy chỉnh đọc" aria-label="Tùy chỉnh đọc" aria-expanded="false" onclick="rsToggle()"><svg class="i" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg></button><div class="rsp" id="rsp" hidden data-kind="novel"></div>`;    if (c.published && (DATA.site.cmt || "anon") === "anon") { const bx = document.createElement("section"); $("#rsb").before(bx); CMT.mount(bx, "st/" + cid) }
   }
@@ -223,8 +265,39 @@ ${error ? errBox(error) : (ws || []).length ? `<div class="stl">${ws.map(w => `<
 <label class="ck"><input type="checkbox" id="w_m" ${w.mature ? "checked" : ""}> Truyện có nội dung chỉ dành cho người từ 18 tuổi</label>
 <label class="ck" id="w_okw" ${w.visibility === "published" ? "hidden" : ""}><input type="checkbox" id="w_ok"> Tôi xác nhận đây là truyện do tôi tự viết và tuân thủ <a class="al" href="#noi-quy" target="_blank">nội quy</a></label>
 <p class="aerr" id="w_err" role="alert"></p><div class="acts"><button class="btn pri" id="w_save">${id ? "Lưu thay đổi" : "Tạo truyện"}</button>${id ? `<a class="btn" href="#st/${esc(id)}">Xem trang truyện</a><button class="btn dngb" id="w_del">Xóa truyện</button>` : ""}</div></div></div></section>
-${id ? `<section class="sec"><div class="sh"><h2>Chương (${ch.length})</h2><a class="btn pri" href="#viet/c/${esc(id)}/moi">${ic(I.plus)}Thêm chương</a></div>${ch.length ? `<div class="stl">${ch.map((c, j) => `<div class="stli"><span class="stn">${j + 1}</span><span class="stb"><b>${esc(c.title)}</b><small>${c.published ? '<em class="okb">Đã đăng</em>' : '<em class="drf">Nháp</em>'} ${fmtN(c.words) || "0 chữ"}, sửa ${ago(day(c.updated_at)).toLowerCase()}</small></span><button class="btn sm" onclick="ST.mv('${esc(id)}',${j},-1)" ${j ? "" : "disabled"} title="Chuyển lên">↑</button><button class="btn sm" onclick="ST.mv('${esc(id)}',${j},1)" ${j < ch.length - 1 ? "" : "disabled"} title="Chuyển xuống">↓</button><a class="btn sm" href="#viet/c/${esc(id)}/${esc(c.id)}">Sửa</a><button class="btn sm dngb" onclick="ST.delCh('${esc(c.id)}','${esc(id)}')">Xóa</button></div>`).join("")}</div>` : '<p class="empty">Chưa có chương nào. Bấm "Thêm chương" để viết chương đầu tiên.</p>'}</section>` : ""}`;
+${id ? `<section class="sec"><div class="sh"><h2>Chương (${ch.length})</h2><a class="btn pri" href="#viet/c/${esc(id)}/moi">${ic(I.plus)}Thêm chương</a></div>${ch.length ? `<div class="stl">${ch.map((c, j) => `<div class="stli"><span class="stn">${j + 1}</span><span class="stb"><b>${(c.vol || "").trim() ? `<em class="vtag">${esc(c.vol)}</em>` : ""}${esc(c.title)}</b><small>${c.published ? '<em class="okb">Đã đăng</em>' : '<em class="drf">Nháp</em>'} ${fmtN(c.words) || "0 chữ"}, sửa ${ago(day(c.updated_at)).toLowerCase()}</small></span><button class="btn sm" onclick="ST.mv('${esc(id)}',${j},-1)" ${j ? "" : "disabled"} title="Chuyển lên">↑</button><button class="btn sm" onclick="ST.mv('${esc(id)}',${j},1)" ${j < ch.length - 1 ? "" : "disabled"} title="Chuyển xuống">↓</button><a class="btn sm" href="#viet/c/${esc(id)}/${esc(c.id)}">Sửa</a><button class="btn sm dngb" onclick="ST.delCh('${esc(c.id)}','${esc(id)}')">Xóa</button></div>`).join("")}</div>
+<details class="stvd"><summary>Chia chương vào tập</summary><p class="mu">Gán một dãy chương vào cùng một tập. Để trống tên tập nếu muốn bỏ các chương đó ra khỏi tập.</p><div class="stg4"><div><label for="v_n">Tên tập</label><input id="v_n" list="w_vl" maxlength="100" placeholder="Tập 1"></div><div><label for="v_a">Từ chương số</label><input id="v_a" type="number" min="1" max="${ch.length}" value="1"></div><div><label for="v_b">Đến chương số</label><input id="v_b" type="number" min="1" max="${ch.length}" value="${ch.length}"></div><div><button class="btn" id="v_go">Gán tập</button></div></div></details>` : '<p class="empty">Chưa có chương nào. Bấm "Thêm chương" để viết chương đầu tiên.</p>'}</section>
+<section class="sec stf" id="w_ill"><div class="sh"><h2>Ảnh minh họa theo tập</h2></div>
+<p class="mu">Chọn tập rồi chọn ảnh (chọn được nhiều ảnh một lúc). Ảnh được đăng thành chương "Minh họa" đứng đầu tập đó, và ảnh đầu tiên làm ảnh bìa của tập. Muốn chèn ảnh vào giữa chương, mở chương đó và bấm "Chèn ảnh minh họa".</p>
+<div class="stg4 stil2"><div><label for="i_v">Tập</label><input id="i_v" list="w_vl" maxlength="100" placeholder="Để trống nếu truyện không chia tập"></div><div><button class="btn pri" id="i_go">${ic(I.img)}Chọn ảnh và đăng</button><input id="i_f" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden></div></div>
+<div id="i_ls"></div></section><datalist id="w_vl">${volsOf(ch).map(v => `<option value="${esc(v)}">`).join("")}</datalist>` : ""}`;
     ST._ch = ch;
+    if (id) {
+      const IM = await illMap(ch), IL = ch.filter(c => IM[c.id]);
+      $("#i_ls").innerHTML = IL.length ? IL.map(c => `<div class="stil"><div class="stilh"><b>${esc((c.vol || "").trim() || "Không thuộc tập nào")}</b><small>${esc(c.title)}, ${IM[c.id].length} ảnh${c.published ? "" : ", bản nháp"}</small><a class="btn sm" href="#viet/c/${esc(id)}/${esc(c.id)}">Sửa, xếp lại ảnh</a></div><div class="stth">${IM[c.id].map(u => `<img src="${esc(u)}" alt="" loading="lazy">`).join("")}</div></div>`).join("") : '<p class="empty">Chưa có ảnh minh họa nào.</p>';
+      $("#i_go").onclick = () => $("#i_f").click();
+      $("#i_f").onchange = async e => {
+        const fs = [...e.target.files].filter(IMGOK), b = $("#i_go"); e.target.value = ""; if (!fs.length) return toast("Hãy chọn ảnh JPG, PNG, WebP hoặc GIF"); if (fs.length > 30) return toast("Mỗi lần đăng tối đa 30 ảnh");
+        const vol = $("#i_v").value.trim(); b.disabled = true;
+        try {
+          const urls = await upIll(fs, (i, n) => { b.textContent = `Đang tải ảnh ${i}/${n}...` }), add = urls.map(u => `[img:${u}]`).join("\n"), ex = IL.find(c => (c.vol || "").trim() === vol);
+          let r;
+          if (ex) { const { data: o } = await sb.from("chapters").select("content").eq("id", ex.id).maybeSingle(); r = await sb.from("chapters").update({ content: ((o && o.content) || "").trim() + "\n" + add }).eq("id", ex.id).select("id").single() }
+          else {
+            const inV = ch.filter(c => (c.vol || "").trim() === vol); let ord = ch.reduce((a, x) => Math.max(a, x.ord || 0), 0) + 1;
+            if (vol && inV.length) { ord = Math.min(...inV.map(c => c.ord || 0)); await shiftOrd(id, ord, ch) }
+            r = await sb.from("chapters").insert({ work_id: id, title: "Minh họa", vol, ord, content: add, published: true }).select("id").single();
+          }
+          if (r.error) throw r.error; toast(`Đã đăng ${urls.length} ảnh minh họa${vol ? " cho " + vol : ""}`); route();
+        } catch (x) { toast(viMsg(x)); b.disabled = false; b.innerHTML = `${ic(I.img)}Chọn ảnh và đăng` }
+      };
+      if (ch.length) $("#v_go").onclick = async e => {
+        const a = Math.max(1, +$("#v_a").value || 1), z = Math.min(ch.length, +$("#v_b").value || ch.length), vol = $("#v_n").value.trim();
+        if (a > z) return toast("Số chương bắt đầu phải nhỏ hơn số chương kết thúc");
+        busy(e.currentTarget, true); const { error } = await sb.from("chapters").update({ vol }).in("id", ch.slice(a - 1, z).map(c => c.id));
+        if (error) { busy(e.currentTarget, false); return toast(viMsg(error)) } toast(vol ? `Đã gán chương ${a} đến ${z} vào ${vol}` : `Đã bỏ chương ${a} đến ${z} khỏi tập`); route();
+      };
+    }
     let cvFile = null;
     $("#w_cv").onchange = e => { const f = e.target.files[0]; if (!f) return; cvFile = f; $("#w_prev").src = URL.createObjectURL(f); $("#w_prev").hidden = false; $("#w_ph").hidden = true };
     $(".stchips").onclick = e => { const b = e.target.closest(".fc"); if (!b) return; const g = b.dataset.g; if (gsel.has(g)) gsel.delete(g); else if (gsel.size < 10) gsel.add(g); else return toast("Chọn tối đa 10 thể loại"); b.classList.toggle("on", gsel.has(g)) };
@@ -248,33 +321,62 @@ ${id ? `<section class="sec"><div class="sh"><h2>Chương (${ch.length})</h2><a 
   async function pChapEdit(wid, cid) {
     const { data: w } = await sb.from("works").select("id,title,author_id").eq("id", wid).maybeSingle();
     if (!w) { app.innerHTML = notice("Không tìm thấy truyện."); return } if (w.author_id !== me.id && !isMod()) { app.innerHTML = notice("Bạn không phải tác giả của truyện này."); return }
-    let c = { title: "", content: "", published: true }, isNew = cid === "moi";
+    let c = { title: "", content: "", published: true, vol: "" }, isNew = cid === "moi";
+    const chs = await getChapters(wid);
     if (!isNew) { const { data } = await sb.from("chapters").select("*").eq("id", cid).maybeSingle(); if (!data) { app.innerHTML = notice("Không tìm thấy chương."); return } c = data }
+    else if (chs.length) c.vol = chs[chs.length - 1].vol || "";
     const dk = `stdr:${wid}:${cid}`; let dr = null; try { dr = JSON.parse(ls.get(dk) || "null") } catch (e) {}
-    const hasDr = dr && (dr.t !== c.title || dr.c !== c.content);
+    const hasDr = dr && (dr.t !== c.title || dr.c !== c.content || (dr.v ?? c.vol ?? "") !== (c.vol || ""));
     document.title = (isNew ? "Thêm chương" : "Sửa chương") + " | Kenrori";
     app.innerHTML = `<section class="sec stf"><div class="sh"><h2>${isNew ? "Thêm chương" : "Sửa chương"}</h2><a class="more all" href="#viet/w/${esc(wid)}">Về truyện</a></div><p class="lead">${esc(w.title)}</p>
 ${hasDr ? `<p class="stwarn" id="c_dr">Có bản nháp chưa lưu trên máy này (${esc(new Date(dr.at).toLocaleString("vi-VN"))}). <button class="lnk" id="c_rs">Khôi phục</button> · <button class="lnk" id="c_rx">Bỏ qua</button></p>` : ""}
-<label for="c_t">Tên chương</label><input id="c_t" maxlength="200" value="${esc(c.title)}" placeholder="Chương 1: ...">
-<label for="c_c">Nội dung <small id="c_n"></small></label><textarea id="c_c" class="stbig" maxlength="${MAXC}" placeholder="Mỗi đoạn một dòng. Để một dòng trống hoặc xuống dòng giữa các đoạn.">${esc(c.content)}</textarea>
+<div class="stg2b"><div><label for="c_t">Tên chương</label><input id="c_t" maxlength="200" value="${esc(c.title)}" placeholder="Chương 1: ..."></div><div><label for="c_v">Tập <small>(không bắt buộc)</small></label><input id="c_v" list="c_vl" maxlength="100" value="${esc(c.vol || "")}" placeholder="Tập 1"><datalist id="c_vl">${volsOf(chs).map(v => `<option value="${esc(v)}">`).join("")}</datalist></div></div>
+<label for="c_c">Nội dung <small id="c_n"></small></label>
+<div class="sttb"><button type="button" class="btn sm" id="c_img">${ic(I.img)}Chèn ảnh minh họa</button><input id="c_if" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden><small>Ảnh được chèn ngay sau đoạn có con trỏ. Có thể kéo thả hoặc dán ảnh vào ô nội dung. Thêm chú thích: <code>[img:...|chú thích]</code></small></div>
+<textarea id="c_c" class="stbig" maxlength="${MAXC}" placeholder="Mỗi đoạn một dòng. Để một dòng trống hoặc xuống dòng giữa các đoạn.">${esc(c.content)}</textarea>
+<div class="stims" id="c_ims" hidden></div>
 <label class="ck"><input type="checkbox" id="c_p" ${c.published ? "checked" : ""}> Đăng công khai <small>(bỏ chọn để lưu nháp, chỉ bạn thấy)</small></label>
 <p class="aerr" id="c_err" role="alert"></p><div class="acts"><button class="btn pri" id="c_save">Lưu chương</button><button class="btn" id="c_pv">Xem trước</button>${isNew ? "" : `<a class="btn" href="#st/${esc(wid)}/${esc(cid)}">Xem trên web</a>`}</div></section>
 <section class="sec" id="c_pvw" hidden><div class="sh"><h2>Xem trước</h2></div><header class="rh"><h1 id="c_pvt"></h1></header><article class="rd novel ${RS.ff} ${RS.bg}" id="c_pvc"></article></section>`;
-    const upd = () => { const n = $("#c_c").value.length; $("#c_n").textContent = `(${words($("#c_c").value).toLocaleString("vi-VN")} chữ, ${n.toLocaleString("vi-VN")}/${MAXC.toLocaleString("vi-VN")} ký tự)` }; upd();
-    let tmr = null; const keep = () => { clearTimeout(tmr); tmr = setTimeout(() => ls.set(dk, JSON.stringify({ t: $("#c_t").value, c: $("#c_c").value, at: Date.now() })), 800) };
-    ["c_t", "c_c"].forEach(i => $("#" + i).addEventListener("input", () => { upd(); keep() }));
-    if (hasDr) { $("#c_rs").onclick = () => { $("#c_t").value = dr.t; $("#c_c").value = dr.c; upd(); $("#c_dr").remove() }; $("#c_rx").onclick = () => { ls.del(dk); $("#c_dr").remove() } }
-    $("#c_pv").onclick = () => { $("#c_pvw").hidden = false; $("#c_pvt").textContent = $("#c_t").value || "Chưa có tên chương"; $("#c_pvc").innerHTML = paras($("#c_c").value) || '<p class="mu">Chưa có nội dung.</p>'; $("#c_pvw").scrollIntoView({ behavior: "smooth" }) };
+    const ta = $("#c_c"), fresh = new Set();
+    const ims = () => { const L = imgsIn(ta.value), bx = $("#c_ims"); bx.hidden = !L.length; bx.innerHTML = L.length ? `<b>Ảnh trong chương (${L.length})</b><div>${L.map((x, j) => `<span class="stim"><button type="button" data-go="${j}" title="Tìm ảnh này trong nội dung"><img src="${esc(x.u)}" alt="" loading="lazy"></button><button type="button" class="x" data-rm="${j}" title="Gỡ ảnh khỏi chương" aria-label="Gỡ ảnh ${j + 1}">✕</button></span>`).join("")}</div>` : "" };
+    const upd = () => { const n = ta.value.length, k = imgsIn(ta.value).length; $("#c_n").textContent = `(${words(ta.value).toLocaleString("vi-VN")} chữ${k ? `, ${k} ảnh` : ""}, ${n.toLocaleString("vi-VN")}/${MAXC.toLocaleString("vi-VN")} ký tự)`; ims() }; upd();
+    let tmr = null; const keep = () => { clearTimeout(tmr); tmr = setTimeout(() => ls.set(dk, JSON.stringify({ t: $("#c_t").value, c: ta.value, v: $("#c_v").value, at: Date.now() })), 800) };
+    ["c_t", "c_c", "c_v"].forEach(i => $("#" + i).addEventListener("input", () => { upd(); keep() }));
+    if (hasDr) { $("#c_rs").onclick = () => { $("#c_t").value = dr.t; ta.value = dr.c; if (dr.v != null) $("#c_v").value = dr.v; upd(); $("#c_dr").remove() }; $("#c_rx").onclick = () => { ls.del(dk); $("#c_dr").remove() } }
+    const lineAt = (v, j) => { const L = v.split("\n"); let n = -1, pos = 0; for (let i = 0; i < L.length; i++) { if (imgOf(L[i].trim()) && ++n === j) return [pos, pos + L[i].length]; pos += L[i].length + 1 } return null };
+    const insImgs = urls => { // chèn sau dòng đang có con trỏ, mỗi ảnh một dòng riêng
+      const v = ta.value; let p = ta.selectionStart ?? v.length; if (p > 0 && v[p - 1] !== "\n") { const e = v.indexOf("\n", p); p = e < 0 ? v.length : e }
+      const pre = v.slice(0, p), post = v.slice(p), add = urls.map(u => `[img:${u}]`).join("\n"), A = (pre && !pre.endsWith("\n") ? "\n" : "") + add + (post && !post.startsWith("\n") ? "\n" : "");
+      ta.value = pre + A + post; const q = pre.length + A.length; ta.focus(); ta.setSelectionRange(q, q); upd(); keep();
+    };
+    const doUp = async files => {
+      files = [...files].filter(IMGOK); if (!files.length) return toast("Hãy chọn ảnh JPG, PNG, WebP hoặc GIF"); if (files.length > 20) return toast("Mỗi lần chèn tối đa 20 ảnh");
+      const b = $("#c_img"); if (b.disabled) return; b.disabled = true;
+      try { const urls = await upIll(files, (i, n) => { b.textContent = `Đang tải ảnh ${i}/${n}...` }); urls.forEach(u => fresh.add(u)); insImgs(urls); toast(`Đã chèn ${urls.length} ảnh. Nhớ bấm Lưu chương.`) } catch (x) { toast(viMsg(x)) }
+      b.disabled = false; b.innerHTML = `${ic(I.img)}Chèn ảnh minh họa`;
+    };
+    $("#c_img").onclick = () => $("#c_if").click(); $("#c_if").onchange = e => { const f = [...e.target.files]; e.target.value = ""; doUp(f) };
+    ta.addEventListener("paste", e => { const f = [...((e.clipboardData && e.clipboardData.files) || [])]; if (f.some(IMGOK)) { e.preventDefault(); doUp(f) } });
+    ta.addEventListener("dragover", e => { if ([...e.dataTransfer.types].includes("Files")) { e.preventDefault(); ta.classList.add("drop") } });
+    ta.addEventListener("dragleave", () => ta.classList.remove("drop"));
+    ta.addEventListener("drop", e => { ta.classList.remove("drop"); const f = [...e.dataTransfer.files]; if (f.length) { e.preventDefault(); doUp(f) } });
+    $("#c_ims").onclick = e => { const g = e.target.closest("[data-go]"), r = e.target.closest("[data-rm]"); const k = g ? +g.dataset.go : r ? +r.dataset.rm : -1; if (k < 0) return; const at = lineAt(ta.value, k); if (!at) return;
+      if (g) { ta.focus(); ta.setSelectionRange(at[0], at[1]); const lh = parseFloat(getComputedStyle(ta).lineHeight) || 24; ta.scrollTop = Math.max(0, ta.value.slice(0, at[0]).split("\n").length * lh - ta.clientHeight / 2); return }
+      ta.value = ta.value.slice(0, at[0]) + ta.value.slice(at[1] + (ta.value[at[1]] === "\n" ? 1 : 0)); upd(); keep() };
+    $("#c_pv").onclick = () => { $("#c_pvw").hidden = false; $("#c_pvt").textContent = $("#c_t").value || "Chưa có tên chương"; const B = rbody(ta.value, true); $("#c_pvc").className = B.gal ? "rd gal" : `rd novel ${RS.ff} ${RS.bg}`; $("#c_pvc").innerHTML = B.html || '<p class="mu">Chưa có nội dung.</p>'; $("#c_pvw").scrollIntoView({ behavior: "smooth" }) };
     $("#c_save").onclick = async e => {
       const b = e.currentTarget, err = m => { $("#c_err").textContent = m }, title = $("#c_t").value.trim(), content = $("#c_c").value.normalize("NFC");
       if (!title) return err("Hãy nhập tên chương."); if (!content.trim()) return err("Chương chưa có nội dung.");
       busy(b, true); err("");
       try {
-        const row = { title, content, published: $("#c_p").checked };
+        const row = { title, content, vol: $("#c_v").value.trim(), published: $("#c_p").checked };
         let r;
         if (isNew) { const ch = await getChapters(wid); row.work_id = wid; row.ord = ch.reduce((a, x) => Math.max(a, x.ord || 0), 0) + 1; r = await sb.from("chapters").insert(row).select("id").single() }
         else r = await sb.from("chapters").update(row).eq("id", cid).select("id").single();
-        if (r.error) throw r.error; ls.del(dk); toast(row.published ? "Đã lưu và đăng chương" : "Đã lưu nháp");
+        if (r.error) throw r.error; ls.del(dk);
+        const keepU = new Set(imgsIn(content).map(x => x.u)); [...fresh].filter(u => !keepU.has(u)).forEach(u => { fresh.delete(u); rmImg(u) }); // ảnh vừa tải rồi gỡ ra thì xóa khỏi kho
+        toast(row.published ? "Đã lưu và đăng chương" : "Đã lưu nháp");
         if (isNew) { ls.del(dk); location.replace(`#viet/c/${wid}/${r.data.id}`) } else busy(b, false);
       } catch (x) { err(viMsg(x)); busy(b, false) }
     };
@@ -589,7 +691,19 @@ Ban quản trị có quyền ẩn truyện hoặc khóa tài khoản vi phạm m
   /* ---------- Giao diện riêng ---------- */
   const css = document.createElement("style");
   css.textContent = `.avs{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:.9rem;background:linear-gradient(160deg,hsl(var(--h) 55% 50%),hsl(calc(var(--h) + 50) 55% 32%))}
-.m18{left:auto;right:6px;background:#d93636}.m18p{background:#d93636;color:#fff}
+.m18{left:auto;right:6px;background:#d93636}
+.sttb{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0 0 8px}.sttb small{color:var(--mu);font-size:.82rem}.sttb code{font-size:.8rem;background:var(--s1);padding:0 4px;border-radius:3px}
+.stbig.drop{outline:2px dashed var(--ac);outline-offset:2px}
+.stims{margin-top:10px;background:var(--s1);border-radius:8px;padding:10px 12px}.stims>b{display:block;font-size:.85rem;margin-bottom:8px}.stims>div{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.stim{position:relative;flex:none}.stim button{border:0;padding:0;background:none;cursor:pointer;display:block}.stim img{display:block;height:84px;width:auto;max-width:120px;object-fit:cover;border-radius:4px}
+.stim .x{position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;background:#000000b0;color:#fff;font-size:.7rem;display:grid;place-items:center}.stim .x:hover{background:#d93636}
+.stbadimg{color:#d93636;font-size:.9rem;border-left:3px solid #d93636;padding-left:10px}
+.stg2b{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:0 14px}.stg4{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(2,minmax(0,1fr)) auto;gap:0 12px;align-items:end}.stg4.stil2{grid-template-columns:minmax(0,1fr) auto}.stg4 .btn{margin-bottom:1px}
+.stvd{margin-top:14px;background:var(--s1);border-radius:8px;padding:10px 14px}.stvd summary{cursor:pointer;font-weight:500}.stvd input{background:var(--bg)}
+em.vtag{font-style:normal;font-size:.75rem;background:var(--acs);color:var(--ac);padding:1px 7px;border-radius:4px;margin-right:6px}
+.stil{border:1px solid var(--bd);border-radius:8px;padding:10px 12px;margin-top:12px}.stilh{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;margin-bottom:8px}.stilh small{color:var(--mu);flex:1}
+.stth{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}.stth img{height:110px;width:auto;border-radius:4px;flex:none}
+@media(max-width:700px){.stg2b,.stg4,.stg4.stil2{grid-template-columns:minmax(0,1fr)}.stg4 .btn{margin-top:12px}}.m18p{background:#d93636;color:#fff}
 .stgate{max-width:560px;margin:60px auto;text-align:center}.stgate .acts{justify-content:center}
 .stf label{display:block;margin:14px 0 5px;font-weight:600;font-size:.9rem}.stf label small{font-weight:400;color:var(--mu)}
 .stf input:not([type=checkbox]):not([type=file]),.stf textarea,.stf select{width:100%;font:inherit;color:var(--tx);background:var(--s1);border:1px solid transparent;border-radius:6px;padding:9px 12px;outline:none}

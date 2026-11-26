@@ -1,6 +1,6 @@
 /* Kenrori service worker: cài như ứng dụng và đọc lại chương đã mở khi mất mạng. */
-const SHELL = "kenrori-shell-v1", READ = "kenrori-read-v1", MAX_READ = 400;
-const SHELL_FILES = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png"];
+const SHELL = "kenrori-shell-v2", READ = "kenrori-read-v1", MAX_READ = 400;
+const SHELL_FILES = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./fonts/beaufort-medium.woff", "./fonts/beaufort-bold.woff"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(SHELL).then(c => c.addAll(SHELL_FILES)).catch(() => {}).then(() => self.skipWaiting()));
@@ -42,7 +42,7 @@ self.addEventListener("fetch", e => {
     if (/admin\.html$/.test(u.pathname) || u.pathname.includes("/truyen/")) return;
     if (r.mode === "navigate") { e.respondWith(networkFirst(r, u.origin + u.pathname, "./index.html")); return }
     if (/\/(data|glossary)\.json$/.test(u.pathname)) { e.respondWith(networkFirst(r, u.origin + u.pathname)); return }
-    if (/\.(txt|jpe?g|png|webp|gif|avif|vtt)$/i.test(u.pathname)) { e.respondWith(staleWhileRevalidate(e)); return }
+    if (/\.(txt|jpe?g|png|webp|gif|avif|vtt|woff2?)$/i.test(u.pathname)) { e.respondWith(staleWhileRevalidate(e)); return }
     return;
   }
   if (/^fonts\.(googleapis|gstatic)\.com$/.test(u.hostname) || u.hostname === "i.ytimg.com") e.respondWith(staleWhileRevalidate(e));
