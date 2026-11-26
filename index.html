@@ -131,7 +131,10 @@ a.pill:hover,a.tag:hover{background:var(--ac);color:#fff}
 .tpcv{grid-area:cv;align-self:start;box-shadow:0 10px 30px #0006}
 .tpt{grid-area:t;min-height:162px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;padding-bottom:14px;text-shadow:0 1px 12px #0008}
 .tpt h1{margin:0;font-size:clamp(1.5rem,3.4vw,3rem);font-weight:800;line-height:1.08;letter-spacing:-.025em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-wrap:balance}
-.tpa{margin-top:8px;color:#ffffffd0}
+.tpa{margin-top:6px;color:#ffffffd0}
+.tpo{margin-top:6px;font-size:1.05rem;font-weight:500;color:#ffffffe0;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.hor{margin:-6px 0 12px;color:#ffffffd0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tpx .ibx div div{margin-bottom:2px}
 .tpm{grid-area:m;padding-top:14px;display:flex;flex-direction:column;gap:12px}
 .tptg{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .tptg .st{margin-right:6px;font-size:.85rem}
@@ -314,7 +317,7 @@ const sum = s => s.chapters.reduce((a, c) => a + (c.words || (c.text ? W(c.text)
 const allS = () => [...DATA.novels.map(s => ({ k: "novel", s })), ...DATA.manga.map(s => ({ k: "manga", s }))];
 const byNew = a => [...a].sort((x, y) => latest(y.s || y).localeCompare(latest(x.s || x)));
 const sec = (t, more, body) => `<section class="sec"><div class="sh"><h2>${t}</h2>${more ? `<a class="more" href="#${more}" title="Xem tất cả">${ic(I.next)}</a>` : ""}</div>${body}</section>`;
-const card = (k, s) => `<a class="sc" href="#${k}/${s.slug}"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b><i class="kd">${k === "novel" ? "Novel" : "Manga"}</i></div><div class="ct" title="${esc(s.title)}">${esc(s.title)}</div><small>${stDot(s)}<span>${s.chapters.length} chương</span></small></a>`;
+const card = (k, s) => `<a class="sc" href="#${k}/${s.slug}"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b><i class="kd">${k === "novel" ? "Novel" : "Manga"}</i></div><div class="ct" title="${esc(s.title)}${s.orig ? "\n" + esc(s.orig) : ""}">${esc(s.title)}</div><small>${stDot(s)}<span>${s.chapters.length} chương</span></small></a>`;
 const gridOf = (k, a) => a.length ? `<div class="series">${byNew(a).map(s => card(k, s)).join("")}</div>` : EMPTY;
 const recent = n => { const a = []; for (const { k, s } of allS()) s.chapters.forEach((c, i) => a.push({ k, s, c, i })); return a.sort((x, y) => (y.c.date || "").localeCompare(x.c.date || "") || y.i - x.i).slice(0, n) };
 const rdSet = (k, s) => { try { return JSON.parse(ls.get("r:" + k + ":" + s.slug) || "[]") } catch (e) { return [] } };
@@ -327,7 +330,7 @@ function latestUpdates() {
 let HI = 0, HT = null;
 function heroHtml() {
   const L = allS().sort((x, y) => latest(y.s).localeCompare(latest(x.s))).slice(0, 5); if (!L.length) return "";
-  return `<section class="hero" id="hero" aria-label="Truyện mới cập nhật">${L.map(({ k, s }, i) => `<div class="hs${i ? "" : " on"}"><div class="hb" ${bgStyle(s)}></div><div class="hw"><a class="cover" href="#${k}/${s.slug}" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></a><div class="hi"><a href="#${k}/${s.slug}"><h2>${esc(s.title)}</h2></a><div class="htg">${(s.genres || []).slice(0, 6).map(g => `<span>${esc(g)}</span>`).join("")}</div><p>${esc(s.desc)}</p><div class="hau">${esc(s.author || "")}</div></div></div></div>`).join("")}${L.length > 1 ? `<div class="hn"><span id="hno">Số 1</span><button onclick="heroGo(-1)" title="Trước">${ic(I.prev)}</button><button onclick="heroGo(1)" title="Sau">${ic(I.next)}</button></div>` : ""}</section>`;
+  return `<section class="hero" id="hero" aria-label="Truyện mới cập nhật">${L.map(({ k, s }, i) => `<div class="hs${i ? "" : " on"}"><div class="hb" ${bgStyle(s)}></div><div class="hw"><a class="cover" href="#${k}/${s.slug}" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></a><div class="hi"><a href="#${k}/${s.slug}"><h2>${esc(s.title)}</h2></a>${s.orig ? `<div class="hor" lang="ja">${esc(s.orig)}</div>` : ""}<div class="htg">${(s.genres || []).slice(0, 6).map(g => `<span>${esc(g)}</span>`).join("")}</div><p>${esc(s.desc)}</p><div class="hau">${esc(s.author || "")}${s.artist && s.artist !== s.author ? `${s.author ? ", " : ""}minh họa: ${esc(s.artist)}` : ""}</div></div></div></div>`).join("")}${L.length > 1 ? `<div class="hn"><span id="hno">Số 1</span><button onclick="heroGo(-1)" title="Trước">${ic(I.prev)}</button><button onclick="heroGo(1)" title="Sau">${ic(I.next)}</button></div>` : ""}</section>`;
 }
 function heroGo(d) { const ss = document.querySelectorAll(".hs"); if (ss.length < 2) return; ss[HI].classList.remove("on"); HI = (HI + d + ss.length) % ss.length; ss[HI].classList.add("on"); $("#hno").textContent = "Số " + (HI + 1); clearInterval(HT); HT = setInterval(() => heroGo(1), 8000) }
 const projCard = d => `<div class="card pj">${d.img ? `<img class="pi" src="${esc(d.img)}" alt="" loading="lazy" onerror="this.remove()">` : ""}<h3>${esc(d.title)}</h3><div class="meta">${d.status ? `<span class="st ${STC(d.status)}">${esc(d.status)}</span>` : ""}${d.type ? `<span class="pill">${esc(d.type)}</span>` : ""}${d.version ? `<span>v${esc(d.version)}</span>` : ""}${d.date ? `<span>Cập nhật ${fmtD(d.date)}</span>` : ""}</div><p>${esc(d.desc)}</p><div class="acts">${(d.links || []).filter(l => /^https?:\/\//.test(l.url)).map((l, i) => `<a class="btn${i ? "" : " pri"}" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join("")}</div>${d.howto ? `<details><summary>Hướng dẫn sử dụng</summary><p class="sum">${esc(d.howto)}</p></details>` : ""}</div>`;
@@ -399,11 +402,12 @@ function rset(k, d) {
 function detail(kind, s) {
   const last = ls.get(kind + ":" + s.slug), rs = rdSet(kind, s), n = s.chapters.length, nv = new Set(s.chapters.map(c => (c.vol || "").trim()).filter(Boolean)).size; let desc = true;
   const tags = (s.genres || []).map(g => `<a class="pill" href="${gHref(g)}">${esc(g)}</a>`).join("");
-  const info = [["Tác giả", esc(s.author || "Chưa rõ")], ["Loại", kind === "novel" ? "Light Novel" : "Manga"], ["Tình trạng", stDot(s) || "Chưa rõ"], ["Số chương", n], nv ? ["Số tập", nv] : null, kind === "novel" ? ["Tổng số chữ", fmtN(sum(s)) || "Chưa rõ"] : null, ["Cập nhật", fmtD(latest(s)) || "Chưa có"]].filter(Boolean);
+  const alt = [s.orig, ...(s.alts || [])].filter(Boolean);
+  const info = [["Tác giả", esc(s.author || "Chưa rõ")], s.artist ? ["Họa sĩ minh họa", esc(s.artist)] : null, alt.length ? ["Tên khác", alt.map(x => `<div>${esc(x)}</div>`).join("")] : null, ["Loại", kind === "novel" ? "Light Novel" : "Manga"], ["Tình trạng", stDot(s) || "Chưa rõ"], ["Số chương", n], nv ? ["Số tập", nv] : null, kind === "novel" ? ["Tổng số chữ", fmtN(sum(s)) || "Chưa rõ"] : null, ["Cập nhật", fmtD(latest(s)) || "Chưa có"]].filter(Boolean);
   const fav = isFav(kind, s.slug);
   app.innerHTML = `<div class="tpb"><div class="hb" ${bgStyle(s)}></div></div>
 <div class="tp"><div class="tph"><div class="cover tpcv" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></div>
-<div class="tpt"><h1>${esc(s.title)}</h1>${s.author ? `<div class="tpa">${esc(s.author)}</div>` : ""}</div>
+<div class="tpt"><h1>${esc(s.title)}</h1>${s.orig || (s.alts || [])[0] ? `<div class="tpo" lang="${s.orig ? "ja" : "vi"}">${esc(s.orig || s.alts[0])}</div>` : ""}${s.author || s.artist ? `<div class="tpa">${esc(s.author || "")}${s.artist && s.artist !== s.author ? `${s.author ? ", " : ""}minh họa: ${esc(s.artist)}` : ""}</div>` : ""}</div>
 <div class="tpm"><div class="acts"><button class="btn ${fav ? "on" : "pri"}" id="fvb" onclick="toggleFav('${kind}','${esc(s.slug)}')">${favLabel(fav)}</button>${n ? (last != null ? `<a class="btn" href="#${kind}/${s.slug}/${last}">${ic(I.play)}Đọc tiếp</a><a class="btn" href="#${kind}/${s.slug}/0">Đọc từ đầu</a>` : `<a class="btn" href="#${kind}/${s.slug}/0">${ic(I.play)}Đọc từ đầu</a>`) + `<a class="btn" href="#${kind}/${s.slug}/${n - 1}">Chương mới nhất</a>` : ""}${ADM ? `<a class="btn" href="admin.html#chap/${kind}/${s.slug}">${ic(I.plus)}Thêm chương</a><a class="btn" href="admin.html#series/${kind}/${s.slug}">${ic(I.edit)}Sửa bộ</a>` : ""}</div><div class="tptg">${stDot(s)}${tags}</div></div></div>
 <div class="tpd"><p class="sum clamp" id="dsc">${esc(s.desc) || "Chưa có tóm tắt."}</p><button class="lnk" id="dmore" hidden>Xem thêm</button></div>
 <div class="tpc"><div class="tpl"><div class="sh"><h2>Danh sách chương</h2></div><div class="bar2"><input id="cq" type="search" placeholder="Tìm chương theo tên hoặc số"><button id="cs">Mới nhất trước</button>${nv ? `<button id="cx">Mở tất cả tập</button>` : ""}</div><div id="cl"></div></div>
