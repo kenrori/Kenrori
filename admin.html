@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="fonts/beaufort-medium.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="fonts/beaufort-bold.woff" as="font" type="font/woff" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/admin.css?v=20261127e">
+<link rel="stylesheet" href="css/admin.css?v=20261127f">
 </head>
 <body>
 <div id="gate"><div class="gc">
@@ -36,17 +36,18 @@
 <div class="ph"><h2 id="ptitle">Tổng quan</h2><span id="livechip" class="lc" hidden></span></div>
 <div id="retbar" hidden><button type="button" class="sec sm" id="ret_go">← Về trang bộ <span></span></button></div>
 
-<div class="panel" id="p-ws"><h3>Quản lý bộ</h3>
+<div class="panel" id="p-ws"><h3>Bộ truyện</h3>
 <div id="ws_home">
 <div class="wstop"><input id="ws_q" type="search" placeholder="Tìm bộ truyện theo tên" aria-label="Tìm bộ truyện"><button type="button" id="ws_new">Thêm bộ mới</button></div>
 <div class="wsf" id="ws_f"><button type="button" class="chip on" data-wf="all">Tất cả</button><button type="button" class="chip" data-wf="ln">Light Novel</button><button type="button" class="chip" data-wf="wn">Web Novel</button><button type="button" class="chip" data-wf="manga">Manga</button></div>
+<p id="ws_pk" class="wspk" hidden></p>
 <div id="ws_grid" class="wsg"></div>
 </div>
 <div id="ws_one" hidden>
 <button type="button" class="sec sm" id="ws_back">← Tất cả bộ</button>
 <div class="wsh"><div class="wscv" id="ws_cvw"><img id="ws_cv" alt=""><label class="wscb">Đổi ảnh bìa<input type="file" id="ws_cvf" accept="image/*" hidden></label></div>
 <div class="wsi"><h3 id="ws_t"></h3><p class="mu" id="ws_m"></p><div class="acts"><button type="button" class="sec sm" id="ws_edit">Sửa thông tin bộ</button><a class="sbtn" id="ws_web" target="_blank" rel="noopener">Xem trên web</a></div></div></div>
-<div class="wstb"><button type="button" id="ws_addb">+ Thêm chương</button><button type="button" class="sec" id="ws_imp">Nhập từ file</button><button type="button" class="sec" id="ws_sort" title="Minh họa, Mở đầu, Chương 1, 2..., Vĩ thanh, Lời bạt">Sắp xếp tự động</button><button type="button" class="sec" id="ws_auto" title="Tập mới bắt đầu ở mỗi Minh họa hoặc Mở đầu, rồi xếp lại chương trong từng tập">Tự chia tập</button><button type="button" class="sec" id="ws_exp">Mở hết</button></div>
+<div class="wstb"><button type="button" id="ws_addb">+ Thêm chương</button><button type="button" class="sec" id="ws_tr">Dịch chương mới</button><button type="button" class="sec" id="ws_imp">Nhập từ file</button><button type="button" class="sec" id="ws_sort" title="Minh họa, Mở đầu, Chương 1, 2..., Vĩ thanh, Lời bạt">Sắp xếp tự động</button><button type="button" class="sec" id="ws_auto" title="Tập mới bắt đầu ở mỗi Minh họa hoặc Mở đầu, rồi xếp lại chương trong từng tập">Tự chia tập</button><button type="button" class="sec" id="ws_exp">Mở hết</button></div>
 <div id="ws_add"></div>
 <p class="mu wshint">Thay đổi thứ tự, chia tập hay gỡ chương chỉ được lưu khi bạn bấm <b>Lưu thay đổi</b>. Bấm vào số thứ tự để chuyển chương tới vị trí khác, bấm <b>✂ Tách tập</b> để bắt đầu tập mới từ chương đó.</p>
 <div id="ws_list"></div>
@@ -57,7 +58,7 @@
 
 <div class="panel" id="p-dash"><h3>Tổng quan</h3><div id="dash"></div></div>
 
-<form class="panel" id="p-series"><h3>Bộ truyện</h3><p class="mu">Điền thông tin để tạo bộ mới. Muốn sửa bộ có sẵn, vào Quản lý và bấm Sửa bộ.</p>
+<form class="panel" id="p-series"><h3>Thông tin bộ</h3><p class="mu">Điền thông tin bộ. Lưu xong sẽ mở trang của bộ để bạn đăng chương.</p>
 <div class="sf"><div><label class="cvl">Ảnh bìa</label><div class="cvbox"><img id="s_prev" alt="" hidden><span id="s_ph">Bấm để chọn ảnh bìa</span><input id="s_cover" type="file" accept="image/*" aria-label="Chọn ảnh bìa"></div><p class="mu" style="margin-top:6px">Ảnh tự được thu nhỏ khi lưu.</p></div>
 <div><div class="g2">
 <div><label for="s_kind">Loại</label><select id="s_kind"><option value="novel">Light Novel</option><option value="webnovel">Web Novel</option><option value="manga">Manga</option></select></div>
@@ -78,8 +79,8 @@
 </div>
 <div class="acts"><button>Lưu bộ truyện</button><button type="button" class="sec" id="s_new">Làm trống để tạo bộ mới</button></div></div></div></form>
 
-<form class="panel" id="p-chap"><h3>Thêm chương</h3><p class="mu">Đăng chương đã dịch sẵn. Muốn dịch ngay trên trang, dùng mục Dịch chương.</p>
-<div class="g2"><div class="full"><label for="c_ser">Bộ truyện</label><select id="c_ser"></select></div>
+<form class="panel" id="p-chap"><h3>Thêm chương</h3><p class="mu">Đăng chương đã dịch sẵn vào bộ này. Muốn dịch ngay trên trang, bấm Dịch chương mới.</p>
+<div class="g2"><div class="full" hidden><label for="c_ser">Bộ truyện</label><select id="c_ser"></select></div>
 <div class="full" id="c_typew"><label>Loại chương</label><div class="segr"><label><input type="radio" name="c_type" value="text" checked> Chương chữ</label><label><input type="radio" name="c_type" value="img"> Minh họa <small>(bộ ảnh minh họa của tập)</small></label></div></div>
 <div class="full"><label for="c_title">Tên chương</label><input id="c_title" placeholder="Chương 12: ..."></div>
 <div><label for="c_vol">Tập <small>(để trống nếu không chia tập)</small></label><input id="c_vol" list="c_vols" placeholder="Tập 1"><datalist id="c_vols"></datalist></div>
@@ -89,7 +90,7 @@
 <div class="acts"><button>Đăng chương</button><button type="button" class="sec" id="c_pv">Xem trước</button></div></form>
 
 <div class="panel" id="p-tr"><h3>Dịch chương</h3><p class="mu">Dán bản gốc bên trái, dịch tay hoặc dịch tự động sang bên phải, soát lại rồi đăng. Bản nháp tự lưu trên máy này.</p>
-<div class="g4"><div><label for="t_ser">Bộ truyện (Novel)</label><select id="t_ser"></select></div><div><label for="t_title">Tên chương</label><input id="t_title" placeholder="Chương 1: ..."></div>
+<div class="g4"><div><label for="t_ser">Đăng vào bộ</label><select id="t_ser" disabled></select></div><div><label for="t_title">Tên chương</label><input id="t_title" placeholder="Chương 1: ..."></div>
 <div><label for="t_vol">Tập</label><input id="t_vol" list="t_vols"><datalist id="t_vols"></datalist></div><div><label for="t_date">Ngày</label><input id="t_date" type="date"></div></div>
 <details id="t_set"><summary>Cài đặt dịch tự động, bảng tên riêng và ghi chú</summary>
 <div class="g2"><div><label for="t_src">Ngôn ngữ gốc</label><select id="t_src"><option>tiếng Nhật</option><option>tiếng Anh</option><option>tiếng Trung</option><option>tiếng Hàn</option></select></div>
@@ -122,7 +123,7 @@
 <button type="button" id="t_join" class="trb sec">Nối dòng gốc</button><button type="button" id="t_apply" class="trb sec">Áp dụng bảng tên</button><button type="button" id="t_clear" class="trb dng">Xóa nháp</button><span class="sp"></span><button type="button" id="t_pv" class="trb sec">Xem trước</button><button type="button" id="t_pub" class="trb">Đăng chương lên web</button></div></div>
 
 <div class="panel" id="p-imp"><h3>Nhập từ file</h3><p class="mu">Tải lên cả bộ trong một file Word (.docx) hoặc văn bản (.txt), công cụ tự chia thành từng chương theo tiêu đề hoặc theo các dòng như "Chương 1", "Tập 2". Bạn xem lại danh sách, sửa tên, bỏ chọn phần thừa rồi mới đăng.</p>
-<div class="g2"><div class="full"><label for="i_ser">Bộ truyện (Novel)</label><select id="i_ser"></select></div>
+<div class="g2"><div class="full"><label for="i_ser">Nhập vào bộ</label><select id="i_ser" disabled></select></div>
 <div><label for="i_file">File .docx, .txt hoặc .md <small>(chọn được nhiều file, mỗi file một tập)</small></label><input id="i_file" type="file" multiple accept=".docx,.txt,.md,text/plain"></div>
 <div><label for="i_url">Hoặc link Google Docs</label><input id="i_url" placeholder="https://docs.google.com/document/d/..."></div>
 <div class="full"><label for="i_vol">Tập <small>(để trống để tự nhận từ tên file, ví dụ "Youjitsu Tập 2.docx", hoặc từ trang đầu file)</small></label><input id="i_vol" placeholder="Tự nhận"></div>
@@ -228,8 +229,8 @@
 <div id="log" class="fade"></div>
 <div id="pvw" hidden role="dialog" aria-label="Xem trước chương"><div class="pvb"><div class="pvh"><b>Xem trước</b><span id="pv_note"></span><button type="button" class="sec sm" id="pv_x">Đóng</button></div><div class="pvc" id="pv_c"></div></div></div>
 <input type="file" id="bk_in" accept=".json,application/json" hidden>
-<script src="js/admin.js?v=20261127e"></script>
-<script src="js/game.js?v=20261127e"></script>
-<script src="js/admin-game.js?v=20261127e"></script>
+<script src="js/admin.js?v=20261127f"></script>
+<script src="js/game.js?v=20261127f"></script>
+<script src="js/admin-game.js?v=20261127f"></script>
 </body>
 </html>
