@@ -1367,6 +1367,110 @@
      "vol": "Tập 9",
      "file": "novels/youkoso-jitsuryoku-shijou-shugi/c153_mwywo1cs.txt",
      "words": 485
+    },
+    {
+     "t": "Minh họa",
+     "date": "2026-11-27",
+     "vol": "Tập 10",
+     "type": "img",
+     "pages": [
+      "novels/youkoso-jitsuryoku-shijou-shugi/c154_mwywoj0e/001.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c154_mwywoj0e/002.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c154_mwywoj0e/003.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c154_mwywoj0e/004.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c154_mwywoj0e/005.webp"
+     ]
+    },
+    {
+     "t": "Mở đầu: Lời độc thoại của Hirata Yousuke",
+     "date": "2026-11-27",
+     "vol": "Tập 10",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c155_mwywojai.txt",
+     "words": 443
+    },
+    {
+     "t": "Chương 01: Khoảng lặng trước cơn bão",
+     "date": "2026-11-27",
+     "vol": "Tập 10",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c156_mwywojch.txt",
+     "words": 3952
+    },
+    {
+     "t": "Chương 02: Class Poll",
+     "date": "2026-11-27",
+     "vol": "Tập 10",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c157_mwywojch.txt",
+     "words": 13258
+    },
+    {
+     "t": "Chương 03: Độ khó cho sự cứu rỗi",
+     "date": "2026-11-27",
+     "vol": "Tập 10",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c158_mwywojgm.txt",
+     "words": 9408
+    },
+    {
+     "t": "Chương 04: Anh và em",
+     "date": "2026-11-27",
+     "vol": "Tập 10",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c159_mwywojl3.txt",
+     "words": 6214
+    },
+    {
+     "t": "Chương 05: Thiện và ác",
+     "date": "2026-11-27",
+     "vol": "Tập 10",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c160_mwywojl4.txt",
+     "words": 10714
+    },
+    {
+     "t": "Chương 06: Cảm nghĩ phía đối phương",
+     "date": "2026-11-27",
+     "vol": "Tập 10",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c161_mwywojnh.txt",
+     "words": 8670
+    },
+    {
+     "t": "Chương kết: Kẻ bị trục xuất",
+     "date": "2026-11-27",
+     "vol": "Tập 10",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c162_mwywojpl.txt",
+     "words": 14510
+    },
+    {
+     "t": "Ngoại truyện – Ichinose: Rõ ràng là rất khó mà",
+     "date": "2026-11-27",
+     "vol": "Tập 10",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c163_mwywoju1.txt",
+     "words": 645
+    },
+    {
+     "t": "Ngoại truyện – Horikita: Người hàng xóm…",
+     "date": "2026-11-27",
+     "vol": "Tập 10",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c164_mwywoju1.txt",
+     "words": 730
+    },
+    {
+     "t": "Ngoại truyện – Ichinose 2: Rung động",
+     "date": "2026-11-27",
+     "vol": "Tập 10",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c165_mwywoju1.txt",
+     "words": 442
+    },
+    {
+     "t": "Ngoại truyện – Sakayanagi: Lời hứa",
+     "date": "2026-11-27",
+     "vol": "Tập 10",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c166_mwywoju1.txt",
+     "words": 452
+    },
+    {
+     "t": "Lời bạt",
+     "date": "2026-11-27",
+     "vol": "Tập 10",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c167_mwywoju1.txt",
+     "words": 457
     }
    ],
    "title": "Youkoso Jitsuryoku Shijou Shugi No Kyoushitsu E Năm Nhất",
@@ -1659,5 +1763,5 @@
   "gc": "<script data-goatcounter=\"https://kenrori",
   "game": true
  },
- "rev": 1795779364060
+ "rev": 1795779388009
 }
