@@ -78,7 +78,11 @@ const feedXml = () => {
   const it = items.slice(0, 30).map(({ k, s, c, i }) => `<item><title>${x(s.title)} – ${x((c.vol ? c.vol + " · " : "") + c.t)}</title><link>${x(base + "#" + k + "/" + s.slug + "/" + i)}</link><guid isPermaLink="false">${x(k + ":" + s.slug + ":" + (c.file || (c.pages && c.pages[0]) || c.t))}</guid>${c.date ? `<pubDate>${new Date(c.date + "T00:00:00Z").toUTCString()}</pubDate>` : ""}</item>`).join("");
   return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Kenrori</title><link>${x(base)}</link><description>Chương mới cập nhật</description><language>vi</language>${it}</channel></rss>`;
 };
+/* Viết hoa chữ cái đầu mỗi chữ trong tên truyện và tên chương (khi bật "Cách hiện tên"). Chạy mỗi lần lưu. */
+const tcap = t => typeof t === "string" ? t.split(/(\s+)/).map(w => w.replace(/^([^\p{L}\p{N}]*)(\p{Ll})/u, (m, a, b) => a + b.toLocaleUpperCase("vi"))).join("") : t;
+function tcapAll() { let n = 0; for (const k of Object.values(KEYS)) for (const s of data[k] || []) { const t = tcap(s.title); if (t !== s.title) { s.title = t; n++ } for (const c of s.chapters || []) { const u = tcap(c.t); if (u !== c.t) { c.t = u; n++ } } } return n }
 async function save(msg) {
+  if (data.site && data.site.tcap !== false) tcapAll();
   data.rev = Date.now(); const own = !STAGE; if (own) STAGE = [];
   try {
     await put("data.json", b64t(JSON.stringify(data, null, 1)), msg);
@@ -502,6 +506,10 @@ $("#fn_file").onchange = e => { const f = e.target.files[0]; e.target.value = ""
   (data.site.fonts ||= []).push({ id, name: nm, family: "KR " + id, file: path, w: 700, it: false });
   await save("Thêm phông chữ: " + nm); fnRender(); log(`✅ Đã thêm phông ${nm}. Web nhận phông sau 1–2 phút.`);
 }) };
+$("#tcap_go").onclick = () => run(async () => {
+  const n = tcapAll(); if (!n) return log("✅ Tên truyện và tên chương đều đã viết hoa sẵn.");
+  await save("Viết hoa tên truyện và tên chương"); fillSel(); manage(); if (WS.k && !WS.dirty) wsDraw(); log(`✅ Đã viết hoa ${n} tên truyện và tên chương.`);
+});
 $("#p-site").onsubmit = e => { e.preventDefault(); run(async () => {
   const t = id => $("#" + id).value.trim(), ok = v => !v || /^https?:\/\//.test(v);
   if (/service_role|sb_secret_/.test(t("sb_key")) || (t("sb_key").split(".").length === 3 && /service_role/.test((() => { try { return atob((t("sb_key").split(".")[1] || "").replace(/-/g, "+").replace(/_/g, "/")) } catch (e) { return "" } })()))) throw new Error("Đây là key bí mật (secret/service_role). Hãy dùng publishable key hoặc anon key.");
