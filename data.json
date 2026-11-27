@@ -923,6 +923,110 @@
      "vol": "Tập 6",
      "file": "novels/youkoso-jitsuryoku-shijou-shugi/c93_mwywl9jx.txt",
      "words": 263
+    },
+    {
+     "t": "Minh họa",
+     "date": "2026-11-27",
+     "vol": "Tập 7",
+     "type": "img",
+     "pages": [
+      "novels/youkoso-jitsuryoku-shijou-shugi/c94_mwywlxhn/001.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c94_mwywlxhn/002.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c94_mwywlxhn/003.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c94_mwywlxhn/004.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c94_mwywlxhn/005.webp"
+     ]
+    },
+    {
+     "t": "Mở đầu: Lời độc thoại của Ryuuen Kakeru",
+     "date": "2026-11-27",
+     "vol": "Tập 7",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c95_mwywlxs8.txt",
+     "words": 430
+    },
+    {
+     "t": "Chương 01: Bước chân giữa mùa đông",
+     "date": "2026-11-27",
+     "vol": "Tập 7",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c96_mwywlxs8.txt",
+     "words": 7549
+    },
+    {
+     "t": "Chương 02: Thông báo chia tay và tái hợp",
+     "date": "2026-11-27",
+     "vol": "Tập 7",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c97_mwywlxs9.txt",
+     "words": 23575
+    },
+    {
+     "t": "Chương 03: Điều phi lý",
+     "date": "2026-11-27",
+     "vol": "Tập 7",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c98_mwywly0w.txt",
+     "words": 7944
+    },
+    {
+     "t": "Chương 04: Đã đến lúc giải quyết",
+     "date": "2026-11-27",
+     "vol": "Tập 7",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c99_mwywly2y.txt",
+     "words": 11320
+    },
+    {
+     "t": "Chương 05: Suy nghĩ đan xen",
+     "date": "2026-11-27",
+     "vol": "Tập 7",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c100_mwywly7a.txt",
+     "words": 16454
+    },
+    {
+     "t": "Chương kết: Những thứ Ryuuen được và mất",
+     "date": "2026-11-27",
+     "vol": "Tập 7",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c101_mwywlydx.txt",
+     "words": 2342
+    },
+    {
+     "t": "Ngoại truyện – Một ngày của Ibuki, Ishizaki, Albert và Shiina",
+     "date": "2026-11-27",
+     "vol": "Tập 7",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c102_mwywlydx.txt",
+     "words": 3813
+    },
+    {
+     "t": "Ngoại truyện - Chabashira: Bóng tối vô hình",
+     "date": "2026-11-27",
+     "vol": "Tập 7",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c103_mwywlydy.txt",
+     "words": 482
+    },
+    {
+     "t": "Ngoại truyện – Sakura: Tôi, Sakura Airi, luôn bị quay như chong chóng",
+     "date": "2026-11-27",
+     "vol": "Tập 7",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c104_mwywlydy.txt",
+     "words": 408
+    },
+    {
+     "t": "Ngoại truyện – Hiyori: Mong rằng chúng tôi sẽ trở thành bạn của nhau",
+     "date": "2026-11-27",
+     "vol": "Tập 7",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c105_mwywlydy.txt",
+     "words": 1005
+    },
+    {
+     "t": "Ngoại truyện - Hasebe: Tôi, Hasebe Haruka, không có ý định thay đổi",
+     "date": "2026-11-27",
+     "vol": "Tập 7",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c106_mwywlydy.txt",
+     "words": 1302
+    },
+    {
+     "t": "Lời bạt",
+     "date": "2026-11-27",
+     "vol": "Tập 7",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c107_mwywlydy.txt",
+     "words": 566
     }
    ],
    "title": "Youkoso Jitsuryoku Shijou Shugi No Kyoushitsu E Năm Nhất",
@@ -1215,5 +1319,5 @@
   "gc": "<script data-goatcounter=\"https://kenrori",
   "game": true
  },
- "rev": 1795779234717
+ "rev": 1795779266902
 }
