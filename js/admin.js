@@ -81,6 +81,75 @@ const feedXml = () => {
 /* Viết hoa chữ cái đầu mỗi chữ trong tên truyện và tên chương (khi bật "Cách hiện tên"). Chạy mỗi lần lưu. */
 const tcap = t => typeof t === "string" ? t.split(/(\s+)/).map(w => w.replace(/^([^\p{L}\p{N}]*)(\p{Ll})/u, (m, a, b) => a + b.toLocaleUpperCase("vi"))).join("") : t;
 function tcapAll() { let n = 0; for (const k of Object.values(KEYS)) for (const s of data[k] || []) { const t = tcap(s.title); if (t !== s.title) { s.title = t; n++ } for (const c of s.chapters || []) { const u = tcap(c.t); if (u !== c.t) { c.t = u; n++ } } } return n }
+/* ===== Báo chương mới lên Discord (webhook khóa bằng PIN, chỉ lưu trên máy này) ===== */
+const DCRX = /^https:\/\/(?:ptb\.|canary\.)?discord(?:app)?\.com\/api\/webhooks\/\d+\/[\w-]+$/;
+let DCW = null, DCK = null; // DCW: {url, on, all}; DCK: các chương đã biết, để chỉ báo chương mới
+const dcId = (s, c) => s.slug + "|" + (c.file || (c.pages && c.pages[0]) || ((c.vol || "") + "/" + c.t));
+function dcKnown() { DCK = new Set(); for (const k of Object.values(KEYS)) for (const s of data[k] || []) for (const c of s.chapters || []) DCK.add(dcId(s, c)) }
+async function dcLoad() { DCW = null; try { const o = JSON.parse(ls.get("dcwh") || "null"); if (o && sessionPin) DCW = JSON.parse(await unseal(sessionPin, o)) } catch (e) {} dcUI() }
+function dcUI() {
+  if (!$("#dc_url")) return; const on = !!(DCW && DCW.url);
+  $("#dc_url").value = ""; $("#dc_url").placeholder = on ? "Đã lưu một webhook trên máy này. Dán link mới để thay." : "https://discord.com/api/webhooks/...";
+  $("#dc_on").checked = !DCW || DCW.on !== false; $("#dc_all").checked = !!(DCW && DCW.all);
+  $("#dc_st").textContent = on ? (DCW.on === false ? "Đang tắt" : "Đang bật: mỗi lần đăng chương sẽ báo lên Discord") : "Chưa cài"; $("#dc_st").className = "dcst" + (on && DCW.on !== false ? " on" : "");
+  $("#dc_test").disabled = $("#dc_del").disabled = !on;
+}
+async function dcSend(body) {
+  const r = await fetch(DCW.url + "?wait=true", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  if (!r.ok) throw new Error(r.status === 404 ? "Webhook không còn tồn tại (có thể đã bị xóa trong Discord)" : "Discord trả lỗi " + r.status);
+}
+const absU = u => !u ? "" : /^https?:\/\//.test(u) ? u : siteBase() + u.replace(/^\.?\//, "");
+async function dcNotify() {
+  if (!DCK) return dcKnown(); const fresh = new Map();
+  for (const [k, kind] of [["novels", "novel"], ["manga", "manga"]]) for (const s of data[k] || []) s.chapters.forEach((c, j) => { const id = dcId(s, c); if (!DCK.has(id)) { DCK.add(id); if (!fresh.has(s)) fresh.set(s, { kind, L: [] }); fresh.get(s).L.push([c, j]) } });
+  if (!fresh.size || !DCW || !DCW.url || DCW.on === false) return;
+  const S = data.site || {}, col = { novel: 0xff00ff, manga: 0x2bb6a3 };
+  const embeds = [...fresh].slice(0, 10).map(([s, { kind, L }]) => {
+    const base = siteBase() + `#${kind}/${s.slug}`, head = L.slice(0, 8).map(([c, j]) => `[${(c.vol ? c.vol + " · " : "") + c.t}](${base}/${j})`).join("\n");
+    return { title: s.title, url: base, color: kind === "manga" ? col.manga : s.format === "Web Novel" ? 0xffd84d : col.novel, description: `**${L.length > 1 ? L.length + " chương mới" : "Chương mới"}**\n${head}${L.length > 8 ? `\nvà ${L.length - 8} chương khác` : ""}`, ...(s.cover ? { thumbnail: { url: absU(s.cover) } } : {}), footer: { text: (s.format || (kind === "manga" ? "Manga" : "Light Novel")) + (s.genres && s.genres.length ? " · " + s.genres.slice(0, 3).join(", ") : "") } };
+  });
+  try { await dcSend({ username: (S.about && S.about.name) || "Kenrori", content: DCW.all ? "@everyone" : "", allowed_mentions: { parse: DCW.all ? ["everyone"] : [] }, embeds }); log("✅ Đã báo chương mới lên Discord.") }
+  catch (e) { log("Đã lưu chương, nhưng chưa báo được lên Discord: " + e.message) }
+}
+/* ===== Nhắc sao lưu và danh sách việc cần sửa ở Tổng quan ===== */
+const bkDays = () => { const t = +ls.get("bk_last") || 0; return t ? Math.floor((Date.now() - t) / 864e5) : null };
+const bkMark = () => ls.set("bk_last", String(Date.now()));
+function bkLine() { const d = bkDays(); return d == null ? "Bạn chưa tải bản sao lưu nào trên máy này." : d === 0 ? "Lần sao lưu gần nhất: hôm nay." : `Lần sao lưu gần nhất: ${d} ngày trước.` }
+function bkRepoZip() { bkMark(); window.open(`https://github.com/${cfg.u}/${cfg.r}/archive/refs/heads/${cfg.b}.zip`, "_blank", "noopener"); log("✅ Đang tải toàn bộ kho từ GitHub (gồm chương và ảnh)."); dash() }
+function goSer(k, i) { $("#m_q").value = ""; manage(); $(`#manage button[data-s="${k}|${i}"]`)?.click() }
+function issues() {
+  const out = [], today = Date.now();
+  for (const k of ["novels", "manga"]) (data[k] || []).forEach((s, i) => {
+    const P = [], ch = s.chapters || [];
+    if (!s.cover) P.push(["Thiếu ảnh bìa"]); if (!(s.desc || "").trim()) P.push(["Thiếu tóm tắt"]); if (!(s.genres || []).length) P.push(["Thiếu thể loại"]);
+    if (!(s.author || "").trim()) P.push(["Thiếu tác giả"]); if (!s.country && !/[぀-ヿ가-힯㐀-鿿]/.test(s.orig || "") && k !== "manga") P.push(["Chưa chọn quốc gia"]);
+    const empty = ch.findIndex(c => c.file ? c.words === 0 : c.pages ? !c.pages.length : false); if (empty >= 0) P.push(["Có chương trống", empty]);
+    const seen = new Map(); let dup = -1; ch.forEach((c, j) => { const key = ((c.vol || "") + "|" + c.t).toLowerCase(); if (seen.has(key) && dup < 0) dup = j; seen.set(key, j) }); if (dup >= 0) P.push(["Trùng tên chương", dup]);
+    const nod = ch.findIndex(c => !c.date); if (nod >= 0) P.push(["Chương chưa có ngày đăng", nod]);
+    const st = s.status || "";
+    if (/sắp/i.test(st) && ch.length) P.push(["Đã có chương nhưng vẫn ghi Sắp ra mắt"]);
+    if (/đang/i.test(st) && ch.length) { const lu = ch.map(c => c.date || "").sort().pop(); if (lu && (today - Date.parse(lu)) / 864e5 > 60) P.push([`Hơn 2 tháng chưa có chương mới, có thể đổi sang Tạm ngưng`]) }
+    if (P.length) out.push({ k, i, s, P });
+  });
+  return out;
+}
+function issuesHtml() {
+  const L = issues(); if (!L.length) return `<h4>Việc cần sửa</h4><p class="mu isok">Mọi bộ truyện đều đủ thông tin. Không có gì cần sửa.</p>`;
+  const row = ({ k, i, s, P }) => { const ch = P.find(p => p[1] != null); return `<div class="li isr">${thumb(s)}<span class="lt">${esc(s.title)}<span class="isc">${P.map(([t]) => `<em>${esc(t)}</em>`).join("")}</span></span><span class="isa"><button type="button" class="sec sm" onclick="goSer('${k}',${i})">Sửa bộ</button>${ch ? `<button type="button" class="sec sm" onclick="goEdit('${k}',${i},${ch[1]})">Mở chương</button>` : ""}</span></div>` };
+  return `<h4>Việc cần sửa <span class="cnt">${L.length} bộ</span></h4><div class="lst">${L.slice(0, 6).map(row).join("")}</div>${L.length > 6 ? `<details class="ismore"><summary>Xem thêm ${L.length - 6} bộ</summary><div class="lst">${L.slice(6).map(row).join("")}</div></details>` : ""}`;
+}
+/* ===== Lưu nháp khung Thêm chương (chương chữ) trên máy này ===== */
+const chdKey = () => "chd:" + $("#c_ser").value;
+let chdT = 0, chdBusy = false;
+function chdSave() { if (chdBusy) return; clearTimeout(chdT); chdT = setTimeout(() => { const t = $("#c_title").value, x = $("#c_text").value, v = $("#c_vol").value; if (!$("#c_ser").value) return; if (!t.trim() && !x.trim()) return ls.del(chdKey()); ls.set(chdKey(), JSON.stringify({ t, v, x, at: Date.now() })) }, 400) }
+function chdRestore() {
+  const box = $("#c_dr"); if (!box) return; box.hidden = true; if (!$("#c_ser").value || $("#c_title").value.trim() || $("#c_text").value.trim()) return;
+  let d = null; try { d = JSON.parse(ls.get(chdKey()) || "null") } catch (e) {} if (!d || (!d.t && !d.x)) return;
+  chdBusy = true; $("#c_title").value = d.t || ""; if (d.v) $("#c_vol").value = d.v; $("#c_text").value = d.x || ""; chdBusy = false;
+  const w = (d.x || "").trim() ? d.x.trim().split(/\s+/).length.toLocaleString("vi-VN") + " chữ" : "";
+  box.innerHTML = `Đã mở lại bản nháp chưa đăng${d.t ? ` "${esc(d.t)}"` : ""}${w ? `, ${w}` : ""}, lưu lúc ${new Date(d.at).toLocaleString("vi-VN", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" })}. <button type="button" class="lnk" id="c_drx">Bỏ nháp này</button>`; box.hidden = false;
+  $("#c_drx").onclick = () => { ls.del(chdKey()); $("#c_title").value = $("#c_text").value = ""; box.hidden = true };
+}
 async function save(msg) {
   if (data.site && data.site.tcap !== false) tcapAll();
   data.rev = Date.now(); const own = !STAGE; if (own) STAGE = [];
@@ -89,7 +158,7 @@ async function save(msg) {
     try { await put("feed.xml", b64t(feedXml()), "Cập nhật RSS") } catch (e) { log("Đã lưu, nhưng chưa cập nhật được RSS: " + e.message) }
     await flush(msg);
   } finally { if (own) STAGE = null }
-  watchLive(data.rev);
+  watchLive(data.rev); dcNotify();
 }
 async function run(fn) {
   const bs = [...document.querySelectorAll("button")]; bs.forEach(b => b.disabled = true); if (!RUND++) STAGE = [];
@@ -114,7 +183,7 @@ async function connect(c, after) {
     for (const k of ["tips", "links", "novels", "manga", "videos", "projects"]) data[k] ??= []; data.site ??= {};
     if (after) await after();
     $("#login").hidden = $("#setup").hidden = true; $("#bye").hidden = false; $("#app").hidden = false; $("#gate").hidden = true; $("#c_date").value = $("#j_date").value = $("#t_date").value = new Date().toISOString().slice(0, 10);
-    fillSel(); manage(); siteLoad(); trLoadKey(); glLoad(); log("✅ Đã đăng nhập. Chọn mục cần thêm."); deepLink();
+    fillSel(); manage(); siteLoad(); trLoadKey(); glLoad(); dcKnown(); dcLoad(); log("✅ Đã đăng nhập. Chọn mục cần thêm."); deepLink();
   });
 }
 let sealed = null; try { sealed = JSON.parse(ls.get("cfg2") || "null") } catch (e) {}
@@ -159,7 +228,7 @@ function fillSel() {
   const cur = $("#c_ser").value; $("#c_ser").innerHTML = o.join("") || "<option value=''>(chưa có bộ nào)</option>"; if (cur && o.some(x => x.includes(`value="${cur}"`))) $("#c_ser").value = cur; chapUI(); gChips(); trFill(); impFill();
 }
 const cType = () => (document.querySelector('input[name="c_type"]:checked') || {}).value || "text";
-function chapUI() { const k = $("#c_ser").value.split("|")[0], img = k === "novel" && cType() === "img"; $("#c_typew").hidden = k !== "novel"; $("#c_novel").hidden = k !== "novel" || img; $("#c_manga").hidden = !(k === "manga" || img); $("#c_firstw").hidden = !img; $("#c_imgl").textContent = img ? "Ảnh minh họa" : "Ảnh các trang"; $("#c_title").placeholder = img ? "Minh họa" : "Chương 12: ..."; volList() }
+function chapUI() { setTimeout(chdRestore); const k = $("#c_ser").value.split("|")[0], img = k === "novel" && cType() === "img"; $("#c_typew").hidden = k !== "novel"; $("#c_novel").hidden = k !== "novel" || img; $("#c_manga").hidden = !(k === "manga" || img); $("#c_firstw").hidden = !img; $("#c_imgl").textContent = img ? "Ảnh minh họa" : "Ảnh các trang"; $("#c_title").placeholder = img ? "Minh họa" : "Chương 12: ..."; volList() }
 document.querySelectorAll('input[name="c_type"]').forEach(r => r.addEventListener("change", chapUI));
 function volList() {
   const [k, i] = $("#c_ser").value.split("|"), s = data[KEYS[k]]?.[i], vs = [...new Set((s?.chapters || []).map(c => (c.vol || "").trim()).filter(Boolean))];
@@ -205,7 +274,7 @@ $("#p-chap").onsubmit = e => { e.preventDefault(); run(async () => {
   else if (ch.vol) { const at = vols.lastIndexOf(ch.vol); if (at >= 0) s.chapters.splice(at + 1, 0, ch); else s.chapters.push(ch) } else s.chapters.push(ch);
   await save("Thêm chương: " + s.title + " - " + t);
   const szMsg = window.lastSz ? ` Dung lượng ảnh: ${window.lastSz}.` : ""; window.lastSz = "";
-  ["c_title", "c_text"].forEach(x => $("#" + x).value = ""); $("#c_file").value = $("#c_imgs").value = ""; done("✅ Đã đăng chương." + szMsg + " Web cập nhật sau 1–2 phút."); if ($("#p-chap").classList.contains("inws")) wsDraw();
+  ls.del("chd:" + $("#c_ser").value); $("#c_dr") && ($("#c_dr").hidden = true); ["c_title", "c_text"].forEach(x => $("#" + x).value = ""); $("#c_file").value = $("#c_imgs").value = ""; done("✅ Đã đăng chương." + szMsg + " Web cập nhật sau 1–2 phút."); if ($("#p-chap").classList.contains("inws")) wsDraw();
 }) };
 
 $("#p-tip").onsubmit = e => { e.preventDefault(); run(async () => {
@@ -1160,9 +1229,11 @@ function dash() {
   const rec = []; S.forEach(([k, s, i]) => s.chapters.forEach((c, j) => rec.push({ k, s, i, c, j }))); rec.sort((a, b) => (b.c.date || "").localeCompare(a.c.date || "") || b.j - a.j);
   const drafts = []; try { for (let x = 0; x < localStorage.length; x++) { const key = localStorage.key(x); if (!key.startsWith("dr:")) continue; const d = JSON.parse(localStorage.getItem(key) || "{}"); if ((d.i || "").trim() || (d.o || "").trim()) drafts.push({ s: data.novels.find(n => n.slug === key.slice(3)), slug: key.slice(3), d }) } } catch (e) {}
   const qa = [["series", "Thêm bộ truyện mới", "$('#ws_new').click()"], ["chap", "Đăng chương", "tab('ws');wsHome('chap')"], ["tr", "Dịch chương mới", "tab('ws');wsHome('tr')"], ["man", "Quản lý nội dung", "tab('man')"]];
-  el.innerHTML = `<div class="dgrid"><div class="dmain"><div class="stats"><div class="stat"><b>${data.novels.filter(s => s.format !== "Web Novel").length}</b><span>Light Novel</span></div><div class="stat"><b>${data.novels.filter(s => s.format === "Web Novel").length}</b><span>Web Novel</span></div><div class="stat"><b>${data.manga.length}</b><span>Manga</span></div><div class="stat"><b>${nch.toLocaleString("vi-VN")}</b><span>Chương đã đăng</span></div><div class="stat"><b>${nw.toLocaleString("vi-VN")}</b><span>Chữ đã dịch</span></div></div>
+  const bw = bkDays() == null || bkDays() > 7;
+  el.innerHTML = `<div class="dgrid"><div class="dmain">${bw ? `<div class="bkwarn"><b>${bkDays() == null ? "Chưa có bản sao lưu" : `Đã ${bkDays()} ngày chưa sao lưu`}</b><span>Chương và ảnh chỉ đang nằm trên GitHub. Tải bản sao lưu để giữ một bản trên máy.</span><button type="button" onclick="backupDl()">Sao lưu ngay</button></div>` : ""}<div class="stats"><div class="stat"><b>${data.novels.filter(s => s.format !== "Web Novel").length}</b><span>Light Novel</span></div><div class="stat"><b>${data.novels.filter(s => s.format === "Web Novel").length}</b><span>Web Novel</span></div><div class="stat"><b>${data.manga.length}</b><span>Manga</span></div><div class="stat"><b>${nch.toLocaleString("vi-VN")}</b><span>Chương đã đăng</span></div><div class="stat"><b>${nw.toLocaleString("vi-VN")}</b><span>Chữ đã dịch</span></div></div>
 <h4>Làm nhanh</h4><div class="qa">${qa.map(([k, l, x]) => `<button type="button" onclick="${x}"><svg class="i" viewBox="0 0 24 24">${NI[k]}</svg>${l}</button>`).join("")}</div>
-<h4>Bảo trì</h4><div class="acts" style="margin-top:8px"><button type="button" onclick="backupDl()">Tải bản sao lưu</button><button type="button" class="sec" onclick="$('#bk_in').click()">Khôi phục từ bản sao lưu</button><button type="button" class="sec" onclick="regenShare()">Tạo lại trang chia sẻ cho tất cả bộ</button>${/^[a-z0-9-]+$/i.test(data.site?.gc || "") ? `<a class="btnl" href="https://${data.site.gc}.goatcounter.com" target="_blank" rel="noopener">Xem thống kê lượt xem</a>` : ""}</div><p class="mu" style="margin-top:6px">Nên tải bản sao lưu trước những thay đổi lớn như gộp thể loại hay gỡ bộ truyện.</p><p class="mu" style="margin-top:6px">Trang chia sẻ giúp link từng bộ hiện đúng bìa, tên và tóm tắt khi dán lên Discord, Facebook. Bộ mới hoặc vừa sửa được tạo tự động; nút này dùng cho các bộ đăng từ trước.</p>
+${issuesHtml()}
+<h4>Bảo trì</h4><p class="bkln">${bkLine()} "Tải bản sao lưu" lưu thông tin các bộ và bảng tên riêng. "Tải toàn bộ kho" tải cả nội dung chương và ảnh từ GitHub.</p><div class="acts" style="margin-top:8px"><button type="button" onclick="backupDl()">Tải bản sao lưu</button><button type="button" class="sec" onclick="bkRepoZip()" title="Tải cả chương và ảnh, dùng khi cần dựng lại web từ đầu">Tải toàn bộ kho (chương và ảnh)</button><button type="button" class="sec" onclick="$('#bk_in').click()">Khôi phục từ bản sao lưu</button><button type="button" class="sec" onclick="regenShare()">Tạo lại trang chia sẻ cho tất cả bộ</button>${/^[a-z0-9-]+$/i.test(data.site?.gc || "") ? `<a class="btnl" href="https://${data.site.gc}.goatcounter.com" target="_blank" rel="noopener">Xem thống kê lượt xem</a>` : ""}</div><p class="mu" style="margin-top:6px">Nên tải bản sao lưu trước những thay đổi lớn như gộp thể loại hay gỡ bộ truyện.</p><p class="mu" style="margin-top:6px">Trang chia sẻ giúp link từng bộ hiện đúng bìa, tên và tóm tắt khi dán lên Discord, Facebook. Bộ mới hoặc vừa sửa được tạo tự động; nút này dùng cho các bộ đăng từ trước.</p>
 ${drafts.length ? `<h4>Bản dịch đang dở trên máy này</h4><div class="lst">${drafts.map(({ s, slug, d }) => `<div class="li"><span class="lt">${esc(s ? s.title : slug)}${d.t ? ` <em>${esc(d.t)}</em>` : ""}</span><small>${(d.o || "").trim() ? d.o.trim().split(/\s+/).length.toLocaleString("vi-VN") + " chữ" : "chưa dịch"}</small><button type="button" class="sec sm" onclick="openDraft('${esc(slug)}')">Mở</button></div>`).join("")}</div>` : ""}
 <h4>Chương mới đăng</h4>${rec.length ? `<div class="lst">${rec.slice(0, 8).map(r => `<div class="li">${thumb(r.s)}<span class="lt">${esc(r.s.title)} <em>${r.c.vol ? esc(r.c.vol) + ", " : ""}${esc(r.c.t)}</em></span><small>${r.c.date || ""}</small><button type="button" class="sec sm" onclick="goEdit('${r.k}',${r.i},${r.j})">Sửa</button></div>`).join("")}</div>` : '<p class="mu">Chưa có chương nào. Tạo bộ truyện rồi đăng chương đầu tiên.</p>'}</div>
 <aside class="stp" id="stp" aria-label="Khu Sáng tác"></aside></div>`;
@@ -1303,7 +1374,7 @@ async function backupDl() {
   let gl = {}; try { gl = await glFetch() } catch (e) {}
   const b = { app: "kenrori", at: new Date().toISOString(), data, glossary: gl }, a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([JSON.stringify(b, null, 1)], { type: "application/json" })); a.download = `kenrori-sao-luu-${new Date().toISOString().slice(0, 10)}.json`;
-  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000); log("✅ Đã tải bản sao lưu.");
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000); bkMark(); log("✅ Đã tải bản sao lưu."); dash();
 }
 $("#bk_in").onchange = async e => {
   const f = e.target.files[0]; e.target.value = ""; if (!f) return;
@@ -1313,7 +1384,7 @@ $("#bk_in").onchange = async e => {
   if (!confirm(`Khôi phục bản sao lưu${b.at ? " ngày " + b.at.slice(0, 10) : ""} (${cnt} bộ truyện)?\nDữ liệu hiện tại trên web sẽ bị thay thế. Nên tải bản sao lưu hiện tại trước.`)) return;
   run(async () => {
     data = d; for (const k of ["tips", "links", "novels", "manga", "videos", "projects"]) data[k] ??= []; data.site ??= {};
-    await save("Khôi phục từ bản sao lưu");
+    dcKnown(); await save("Khôi phục từ bản sao lưu"); dcKnown();
     if (b.glossary && Object.keys(b.glossary).length) { await put("glossary.json", b64t(JSON.stringify(b.glossary, null, 1)), "Khôi phục bảng tên"); GL = b.glossary }
     siteLoad(); done(`✅ Đã khôi phục ${cnt} bộ truyện. Web cập nhật sau 1–2 phút.`);
   });
@@ -1572,3 +1643,14 @@ $("#i_pub").onclick = () => {
     impRender(); done(`✅ Đã đăng ${L.length} chương vào "${s.title}". Web cập nhật sau 1–2 phút.`);
   });
 };
+
+/* Gắn sự kiện: lưu nháp chương, cài Discord */
+["c_title", "c_vol", "c_text"].forEach(id => $("#" + id)?.addEventListener("input", chdSave));
+$("#dc_save") && ($("#dc_save").onclick = () => run(async () => {
+  if (!sessionPin) throw new Error("Hãy đăng nhập lại bằng PIN để lưu webhook"); needHttps();
+  const u = $("#dc_url").value.trim(); if (!u && !(DCW && DCW.url)) throw new Error("Dán link webhook Discord vào ô trên");
+  if (u && !DCRX.test(u)) throw new Error("Link không đúng dạng webhook Discord. Trong Discord: Cài đặt kênh > Tích hợp > Webhook > Sao chép URL Webhook.");
+  DCW = { url: u || DCW.url, on: $("#dc_on").checked, all: $("#dc_all").checked }; ls.set("dcwh", JSON.stringify(await seal(sessionPin, JSON.stringify(DCW)))); dcUI(); log("✅ Đã lưu cài đặt báo Discord trên máy này.");
+}));
+$("#dc_test") && ($("#dc_test").onclick = () => run(async () => { if (!DCW || !DCW.url) throw new Error("Chưa có webhook"); const S = data.site || {}; await dcSend({ username: (S.about && S.about.name) || "Kenrori", embeds: [{ title: "Thử kết nối", description: "Nếu bạn thấy tin này, web sẽ tự báo vào kênh này mỗi khi đăng chương mới.", url: siteBase(), color: 0xff00ff }] }); log("✅ Đã gửi tin thử. Mở Discord để xem.") }));
+$("#dc_del") && ($("#dc_del").onclick = () => { if (!confirm("Xóa webhook Discord khỏi máy này?")) return; ls.del("dcwh"); DCW = null; dcUI(); log("✅ Đã xóa webhook.") });

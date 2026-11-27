@@ -49,7 +49,7 @@ DATA.projects ??= [];
 DATA.site ??= {};
 const KEY = { novel: "novels", manga: "manga" }, app = $("#app"), EMPTY = '<p class="empty">Chưa có nội dung.</p>';
 const NAV = [["home", "home", "Trang chủ"], ["tim-kiem", "search", "Tìm truyện"], ["library", "bmark", "Thư viện"],
-  ["—", "", "Kệ truyện"], ["novels", "#ff00ff", "Light Novel"], ["webnovel", "#ffd84d", "Web Novel"], ["manga", "#2bb6a3", "Manga"], ["sang-tac", "#8b6cff", "Sáng tác"], ["the-loai", "tag", "Thể loại"],
+  ["—", "", "Kệ truyện"], ["novels", "#ff00ff", "Light Novel"], ["webnovel", "#ffd84d", "Web Novel"], ["manga", "#2bb6a3", "Manga"], ["sang-tac", "#8b6cff", "Sáng tác"],
   ["—", "", "Tu luyện"], ["tu-luyen", "crown", "Tu luyện của tôi"], ["cua-hang", "gem", "Cửa hàng"], ["kho-do", "box2", "Kho đồ"], ["bang-xep-hang", "rank", "Bảng xếp hạng"],
   ["—", "", "Game"], ["projects", "box", "Dự án"], ["tips", "bulb", "Mẹo game"], ["tools", "tool", "Công cụ"],
   ["—", "", "Kenrori"], ["videos", "video", "Video Vietsub"], ["links", "link", "Liên kết"], ["about", "info", "Giới thiệu"]];
@@ -280,7 +280,7 @@ function fmtShelf(f, label, more, col, desc, L) {
   const [{ k, s }, ...rest] = L, lc = newest(s), [rh, rl] = resumeHref(k, s), G = (s.genres || []).slice(0, 3);
   const feat = `<article class="fsf"><a class="fsc" href="#${k}/${s.slug}" aria-label="${esc(s.title)}"><span class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></span></a>
 <div class="fsi"><span class="fsk">Mới cập nhật${lc && lc.date ? `, ${ago(lc.date).toLowerCase()}` : ""}</span><h3><a href="#${k}/${s.slug}">${esc(s.title)}</a></h3>${s.orig ? `<p class="fso" lang="${hasJP(s.orig) ? "ja" : "vi"}">${esc(s.orig)}</p>` : ""}
-${G.length ? `<div class="fsgn">${G.map(g => `<a class="pill" href="#the-loai/${encodeURIComponent(g)}">${esc(g)}</a>`).join("")}</div>` : ""}${s.desc ? `<p class="fsd">${esc(s.desc)}</p>` : ""}
+${G.length ? `<div class="fsgn">${G.map(g => `<a class="pill" href="${gHref(g)}">${esc(g)}</a>`).join("")}</div>` : ""}${s.desc ? `<p class="fsd">${esc(s.desc)}</p>` : ""}
 ${lc ? `<a class="fsl" href="#${k}/${s.slug}/${s.chapters.indexOf(lc)}"><span>Chương mới nhất</span><b>${esc((lc.vol ? lc.vol + " · " : "") + lc.t)}</b></a>` : ""}
 <div class="fsa"><a class="btn pri" href="${rh}">${rl}</a><a class="btn" href="#${k}/${s.slug}">Xem chi tiết</a></div></div></article>`;
   return `<section class="sec fsh" style="--fc:${col}" aria-labelledby="fs-${f}"><div class="fsh-h"><i class="fsh-t" aria-hidden="true"></i><h2 id="fs-${f}">${label}</h2><a class="more all" href="#${more}">Xem tất cả</a></div>

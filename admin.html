@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="fonts/beaufort-medium.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="fonts/beaufort-bold.woff" as="font" type="font/woff" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/admin.css?v=20261128p">
+<link rel="stylesheet" href="css/admin.css?v=20261128r">
 </head>
 <body>
 <div id="gate"><div class="gc">
@@ -81,7 +81,7 @@
 </div>
 <div class="acts"><button>Lưu bộ truyện</button><button type="button" class="sec" id="s_new">Làm trống để tạo bộ mới</button></div></div></div></form>
 
-<form class="panel" id="p-chap"><h3>Thêm chương</h3><p class="mu">Đăng chương đã dịch sẵn vào bộ này. Muốn dịch ngay trên trang, bấm Dịch chương mới.</p>
+<form class="panel" id="p-chap"><h3>Thêm chương</h3><p class="mu">Đăng chương đã dịch sẵn vào bộ này. Muốn dịch ngay trên trang, bấm Dịch chương mới. Nội dung đang nhập được tự lưu nháp trên máy này.</p><p class="chdr" id="c_dr" hidden></p>
 <div class="g2"><div class="full" hidden><label for="c_ser">Bộ truyện</label><select id="c_ser"></select></div>
 <div class="full" id="c_typew"><label>Loại chương</label><div class="segr"><label><input type="radio" name="c_type" value="text" checked> Chương chữ</label><label><input type="radio" name="c_type" value="img"> Minh họa <small>(bộ ảnh minh họa của tập)</small></label></div></div>
 <div class="full"><label for="c_title">Tên chương</label><input id="c_title" placeholder="Chương 12: ..."></div>
@@ -200,6 +200,10 @@
 <h4>Phông chữ cho danh hiệu</h4><p class="mu">Có sẵn 4 phông. Bạn thêm được phông từ Google Fonts (gõ đúng tên, ví dụ Pattaya, Lobster, Dancing Script, Bungee) hoặc tải file phông của mình (WOFF2, WOFF, TTF, OTF, tối đa 2 MB). Nên chọn phông có hỗ trợ tiếng Việt, nếu không dấu sẽ hiện bằng phông khác. Phông thêm ở đây sẽ có trong ô "Phông chữ" khi sửa danh hiệu.</p>
 <div id="fn_list" class="fnl"></div>
 <div class="g2"><div><label for="fn_g">Tên phông trên Google Fonts</label><input id="fn_g" placeholder="Ví dụ: Pattaya"></div><div class="acts" style="align-self:end"><button type="button" class="sec" id="fn_gadd">Thêm từ Google Fonts</button><label class="sec stkup">Tải file phông<input type="file" id="fn_file" accept=".woff2,.woff,.ttf,.otf" hidden></label></div></div>
+<h4>Báo chương mới lên Discord</h4><p class="mu">Mỗi lần bạn đăng chương (thêm chương, dịch chương, nhập cả tập), web tự gửi tin vào kênh Discord của nhóm, có bìa và link tới chương. Link webhook được khóa bằng mã PIN và chỉ lưu trên máy này, không đưa lên web. Lấy link trong Discord: Cài đặt kênh &gt; Tích hợp &gt; Webhook &gt; Webhook mới &gt; Sao chép URL Webhook.</p>
+<div class="dcbox"><p>Trạng thái: <b id="dc_st" class="dcst">Chưa cài</b></p><label for="dc_url">Link webhook</label><input id="dc_url" type="password" autocomplete="off" spellcheck="false">
+<label class="ck"><input type="checkbox" id="dc_on" checked> Tự báo khi đăng chương</label><label class="ck"><input type="checkbox" id="dc_all"> Nhắc @everyone trong tin báo</label>
+<div class="acts"><button type="button" id="dc_save">Lưu webhook</button><button type="button" class="sec" id="dc_test" disabled>Gửi tin thử</button><button type="button" class="sec dng" id="dc_del" disabled>Xóa</button></div></div>
 <h4>Cảnh báo độ tuổi theo thể loại</h4><p class="mu">Mỗi dòng một thể loại và số tuổi, ví dụ <code>Ecchi: 16</code>. Bộ nào có thể loại trong danh sách sẽ tự hiện nhãn và hỏi xác nhận tuổi trước khi đọc (16 trở lên). Ở từng bộ, ô "Giới hạn tuổi" có thể nâng lên hoặc tắt hẳn cảnh báo.</p><textarea id="agetags" style="min-height:96px" placeholder="Ecchi: 16"></textarea>
 <h4>Cách hiện tên</h4><label class="ck"><input type="checkbox" id="tcap"> Viết hoa chữ cái đầu mỗi chữ trong tên truyện và tên chương <small>(ví dụ "cô gái bên cửa sổ" thành "Cô Gái Bên Cửa Sổ". Khi bật, mỗi lần bạn lưu, tên mới nhập cũng tự được viết hoa)</small></label>
 <div class="acts"><button type="button" class="sec" id="tcap_go">Viết hoa tất cả tên đã lưu ngay</button></div>
@@ -254,8 +258,8 @@
 <div id="log" class="fade"></div>
 <div id="pvw" hidden role="dialog" aria-label="Xem trước chương"><div class="pvb"><div class="pvh"><b>Xem trước</b><span id="pv_note"></span><button type="button" class="sec sm" id="pv_x">Đóng</button></div><div class="pvc" id="pv_c"></div></div></div>
 <input type="file" id="bk_in" accept=".json,application/json" hidden>
-<script src="js/admin.js?v=20261128p"></script>
-<script src="js/game.js?v=20261128p"></script>
-<script src="js/admin-game.js?v=20261128p"></script>
+<script src="js/admin.js?v=20261128r"></script>
+<script src="js/game.js?v=20261128r"></script>
+<script src="js/admin-game.js?v=20261128r"></script>
 </body>
 </html>

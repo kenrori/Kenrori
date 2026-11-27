@@ -282,3 +282,24 @@ button,input,select,textarea{font-family:inherit}
 .pchips .pchip button{margin:0;padding:0;border:0;background:transparent;color:var(--mu);font-size:1rem;font-weight:500;line-height:1;width:22px;height:22px;border-radius:50%;justify-content:center}
 .pchips .pchip button:hover{background:var(--bd);color:var(--tx)}
 .pchip .pmv{margin-left:-6px;font-size:1.1rem}
+
+/* Nhắc sao lưu, việc cần sửa, nháp chương, Discord */
+.bkwarn{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:0 0 18px;padding:12px 14px;border-radius:10px;background:color-mix(in srgb,#e89a00 14%,var(--s1));border:1px solid color-mix(in srgb,#e89a00 45%,var(--bd))}
+.bkwarn b{font-size:.98rem}.bkwarn span{flex:1 1 260px;color:var(--mu);font-size:.88rem}
+.bkwarn button{margin:0}
+.bkln{margin:6px 0 0;font-size:.88rem;color:var(--mu)}.bkln.warn{color:#c27c00}
+h4 .cnt{margin-left:6px;padding:1px 8px;border-radius:999px;background:var(--s1);font-size:.75rem;font-weight:600;color:var(--mu)}
+.isr{align-items:flex-start}
+.isr .lt{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}
+.isc{display:flex;flex-wrap:wrap;gap:4px}
+.isc em{font-style:normal;font-size:.74rem;font-weight:600;padding:1px 8px;border-radius:999px;background:color-mix(in srgb,#e89a00 15%,transparent);color:#b87300}
+[data-theme=dark] .isc em,.dark .isc em{color:#ffbf47}
+.isa{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.isa button{margin:0}
+.ismore{margin-top:6px}.ismore summary{cursor:pointer;color:var(--ac);font-weight:600;font-size:.88rem;padding:4px 2px}
+.isok{margin-top:6px}
+.chdr{margin:8px 0 0;padding:9px 12px;border-radius:8px;background:var(--acs);font-size:.88rem;line-height:1.5}
+.chdr .lnk{margin:0 0 0 6px;padding:0;background:none;color:var(--ac);font-weight:700}
+.dcbox{display:flex;flex-direction:column;gap:6px;padding:14px;border:1px solid var(--bd);border-radius:10px;margin-top:8px}
+.dcbox p{margin:0 0 4px}
+.dcst{color:var(--mu)}.dcst.on{color:#04a74b}
