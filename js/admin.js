@@ -747,10 +747,13 @@ $("#cm_pwgo").onclick = () => run(async () => {
 $("#cm_pwx").onclick = () => { try { localStorage.removeItem("cmtMod") } catch (e) {} $("#cm_pw").value = ""; log("✅ Đã xóa mật khẩu kiểm duyệt khỏi máy này.") };
 const stkOk = p => /^stickers\/[A-Za-z0-9._-]+\.(gif|png|webp|jpg|svg)$/.test(p) || /^https:\/\/cdn\.discordapp\.com\/emojis\/\d{15,21}\.(png|gif|webp)$/.test(p);
 const stkG = x => (x.g || "Nhãn dán").trim() || "Nhãn dán";
+const STKO = new Set(); // các bộ emote đang mở
 function stkRender() {
   const L = (data.site.stickers || []).map((x, i) => ({ ...x, i })), G = [...new Set(L.map(stkG))];
   $("#stk_gs").innerHTML = G.map(g => `<option value="${esc(g)}">`).join("");
-  $("#stk_list").innerHTML = G.map(g => { const A = L.filter(x => stkG(x) === g); return `<div class="stkh"><b>${esc(g)}</b><small>${A.length} emote</small><button type="button" class="dng sm" data-stgx="${esc(g)}">Gỡ cả bộ</button></div><div class="stkl">${A.map(x => `<div class="stki" title="${esc(x.n || "")}"><img src="${esc(x.p)}" alt="${esc(x.n || "")}" loading="lazy"><button type="button" class="dng" data-stx="${x.i}" title="Gỡ emote" aria-label="Gỡ emote ${esc(x.n || "")}">✕</button></div>`).join("")}</div>` }).join("") || '<p class="mu">Chưa có bộ emote nào. Người đọc vẫn dùng được emoji, kaomoji và GIF.</p>';
+  $("#stk_add").open = !L.length;
+  $("#stk_list").innerHTML = G.map(g => { const A = L.filter(x => stkG(x) === g); return `<details class="stks" data-g="${esc(g)}"${STKO.has(g) ? " open" : ""}><summary><span class="stkn"><b>${esc(g)}</b><small>${A.length} emote</small></span><span class="stkp" aria-hidden="true">${A.slice(0, 8).map(x => `<img src="${esc(x.p)}" alt="" loading="lazy">`).join("")}${A.length > 8 ? `<i>+${A.length - 8}</i>` : ""}</span><button type="button" class="dng sm" data-stgx="${esc(g)}">Gỡ cả bộ</button></summary><div class="stkl">${A.map(x => `<div class="stki" title="${esc(x.n || "")}"><img src="${esc(x.p)}" alt="${esc(x.n || "")}" loading="lazy"><button type="button" class="dng" data-stx="${x.i}" title="Gỡ emote ${esc(x.n || "")}" aria-label="Gỡ emote ${esc(x.n || "")}">✕</button></div>`).join("")}</div></details>` }).join("") || '<p class="mu">Chưa có bộ emote nào. Người đọc vẫn dùng được emoji, kaomoji và GIF.</p>';
+  $("#stk_list").querySelectorAll(".stks").forEach(d => d.ontoggle = () => d.open ? STKO.add(d.dataset.g) : STKO.delete(d.dataset.g));
 }
 async function stkAdd(items, msg) { // items: [{n, g, make: async () => ({ p })}]
   const L = data.site.stickers = data.site.stickers || []; let n = 0, k = 0;
@@ -786,7 +789,7 @@ $("#kemo_go").onclick = () => run(async () => {
   done(n ? `✅ Đã thêm ${n} emote Kenrori. Web cập nhật sau 1–2 phút.` : "✅ Bộ emote Kenrori đã có sẵn.");
 });
 $("#stk_list").onclick = e => {
-  const b = e.target.closest("[data-stx]"), bg = e.target.closest("[data-stgx]");
+  const b = e.target.closest("[data-stx]"), bg = e.target.closest("[data-stgx]"); if (bg) e.preventDefault();
   if (b) { if (!confirm("Gỡ emote này? Bình luận cũ đã dùng nó sẽ không hiện ảnh nữa.")) return; run(async () => { data.site.stickers.splice(+b.dataset.stx, 1); await save("Gỡ emote bình luận"); stkRender(); done("✅ Đã gỡ emote.") }) }
   if (bg) { const g = bg.dataset.stgx; if (!confirm(`Gỡ cả bộ "${g}"?`)) return; run(async () => { data.site.stickers = data.site.stickers.filter(x => stkG(x) !== g); await save("Gỡ bộ emote: " + g); stkRender(); done(`✅ Đã gỡ bộ "${g}".`) }) }
 };

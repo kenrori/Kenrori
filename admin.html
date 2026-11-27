@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="fonts/beaufort-medium.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="fonts/beaufort-bold.woff" as="font" type="font/woff" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/admin.css?v=20261128r">
+<link rel="stylesheet" href="css/admin.css?v=20261128s">
 </head>
 <body>
 <div id="gate"><div class="gc">
@@ -212,10 +212,10 @@
 <h4>Kiểm duyệt bình luận</h4><p class="mu">Đặt mật khẩu kiểm duyệt trong Supabase (xem đầu file binh-luan.sql), rồi nhập vào đây. Mật khẩu chỉ lưu trên máy này, không đưa lên web. Khi đã lưu, trên web bạn thấy nút Ẩn, Xóa và Chặn dưới mỗi bình luận.</p>
 <div class="g2"><div><label for="cm_pw">Mật khẩu kiểm duyệt</label><input id="cm_pw" type="password" autocomplete="off"></div><div class="acts" style="align-self:end"><button type="button" class="sec" id="cm_pwgo">Kiểm tra và lưu trên máy này</button><button type="button" class="sec" id="cm_pwx">Xóa khỏi máy này</button></div></div>
 <h4>Emote cho bình luận</h4><p class="mu">Mỗi bộ emote là một tab trong khung bình luận, giống Discord. Chỉ dùng emote do nhóm tự làm hoặc được phép dùng.</p>
-<div class="stkg"><div><b>Lấy emote từ server Discord</b><p class="mu" style="margin:4px 0 8px">Trong Discord, gõ dấu \ ngay trước emote rồi gửi, ví dụ <code>\:meo_cuoi:</code>, Discord sẽ hiện mã dạng &lt;:meo_cuoi:123456789&gt;. Gửi nhiều emote trong một tin nhắn, sao chép cả tin nhắn rồi dán vào đây. Dán link ảnh cdn.discordapp.com/emojis/... cũng được.</p>
+<details class="stkg" id="stk_add"><summary>Thêm emote <small>(từ Discord, tải ảnh từ máy, hoặc bộ có sẵn)</small></summary><div><b>Lấy emote từ server Discord</b><p class="mu" style="margin:4px 0 8px">Trong Discord, gõ dấu \ ngay trước emote rồi gửi, ví dụ <code>\:meo_cuoi:</code>, Discord sẽ hiện mã dạng &lt;:meo_cuoi:123456789&gt;. Gửi nhiều emote trong một tin nhắn, sao chép cả tin nhắn rồi dán vào đây. Dán link ảnh cdn.discordapp.com/emojis/... cũng được.</p>
 <textarea id="dc_in" placeholder="<:meo_cuoi:123456789012345678> <a:meo_nhay:234567890123456789>" style="min-height:70px"></textarea></div>
 <div class="g2"><div><label for="stk_g">Tên bộ emote</label><input id="stk_g" list="stk_gs" placeholder="Ví dụ: Discord Kenrori"><datalist id="stk_gs"></datalist></div><div class="acts" style="align-self:end"><button type="button" class="sec" id="dc_go">Lấy emote từ mã Discord</button><label class="sec stkup">Tải ảnh từ máy<input type="file" id="stk_in" accept="image/gif,image/png,image/webp,image/jpeg" multiple hidden></label></div></div>
-<div class="acts" style="margin-top:4px"><button type="button" class="sec" id="kemo_go">Thêm bộ emote Kenrori có sẵn (12 emote)</button></div></div>
+<div class="acts" style="margin-top:4px"><button type="button" class="sec" id="kemo_go">Thêm bộ emote Kenrori có sẵn (12 emote)</button></div></details>
 <div id="stk_list"></div>
 <h4>Trợ lý ở góc web</h4><p class="mu">Cô trợ lý nhỏ đứng ở góc dưới bên phải: trò chuyện, tìm và gợi ý truyện, chỉ cách dùng web, kể chuyện cười, chơi trò chơi nhỏ. Người đọc thay đồ được cho cô ấy, và tự thu nhỏ nếu thấy vướng.</p>
 <label class="ck"><input type="checkbox" id="kk_on"> Hiện trợ lý ở góc web</label>
@@ -258,8 +258,8 @@
 <div id="log" class="fade"></div>
 <div id="pvw" hidden role="dialog" aria-label="Xem trước chương"><div class="pvb"><div class="pvh"><b>Xem trước</b><span id="pv_note"></span><button type="button" class="sec sm" id="pv_x">Đóng</button></div><div class="pvc" id="pv_c"></div></div></div>
 <input type="file" id="bk_in" accept=".json,application/json" hidden>
-<script src="js/admin.js?v=20261128r"></script>
-<script src="js/game.js?v=20261128r"></script>
-<script src="js/admin-game.js?v=20261128r"></script>
+<script src="js/admin.js?v=20261128s"></script>
+<script src="js/game.js?v=20261128s"></script>
+<script src="js/admin-game.js?v=20261128s"></script>
 </body>
 </html>

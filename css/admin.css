@@ -231,7 +231,24 @@ details.ms>summary::-webkit-details-marker{display:none}
 .pvg{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}.pvg img{width:100%;aspect-ratio:7/10;object-fit:cover;border-radius:6px;background:var(--s1)}
 .ilist{display:flex;flex-direction:column;gap:6px;margin-top:10px;max-height:62vh;overflow-y:auto;padding-right:4px}
 .irow{display:grid;grid-template-columns:24px 34px 130px minmax(0,1fr) auto auto;gap:4px 8px;align-items:center;background:var(--s1);border-radius:6px;padding:6px 8px}
-.isv{display:inline-flex;gap:6px;align-items:center;margin-left:auto}.isv input{width:150px;padding:5px 9px}.stkg{background:var(--s1);border-radius:10px;padding:14px 16px;margin:8px 0 12px}.stkg textarea,.stkg input{background:var(--bg)}.stkg code{background:var(--bg);padding:1px 5px;border-radius:4px}.stkh{display:flex;align-items:center;gap:10px;margin:14px 0 6px}.stkh b{font-size:.95rem}.stkh small{color:var(--mu)}.stkh button{margin:0 0 0 auto}.stkl{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}.stki{position:relative;width:76px;height:76px;border-radius:8px;background:var(--s1);display:grid;place-items:center}.stki img{max-width:64px;max-height:64px}.stki button{position:absolute;top:-6px;right:-6px;margin:0;width:22px;height:22px;padding:0;border-radius:50%;justify-content:center;font-size:.75rem}.stkup{display:inline-flex;align-items:center;padding:9px 16px;border-radius:6px;background:var(--s1);font-weight:600;cursor:pointer}.stkup:hover{background:var(--s2)}details.gsx{margin:12px 0}details.gsx summary{cursor:pointer;font-weight:600}
+.isv{display:inline-flex;gap:6px;align-items:center;margin-left:auto}.isv input{width:150px;padding:5px 9px}.stkg{background:var(--s1);border-radius:10px;padding:10px 14px;margin:8px 0 12px}
+.stkg>summary{cursor:pointer;font-weight:700;padding:4px 0;list-style-position:inside}
+.stkg>summary small{font-weight:500;color:var(--mu);margin-left:4px}
+.stkg[open]>summary{margin-bottom:10px}.stkg textarea,.stkg input{background:var(--bg)}.stkg code{background:var(--bg);padding:1px 5px;border-radius:4px}.stks{border:1px solid var(--bd);border-radius:10px;margin:8px 0;background:var(--bg)}
+.stks>summary{display:flex;align-items:center;gap:12px;padding:8px 12px;cursor:pointer;list-style:none}
+.stks>summary::-webkit-details-marker{display:none}
+.stks>summary::before{content:"";width:7px;height:7px;border-right:2px solid var(--mu);border-bottom:2px solid var(--mu);transform:rotate(-45deg);transition:transform .15s;flex:none}
+.stks[open]>summary::before{transform:rotate(45deg)}
+.stkn{display:flex;flex-direction:column;line-height:1.25;flex:none;min-width:110px}
+.stkn b{font-size:.92rem}.stkn small{color:var(--mu);font-size:.76rem}
+.stkp{display:flex;align-items:center;gap:4px;min-width:0;overflow:hidden;flex:1}
+.stkp img{width:24px;height:24px;object-fit:contain;flex:none}
+.stkp i{font-style:normal;font-size:.76rem;color:var(--mu);margin-left:2px}
+.stks[open] .stkp{visibility:hidden}
+.stks>summary button{margin:0 0 0 auto;flex:none}
+.stkl{display:flex;flex-wrap:wrap;gap:6px;padding:4px 12px 12px}.stki{position:relative;width:46px;height:46px;border-radius:7px;background:var(--s1);display:grid;place-items:center}.stki img{max-width:36px;max-height:36px}.stki button{position:absolute;top:-5px;right:-5px;margin:0;width:18px;height:18px;padding:0;border-radius:50%;justify-content:center;font-size:.62rem;opacity:0;transition:opacity .12s}
+.stki:hover button,.stki:focus-within button{opacity:1}
+@media (hover:none){.stki button{opacity:.85}}.stkup{display:inline-flex;align-items:center;padding:9px 16px;border-radius:6px;background:var(--s1);font-weight:600;cursor:pointer}.stkup:hover{background:var(--s2)}details.gsx{margin:12px 0}details.gsx summary{cursor:pointer;font-weight:600}
 .irow.off{opacity:.5}.irow input[type=text]{padding:6px 9px;background:var(--bg)}.irow .n{color:var(--mu);font-size:.8rem;text-align:right}.irow small{color:var(--mu);white-space:nowrap;font-size:.8rem}
 .irow .sn{grid-column:3 / -1;color:var(--mu);font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #i_opt{background:var(--s1);border-radius:8px;padding:10px 14px;margin-top:14px}#i_opt summary{cursor:pointer;font-weight:600}#i_opt input:not([type=checkbox]),#i_opt select{background:var(--bg)}
