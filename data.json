@@ -1763,7 +1763,80 @@
   },
   {
    "slug": "jorge-joestar",
-   "chapters": [],
+   "chapters": [
+    {
+     "t": "Jorge Joestar",
+     "date": "2026-11-27",
+     "file": "novels/jorge-joestar/c1_mwz4uhqc.txt",
+     "words": 1
+    },
+    {
+     "t": "Maijo Otaro",
+     "date": "2026-11-27",
+     "file": "novels/jorge-joestar/c2_mwz4uhqc.txt",
+     "words": 6
+    },
+    {
+     "t": "Araki Hirohiko",
+     "date": "2026-11-27",
+     "file": "novels/jorge-joestar/c3_mwz4uhqc.txt",
+     "words": 3
+    },
+    {
+     "t": "Tsukumojuku",
+     "date": "2026-11-27",
+     "file": "novels/jorge-joestar/c4_mwz4uhqc.txt",
+     "words": 29636
+    },
+    {
+     "t": "Vết thương",
+     "date": "2026-11-27",
+     "file": "novels/jorge-joestar/c5_mwz4uhqi.txt",
+     "words": 26373
+    },
+    {
+     "t": "Chiếc hộp",
+     "date": "2026-11-27",
+     "file": "novels/jorge-joestar/c6_mwz4uhqn.txt",
+     "words": 26434
+    },
+    {
+     "t": "Những chiếc máy bay",
+     "date": "2026-11-27",
+     "file": "novels/jorge-joestar/c7_mwz4uhqr.txt",
+     "words": 24852
+    },
+    {
+     "t": "Vách đá",
+     "date": "2026-11-27",
+     "file": "novels/jorge-joestar/c8_mwz4uhqw.txt",
+     "words": 35742
+    },
+    {
+     "t": "Gremlin",
+     "date": "2026-11-27",
+     "file": "novels/jorge-joestar/c9_mwz4uhr3.txt",
+     "words": 29782
+    },
+    {
+     "t": "Kẻ Thù",
+     "date": "2026-11-27",
+     "file": "novels/jorge-joestar/c10_mwz4uhr8.txt",
+     "words": 36077
+    },
+    {
+     "t": "Bên ngoài",
+     "date": "2026-11-27",
+     "file": "novels/jorge-joestar/c11_mwz4uhre.txt",
+     "words": 29793
+    },
+    {
+     "t": "COURAGE",
+     "date": "2026-11-27",
+     "file": "novels/jorge-joestar/c12_mwz4uhri.txt",
+     "words": 36633
+    }
+   ],
    "title": "JORGE JOESTAR",
    "orig": "ジョージ・ジョースター",
    "alts": [],
@@ -2006,5 +2079,5 @@
   ],
   "gc": "<script data-goatcounter=\"https://kenrori"
  },
- "rev": 1795791937926
+ "rev": 1795793102197
 }
