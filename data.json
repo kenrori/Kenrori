@@ -826,6 +826,103 @@
      "vol": "Tập 5",
      "file": "novels/youkoso-jitsuryoku-shijou-shugi/c80_mwxr4yar.txt",
      "words": 249
+    },
+    {
+     "t": "Minh họa",
+     "date": "2026-11-27",
+     "vol": "Tập 6",
+     "type": "img",
+     "pages": [
+      "novels/youkoso-jitsuryoku-shijou-shugi/c81_mwywl8pu/001.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c81_mwywl8pu/002.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c81_mwywl8pu/003.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c81_mwywl8pu/004.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c81_mwywl8pu/005.webp"
+     ]
+    },
+    {
+     "t": "Mở đầu: Lời độc thoại của Kushida Kikyou",
+     "date": "2026-11-27",
+     "vol": "Tập 6",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c82_mwywl8yo.txt",
+     "words": 998
+    },
+    {
+     "t": "Chương 01: Sự thay đổi của lớp D",
+     "date": "2026-11-27",
+     "vol": "Tập 6",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c83_mwywl8yp.txt",
+     "words": 7245
+    },
+    {
+     "t": "Chương 02: Paper Shuffle",
+     "date": "2026-11-27",
+     "vol": "Tập 6",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c84_mwywl90s.txt",
+     "words": 15105
+    },
+    {
+     "t": "Chương 03: Lớp C hành động",
+     "date": "2026-11-27",
+     "vol": "Tập 6",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c85_mwywl90u.txt",
+     "words": 7198
+    },
+    {
+     "t": "Chương 04: Dấu hiệu của con đường sống",
+     "date": "2026-11-27",
+     "vol": "Tập 6",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c86_mwywl92z.txt",
+     "words": 22889
+    },
+    {
+     "t": "Chương 05: Nhóm Ayanokouji thành lập",
+     "date": "2026-11-27",
+     "vol": "Tập 6",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c87_mwywl979.txt",
+     "words": 15687
+    },
+    {
+     "t": "Chương kết: Những quyết định khác nhau",
+     "date": "2026-11-27",
+     "vol": "Tập 6",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c88_mwywl9dt.txt",
+     "words": 11013
+    },
+    {
+     "t": "Ngoại truyện: Ngày thường của Sakayanagi Arisu - Phía sau bài thi cuối kỳ",
+     "date": "2026-11-27",
+     "vol": "Tập 6",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c89_mwywl9jw.txt",
+     "words": 2620
+    },
+    {
+     "t": "Ngoại truyện – Ichinose: Ngày thường của Ichinose Honami",
+     "date": "2026-11-27",
+     "vol": "Tập 6",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c90_mwywl9jx.txt",
+     "words": 1508
+    },
+    {
+     "t": "Ngoại truyện - Sakura: Người tôi yêu",
+     "date": "2026-11-27",
+     "vol": "Tập 6",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c91_mwywl9jx.txt",
+     "words": 914
+    },
+    {
+     "t": "Ngoại truyện - Haruka: Có lẽ tôi sẽ có vài người bạn",
+     "date": "2026-11-27",
+     "vol": "Tập 6",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c92_mwywl9jx.txt",
+     "words": 778
+    },
+    {
+     "t": "Lời bạt",
+     "date": "2026-11-27",
+     "vol": "Tập 6",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c93_mwywl9jx.txt",
+     "words": 263
     }
    ],
    "title": "Youkoso Jitsuryoku Shijou Shugi No Kyoushitsu E Năm Nhất",
@@ -1118,5 +1215,5 @@
   "gc": "<script data-goatcounter=\"https://kenrori",
   "game": true
  },
- "rev": 1795776504765
+ "rev": 1795779234717
 }
