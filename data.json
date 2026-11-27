@@ -1027,6 +1027,103 @@
      "vol": "Tập 7",
      "file": "novels/youkoso-jitsuryoku-shijou-shugi/c107_mwywlydy.txt",
      "words": 566
+    },
+    {
+     "t": "Minh họa",
+     "date": "2026-11-27",
+     "vol": "Tập 7.5",
+     "type": "img",
+     "pages": [
+      "novels/youkoso-jitsuryoku-shijou-shugi/c108_mwywmp7d/001.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c108_mwywmp7d/002.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c108_mwywmp7d/003.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c108_mwywmp7d/004.webp",
+      "novels/youkoso-jitsuryoku-shijou-shugi/c108_mwywmp7d/005.webp"
+     ]
+    },
+    {
+     "t": "Mở đầu: Mùa đông đầu tiên",
+     "date": "2026-11-27",
+     "vol": "Tập 7.5",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c109_mwywmphc.txt",
+     "words": 280
+    },
+    {
+     "t": "Chương 01: Mũi tên tình ái",
+     "date": "2026-11-27",
+     "vol": "Tập 7.5",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c110_mwywmphc.txt",
+     "words": 10045
+    },
+    {
+     "t": "Chương 02: Một ngày đầy tai vạ của Ibuki Mio",
+     "date": "2026-11-27",
+     "vol": "Tập 7.5",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c111_mwywmpju.txt",
+     "words": 17568
+    },
+    {
+     "t": "Chương 03: Cách mỗi người trải qua ngày lễ",
+     "date": "2026-11-27",
+     "vol": "Tập 7.5",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c112_mwywmpmd.txt",
+     "words": 13209
+    },
+    {
+     "t": "Chương 04: Cuộc hẹn hò đôi sóng gió",
+     "date": "2026-11-27",
+     "vol": "Tập 7.5",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c113_mwywmpv9.txt",
+     "words": 24055
+    },
+    {
+     "t": "Chương kết: Đích đến của mũi tên",
+     "date": "2026-11-27",
+     "vol": "Tập 7.5",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c114_mwywmq1k.txt",
+     "words": 6876
+    },
+    {
+     "t": "Ngoại truyện – Karuizawa 3: Một trải nghiệm mới",
+     "date": "2026-11-27",
+     "vol": "Tập 7.5",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c115_mwywmq3t.txt",
+     "words": 1366
+    },
+    {
+     "t": "Ngoại truyện – Ryuuen: Dấu hiệu của cuộc chiến",
+     "date": "2026-11-27",
+     "vol": "Tập 7.5",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c116_mwywmq3t.txt",
+     "words": 1989
+    },
+    {
+     "t": "Ngoại truyện – Karuizawa: Khi trái tim đã nhận ra",
+     "date": "2026-11-27",
+     "vol": "Tập 7.5",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c117_mwywmq3t.txt",
+     "words": 1393
+    },
+    {
+     "t": "Ngoại truyện – Karuizawa: Thần Cupid Karuizawa",
+     "date": "2026-11-27",
+     "vol": "Tập 7.5",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c118_mwywmq3t.txt",
+     "words": 847
+    },
+    {
+     "t": "Ngoại truyện – Ibuki: Xung đột nội tâm",
+     "date": "2026-11-27",
+     "vol": "Tập 7.5",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c119_mwywmq3u.txt",
+     "words": 590
+    },
+    {
+     "t": "Lời bạt",
+     "date": "2026-11-27",
+     "vol": "Tập 7.5",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c120_mwywmq3u.txt",
+     "words": 512
     }
    ],
    "title": "Youkoso Jitsuryoku Shijou Shugi No Kyoushitsu E Năm Nhất",
@@ -1319,5 +1416,5 @@
   "gc": "<script data-goatcounter=\"https://kenrori",
   "game": true
  },
- "rev": 1795779266902
+ "rev": 1795779302826
 }
