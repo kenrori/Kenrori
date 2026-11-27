@@ -181,22 +181,69 @@ const R = {
 const toolUI = (t, i) => `<details class="it tb"><summary>${esc(t.t)}</summary>${t.h ? `<p>${esc(t.h)}</p>` : ""}<textarea class="i" placeholder="Dán nội dung vào đây"></textarea>${t.x ? `<textarea class="x" placeholder="${esc(t.x)}"></textarea>` : ""}<button onclick="runTool(${i},this)">Chạy</button><button onclick="copyOut(this)">Sao chép kết quả</button><textarea class="o" readonly placeholder="Kết quả"></textarea></details>`;
 function runTool(i, b) { const d = b.closest(".tb"), o = $(".o", d); try { o.value = TOOLS[i].fn($(".i", d).value, $(".x", d)?.value || "") } catch (e) { o.value = "Lỗi: " + e.message } }
 function copyOut(b) { const o = $(".o", b.closest(".tb")); o.select(); navigator.clipboard?.writeText(o.value) }
-const FS0 = { q: "", k: [], st: [], g: [], sort: "upd" };
+/* ---------- Quốc gia của bộ truyện (chọn ở trang quản trị; chưa chọn thì đoán theo tên gốc) ---------- */
+const CTRY = [["jp", "Nhật Bản"], ["kr", "Hàn Quốc"], ["cn", "Trung Quốc"], ["tw", "Đài Loan"], ["vn", "Việt Nam"], ["us", "Mỹ"], ["gb", "Anh"], ["other", "Khác"]];
+const ctryOf = (k, s) => s.country && CTRY.some(([c]) => c === s.country) ? s.country : /[぀-ヿ]/.test(s.orig || "") ? "jp" : /[가-힯]/.test(s.orig || "") ? "kr" : /[㐀-鿿]/.test(s.orig || "") ? "cn" : k === "manga" ? "jp" : "";
+const ctryName = c => (CTRY.find(([x]) => x === c) || [])[1] || "";
+/* ---------- Trang Light Novel / Web Novel / Manga: bộ lọc tình trạng, quốc gia, thể loại ---------- */
+const FPG = { novels: ["Light Novel", "#ff00ff", "Tiểu thuyết có minh họa, dịch theo từng tập", () => DATA.novels.filter(s => !isWN(s)).map(s => ({ k: "novel", s }))], webnovel: ["Web Novel", "#ffd84d", "Truyện đăng theo chương trên mạng", () => DATA.novels.filter(isWN).map(s => ({ k: "novel", s }))], manga: ["Manga", "#2bb6a3", "Truyện tranh", () => DATA.manga.map(s => ({ k: "manga", s }))] };
+const STL = [["on", "Đang dịch"], ["done", "Hoàn thành"], ["pause", "Tạm ngưng"], ["soon", "Sắp ra mắt"]];
+const FP0 = () => ({ q: "", st: [], c: [], g: [], sort: "upd" });
+let FPK = null, FPS = FP0();
+function fpPage(key) {
+  const [label, col, desc, all] = FPG[key], L = all();
+  FPK = key; FPS = FP0(); try { Object.assign(FPS, JSON.parse(ls.get("fp:" + key) || "{}")) } catch (e) {}
+  const cnt = f => { const m = new Map(); L.forEach(x => f(x).forEach(v => v && m.set(v, (m.get(v) || 0) + 1))); return m };
+  const sc = cnt(({ s }) => [STC(s.status)]), cc = cnt(({ k, s }) => [ctryOf(k, s)]), gc = cnt(({ s }) => (s.genres || []).filter(g => !gHid(g)));
+  const chip = (f, v, l, n) => `<button type="button" class="fpc" data-f="${f}" data-v="${esc(v)}" aria-pressed="false">${esc(l)}<span>${n}</span></button>`;
+  const G = [...gc].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "vi"));
+  const row = (id, lbl, body, n) => n ? `<div class="fpr" id="${id}"><span class="fpl">${lbl}</span><div class="fpv">${body}</div></div>` : "";
+  return `<section class="sec fpg" id="fpg" style="--fc:${col}"><header class="fph"><i class="fsh-t" aria-hidden="true"></i><div><h1>${label}</h1><p>${L.length} bộ, ${desc.charAt(0).toLowerCase() + desc.slice(1)}</p></div></header>
+<div class="fpf" role="search">
+<div class="fpt"><label class="fpq"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="fpq" type="search" placeholder="Tìm trong ${label}: tên, tên khác, tác giả" aria-label="Tìm trong ${label}"></label>
+<label class="fps"><span>Sắp xếp</span><select id="fpsort"><option value="upd">Mới cập nhật</option><option value="new">Mới thêm</option><option value="az">Tên A đến Z</option><option value="ch">Nhiều chương nhất</option></select></label></div>
+${row("fpr-st", "Tình trạng", STL.filter(([v]) => sc.get(v)).map(([v, l]) => chip("st", v, l, sc.get(v))).join(""), sc.size)}
+${row("fpr-c", "Quốc gia", CTRY.filter(([v]) => cc.get(v)).map(([v, l]) => chip("c", v, l, cc.get(v))).join(""), cc.size)}
+${row("fpr-g", "Thể loại", G.map(([g, n], j) => chip("g", g, g, n).replace('class="fpc"', `class="fpc${j >= 14 ? " fpx" : ""}"`)).join("") + (G.length > 14 ? `<button type="button" class="fpm" id="fpm">Thêm ${G.length - 14} thể loại</button>` : ""), G.length)}
+</div>
+<div class="fpb"><p class="fpn" id="fpn" aria-live="polite"></p><button type="button" class="lnk" id="fprs" hidden>Xóa bộ lọc</button></div>
+<div id="fpres"></div></section>`;
+}
+function fpRun() {
+  const L = FPG[FPK][3](), q = FPS.q.trim().toLowerCase(), on = FPS.st.length + FPS.c.length + FPS.g.length + (q ? 1 : 0);
+  const R = L.filter(({ k, s }) => (!q || JSON.stringify([s.title, s.orig, s.alts, s.author, s.artist]).toLowerCase().includes(q)) && (!FPS.st.length || FPS.st.includes(STC(s.status))) && (!FPS.c.length || FPS.c.includes(ctryOf(k, s))) && FPS.g.every(g => (s.genres || []).includes(g)));
+  const srt = { upd: (x, y) => latest(y.s).localeCompare(latest(x.s)), new: (x, y) => first(y.s).localeCompare(first(x.s)), az: (x, y) => x.s.title.localeCompare(y.s.title, "vi"), ch: (x, y) => y.s.chapters.length - x.s.chapters.length }[FPS.sort];
+  if (srt) R.sort(srt); ls.set("fp:" + FPK, JSON.stringify(FPS));
+  $("#fpn").textContent = on ? `${R.length} / ${L.length} bộ phù hợp` : `${L.length} bộ`; $("#fprs").hidden = !on;
+  $("#fpres").innerHTML = R.length ? `<div class="series">${R.map(({ k, s }) => card(k, s)).join("")}</div>` : `<div class="fpe"><b>Không có bộ nào khớp</b><p>Bỏ bớt một vài lựa chọn ở trên để thấy thêm truyện.</p><button type="button" class="btn" onclick="fpReset()">Xóa bộ lọc</button></div>`;
+  document.querySelectorAll(".fpc").forEach(b => { const v = FPS[b.dataset.f].includes(b.dataset.v); b.classList.toggle("on", v); b.setAttribute("aria-pressed", v) });
+  if (FPS.g.length) document.querySelectorAll(".fpc.fpx.on").forEach(() => $("#fpr-g")?.classList.add("all"));
+}
+function fpReset() { FPS = FP0(); $("#fpq").value = ""; $("#fpsort").value = "upd"; fpRun() }
+function fpInit() {
+  $("#fpq").value = FPS.q; $("#fpsort").value = FPS.sort;
+  let t = 0; $("#fpq").oninput = e => { clearTimeout(t); t = setTimeout(() => { FPS.q = e.target.value; fpRun() }, 120) };
+  $("#fpsort").onchange = e => { FPS.sort = e.target.value; fpRun() };
+  $(".fpf").onclick = e => { const b = e.target.closest(".fpc"); if (!b) return; const a = FPS[b.dataset.f], v = b.dataset.v; FPS[b.dataset.f] = a.includes(v) ? a.filter(x => x !== v) : [...a, v]; fpRun() };
+  $("#fpm") && ($("#fpm").onclick = () => { const r = $("#fpr-g"); r.classList.toggle("all"); $("#fpm").textContent = r.classList.contains("all") ? "Thu gọn" : `Thêm ${r.querySelectorAll(".fpx").length} thể loại` });
+  $("#fprs").onclick = fpReset; fpRun();
+}
+const FS0 = { q: "", k: [], st: [], g: [], c: [], sort: "upd" };
 let FS = { ...FS0 }; try { Object.assign(FS, JSON.parse(ls.get("fs") || "{}")) } catch (e) {}
 const fKey = (k, s) => k === "manga" ? "manga" : isWN(s) ? "wn" : "ln";
 function searchRes() {
   const q = FS.q.trim().toLowerCase();
-  let L = allS().filter(({ k, s }) => (!q || JSON.stringify([s.title, s.orig, s.alts, s.author, s.artist]).toLowerCase().includes(q)) && (!FS.k.length || FS.k.includes(fKey(k, s))) && (!FS.st.length || FS.st.includes(STC(s.status))) && FS.g.every(g => (s.genres || []).includes(g)));
+  let L = allS().filter(({ k, s }) => (!q || JSON.stringify([s.title, s.orig, s.alts, s.author, s.artist]).toLowerCase().includes(q)) && (!FS.k.length || FS.k.includes(fKey(k, s))) && (!FS.st.length || FS.st.includes(STC(s.status))) && (!(FS.c || []).length || FS.c.includes(ctryOf(k, s))) && FS.g.every(g => (s.genres || []).includes(g)));
   const srt = { upd: (x, y) => latest(y.s).localeCompare(latest(x.s)), new: (x, y) => first(y.s).localeCompare(first(x.s)), az: (x, y) => x.s.title.localeCompare(y.s.title, "vi"), ch: (x, y) => y.s.chapters.length - x.s.chapters.length }[FS.sort] || (() => 0);
   L.sort(srt); ls.set("fs", JSON.stringify(FS));
   $("#fres").innerHTML = `<p class="lead">${L.length} bộ phù hợp</p>` + (L.length ? `<div class="series">${L.map(({ k, s }) => card(k, s)).join("")}</div>` : '<p class="empty">Không có bộ nào khớp. Bỏ bớt bộ lọc hoặc thử từ khóa khác.</p>');
-  document.querySelectorAll(".fc").forEach(b => b.classList.toggle("on", FS[b.dataset.f].includes(b.dataset.v)));
+  document.querySelectorAll(".fc").forEach(b => b.classList.toggle("on", (FS[b.dataset.f] || []).includes(b.dataset.v)));
 }
 function searchInit() {
   $("#fq").value = FS.q; $("#fsort").value = FS.sort;
   $("#fq").oninput = e => { FS.q = e.target.value; searchRes() }; $("#fsort").onchange = e => { FS.sort = e.target.value; searchRes() };
-  $(".flt").onclick = e => { const b = e.target.closest(".fc"); if (!b) return; const a = FS[b.dataset.f], v = b.dataset.v; FS[b.dataset.f] = a.includes(v) ? a.filter(x => x !== v) : [...a, v]; searchRes() };
-  $("#frs").onclick = () => { FS = { ...FS0, k: [], st: [], g: [] }; searchInit() };
+  $(".flt").onclick = e => { const b = e.target.closest(".fc"); if (!b) return; const a = FS[b.dataset.f] || [], v = b.dataset.v; FS[b.dataset.f] = a.includes(v) ? a.filter(x => x !== v) : [...a, v]; searchRes() };
+  $("#frs").onclick = () => { FS = { ...FS0, k: [], st: [], g: [], c: [] }; searchInit() };
   searchRes();
 }
 function schedSec() {
@@ -254,11 +301,11 @@ const P = {
       + (window.ST && ST.enabled() ? '<div id="st_home"></div>' : "")
       + discordCta();
   },
-  "tim-kiem": () => { const ch = (f, opts) => opts.map(([v, l]) => `<button class="fc" data-f="${f}" data-v="${esc(v)}">${esc(l)}</button>`).join(""); return `<section class="sec"><div class="sh"><h2>Tìm truyện</h2></div><div class="flt"><input id="fq" type="search" placeholder="Tên truyện, tên khác, tác giả, họa sĩ"><div class="frow"><span>Loại</span><div>${ch("k", [["ln", "Light Novel"], ["wn", "Web Novel"], ["manga", "Manga"]])}</div></div><div class="frow"><span>Tình trạng</span><div>${ch("st", [["on", "Đang dịch"], ["done", "Hoàn thành"], ["pause", "Tạm ngưng"], ["soon", "Sắp ra mắt"]])}</div></div>${allG().length ? `<div class="frow"><span>Thể loại</span><div>${ch("g", allG().map(([g]) => [g, g]))}</div></div>` : ""}<div class="frow"><span>Sắp xếp</span><div><select id="fsort"><option value="upd">Mới cập nhật</option><option value="new">Mới thêm</option><option value="az">Tên A đến Z</option><option value="ch">Nhiều chương nhất</option></select><button class="lnk" id="frs">Xóa bộ lọc</button></div></div></div><div id="fres"></div></section>` },
-  novels: () => sec("Light Novel", null, gridOf("novel", DATA.novels.filter(s => !isWN(s)))),
-  webnovel: () => sec("Web Novel", null, gridOf("novel", DATA.novels.filter(isWN))),
+  "tim-kiem": () => { const ch = (f, opts) => opts.map(([v, l]) => `<button class="fc" data-f="${f}" data-v="${esc(v)}">${esc(l)}</button>`).join(""); return `<section class="sec"><div class="sh"><h2>Tìm truyện</h2></div><div class="flt"><input id="fq" type="search" placeholder="Tên truyện, tên khác, tác giả, họa sĩ"><div class="frow"><span>Loại</span><div>${ch("k", [["ln", "Light Novel"], ["wn", "Web Novel"], ["manga", "Manga"]])}</div></div><div class="frow"><span>Tình trạng</span><div>${ch("st", [["on", "Đang dịch"], ["done", "Hoàn thành"], ["pause", "Tạm ngưng"], ["soon", "Sắp ra mắt"]])}</div></div>${(() => { const C = CTRY.filter(([c]) => allS().some(({ k, s }) => ctryOf(k, s) === c)); return C.length ? `<div class="frow"><span>Quốc gia</span><div>${ch("c", C)}</div></div>` : "" })()}${allG().length ? `<div class="frow"><span>Thể loại</span><div>${ch("g", allG().map(([g]) => [g, g]))}</div></div>` : ""}<div class="frow"><span>Sắp xếp</span><div><select id="fsort"><option value="upd">Mới cập nhật</option><option value="new">Mới thêm</option><option value="az">Tên A đến Z</option><option value="ch">Nhiều chương nhất</option></select><button class="lnk" id="frs">Xóa bộ lọc</button></div></div></div><div id="fres"></div></section>` },
+  novels: () => fpPage("novels"),
+  webnovel: () => fpPage("webnovel"),
   author: n => { const W = allS().filter(({ s }) => people(s.author).includes(n) || people(s.artist).includes(n)), wa = W.filter(({ s }) => people(s.author).includes(n)).length, wi = W.filter(({ s }) => people(s.artist).includes(n)).length, src = W.map(({ s }) => s.src).filter(u => /^https?:\/\//.test(u || "")); return `<section class="ap"><div class="av" style="--h:${hue(n)}">${esc([...n][0] || "?")}</div><div><h1>${esc(n)}</h1><p>${[wa ? `Tác giả của ${wa} bộ` : "", wi ? `Minh họa ${wi} bộ` : ""].filter(Boolean).join(", ")} được dịch tại Kenrori.</p></div></section>` + sec("Tác phẩm", null, W.length ? `<div class="series">${W.map(({ k, s }) => card(k, s)).join("")}</div>` : EMPTY) + (src.length ? `<p class="lead">Tác phẩm gốc: ${[...new Set(src)].map(u => `<a class="al" href="${esc(u)}" target="_blank" rel="noopener">${esc(u.replace(/^https?:\/\//, "").slice(0, 50))}</a>`).join(", ")}</p>` : "") },
-  manga: () => sec("Manga", null, gChips("manga") + gridOf("manga", DATA.manga)),
+  manga: () => fpPage("manga"),
   library: () => { const rd = reading(100), F = follows(), nn = F.filter(f => f.n > 0).length;
     return `<section class="sec lib"><div class="sh"><h2>Đang theo dõi</h2>${F.length ? `<span class="shn${nn ? " hot" : ""}">${nn ? nn + " bộ có chương mới" : "Bạn đã xem hết chương mới"}</span>` : ""}</div>${F.length ? `<div class="series" id="flw">${F.map(f => f.h).join("")}</div>` : `<div class="lbe">${ic(I.bmark)}<div><b>Chưa theo dõi bộ nào</b><p>Bấm Theo dõi trên trang của bất kỳ bộ truyện nào, kể cả truyện Sáng tác. Khi bộ đó ra chương mới, bạn sẽ thấy ngay ở đây và trên menu.</p></div><a class="btn pri" href="#tim-kiem">Tìm truyện</a></div>`}</section>`
       + sec("Lịch sử đọc", null, rd.length ? `<div class="series">${rd.map(rdCard).join("")}</div>` : '<p class="empty">Bạn chưa đọc bộ nào.</p>') + `<p class="lead">Thư viện lưu ngay trên trình duyệt này, không cần tài khoản. Nếu xóa dữ liệu trình duyệt hoặc đổi sang máy khác, thư viện sẽ trống.</p>` },
@@ -303,7 +350,7 @@ function detail(kind, s) {
   const tags = (s.genres || []).filter(g => !gHid(g)).map(g => `<a class="pill" href="${gHref(g)}"${(gMeta(g) || {}).color ? ` style="box-shadow:inset 3px 0 0 ${esc(gMeta(g).color)}"` : ""}>${esc(g)}</a>`).join("");
   const shownAlt = s.orig || (s.alts || [])[0], alt = [s.orig, ...(s.alts || [])].filter(x => x && x !== shownAlt);
   const team = (s.team || []).filter(t => t.n), vc = s.vc || {};
-  const info = [["Tác giả", pLinks(s.author) || "Chưa rõ"], s.artist ? ["Họa sĩ minh họa", pLinks(s.artist)] : null, /^https?:\/\//.test(s.src || "") ? ["Tác phẩm gốc", `<a class="al" href="${esc(s.src)}" target="_blank" rel="noopener">${esc(s.src.replace(/^https?:\/\//, "").slice(0, 40))}</a>`] : null, team.length ? ["Nhóm thực hiện", team.map(t => `<div><span class="tr">${esc(t.r || "Thành viên")}</span> ${esc(t.n)}</div>`).join("")] : null, alt.length ? ["Tên khác", altHtml(alt, hasJP(s.orig))] : null, ["Loại", fmtOf(kind, s)], ["Tình trạng", stDot(s) || "Chưa rõ"], ["Số chương", n], nv ? ["Số tập", nv] : null, kind === "novel" ? ["Tổng số chữ", fmtN(sum(s)) || "Chưa rõ"] : null, ["Cập nhật", fmtD(latest(s)) || "Chưa có"]].filter(Boolean);
+  const info = [["Tác giả", pLinks(s.author) || "Chưa rõ"], s.artist ? ["Họa sĩ minh họa", pLinks(s.artist)] : null, /^https?:\/\//.test(s.src || "") ? ["Tác phẩm gốc", `<a class="al" href="${esc(s.src)}" target="_blank" rel="noopener">${esc(s.src.replace(/^https?:\/\//, "").slice(0, 40))}</a>`] : null, team.length ? ["Nhóm thực hiện", team.map(t => `<div><span class="tr">${esc(t.r || "Thành viên")}</span> ${esc(t.n)}</div>`).join("")] : null, alt.length ? ["Tên khác", altHtml(alt, hasJP(s.orig))] : null, ["Loại", fmtOf(kind, s)], ctryOf(kind, s) ? ["Quốc gia", ctryName(ctryOf(kind, s))] : null, ["Tình trạng", stDot(s) || "Chưa rõ"], ["Số chương", n], nv ? ["Số tập", nv] : null, kind === "novel" ? ["Tổng số chữ", fmtN(sum(s)) || "Chưa rõ"] : null, ["Cập nhật", fmtD(latest(s)) || "Chưa có"]].filter(Boolean);
   const fav = isFav(kind, s.slug), lu = latest(s); markSeen(kind, s);
   const upd = lu ? `<div class="cr cru${(Date.now() - Date.parse(lu)) / 864e5 < 3 ? " fresh" : ""}" title="Cập nhật ngày ${fmtD(lu)}"><span>Cập nhật</span><b>${ago(lu)}</b></div>` : "";
   app.innerHTML = `<div class="tpb"><div class="hb" ${bgStyle(s)}></div>${hasJP(s.orig) ? `<div class="hv" lang="ja" aria-hidden="true">${esc(s.orig)}</div>` : ""}</div>
@@ -615,7 +662,7 @@ function route() {
   else if (a === "tac-gia") app.innerHTML = P.author(b || "");
   else if (s) c !== undefined ? read(a, s, +c) : detail(a, s);
   else app.innerHTML = (P[k] || P.home)();
-  scrollTo(0, 0); setClear(); shArrows(); setTitle(a, b, c, s); gcCount();
+  scrollTo(0, 0); setClear(); shArrows(); setTitle(a, b, c, s); gcCount(); if ($("#fpg")) fpInit();
   if ($("#st_home") && window.ST) ST.homeShelf();
   if (k === "library" && window.ST && ST.libRefresh && stFavs().length) ST.libRefresh();
   navBadge();

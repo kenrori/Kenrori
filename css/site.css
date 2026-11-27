@@ -580,3 +580,43 @@ body.mrx .kk,body.mrx #up,body.mrx #ann{display:none!important}
   .fsg>.sc{flex:none;width:118px;scroll-snap-align:start}
   .ssg,.sfg{grid-template-columns:minmax(0,1fr)}
 }
+
+/* ===== Trang Light Novel / Web Novel / Manga: tiêu đề + bộ lọc ===== */
+.fph{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.fph h1{margin:0;font-size:1.7rem;font-weight:800;line-height:1.2}
+.fph p{margin:3px 0 0;color:var(--mu);font-size:.92rem}
+.fpf{display:flex;flex-direction:column;gap:2px;padding:14px 16px 10px;border-radius:16px;background:var(--s1);border:1px solid var(--bd);border-top:3px solid var(--fc)}
+.fpt{display:flex;flex-wrap:wrap;gap:10px;padding-bottom:10px;margin-bottom:4px;border-bottom:1px solid var(--bd)}
+.fpq{flex:1 1 280px;display:flex;align-items:center;gap:8px;padding:0 12px;border-radius:10px;background:var(--bg);border:1px solid var(--bd);color:var(--mu)}
+.fpq:focus-within{border-color:var(--ac)}
+.fpq .i{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.fpq input{flex:1;min-width:0;height:42px;border:0;background:transparent;color:var(--tx);font:inherit;outline:0}
+.fps{display:flex;align-items:center;gap:8px;font-size:.88rem;font-weight:600;color:var(--mu)}
+.fps select{height:42px;padding:0 12px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit;font-weight:600}
+.fpr{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:start;padding:8px 0}
+.fpr+.fpr{border-top:1px dashed var(--bd)}
+.fpl{padding-top:6px;font-size:.86rem;font-weight:700;color:var(--mu)}
+.fpv{display:flex;flex-wrap:wrap;gap:6px}
+.fpc{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit;font-size:.86rem;font-weight:600;cursor:pointer;transition:background .15s,border-color .15s}
+.fpc span{font-size:.74rem;font-weight:600;color:var(--mu)}
+.fpc:hover{border-color:var(--ac)}
+.fpc.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.fpc.on span{color:#fffc}
+.fpc:focus-visible,.fpm:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.fpr:not(.all) .fpx:not(.on){display:none}
+.fpm{padding:5px 11px;border:0;border-radius:999px;background:transparent;color:var(--ac);font:inherit;font-size:.86rem;font-weight:700;cursor:pointer}
+.fpb{display:flex;align-items:center;gap:14px;margin:16px 0 14px}
+.fpn{margin:0;font-weight:700}
+.fpe{display:flex;flex-direction:column;align-items:center;gap:6px;padding:48px 16px;border:1px dashed var(--bd);border-radius:16px;text-align:center}
+.fpe p{margin:0 0 8px;color:var(--mu)}
+@media (max-width:640px){
+  .fph h1{font-size:1.4rem}
+  .fpf{padding:12px 12px 8px}
+  .fpr{grid-template-columns:minmax(0,1fr);gap:6px}
+  .fpl{padding:0}
+  .fpv{flex-wrap:nowrap;overflow-x:auto;margin:0 -12px;padding:0 12px 4px;scrollbar-width:none}
+  .fpv::-webkit-scrollbar{display:none}
+  .fpc{flex:none}
+  .fpr#fpr-g .fpv{flex-wrap:wrap;overflow:visible;margin:0;padding:0}
+  .fps{flex:1}.fps select{flex:1}
+}
