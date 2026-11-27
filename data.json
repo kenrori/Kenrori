@@ -223,6 +223,76 @@
    "slug": "youkoso-jitsuryoku-shijou-shugi",
    "chapters": [
     {
+     "t": "Mở đầu",
+     "date": "2026-11-27",
+     "vol": "Tập 0",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c188_mwyxwq03.txt",
+     "words": 105
+    },
+    {
+     "t": "Mở đầu: Lời độc thoại của Ayanokouji Atsuomi",
+     "date": "2026-11-27",
+     "vol": "Tập 0",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c189_mwyxwqa0.txt",
+     "words": 1962
+    },
+    {
+     "t": "Chương 1: Khởi động dự án",
+     "date": "2026-11-27",
+     "vol": "Tập 0",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c190_mwyxwqc0.txt",
+     "words": 8997
+    },
+    {
+     "t": "Chương 2: Chạy đà gấp rút",
+     "date": "2026-11-27",
+     "vol": "Tập 0",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c191_mwyxwqc1.txt",
+     "words": 21093
+    },
+    {
+     "t": "Chương 3: Tiến hành",
+     "date": "2026-11-27",
+     "vol": "Tập 0",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c192_mwyxwqc4.txt",
+     "words": 7633
+    },
+    {
+     "t": "Chương 4: Cơ sở thí nghiệm chưa từng có",
+     "date": "2026-11-27",
+     "vol": "Tập 0",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c193_mwyxwqc6.txt",
+     "words": 5225
+    },
+    {
+     "t": "Chương 5: Những đứa trẻ ngây thơ",
+     "date": "2026-11-27",
+     "vol": "Tập 0",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c194_mwyxwqec.txt",
+     "words": 19644
+    },
+    {
+     "t": "Chương 6: Tuyệt vọng và lối thoát",
+     "date": "2026-11-27",
+     "vol": "Tập 0",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c195_mwyxwqpo.txt",
+     "words": 14924
+    },
+    {
+     "t": "Kết chương: Nhìn về phía trước",
+     "date": "2026-11-27",
+     "vol": "Tập 0",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c196_mwyxwqs7.txt",
+     "words": 6589
+    },
+    {
+     "t": "Lời bạt",
+     "date": "2026-11-27",
+     "vol": "Tập 0",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c197_mwyxwqv1.txt",
+     "words": 418
+    },
+    {
      "t": "Minh Họa",
      "date": "2026-11-26",
      "pages": [
@@ -1919,5 +1989,5 @@
   "gc": "<script data-goatcounter=\"https://kenrori",
   "game": true
  },
- "rev": 1795780485361
+ "rev": 1795781449981
 }
