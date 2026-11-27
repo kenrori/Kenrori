@@ -1664,7 +1664,9 @@
     "Tập 7": "images/youkoso-jitsuryoku-shijou-shugi-tap-7-mwywtrej.jpg",
     "Tập 8": "images/youkoso-jitsuryoku-shijou-shugi-tap-8-mwywtupz.jpg",
     "Tập 9": "images/youkoso-jitsuryoku-shijou-shugi-tap-9-mwywtw0v.jpg",
-    "Tập 10": "images/youkoso-jitsuryoku-shijou-shugi-tap-10-mwywtxgu.jpg"
+    "Tập 10": "images/youkoso-jitsuryoku-shijou-shugi-tap-10-mwywtxgu.jpg",
+    "Tập 11": "images/youkoso-jitsuryoku-shijou-shugi-tap-11-mwywtyvr.jpg",
+    "Tập 11.75": "images/youkoso-jitsuryoku-shijou-shugi-tap-11-75-mwywu300.jpg"
    }
   },
   {
@@ -1923,5 +1925,5 @@
   "gc": "<script data-goatcounter=\"https://kenrori",
   "game": true
  },
- "rev": 1795779638991
+ "rev": 1795779646151
 }
