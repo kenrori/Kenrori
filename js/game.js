@@ -240,7 +240,7 @@
     for (const p of s.parts) for (let i = 0; i < p.n; i++) ps += `<i class="kt-pt t-${p.t} d-${p.dir}" style="--x:${(r() * 100).toFixed(1)}%;--y:${(r() * 100).toFixed(1)}%;--dl:-${(r() * 6).toFixed(2)}s;--du:${((2.4 + r() * 2.6) / p.spd).toFixed(2)}s;--s:${(p.sz * (2 + r() * 2.2)).toFixed(1)}px;--pc:${p.c};--rt:${Math.round(r() * 360)}deg"></i>`;
     const ring = L.has("ring") ? `<i class="kt-ring">${RING[th]}</i>` : "";
     const art = opt.noart ? "" : s.art ? `<span class="kt-av">${artHtml(s.art, 40)}</span>` : "";
-    const ic = art || (s.img ? `<span class="kt-ic"><img src="${esc(s.img)}" alt=""></span>` : s.icon ? `<span class="kt-ic">${ring}${icon(s.icon)}</span>` : ring ? `<span class="kt-ic">${ring}</span>` : "");
+    const ic = art ? art + (s.img ? `<span class="kt-ic"><img src="${esc(s.img)}" alt=""></span>` : "") : (s.img ? `<span class="kt-ic"><img src="${esc(s.img)}" alt=""></span>` : s.icon ? `<span class="kt-ic">${ring}${icon(s.icon)}</span>` : ring ? `<span class="kt-ic">${ring}</span>` : "");
     const cls = `kt kt-q${q} kt-${th} kt-bg-${s.bg} kt-bd-${s.border}${s.gmove ? " kt-gm" : ""}${L.has("sweep") ? " kt-sw" : ""}${L.has("breathe") ? " kt-br" : ""}${item.ex ?? item.exclusive ? " kt-ex" : ""} kt-${opt.size || "sm"}${s.font === "bold" ? " kt-it" : ""}`;
     return `<span class="${cls}" style="${vars}" title="${esc(item.name)}, ${QN[q - 1]}${item.ex ?? item.exclusive ? ", độc quyền" : ""}">${fx || ps ? `<span class="kt-fx" aria-hidden="true">${fx}${ps ? `<span class="kt-ps">${ps}</span>` : ""}</span>` : ""}${ic}<span class="kt-t" data-t="${esc(item.name)}">${esc(item.name)}</span></span>`;
   }
@@ -701,6 +701,7 @@
 .kt-ic,.kt-av{position:relative;display:inline-grid;place-items:center;width:var(--isz);height:var(--isz);color:var(--ic);flex:none}
 .kt-ic img{width:100%;height:100%;object-fit:contain}
 .kt-av{width:1.5em;height:1.5em;margin:0 .05em 0 -.35em;border-radius:50%;overflow:hidden;background:color-mix(in srgb,var(--ic) 30%,#fff);box-shadow:0 0 0 1.5px var(--bc)}.kt-av svg,.kt-av img{width:160%;height:auto;margin-top:22%}
+.kt-av img.kg-art{width:100%;height:100%;margin:0;object-fit:cover;object-position:50% 25%}
 .kt-ring{position:absolute;inset:-.45em;color:var(--ic);opacity:calc(.7 * var(--op));pointer-events:none}.kt-ring svg{width:100%;height:100%;display:block}
 .kt-fx{position:absolute;inset:-4px -6px;z-index:-1;pointer-events:none;opacity:var(--op);overflow:hidden;border-radius:.6em}
 .kt-aura{position:absolute;inset:-30% -10%;background:radial-gradient(50% 60% at 50% 50%,color-mix(in srgb,var(--gl) 55%,transparent),transparent 70%)}
