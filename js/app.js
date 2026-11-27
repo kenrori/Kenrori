@@ -493,4 +493,5 @@ if (ls.get("kx")) loadExtras();
   if (sbOn()) { ls.set("kx", "1"); await loadExtras() } else ls.del("kx");
   gcInit(); renderSide(); renderAnn(); if (window.ST) ST.initBtn();
   route();
+  if ((DATA.site.kiku || {}).on !== false) setTimeout(() => loadJs("js/kiku.js").catch(() => {}), 500); // trợ lý Kiku ở góc web
 })();

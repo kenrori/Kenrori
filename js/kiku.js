@@ -50,7 +50,7 @@
   const curA = () => (ACCS.find(a => a[0] === ls.get("kk_a")) || ACCS[0])[0];
   let mood = "idle", moodT = 0, lastAct = Date.now();
   const srcOf = (o, m = mood) => o.moods ? `img/kiku/cu-${MOODS.includes(m) ? m : "idle"}.webp` : o.src;
-  const figHtml = (o = curO(), a = curA(), m) => `<span class="kk-in"><img src="${esc(srcOf(o, m))}" alt="" draggable="false" onerror="this.onerror=null;this.src='img/kiku/goc.webp'">${a && o.acc ? `<svg class="kk-acc" viewBox="0 0 576 640" aria-hidden="true">${ACC[a]}</svg>` : ""}</span>`;
+  const figHtml = (o = curO(), a = curA(), m) => `<span class="kk-in"><img src="${esc(srcOf(o, m))}" alt="" draggable="false" onerror="KIKU.miss(this)">${a && o.acc ? `<svg class="kk-acc" viewBox="0 0 576 640" aria-hidden="true">${ACC[a]}</svg>` : ""}</span>`;
 
   /* ---------- Giao diện ---------- */
   const css = `
@@ -72,6 +72,9 @@
 .kk.new .kk-dot{display:block}
 /* thu nhỏ: chỉ còn gương mặt tròn */
 .kk.sm{right:18px;bottom:18px}
+.kk-fb{display:none}
+.kk.noimg .kk-in{display:none}.kk.noimg .kk-fig{background:var(--ac)!important}
+.kk.noimg .kk-fb{display:block;position:absolute;left:11px;top:11px;width:24px;height:24px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
 body.rdg .kk.sm{right:130px}
 .kk.sm .kk-fig{width:46px;height:46px;aspect-ratio:auto;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 35%,#ffe9d9,#f6b98f);box-shadow:0 6px 18px #0004,0 0 0 2px var(--bg),0 0 0 4px color-mix(in srgb,var(--ac) 70%,transparent)}
 .kk.sm .kk-in{inset:auto;left:-21px;top:-11px;width:88px;aspect-ratio:576/640}
@@ -194,7 +197,7 @@ html:not([data-ktfx=simple]):not([data-ktfx=off]) .kk-halo{animation:kkhalo 3.2s
   function mount() {
     const st = document.createElement("style"); st.id = "kk-css"; st.textContent = css; document.head.appendChild(st);
     root = document.createElement("div"); root.className = "kk"; root.id = "kk";
-    root.innerHTML = `<button class="kk-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Trò chuyện với ${esc(NAME())}"><span class="kk-fig">${figHtml()}</span><i class="kk-sp" aria-hidden="true"></i><b class="kk-name">${esc(NAME())}</b><i class="kk-dot" aria-hidden="true"></i></button>`;
+    root.innerHTML = `<button class="kk-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-label="Trò chuyện với ${esc(NAME())}"><span class="kk-fig">${figHtml()}</span><i class="kk-sp" aria-hidden="true"></i><b class="kk-name">${esc(NAME())}</b><i class="kk-dot" aria-hidden="true"></i><svg class="kk-fb" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></button>`;
     document.body.appendChild(root);
     panel = document.createElement("section"); panel.className = "kk-p"; panel.hidden = true; panel.setAttribute("role", "dialog"); panel.setAttribute("aria-label", "Trò chuyện với " + NAME());
     panel.innerHTML = `<header class="kk-h"><span class="kk-av">${figHtml()}</span><div class="kk-ht"><b>${esc(NAME())}</b><small class="kk-sub">Trợ lý nhỏ của ${esc((DATA.site.about || {}).name || "Kenrori")}</small></div><button class="kk-hb" type="button" data-k="ward" aria-pressed="false" title="Thay đồ cho ${esc(NAME())}" aria-label="Thay đồ">${IC.ward}</button><button class="kk-hb" type="button" data-k="min" title="Thu nhỏ ${esc(NAME())} vào góc" aria-label="Thu nhỏ">${IC.min}</button><button class="kk-hb" type="button" data-k="x" title="Đóng" aria-label="Đóng">${IC.x}</button></header>
@@ -225,7 +228,11 @@ html:not([data-ktfx=simple]):not([data-ktfx=off]) .kk-halo{animation:kkhalo 3.2s
     if (!quiet && v) toast(`${NAME()} đã thu nhỏ vào góc. Bấm vào để gọi lại nha.`);
     if (!quiet) setMood(baseMood());
   }
-  const syncMode = () => root && root.classList.toggle("sm", !!ls.get("kk_min") || document.body.classList.contains("rdg"));
+  const syncMode = () => root && root.classList.toggle("sm", !!ls.get("kk_min") || document.body.classList.contains("rdg") || root.classList.contains("noimg"));
+  function miss(img) { // ảnh lỗi: thử bộ gốc, vẫn lỗi thì hiện nút tròn
+    if (!/goc\.webp$/.test(img.src)) { img.src = "img/kiku/goc.webp"; return }
+    img.onerror = null; const k = img.closest(".kk"); if (k) { k.classList.add("noimg", "sm") }
+  }
   function refreshFig() {
     document.querySelectorAll(".kk-fig:not(.kk-st .kk-fig), .kk-av").forEach(f => { const w = f.querySelector(".kk-in"); if (w) w.outerHTML = figHtml() });
   }
@@ -518,7 +525,7 @@ html:not([data-ktfx=simple]):not([data-ktfx=off]) .kk-halo{animation:kkhalo 3.2s
   }
 
   /* ---------- Khởi động ---------- */
-  window.KIKU = { open: () => toggle(true), ask: t => { toggle(true); ask(t) }, sync: syncMode, refresh: () => { refreshFig() } };
+  window.KIKU = { miss: i => miss(i), open: () => toggle(true), ask: t => { toggle(true); ask(t) }, sync: syncMode, refresh: () => { refreshFig() } };
   if (!CFG().on) return;
   mount(); setMood(baseMood());
   // Đêm khuya (23 giờ tới 5 giờ), để yên hơn 2 phút thì Kiku ngủ gật

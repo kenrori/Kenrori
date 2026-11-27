@@ -152,7 +152,7 @@
     const st = item.style || {}, pk = st.preset || `${th}-${q}`, F = FRM[pk];
     if (!F || opt.css || Object.keys(st).some(k => !["preset", "icon", "v"].includes(k))) return ""; // danh hiệu đã tự chỉnh kiểu thì giữ kiểu CSS
     const n = String(item.name), fz = Math.min(1.08, 11.6 / ([...n].length * .56)).toFixed(3), ex = item.ex ?? item.exclusive;
-    return `<span class="kt kt-fr kt-f-${pk.split("-")[0]} kt-${opt.size || "sm"}${ex ? " kt-ex" : ""}" style="--ty:${F[0]};--ar:${F[1]};--fz:${fz}" title="${esc(n)}, ${QN[q - 1]}${ex ? ", độc quyền" : ""}"><img class="kt-fi" src="img/dh/${pk}.webp" alt="" loading="lazy" decoding="async" draggable="false"><span class="kt-t">${esc(n)}</span></span>`;
+    return `<span class="kt kt-fr kt-f-${pk.split("-")[0]} kt-${opt.size || "sm"}${ex ? " kt-ex" : ""}" style="--ty:${F[0]};--ar:${F[1]};--fz:${fz}" title="${esc(n)}, ${QN[q - 1]}${ex ? ", độc quyền" : ""}"><img class="kt-fi" src="img/dh/${pk}.webp" alt="" loading="lazy" decoding="async" draggable="false" onerror="this.parentNode.classList.add('kt-nf');this.remove()"><span class="kt-t">${esc(n)}</span></span>`;
   }
   function title(item, opt = {}) {
     if (!item || !item.name) return "";
@@ -284,7 +284,7 @@
 .kt-f-matu{--tg:linear-gradient(180deg,#ffe6e1 15%,#ff8a74 55%,#e0393a 92%)}
 .kt-f-tinhkhong{--tg:linear-gradient(180deg,#f4f9ff 15%,#b3dbff 55%,#64aefc 92%)}
 .kt-f-anime{--tg:linear-gradient(180deg,#fff5fb 15%,#ffb8e8 55%,#ff63c6 92%)}
-.kt.kt-fr.kt-sm{font-size:.82em;margin:1.05em .15em}.kt.kt-fr.kt-md{font-size:.86em}.kt.kt-fr.kt-lg{font-size:1.2em}
+.kt.kt-fr.kt-sm{font-size:.82em;margin:1.05em .15em}.kt.kt-fr.kt-nf{width:auto;height:auto;margin:0 .1em;padding:.3em .8em;border-radius:.45em;background:linear-gradient(180deg,#2c2438,#16121f);border:1px solid #ffd78c59}.kt.kt-fr.kt-nf .kt-t{position:static;transform:none;display:block}.kt.kt-fr.kt-md{font-size:.86em}.kt.kt-fr.kt-lg{font-size:1.2em}
 .kt-t{position:relative;min-width:0;color:var(--tc);background:var(--g);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;-webkit-text-stroke:var(--sk) var(--skc);paint-order:stroke fill;background-size:200% 100%;overflow:hidden;text-overflow:ellipsis}
 .kt-q1 .kt-t{-webkit-text-fill-color:var(--tc);background:none}
 .kt-q3 .kt-t,.kt-q4 .kt-t,.kt-q5 .kt-t,.kt-q6 .kt-t,.kt-q7 .kt-t,.kt-ex .kt-t{filter:drop-shadow(0 0 calc(5px * var(--gi)) var(--gl))}
