@@ -1760,6 +1760,32 @@
    "sched": "",
    "format": "Light Novel",
    "cover": "images/mondaiji-bia.jpg"
+  },
+  {
+   "slug": "jorge-joestar",
+   "chapters": [],
+   "title": "JORGE JOESTAR",
+   "orig": "ジョージ・ジョースター",
+   "alts": [],
+   "artist": "Hirohiko Araki",
+   "author": "Ōtarō Maijō",
+   "status": "Đang dịch",
+   "genres": [
+    "Hành động",
+    "Comedy",
+    "Action",
+    "Fantasy",
+    "Trinh thám",
+    "Kinh dị",
+    "Drama"
+   ],
+   "desc": "",
+   "src": "",
+   "team": [],
+   "prog": "",
+   "sched": "",
+   "format": "Light Novel",
+   "cover": "images/jorge-joestar-bia.jpg"
   }
  ],
  "manga": [],
@@ -1980,5 +2006,5 @@
   ],
   "gc": "<script data-goatcounter=\"https://kenrori"
  },
- "rev": 1795788002433
+ "rev": 1795791937926
 }
