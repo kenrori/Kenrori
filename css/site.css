@@ -394,3 +394,9 @@ button,input,select,textarea{font-family:inherit}
 .lbe>.i{width:34px;height:34px;color:var(--ac);flex:none}.lbe>div{flex:1;min-width:220px}.lbe b{font-size:1.05rem}.lbe p{margin:4px 0 0;color:var(--mu);max-width:62ch}
 .tag[style*="--gc"]{box-shadow:inset 3px 0 0 var(--gc)}.tag .kg-i{width:14px;height:14px;margin-right:4px;vertical-align:-2px;color:var(--gc,currentColor)}
 .gcg{margin-bottom:10px}.gc.gck{margin:6px 0 0 18px;padding-left:12px;border-left:2px solid var(--bd)}
+
+/* Menu trái: ẩn thanh kéo, vẫn cuộn được; rê chuột vào mới hiện một vạch mảnh */
+#side{scrollbar-width:thin;scrollbar-color:transparent transparent;overscroll-behavior:contain;scrollbar-gutter:auto}
+#side:hover{scrollbar-color:color-mix(in srgb,var(--mu) 40%,transparent) transparent}
+@media(hover:none),(pointer:coarse){#side{scrollbar-width:none}#side::-webkit-scrollbar{display:none}}
+#nv .sg{padding:14px 12px 5px}#nv a,#nv a.top{padding:7px 12px}
