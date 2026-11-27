@@ -2519,6 +2519,44 @@
    "prog": "",
    "sched": "",
    "cover": "images/jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru-bia.jpg"
+  },
+  {
+   "slug": "ore-ni-trauma-wo-ataeta-joshi-tachi-ga-chirachira-mitekuru-kedo-zannen-desuga-teokure-desu",
+   "chapters": [],
+   "title": "Ore Ni Trauma Wo Ataeta Joshi-tachi Ga Chirachira Mitekuru Kedo, Zannen Desuga Teokure Desu",
+   "orig": "俺にトラウマを与えた女子達がチラチラ見てくるけど、残念ですが手遅れです",
+   "alts": [
+    "The Girls Who Traumatized Me Keep Glancing at Me, but Alas, It’s Too Late",
+    "Las chicas que me traumaron me están mirando, pero desafortunadamente es demasiado tarde.",
+    "Những Cô Gái Từng Làm Tôi Tổn Thương, Giờ Hối Hận Cũng Đã Muộn"
+   ],
+   "artist": "Ichitaka (いちたか)",
+   "author": "Midou Yugari",
+   "country": "",
+   "age": "",
+   "status": "Đang dịch",
+   "genres": [
+    "Harem",
+    "Comedy",
+    "Drama",
+    "Romance",
+    "tragedy"
+   ],
+   "desc": "Kokonoe Yukito chưa từng một lần may mắn khi dính dáng đến phụ nữ. Cậu bị cô bạn thanh mai trúc mã — người cậu ngỡ rằng cả hai có tình cảm với nhau — phũ phàng từ chối. Chị gái căm ghét cậu. Mẹ ruột thì bỏ bê cậu. Những tổn thương tâm lý cứ thế chồng chất lên nhau, khiến cảm xúc bên trong cậu hoàn toàn vụn vỡ. Thế nhưng, khi Yukito bước chân vào trường cấp ba, những cô gái từng gieo rắc bao nỗi đau lên cậu lại bắt đầu đoái hoài, quan tâm đến cậu...!?",
+   "src": "",
+   "team": [
+    {
+     "r": "",
+     "n": "Ning's Basement"
+    },
+    {
+     "r": "",
+     "n": "Shiroi_Arika~"
+    }
+   ],
+   "prog": "",
+   "sched": "",
+   "cover": "images/ore-ni-trauma-wo-ataeta-joshi-tachi-ga-chirachira-mitekuru-kedo-zannen-desuga-teokure-desu-bia.jpg"
   }
  ],
  "videos": [
@@ -2961,5 +2999,5 @@
    }
   ]
  },
- "rev": 1795821322235
+ "rev": 1795822696405
 }
