@@ -202,6 +202,46 @@
     return "";
   }
 
+
+  /* ---------- Hộp chọn vật phẩm có hình xem trước (dùng khi Admin trao tặng, đặt phần thưởng, tạo gói) ----------
+     o: { items, title, multi, selected: [id], owned: Set(id), kind } → Promise trả về id (hoặc mảng id), hoặc null nếu đóng */
+  const STN = { draft: "Nháp", on: "Đang bán", off: "Ngừng bán", limited: "Giới hạn", hidden: "Ẩn" };
+  const OBN = { shop: "Cửa hàng", level: "Mốc cấp", achievement: "Thành tựu", event: "Sự kiện", admin: "Admin trao", encounter: "Kỳ ngộ", secret: "Bí mật" };
+  const qOf = it => Math.round(num(it.q ?? it.quality, 1, 7, 1));
+  function pickItem(o) {
+    return new Promise(done => {
+      const L = (o.items || []).map(it => ({ ...it, q: qOf(it), ex: it.ex ?? it.exclusive })), multi = !!o.multi, owned = o.owned || new Set();
+      const sel = new Set(o.selected || []), F = { q: "", k: o.kind || "", th: "", ql: 0 };
+      const m = document.createElement("div"); m.className = "kgp-m";
+      m.innerHTML = `<div class="kgp" role="dialog" aria-modal="true" aria-label="${esc(o.title || "Chọn vật phẩm")}"><div class="kgp-h"><b>${esc(o.title || "Chọn vật phẩm")}</b><button type="button" class="kgp-x" aria-label="Đóng">✕</button></div>
+<div class="kgp-f"><input type="search" placeholder="Tìm theo tên hoặc mã" aria-label="Tìm"><select data-f="k" aria-label="Loại"><option value="">Mọi loại</option>${Object.entries(KINDS).map(([k, l]) => `<option value="${k}"${k === F.k ? " selected" : ""}>${l}</option>`).join("")}</select>
+<select data-f="th" aria-label="Chủ đề"><option value="">Mọi chủ đề</option>${Object.entries(THEMES).map(([k, l]) => `<option value="${k}">${l}</option>`).join("")}</select><select data-f="ql" aria-label="Phẩm chất"><option value="0">Mọi phẩm chất</option>${QN.map((l, i) => `<option value="${i + 1}">${l}</option>`).join("")}</select></div>
+<div class="kgp-g" role="listbox"${multi ? ' aria-multiselectable="true"' : ""}></div><div class="kgp-b"><span class="kgp-n"></span><button type="button" class="kgp-no">Hủy</button><button type="button" class="kgp-ok">${multi ? "Xong" : "Chọn món này"}</button></div></div>`;
+      const g = m.querySelector(".kgp-g"), byId = Object.fromEntries(L.map(x => [x.id, x]));
+      const foot = () => { const S = [...sel].map(i => byId[i]).filter(Boolean); m.querySelector(".kgp-n").innerHTML = S.length ? (multi ? `Đã chọn ${S.length}: ` : "Đã chọn: ") + S.map(x => `<b>${esc(x.name)}</b>`).join(", ") : '<span class="kgp-mu">Chưa chọn món nào</span>'; m.querySelector(".kgp-ok").disabled = !multi && !S.length };
+      const draw = () => {
+        const R = L.filter(x => (!F.k || x.kind === F.k) && (!F.th || x.theme === F.th) && (!F.ql || x.q === F.ql) && (!F.q || (x.name + " " + x.id).toLowerCase().includes(F.q)));
+        g.innerHTML = R.length ? R.map(x => `<button type="button" class="kgp-i${sel.has(x.id) ? " on" : ""}" role="option" aria-selected="${sel.has(x.id)}" data-id="${esc(x.id)}" style="--q:${QC[x.q - 1]}">
+<span class="kgp-p">${x.kind === "title" ? title(x, { size: "md" }) : preview(x)}</span><span class="kgp-t"><b>${esc(x.name)}</b><small>${KINDS[x.kind] || x.kind}, ${THEMES[x.theme] || ""}</small>
+<span class="kgp-tags"><em class="kgp-q">${QN[x.q - 1]}${x.ex ? ", độc quyền" : ""}</em>${x.status && x.status !== "on" ? `<em>${STN[x.status] || x.status}</em>` : ""}${(x.obtain || []).filter(k => k !== "shop").map(k => `<em>${OBN[k] || k}</em>`).join("")}${owned.has(x.id) ? '<em class="kgp-own">Đã có</em>' : ""}</span></span><i class="kgp-ck" aria-hidden="true">✓</i></button>`).join("") : '<p class="kgp-mu">Không có vật phẩm nào khớp.</p>';
+      };
+      const close = v => { m.remove(); removeEventListener("keydown", key); done(v) }, key = e => { if (e.key === "Escape") close(null) };
+      m.addEventListener("click", e => {
+        if (e.target === m || e.target.closest(".kgp-x,.kgp-no")) return close(null);
+        if (e.target.closest(".kgp-ok")) return close(multi ? [...sel] : [...sel][0] || null);
+        const b = e.target.closest(".kgp-i"); if (!b) return; const id = b.dataset.id;
+        if (multi) sel.has(id) ? sel.delete(id) : sel.add(id); else { sel.clear(); sel.add(id) }
+        g.querySelectorAll(".kgp-i").forEach(x => { const on = sel.has(x.dataset.id); x.classList.toggle("on", on); x.setAttribute("aria-selected", on) }); foot();
+      });
+      g.addEventListener("dblclick", e => { const b = e.target.closest(".kgp-i"); if (b && !multi) close(b.dataset.id) });
+      m.querySelector("input").oninput = e => { F.q = e.target.value.trim().toLowerCase(); draw() };
+      m.querySelectorAll("select").forEach(x => x.onchange = () => { F[x.dataset.f] = x.dataset.f === "ql" ? +x.value : x.value; draw() });
+      addEventListener("keydown", key); document.body.appendChild(m); draw(); foot(); m.querySelector("input").focus();
+    });
+  }
+  // Thẻ nhỏ cho món đã chọn, đặt cạnh nút "Chọn vật phẩm"
+  const chosen = it => it ? `<span class="kgp-cs" style="--q:${QC[qOf(it) - 1]}"><span class="kgp-p">${it.kind === "title" ? title({ ...it, q: qOf(it), ex: it.ex ?? it.exclusive }) : preview({ ...it, q: qOf(it) })}</span><span><b>${esc(it.name)}</b><small>${KINDS[it.kind]}, ${QN[qOf(it) - 1]}</small></span></span>` : '<span class="kgp-mu">Chưa chọn</span>';
+
   /* ---------- Chế độ hiệu ứng và tạm dừng khi ra khỏi màn hình ---------- */
   const LS = { get: k => { try { return localStorage.getItem(k) } catch (e) { return null } }, set: (k, v) => { try { localStorage.setItem(k, v) } catch (e) {} } };
   let DEF = "full";
@@ -352,6 +392,27 @@
 .kg-pvc{display:flex;flex-direction:column;gap:3px;min-width:220px;font-size:.88rem}.kg-pvc span{color:#cfcde0}
 .kg-bdl{width:46px;height:46px;color:#fff;display:grid}.kg-bdl .kg-i{width:100%;height:100%}
 .kg-girl{display:block}
+/* Hộp chọn vật phẩm */
+.kgp-m{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:16px;background:#000a}
+.kgp{display:flex;flex-direction:column;width:min(980px,100%);max-height:92vh;background:var(--bg,#fff);color:var(--tx,#14131a);border-radius:16px;box-shadow:0 24px 70px #0009;overflow:hidden}
+.kgp-h{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bd,#ddd)}.kgp-h b{font-size:1.1rem}
+.kgp-x{width:34px;height:34px;margin:0;padding:0;border:0;border-radius:50%;background:var(--s1,#eee);color:var(--tx,#111);justify-content:center}
+.kgp-f{display:flex;flex-wrap:wrap;gap:8px;padding:12px 18px}.kgp-f input{flex:2 1 200px}.kgp-f select{flex:1 1 140px;width:auto}
+.kgp-f input,.kgp-f select{background:var(--s1,#f2f1f7);color:var(--tx,#111);border:1px solid var(--bd,#ddd);border-radius:8px;padding:8px 10px;font:inherit}
+.kgp-g{flex:1;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;padding:4px 18px 16px;align-content:start}
+.kgp-i{position:relative;display:flex;flex-direction:column;gap:8px;margin:0;padding:8px;border:0;border-radius:12px;background:var(--s1,#f2f1f7);color:inherit;text-align:left;cursor:pointer;box-shadow:inset 0 3px 0 var(--q);font:inherit;justify-content:flex-start;align-items:stretch}
+.kgp-i:hover{background:var(--s2,#e6e4ef)}.kgp-i:focus-visible{outline:2px solid var(--ac,#f0f)}
+.kgp-i.on{box-shadow:inset 0 3px 0 var(--q),0 0 0 2px var(--ac,#f0f)}
+.kgp-p{display:grid;place-items:center;min-height:70px;border-radius:9px;background:#15131f;color:#f3f2f8;overflow:hidden;padding:6px}.kgp-p .kg-pv{min-height:58px;width:100%;padding:4px;background:none}
+.kgp-t{display:flex;flex-direction:column;gap:2px;padding:0 2px}.kgp-t small{color:var(--mu,#777);font-size:.78rem}
+.kgp-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}.kgp-tags em{font-style:normal;font-size:.7rem;padding:1px 6px;border-radius:4px;background:var(--bg,#fff);color:var(--mu,#666)}
+.kgp-tags .kgp-q{color:var(--q);box-shadow:inset 0 0 0 1px var(--q);background:none;font-weight:700}.kgp-tags .kgp-own{background:var(--ok,#04a74b);color:#fff}
+.kgp-ck{position:absolute;top:12px;right:12px;display:none;width:24px;height:24px;border-radius:50%;background:var(--ac,#f0f);color:#fff;font-style:normal;font-weight:800;place-items:center}.kgp-i.on .kgp-ck{display:grid}
+.kgp-b{display:flex;align-items:center;gap:8px;padding:12px 18px;border-top:1px solid var(--bd,#ddd)}.kgp-n{flex:1;min-width:0;font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.kgp-b button{margin:0}
+.kgp-no{background:var(--s1,#eee)!important;color:var(--tx,#111)!important}.kgp-mu{color:var(--mu,#777)}
+.kgp-cs{display:flex;flex-wrap:wrap;max-width:100%;overflow:hidden;align-items:center;gap:6px 10px;padding:6px;border-radius:10px;background:var(--bg,#fff);box-shadow:inset 3px 0 0 var(--q);min-width:0}.kgp-cs .kgp-p{min-height:44px;padding:6px 12px;max-width:100%}.kgp-cs>span:last-child{display:flex;flex-direction:column;min-width:0}.kgp-cs small{color:var(--mu,#777);font-size:.75rem}
+.kgp-pick{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.kgp-pick>button{margin:0}
+@media(max-width:600px){.kgp-g{grid-template-columns:1fr 1fr}.kgp-p{min-height:56px}}
 /* Chế độ hiệu ứng: đầy đủ / đơn giản / tắt, và tôn trọng thiết lập giảm chuyển động */
 [data-ktfx=simple] .kt-fx,[data-ktfx=simple] .kt-ring,[data-ktfx=off] .kt-fx,[data-ktfx=off] .kt-ring,[data-ktfx=off] .kf-dec,[data-ktfx=off] .kf-orb,[data-ktfx=off] .kx-aura{display:none}
 [data-ktfx=simple] *,[data-ktfx=off] *{animation-play-state:paused!important}
@@ -362,5 +423,5 @@
   (document.head || document.documentElement).appendChild(css);
   fxMode();
 
-  window.KG = { THEMES, QN, QC, KINDS, FONTS, PARTS, DIRS, LAYERS, BGS, BORDERS, IC, esc, icon, girl, art: artHtml, preset, resolve, title, name, avatar, cframe, bgStyle, badge, preview, fxMode, setDefault, watch, IMGOK };
+  window.KG = { THEMES, QN, QC, KINDS, FONTS, PARTS, DIRS, LAYERS, BGS, BORDERS, IC, esc, icon, girl, art: artHtml, preset, resolve, title, name, avatar, cframe, bgStyle, badge, preview, fxMode, setDefault, watch, IMGOK, pickItem, chosen };
 })();

@@ -29,7 +29,7 @@
     draw();
   }
   async function draw() {
-    const b = Q("#gmb"); b.innerHTML = '<p class="mu">Đang tải...</p>';
+    const b = Q("#gmb"); b.onclick = null; b.innerHTML = '<p class="mu">Đang tải...</p>';
     try { ({ cfg: dCfg, items: dItems, ach: dAch, buff: dBuff, give: dGive, log: dLog })[G.tab](b) } catch (e) { b.innerHTML = `<p class="aerr">${esc(e.message)}</p>` }
   }
   const fail = (b, e) => { b.innerHTML = `<p class="aerr">${esc(e.message)}</p>` };
@@ -53,13 +53,14 @@ ${f("daily_exp_cap", "Giới hạn EXP mỗi ngày (0 = không giới hạn)", c
 <table class="gtb"><thead><tr><th>Mức</th><th>Trọng số</th><th>Từ</th><th>Đến</th><th></th></tr></thead><tbody id="gm_tiers">${c.drop.tiers.map(t => `<tr><td><input value="${esc(t.n)}"></td><td><input type="number" step="0.1" value="${t.w}"></td><td><input type="number" value="${t.min}"></td><td><input type="number" value="${t.max}"></td><td><button type="button" class="sec sm" data-rm>Xóa</button></td></tr>`).join("")}</tbody></table><button type="button" class="sec sm" id="gm_taddt">Thêm mức rơi</button>
 <h4>Kỳ ngộ</h4><div class="g4">${f("encounter.chance", "Xác suất mỗi nhịp", c.encounter.chance, "number", 'step="0.001" min="0" max="1"')}${f("encounter.cooldown_h", "Giờ chờ giữa hai lần", c.encounter.cooldown_h)}${f("encounter.secret_chance", "Xác suất kèm danh hiệu bí mật", c.encounter.secret_chance, "number", 'step="0.05" min="0" max="1"')}<div><label>${esc(c.currency)} (từ, đến)</label><div class="kmr2"><input data-c="encounter.stones.0" type="number" value="${c.encounter.stones[0]}"><input data-c="encounter.stones.1" type="number" value="${c.encounter.stones[1]}"></div></div><div><label>EXP (từ, đến)</label><div class="kmr2"><input data-c="encounter.exp.0" type="number" value="${c.encounter.exp[0]}"><input data-c="encounter.exp.1" type="number" value="${c.encounter.exp[1]}"></div></div></div>
 <h4>Phần thưởng lên cấp</h4><div class="g4">${f("level_reward.stones", `${esc(c.currency)} mỗi cấp`, c.level_reward.stones)}${f("level_reward.per10", "Cộng thêm mỗi 10 cấp", c.level_reward.per10)}${f("level_reward.after100_every", "Sau cấp 100, thưởng mỗi N cấp", c.level_reward.after100_every)}${f("level_reward.after100_stones", "Số thưởng đó", c.level_reward.after100_stones)}</div>
-<table class="gtb"><thead><tr><th>Cấp</th><th>${esc(c.currency)}</th><th>Vật phẩm (mã)</th><th></th></tr></thead><tbody id="gm_ms">${c.level_reward.milestones.map(m => `<tr><td><input type="number" value="${m.lv}"></td><td><input type="number" value="${m.stones || 0}"></td><td><input value="${esc(m.item || "")}" placeholder="vd: frame-tutien"></td><td><button type="button" class="sec sm" data-rm>Xóa</button></td></tr>`).join("")}</tbody></table><button type="button" class="sec sm" id="gm_madd">Thêm mốc</button>
+<table class="gtb"><thead><tr><th>Cấp</th><th>${esc(c.currency)}</th><th>Vật phẩm (mã)</th><th></th></tr></thead><tbody id="gm_ms">${c.level_reward.milestones.map(m => `<tr><td><input type="number" value="${m.lv}"></td><td><input type="number" value="${m.stones || 0}"></td><td><div class="kgp-pick"><input value="${esc(m.item || "")}" placeholder="Không thưởng vật phẩm" readonly><button type="button" class="sec sm" data-msp>Chọn</button></div></td><td><button type="button" class="sec sm" data-rm>Xóa</button></td></tr>`).join("")}</tbody></table><button type="button" class="sec sm" id="gm_madd">Thêm mốc</button>
 <h4>Bảng xếp hạng</h4><label class="ck"><input type="checkbox" data-c="lb.exclude_admins"${c.lb.exclude_admins ? " checked" : ""}> Không xếp hạng tài khoản quản trị viên</label><label class="ck"><input type="checkbox" data-c="lb.exclude_granted"${c.lb.exclude_granted ? " checked" : ""}> Không xếp hạng tài khoản từng được cấp tài nguyên thủ công</label>
 <h4>Tên chủ đề và phẩm chất</h4><div class="g4">${Object.entries(c.themes).map(([k, v]) => f("themes." + k, k, v, "text")).join("")}</div><div class="g4">${c.qualities.map((v, i) => f("qualities." + i, "Phẩm " + (i + 1), v, "text")).join("")}</div>
 <div class="acts"><button type="button" id="gm_save">Lưu cấu hình</button><button type="button" class="sec" id="gm_reset">Khôi phục mặc định</button></div>`;
-    b.addEventListener("click", e => { if (e.target.closest("[data-rm]")) e.target.closest("tr").remove() });
+    b.onclick = async e => { if (e.target.closest("[data-rm]")) e.target.closest("tr").remove();
+      const ms = e.target.closest("[data-msp]"); if (ms) { const inp = ms.previousElementSibling; G.items = G.items || await GA("items"); const id = await KG.pickItem({ items: G.items, title: "Chọn vật phẩm thưởng cho mốc cấp này", selected: [inp.value].filter(Boolean) }); if (id) inp.value = id } };
     Q("#gm_taddt").onclick = () => Q("#gm_tiers").insertAdjacentHTML("beforeend", '<tr><td><input value="Mới"></td><td><input type="number" value="1"></td><td><input type="number" value="1"></td><td><input type="number" value="10"></td><td><button type="button" class="sec sm" data-rm>Xóa</button></td></tr>');
-    Q("#gm_madd").onclick = () => Q("#gm_ms").insertAdjacentHTML("beforeend", '<tr><td><input type="number" value="150"></td><td><input type="number" value="1000"></td><td><input></td><td><button type="button" class="sec sm" data-rm>Xóa</button></td></tr>');
+    Q("#gm_madd").onclick = () => Q("#gm_ms").insertAdjacentHTML("beforeend", '<tr><td><input type="number" value="150"></td><td><input type="number" value="1000"></td><td><div class="kgp-pick"><input placeholder="Không thưởng vật phẩm" readonly><button type="button" class="sec sm" data-msp>Chọn</button></div></td><td><button type="button" class="sec sm" data-rm>Xóa</button></td></tr>');
     Q("#gm_save").onclick = () => run(async () => {
       const o = JSON.parse(JSON.stringify(c));
       QA("[data-c]", b).forEach(i => { const p = i.dataset.c.split("."); let t = o; for (const k of p.slice(0, -1)) t = t[k]; const k = p[p.length - 1]; t[k] = i.type === "checkbox" ? i.checked : i.type === "number" ? +i.value : i.value });
@@ -118,7 +119,7 @@ ${T ? `<h4>Chữ</h4><div class="g2"><div><label>Phông chữ (đều hỗ trợ
       : `<h4>Màu và hiệu ứng</h4><div class="g2"><div class="full"><label>Màu chuyển sắc</label>${colors(st.grad || [], "ge_grad")}</div><div><label>Màu A</label><input type="color" id="ge_a" value="${st.a.slice(0, 7)}"></div><div><label>Màu B</label><input type="color" id="ge_b" value="${st.b.slice(0, 7)}"></div><div><label>Màu C</label><input type="color" id="ge_c" value="${st.c.slice(0, 7)}"></div>
 <div><label>Hiệu ứng</label><select id="ge_fx">${opt({ glow: "Phát sáng", qi: "Linh khí", flame: "Lửa", stars: "Sao", cel: "Nét hoạt hình", sweep: "Ánh sáng chạy" }, st.fx)}</select></div><div><label>Chủ đề hiển thị</label><select id="ge_th2">${opt(KG.THEMES, st.th)}</select></div><div><label>Chữ trên huy hiệu</label><input id="ge_n" maxlength="4" value="${esc(st.n || "")}"></div></div>${iconPick(st.icon, "icon")}
 <div><label>Ảnh riêng (huy hiệu)</label><input type="file" id="ge_img" accept="image/png,image/webp,image/gif,image/jpeg"><small class="mu" id="ge_imgv">${esc(st.img || "Chưa có")}</small> <button type="button" class="sec sm" id="ge_imgx">Bỏ ảnh</button></div>
-${it.kind === "bundle" ? `<label>Các món trong gói</label><select id="ge_bundle" multiple size="8">${G.items.filter(x => x.kind !== "bundle").map(x => `<option value="${esc(x.id)}"${(it.bundle || []).includes(x.id) ? " selected" : ""}>${esc(KG.KINDS[x.kind])}: ${esc(x.name)}</option>`).join("")}</select>` : ""}`}
+${it.kind === "bundle" ? `<label>Các món trong gói</label><div class="kgp-pick"><div id="ge_bcs" class="gchs"></div><button type="button" class="sec sm" id="ge_bpk">Chọn các món</button></div>` : ""}`}
 <h4>Bán và cách nhận</h4><div class="g2"><div><label>Giá (${esc((G.cfg && G.cfg.currency) || "Linh Thạch")})</label><input type="number" id="ge_price" min="0" value="${it.price}"></div><div><label>Cần cấp</label><input type="number" id="ge_lv" min="1" value="${it.level_req}"></div>
 <div><label>Giá khuyến mãi</label><input type="number" id="ge_sp" min="0" value="${it.sale_price ?? ""}"></div><div><label>Khuyến mãi tới</label><input type="datetime-local" id="ge_su" value="${dt(it.sale_until)}"></div>
 <div><label>Mở bán từ</label><input type="datetime-local" id="ge_sf" value="${dt(it.sell_from)}"></div><div><label>Mở bán tới</label><input type="datetime-local" id="ge_st" value="${dt(it.sell_until)}"></div>
@@ -140,7 +141,7 @@ ${it.kind === "bundle" ? `<label>Các món trong gói</label><select id="ge_bund
       return { ...it, id: v("#ge_id").trim(), kind: v("#ge_kind"), name: v("#ge_name").trim(), description: v("#ge_desc").trim(), quote: v("#ge_quote").trim(), theme: v("#ge_theme"), quality: +v("#ge_q"), exclusive: Q("#ge_ex").checked, style: s,
         price: +v("#ge_price") || 0, level_req: +v("#ge_lv") || 1, sale_price: v("#ge_sp") === "" ? null : +v("#ge_sp"), sale_until: v("#ge_su") ? new Date(v("#ge_su")).toISOString() : "", sell_from: v("#ge_sf") ? new Date(v("#ge_sf")).toISOString() : "", sell_until: v("#ge_st") ? new Date(v("#ge_st")).toISOString() : "",
         limit_count: v("#ge_lim") || "", duration_days: v("#ge_dur") || "", ach_req: v("#ge_ach"), sort: +v("#ge_sort") || 0, obtain: QA("[data-ob]").filter(x => x.checked).map(x => x.dataset.ob), status: v("#ge_status"),
-        bundle: Q("#ge_bundle") ? [...Q("#ge_bundle").selectedOptions].map(o => o.value) : it.bundle || [] };
+        bundle: it.bundle || [] };
     }
     function pv() {
       const x = collect(), I = { ...x, q: x.quality, ex: x.exclusive }, who = "Đạo hữu Kenrori";
@@ -152,14 +153,16 @@ ${it.kind === "bundle" ? `<label>Các món trong gói</label><select id="ge_bund
       Q("#pv_m").innerHTML = `<small>Điện thoại</small><div class="gmob"><div class="gch">${KG.avatar('<span class="kav" style="--s:28px">Đ</span>', eq, 28)}<b>${KG.name(who, eq)}</b>${sm}</div><p>Danh hiệu dài có bị tràn không?</p></div>`;
       Q("#pv_art").innerHTML = T && x.style.art ? `<small>Nhân vật đi kèm</small><div class="gart">${KG.art(x.style.art, 140)}</div>` : "";
     }
+    if (Q("#ge_bpk")) { const drawB = () => { Q("#ge_bcs").innerHTML = (it.bundle || []).length ? it.bundle.map(i => KG.chosen(G.items.find(x => x.id === i))).join("") : KG.chosen(null) }; drawB();
+      Q("#ge_bpk").onclick = async () => { const r = await KG.pickItem({ items: G.items.filter(x => x.kind !== "bundle"), multi: true, title: "Chọn các món trong gói", selected: it.bundle || [] }); if (r) { it.bundle = r; drawB() } } }
     pv();
     b.querySelector(".gef").addEventListener("input", pv); b.querySelector(".gef").addEventListener("change", pv);
-    b.addEventListener("click", e => {
+    b.onclick = e => {
       const ic = e.target.closest("[data-ic]"); if (ic) { QA(".gic button").forEach(x => x.classList.toggle("on", x === ic)); pv() }
       if (e.target.closest("[data-gx]")) { e.target.closest("span").remove(); pv() }
       if (e.target.closest("[data-ga]")) { if (QA("#ge_grad input").length >= 6) return; e.target.insertAdjacentHTML("beforebegin", '<span><input type="color" value="#ffffff"><button type="button" class="sec sm" data-gx>✕</button></span>'); pv() }
       if (e.target.closest("[data-px]")) { e.target.closest(".gpt").remove(); pv() }
-    });
+    };
     if (Q("#ge_padd")) Q("#ge_padd").onclick = () => { if (QA(".gpt").length >= 4) return log("Tối đa 4 loại hạt"); Q("#ge_parts").insertAdjacentHTML("beforeend", partRow({ t: "spark", n: 5, dir: "up", spd: 1, sz: 1, c: "#ffffff" })); pv() };
     Q("#ge_name").oninput = e => { if (isNew && !Q("#ge_id").dataset.touched) Q("#ge_id").value = (T ? "t-" : it.kind + "-") + slug(e.target.value).slice(0, 50) };
     Q("#ge_id").oninput = e => e.target.dataset.touched = 1;
@@ -200,12 +203,14 @@ ${it.kind === "bundle" ? `<label>Các món trong gói</label><select id="ge_bund
       b.innerHTML = `<button type="button" class="sec" id="ga_back">← Danh sách</button><div class="g2"><div><label>Tên</label><input id="ga_n" value="${esc(a.name)}"></div><div><label>Mã</label><input id="ga_id" value="${esc(a.id)}" ${isNew ? "" : "readonly"}></div><div class="full"><label>Mô tả</label><input id="ga_d" value="${esc(a.description)}"></div>
 <div><label>Điều kiện</label><select id="ga_t">${opt(RULE, a.rule.t)}</select></div><div><label>Giá trị</label><input id="ga_v" type="number" value="${a.rule.v ?? 1}"></div><div><label>Ngày (với điều kiện tham gia trước)</label><input id="ga_date" type="date" value="${(a.rule.date || "").slice(0, 10)}"></div><div><label>Biểu tượng</label><select id="ga_ic">${Object.keys(KG.IC).map(k => `<option${k === a.icon ? " selected" : ""}>${k}</option>`).join("")}</select></div>
 <div><label>Thưởng EXP</label><input id="ga_e" type="number" value="${(a.reward || {}).exp || 0}"></div><div><label>Thưởng ${esc((G.cfg && G.cfg.currency) || "Linh Thạch")}</label><input id="ga_s" type="number" value="${(a.reward || {}).stones || 0}"></div>
-<div class="full"><label>Thưởng vật phẩm (giữ Ctrl để chọn nhiều)</label><select id="ga_it" multiple size="6">${G.items.map(x => `<option value="${esc(x.id)}"${((a.reward || {}).items || []).includes(x.id) ? " selected" : ""}>${esc(KG.KINDS[x.kind])}: ${esc(x.name)}</option>`).join("")}</select></div>
+<div class="full"><label>Thưởng vật phẩm</label><div class="kgp-pick"><div id="ga_cs" class="gchs"></div><button type="button" class="sec sm" id="ga_pk">Chọn vật phẩm thưởng</button></div></div>
 <div><label class="ck"><input type="checkbox" id="ga_h"${a.hidden ? " checked" : ""}> Ẩn điều kiện tới khi mở khóa</label></div><div><label class="ck"><input type="checkbox" id="ga_on"${a.active ? " checked" : ""}> Đang bật</label></div><div><label>Thứ tự</label><input id="ga_so" type="number" value="${a.sort || 0}"></div></div>
 <div class="acts"><button type="button" id="ga_save">Lưu thành tựu</button>${isNew ? "" : '<button type="button" class="sec" id="ga_del">Xóa</button>'}</div>`;
+      let rwI = ((a.reward || {}).items || []).slice(); const drawRw = () => { Q("#ga_cs").innerHTML = rwI.length ? rwI.map(i => KG.chosen(G.items.find(x => x.id === i) || { id: i, name: i, kind: "title" })).join("") : KG.chosen(null) }; drawRw();
+      Q("#ga_pk").onclick = async () => { const r = await KG.pickItem({ items: G.items, multi: true, title: "Chọn vật phẩm thưởng cho thành tựu này", selected: rwI }); if (r) { rwI = r; drawRw() } };
       Q("#ga_back").onclick = draw; Q("#ga_n").oninput = e => { if (isNew) Q("#ga_id").value = slug(e.target.value).slice(0, 50) };
       Q("#ga_save").onclick = () => run(async () => { const r = { t: Q("#ga_t").value, v: +Q("#ga_v").value }; if (Q("#ga_date").value) r.date = Q("#ga_date").value + "T00:00:00+07:00";
-        const rw = { exp: +Q("#ga_e").value || 0, stones: +Q("#ga_s").value || 0, items: [...Q("#ga_it").selectedOptions].map(o => o.value) };
+        const rw = { exp: +Q("#ga_e").value || 0, stones: +Q("#ga_s").value || 0, items: rwI };
         await GA("ach_save", { ach: { id: Q("#ga_id").value.trim(), name: Q("#ga_n").value.trim(), description: Q("#ga_d").value.trim(), icon: Q("#ga_ic").value, hidden: Q("#ga_h").checked, active: Q("#ga_on").checked, sort: +Q("#ga_so").value || 0, rule: r, reward: rw } }); log("✅ Đã lưu thành tựu."); draw() });
       if (Q("#ga_del")) Q("#ga_del").onclick = () => run(async () => { if (!confirm("Xóa thành tựu này? Người đã đạt sẽ mất thành tựu (phần thưởng đã nhận vẫn giữ).")) return; await GA("ach_delete", { id: a.id }); log("✅ Đã xóa."); draw() });
     };
@@ -230,9 +235,11 @@ ${it.kind === "bundle" ? `<label>Các món trong gói</label><select id="ge_bund
   async function dGive(b) {
     try { G.items = G.items || await GA("items") } catch (e) { return fail(b, e) }
     b.innerHTML = `<p class="mu">Phát cho mọi tài khoản đang hoạt động. Muốn phát cho vài người, vào Kiểm duyệt › Tài khoản, tick chọn rồi bấm Thao tác hàng loạt. Mọi lần phát đều ghi nhật ký.</p>
-<div class="g4"><div><label>Phát gì</label><select id="gv_a"><option value="stones">${esc((G.cfg && G.cfg.currency) || "Linh Thạch")}</option><option value="exp">EXP</option><option value="grant">Vật phẩm hoặc danh hiệu</option></select></div><div><label>Số lượng</label><input id="gv_v" type="number" value="100"></div><div><label>Vật phẩm</label><select id="gv_i">${G.items.map(x => `<option value="${esc(x.id)}">${esc(KG.KINDS[x.kind])}: ${esc(x.name)}</option>`).join("")}</select></div><div><label>Số ngày sở hữu</label><input id="gv_d" type="number" min="1" placeholder="trống = vĩnh viễn"></div></div>
+<div class="g4"><div><label>Phát gì</label><select id="gv_a"><option value="stones">${esc((G.cfg && G.cfg.currency) || "Linh Thạch")}</option><option value="exp">EXP</option><option value="grant">Vật phẩm hoặc danh hiệu</option></select></div><div><label>Số lượng</label><input id="gv_v" type="number" value="100"></div><div><label>Số ngày sở hữu (vật phẩm)</label><input id="gv_d" type="number" min="1" placeholder="trống = vĩnh viễn"></div></div>
+<label>Vật phẩm (khi phát vật phẩm hoặc danh hiệu)</label><div class="kgp-pick"><span id="gv_cs">${KG.chosen(null)}</span><button type="button" class="sec sm" id="gv_pk">Chọn vật phẩm</button></div><input type="hidden" id="gv_i">
 <label>Lý do (bắt buộc)</label><input id="gv_r" maxlength="300" placeholder="Quà sự kiện Tết"><div class="acts"><button type="button" id="gv_go">Phát cho toàn bộ thành viên</button></div>`;
-    Q("#gv_go").onclick = () => run(async () => { const a = Q("#gv_a").value, why = Q("#gv_r").value.trim(); if (!why) return log("❌ Hãy ghi lý do"); if (!confirm("Phát cho TOÀN BỘ thành viên? Không hoàn tác tự động được.")) return;
+    Q("#gv_pk").onclick = async () => { const id = await KG.pickItem({ items: G.items, title: "Chọn vật phẩm phát cho toàn bộ thành viên", selected: [Q("#gv_i").value].filter(Boolean) }); if (!id) return; Q("#gv_i").value = id; Q("#gv_cs").innerHTML = KG.chosen(G.items.find(x => x.id === id)); Q("#gv_a").value = "grant" };
+    Q("#gv_go").onclick = () => run(async () => { const a = Q("#gv_a").value, why = Q("#gv_r").value.trim(); if (!why) return log("❌ Hãy ghi lý do"); if (a === "grant" && !Q("#gv_i").value) return log("❌ Hãy bấm Chọn vật phẩm trước"); if (!confirm("Phát cho TOÀN BỘ thành viên? Không hoàn tác tự động được.")) return;
       const r = a === "grant" ? await GA("grant", { all: true, item: Q("#gv_i").value, days: Q("#gv_d").value || null, reason: why }) : await GA("adjust", { all: true, [a]: +Q("#gv_v").value, reason: why }); log(`✅ Đã phát cho ${n0(r.n)} tài khoản.`) });
   }
 
@@ -336,6 +343,7 @@ ${it.kind === "bundle" ? `<label>Các món trong gói</label><select id="ge_bund
 .gpt{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px;border-radius:8px;background:var(--s1);margin-bottom:6px}.gpt label{display:flex;flex-direction:column;margin:0;font-size:.75rem}.gpt select{width:auto}.gpt button{margin:0}
 .gtw{overflow-x:auto}.gtb{width:100%;border-collapse:collapse;margin:8px 0;font-size:.88rem}.gtb th{text-align:left;font-weight:500;color:var(--mu);padding:4px 6px}.gtb td{padding:3px 4px;vertical-align:middle}.gtb input,.gtb select{padding:5px 8px;min-width:60px}
 .gtb.gn td:nth-child(2){white-space:nowrap}.gtb.gn button{margin:0 2px}.gtb tr.kid td:nth-child(3){padding-left:22px}.gtb tr.hid{opacity:.55}.gtb input[type=checkbox]{width:auto;min-width:0}
+.gchs{display:flex;flex-wrap:wrap;gap:6px}.gtb .kgp-pick input{min-width:150px}
 .gtb.gn td:nth-child(3) input{min-width:140px}.gtb.gn td:nth-child(5) input{min-width:160px}`;
   document.head.appendChild(css);
   const watch = (id, fn) => { const el = Q(id); if (el) new MutationObserver(() => { if (el.classList.contains("on")) fn() }).observe(el, { attributes: true, attributeFilter: ["class"] }) };
