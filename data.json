@@ -1910,9 +1910,13 @@
    "author": "Hige Neko, Ikaguchi Ei",
    "status": "Đang dịch",
    "genres": [
-    "tragedy"
+    "tragedy",
+    "Romance",
+    "Drama",
+    "Comedy",
+    "Học đường"
    ],
-   "desc": "",
+   "desc": "Vào cuối mùa hè, Aono Eiji bắt gặp bạn thơ ấu kiêm bạn gái cậu, Amada Miyuki, đang cắm sừng cậu với Kondo, át chủ bài của đội bóng đá. Bị cô ta phản bội và tổn thương sâu sắc, Eiji trở thành mục tiêu cho những lời vu khống và quấy rối vô căn cứ. Bị dồn vào chân tường và không còn lối thoát, cậu trốn lên sân thượng trường học—nơi cậu gặp một cô gái bí ẩn...",
    "src": "",
    "team": [
     {
@@ -2365,5 +2369,5 @@
    }
   ]
  },
- "rev": 1795818672346
+ "rev": 1795818731061
 }
