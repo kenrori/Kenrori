@@ -462,17 +462,52 @@ $("#manage").addEventListener("click", e => {
 
 function siteLoad() {
   const S = data.site, A = S.about || {}, G = S.giscus || {};
-  $("#tcap").checked = S.tcap !== false; const K = S.kiku || {}; $("#kk_on").checked = K.on !== false; $("#kk_name").value = K.name || ""; $("#kk_ai").checked = !!K.ai; kkoRender();
+  $("#tcap").checked = S.tcap !== false; fnRender(); const K = S.kiku || {}; $("#kk_on").checked = K.on !== false; $("#kk_name").value = K.name || ""; $("#kk_ai").checked = !!K.ai; kkoRender();
   $("#a_text").value = S.announce?.text || ""; $("#a_url").value = S.announce?.url || ""; $("#b_name").value = A.name || ""; $("#b_intro").value = A.intro || ""; $("#b_dc").value = A.discord || "";
   $("#b_ct").value = (A.contacts || []).map(c => c.label + " | " + c.url).join("\n");
   $("#g_repo").value = G.repo || ""; $("#g_rid").value = G.repoId || ""; $("#g_cat").value = G.category || ""; $("#g_cid").value = G.categoryId || ""; $("#w_url").value = S.url || ""; $("#b_rep").value = S.report || ""; $("#gc_code").value = S.gc || ""; $("#sb_url").value = (S.sb || {}).url || ""; $("#sb_key").value = (S.sb || {}).key || ""; $("#st_rules").value = S.rules || ""; $("#cm_mode").value = S.cmt || "anon"; $("#gp_key").value = S.giphy || ""; $("#st_on").checked = S.st === true; try { $("#cm_pw").value = localStorage.getItem("cmtMod") || "" } catch (e) {} stkRender();
 }
+/* ===== Phông chữ cho danh hiệu ===== */
+const FN_SAMPLE = "Hắc Kiếm Sĩ · ẤN THIÊN KIẾM Ỷ · Quỹ Đạo";
+function fnRender() {
+  const L = data.site.fonts ||= [], box = $("#fn_list"); if (!box) return;
+  if (window.KG && KG.addFonts) KG.addFonts(L);
+  box.innerHTML = L.length ? L.map((f, i) => `<div class="fnr" data-i="${i}"><div class="fns" style="font-family:'${esc(f.family).replace(/'/g, "")}','Be Vietnam Pro',sans-serif;font-weight:${+f.w || 700};font-style:${f.it ? "italic" : "normal"}">${FN_SAMPLE}</div>
+<div class="fnc"><input class="fn_n" value="${esc(f.name || f.family)}" maxlength="40" aria-label="Tên hiện trong danh sách"><select class="fn_w" aria-label="Độ đậm">${[[400, "Thường"], [500, "Vừa"], [600, "Hơi đậm"], [700, "Đậm"], [800, "Rất đậm"], [900, "Đậm nhất"]].map(([v, l]) => `<option value="${v}"${(+f.w || 700) === v ? " selected" : ""}>${l} (${v})</option>`).join("")}</select>
+<label class="ck"><input type="checkbox" class="fn_it"${f.it ? " checked" : ""}> Nghiêng</label><small class="mu">${f.file ? "File: " + esc(f.file) : "Google Fonts" + (f.gw ? ", có sẵn độ đậm " + esc(f.gw.replace(/;/g, ", ")) : ", chỉ có độ đậm thường")}${f.vi === false ? ". <b>Không có bộ chữ tiếng Việt</b>" : ""}</small><button type="button" class="sec sm fn_x">Xóa</button></div></div>`).join("") : '<p class="mu">Chưa thêm phông nào.</p>';
+  box.querySelectorAll(".fnr").forEach(r => { const f = L[+r.dataset.i], up = () => { f.name = r.querySelector(".fn_n").value.trim().slice(0, 40) || f.family; f.w = +r.querySelector(".fn_w").value; f.it = r.querySelector(".fn_it").checked; const s = r.querySelector(".fns"); s.style.fontWeight = f.w; s.style.fontStyle = f.it ? "italic" : "normal"; if (window.KG) KG.addFonts(L) };
+    r.querySelector(".fn_n").oninput = up; r.querySelector(".fn_w").onchange = up; r.querySelector(".fn_it").onchange = up;
+    r.querySelector(".fn_x").onclick = () => run(async () => { if (!confirm(`Xóa phông "${f.name}"? Danh hiệu đang dùng phông này sẽ quay về phông Beaufort.`)) return; L.splice(+r.dataset.i, 1); await save("Xóa phông chữ: " + f.name); fnRender(); log("✅ Đã xóa phông.") }) });
+}
+const fnId = n => (slugify(n) || "font").slice(0, 24) + "-" + rid().slice(-4);
+$("#fn_gadd").onclick = () => run(async () => {
+  const fam = $("#fn_g").value.replace(/[^\p{L}\p{N} -]/gu, "").replace(/\s+/g, " ").trim(); if (!fam) throw new Error("Nhập tên phông, ví dụ Pattaya");
+  const L = data.site.fonts ||= []; if (L.some(f => f.family.toLowerCase() === fam.toLowerCase())) throw new Error("Phông này đã có trong danh sách");
+  const base = "https://fonts.googleapis.com/css2?family=" + encodeURIComponent(fam).replace(/%20/g, "+"), get = async q => { try { const r = await fetch(base + q + "&display=swap"); return r.ok ? await r.text() : null } catch (e) { return null } };
+  log("Đang kiểm tra phông trên Google Fonts...");
+  let gw = "400;700", css = await get(":wght@400;700"); if (css == null) { gw = "400;900"; css = await get(":wght@400;900") } if (css == null) { gw = ""; css = await get("") }
+  if (css == null) throw new Error(`Không tìm thấy phông "${fam}" trên Google Fonts. Kiểm tra lại tên (viết đúng hoa thường, có dấu cách), ví dụ "Dancing Script".`);
+  const vi = /\/\*\s*vietnamese\s*\*\//.test(css), w = gw.includes("700") ? 700 : gw.includes("900") ? 900 : 400;
+  L.push({ id: fnId(fam), name: fam, family: fam, gw, w, it: false, vi }); $("#fn_g").value = "";
+  await save("Thêm phông chữ: " + fam); fnRender();
+  log(vi ? `✅ Đã thêm phông ${fam}.` : `⚠️ Đã thêm phông ${fam}, nhưng phông này không có bộ chữ tiếng Việt: chữ có dấu sẽ hiện bằng phông khác. Nên xóa và chọn phông khác.`);
+});
+$("#fn_file").onchange = e => { const f = e.target.files[0]; e.target.value = ""; if (!f) return; run(async () => {
+  const ext = (f.name.split(".").pop() || "").toLowerCase(); if (!/^(woff2?|ttf|otf)$/.test(ext)) throw new Error("Chỉ nhận file WOFF2, WOFF, TTF hoặc OTF");
+  if (f.size > 2 * 1024 * 1024) throw new Error("File phông lớn hơn 2 MB. Nên đổi sang WOFF2 cho nhẹ (tìm \"ttf to woff2\" trên mạng).");
+  const nm = f.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").replace(/[^\p{L}\p{N} ]/gu, "").trim().slice(0, 40) || "Phông riêng", id = fnId(nm);
+  const path = `fonts/custom/${id}.${ext}`; log("Đang tải phông lên...");
+  try { const ff = new FontFace("KR " + id, await f.arrayBuffer(), { weight: "100 900" }); await ff.load(); document.fonts.add(ff) } catch (e) { throw new Error("File này không đọc được như một phông chữ. Hãy thử file khác.") } // xem trước ngay, không cần chờ GitHub
+  await put(path, await fileB64(f), "Phông chữ: " + f.name);
+  (data.site.fonts ||= []).push({ id, name: nm, family: "KR " + id, file: path, w: 700, it: false });
+  await save("Thêm phông chữ: " + nm); fnRender(); log(`✅ Đã thêm phông ${nm}. Web nhận phông sau 1–2 phút.`);
+}) };
 $("#p-site").onsubmit = e => { e.preventDefault(); run(async () => {
   const t = id => $("#" + id).value.trim(), ok = v => !v || /^https?:\/\//.test(v);
   if (/service_role|sb_secret_/.test(t("sb_key")) || (t("sb_key").split(".").length === 3 && /service_role/.test((() => { try { return atob((t("sb_key").split(".")[1] || "").replace(/-/g, "+").replace(/_/g, "/")) } catch (e) { return "" } })()))) throw new Error("Đây là key bí mật (secret/service_role). Hãy dùng publishable key hoặc anon key.");
   if (t("sb_url") && !/^https:\/\/[a-z0-9-]+\.supabase\.(co|in)\/?$/i.test(t("sb_url"))) throw new Error("Project URL Supabase có dạng https://xxxx.supabase.co");
   if (!ok(t("b_dc")) || !ok(t("a_url")) || !ok(t("w_url")) || !ok(t("b_rep"))) throw new Error("Link phải bắt đầu bằng https://");
-  data.site = { announce: { text: t("a_text"), url: t("a_url") }, about: { name: t("b_name"), intro: t("b_intro"), discord: t("b_dc"), contacts: $("#b_ct").value.split("\n").map(l => { const [x, ...y] = l.split("|"); return { label: (x || "").trim(), url: y.join("|").trim() } }).filter(c => c.label) }, giscus: { repo: t("g_repo"), repoId: t("g_rid"), category: t("g_cat"), categoryId: t("g_cid") }, url: t("w_url"), report: t("b_rep"), sb: { url: t("sb_url").replace(/\/+$/, ""), key: t("sb_key") }, rules: $("#st_rules").value.trim(), cmt: $("#cm_mode").value, giphy: t("gp_key"), st: $("#st_on").checked, tcap: $("#tcap").checked, game: !!(data.site && data.site.game), genres: (data.site && data.site.genres) || undefined, stickers: data.site.stickers || [], kiku: { ...((data.site && data.site.kiku) || {}), on: $("#kk_on").checked, name: t("kk_name").slice(0, 20), ai: $("#kk_ai").checked }, gc: t("gc_code").replace(/^https?:\/\//, "").replace(/\.goatcounter\.com.*$/, "") };
+  data.site = { announce: { text: t("a_text"), url: t("a_url") }, about: { name: t("b_name"), intro: t("b_intro"), discord: t("b_dc"), contacts: $("#b_ct").value.split("\n").map(l => { const [x, ...y] = l.split("|"); return { label: (x || "").trim(), url: y.join("|").trim() } }).filter(c => c.label) }, giscus: { repo: t("g_repo"), repoId: t("g_rid"), category: t("g_cat"), categoryId: t("g_cid") }, url: t("w_url"), report: t("b_rep"), sb: { url: t("sb_url").replace(/\/+$/, ""), key: t("sb_key") }, rules: $("#st_rules").value.trim(), cmt: $("#cm_mode").value, giphy: t("gp_key"), st: $("#st_on").checked, tcap: $("#tcap").checked, fonts: (data.site && data.site.fonts) || [], game: !!(data.site && data.site.game), genres: (data.site && data.site.genres) || undefined, stickers: data.site.stickers || [], kiku: { ...((data.site && data.site.kiku) || {}), on: $("#kk_on").checked, name: t("kk_name").slice(0, 20), ai: $("#kk_ai").checked }, gc: t("gc_code").replace(/^https?:\/\//, "").replace(/\.goatcounter\.com.*$/, "") };
   await save("Cập nhật cài đặt trang web"); done("✅ Đã lưu cài đặt. Web cập nhật sau 1–2 phút.");
 }) };
 /* ===== Cập nhật web bằng gói .zip (đọc zip ngay trong trình duyệt, không cần thư viện) ===== */

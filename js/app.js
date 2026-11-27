@@ -493,7 +493,7 @@ const loadExtras = () => extrasP ??= Promise.all(EXTRAS.map(f => loadJs(f).catch
 if (ls.get("kx")) loadExtras();
 (async () => {
   try { const r = await fetch("data.json?v=" + Date.now()); if (r.ok) Object.assign(DATA, await r.json()) } catch (e) {}
-  DATA.site ??= {}; DATA.projects ??= []; applyTcap();
+  DATA.site ??= {}; DATA.projects ??= []; applyTcap(); if (window.KG && KG.addFonts) KG.addFonts(DATA.site.fonts);
   if (sbOn()) { ls.set("kx", "1"); await loadExtras() } else ls.del("kx");
   gcInit(); renderSide(); renderAnn(); if (window.ST) ST.initBtn();
   route();

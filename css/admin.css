@@ -263,5 +263,12 @@ button,input,select,textarea{font-family:inherit}
 .gfxs{display:grid;grid-template-columns:1fr 1fr;border-radius:10px;overflow:hidden;margin:6px 0 8px;border:1px solid var(--bd)}
 .gfxs>span{display:grid;place-items:center;min-height:72px;padding:8px;overflow:hidden}
 .gfxs>.d{background:#15131f}.gfxs>.l{background:#f6f5fa}
-.gfxs b{font-size:24px;font-weight:700;white-space:nowrap;max-width:100%;overflow:visible}
+.gfxs b{font-size:20px;font-weight:700;line-height:1.4;text-align:center;max-width:100%;overflow-wrap:anywhere}
 @media (max-width:760px){.gfx2{grid-template-columns:1fr}}
+
+/* Danh sách phông chữ thêm cho danh hiệu */
+.fnl{display:grid;gap:10px;margin:8px 0 12px}
+.fnr{border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+.fns{padding:14px 16px;font-size:22px;line-height:1.5;background:var(--s1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fnc{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 14px}
+.fnc .fn_n{flex:1 1 180px;min-width:0}.fnc .fn_w{width:auto}.fnc small{flex:1 1 100%;order:5}.fnc .ck{margin:0}

@@ -138,6 +138,24 @@
   }
   // Màu phát sáng kèm độ mạnh (0..1) thành rgba, để độ mạnh và độ lan chỉnh riêng được
   const glowC = (c, i) => { let h = String(c || "#ffffff").slice(1); if (h.length < 6) h = [...h.slice(0, 3)].map(x => x + x).join(""); const n = k => parseInt(h.slice(k, k + 2), 16) || 0; return `rgba(${n(0)},${n(2)},${n(4)},${Math.min(1, .25 + .85 * i).toFixed(2)})` };
+  // Phông chữ thêm từ trang quản trị (Google Fonts hoặc file tải lên thư mục fonts/custom/), lưu trong data.json > site.fonts
+  const FCUS = new Set();
+  const fontFam = f => String((f && f.family) || "").replace(/[^\p{L}\p{N} -]/gu, "").trim().slice(0, 60);
+  function addFonts(list) {
+    for (const f of Array.isArray(list) ? list : []) {
+      const fam = fontFam(f), id = String((f && f.id) || "");
+      if (!fam || !/^[a-z0-9-]{1,40}$/.test(id)) continue;
+      const key = "c-" + id, w = [400, 500, 600, 700, 800, 900].includes(+f.w) ? +f.w : 700;
+      FONTS[key] = [String(f.name || fam).slice(0, 40), `"${fam}","Be Vietnam Pro",system-ui,sans-serif`, { w, it: !!f.it }];
+      const sig = key + "|" + fam + "|" + (f.file || "") + "|" + (f.gw || ""); if (FCUS.has(sig)) continue; FCUS.add(sig);
+      if (/^fonts\/custom\/[\w.-]+\.(woff2?|ttf|otf)$/i.test(f.file || "")) {
+        const st = document.createElement("style"); st.textContent = `@font-face{font-family:"${fam}";src:url("${f.file}");font-weight:100 900;font-display:swap}`; document.head.appendChild(st);
+      } else {
+        const gw = /^[0-9;]{1,40}$/.test(f.gw || "") ? ":wght@" + f.gw : "", l = document.createElement("link");
+        l.rel = "stylesheet"; l.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fam).replace(/%20/g, "+")}${gw}&display=swap`; document.head.appendChild(l);
+      }
+    }
+  }
   const artHtml = (a, size) => { if (!a) return ""; const m = /^girl:(\d)$/.exec(a); if (m) return girl(+m[1], size); return IMGOK(a) ? `<img class="kg-art" src="${esc(a)}" alt="" loading="lazy" width="${size}">` : "" };
 
   /* ---------- Bảng màu và cấu hình mẫu ---------- */
@@ -230,7 +248,7 @@
     const dflt = !Object.keys(st0).some(k => !["preset", "icon", "v"].includes(k)), s = resolve({ ...st0, preset: st0.preset || `${th}-${q}`, ...(dflt ? { icon: autoIcon(item.name, th, st0.icon), isz: 1.32 } : {}) });
     const r = rng(item.id || item.name), L = new Set(s.layers), g = s.grad.length ? s.grad : [s.color];
     const vars = [`--tc:${s.color}`, `--g:${gradCss(g.length > 1 ? g : [g[0], g[0]])}`, `--gl:${glowC(s.glow.c, s.glow.i)}`, `--gi:${s.glow.i}`, `--gr:${s.glow.r ?? Math.max(1, Math.round(s.glow.i * 7))}px`, `--sk:${s.stroke.w}px`, `--skc:${s.stroke.c}`, `--sp:${(1 / s.spd).toFixed(2)}`, `--op:${s.op}`,
-      `--b1:${s.bgc[0] || "#1b1630"}`, `--b2:${s.bgc[1] || s.bgc[0] || "#2b2448"}`, `--bc:${s.bc}`, `--ic:${s.iconc || g[Math.min(1, g.length - 1)]}`, `--isz:${s.isz}em`, `--ff:${FONTS[s.font][1]}`].join(";");
+      `--b1:${s.bgc[0] || "#1b1630"}`, `--b2:${s.bgc[1] || s.bgc[0] || "#2b2448"}`, `--bc:${s.bc}`, `--ic:${s.iconc || g[Math.min(1, g.length - 1)]}`, `--isz:${s.isz}em`, `--ff:${FONTS[s.font][1].replace(/"/g, "'")}`, `--fw:${(FONTS[s.font][2] || {}).w || 700}`].join(";");
     let fx = "";
     if (L.has("aura")) fx += '<i class="kt-aura"></i>';
     if (L.has("aurora")) fx += '<i class="kt-aurora"></i>';
@@ -243,7 +261,7 @@
     const ring = L.has("ring") ? `<i class="kt-ring">${RING[th]}</i>` : "";
     const art = opt.noart ? "" : s.art ? `<span class="kt-av">${artHtml(s.art, 40)}</span>` : "";
     const ic = art ? art + (s.img ? `<span class="kt-ic"><img src="${esc(s.img)}" alt=""></span>` : "") : (s.img ? `<span class="kt-ic"><img src="${esc(s.img)}" alt=""></span>` : s.icon ? `<span class="kt-ic">${ring}${icon(s.icon)}</span>` : ring ? `<span class="kt-ic">${ring}</span>` : "");
-    const cls = `kt kt-q${q} kt-${th} kt-bg-${s.bg} kt-bd-${s.border}${s.gmove ? " kt-gm" : ""}${L.has("sweep") ? " kt-sw" : ""}${L.has("breathe") ? " kt-br" : ""}${s.glow.i > 0 ? " kt-gw" : ""}${s.img ? " kt-hi" : ""}${item.ex ?? item.exclusive ? " kt-ex" : ""} kt-${opt.size || "sm"}${s.font === "bold" ? " kt-it" : ""}`;
+    const cls = `kt kt-q${q} kt-${th} kt-bg-${s.bg} kt-bd-${s.border}${s.gmove ? " kt-gm" : ""}${L.has("sweep") ? " kt-sw" : ""}${L.has("breathe") ? " kt-br" : ""}${s.glow.i > 0 ? " kt-gw" : ""}${s.img ? " kt-hi" : ""}${item.ex ?? item.exclusive ? " kt-ex" : ""} kt-${opt.size || "sm"}${s.font === "bold" ? " kt-it" : (FONTS[s.font][2] || {}).it ? " kt-ci" : ""}`;
     return `<span class="${cls}" style="${vars}" title="${esc(item.name)}, ${QN[q - 1]}${item.ex ?? item.exclusive ? ", độc quyền" : ""}">${fx || ps ? `<span class="kt-fx" aria-hidden="true">${fx}${ps ? `<span class="kt-ps">${ps}</span>` : ""}</span>` : ""}${ic}<span class="kt-t" data-t="${esc(item.name)}">${esc(item.name)}</span></span>`;
   }
 
@@ -675,12 +693,13 @@
 @media(prefers-reduced-motion:reduce){.dz-l *,.kn2,.kn2 *,.kn2::before,.kn2::after,.kbg2::before,.kbg2::after,.kcf2,.kcf2::before,.kcf2::after,.kbd2,.kbd2 *{animation:none!important}}
 .kg-d .nb{fill:currentColor;opacity:.3;stroke:none}.kg-d .nm{fill:currentColor;stroke:none}.kg-d .nw{fill:#fff;opacity:.32;stroke:none}.kg-d .nh{fill:#fff;opacity:.9;stroke:none}.kg-d .nx{fill:#000;opacity:.45;stroke:none}.kg-d .nx2{fill:#0b0612;opacity:.92;stroke:none}
 .kg-d .ns,.kg-d .nsb{fill:none;stroke:currentColor;stroke-width:1.5}.kg-d .nsb{opacity:.45}.kg-d .nk{fill:none;stroke:#fff;stroke-width:1.1;opacity:.75}.kg-d .nkd{fill:none;stroke:#000;stroke-width:1.1;opacity:.35}
-.kt{--sp:1;position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:.32em;height:1.6em;padding:0 .6em;font:700 .78em/1 var(--ff);letter-spacing:.01em;white-space:nowrap;vertical-align:middle;border-radius:.4em;max-width:100%;contain:layout style}
+.kt{--sp:1;position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:.32em;height:1.6em;padding:0 .6em;font:var(--fw,700) .78em/1 var(--ff);letter-spacing:.01em;white-space:nowrap;vertical-align:middle;border-radius:.4em;max-width:100%;contain:layout style}
 .kt.kt-md{font-size:1em}.kt.kt-lg{font-size:1.35em}
-.kt-t{position:relative;min-width:0;color:var(--tc);background:var(--g);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;-webkit-text-stroke:var(--sk) var(--skc);paint-order:stroke fill;background-size:200% 100%;overflow:hidden;text-overflow:ellipsis}
+.kt-t{position:relative;min-width:0;padding:.32em .16em;margin:-.32em -.16em;color:var(--tc);background:var(--g);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;-webkit-text-stroke:var(--sk) var(--skc);paint-order:stroke fill;background-size:200% 100%;overflow:hidden;text-overflow:ellipsis}
 .kt-q1 .kt-t{-webkit-text-fill-color:var(--tc);background:none}
 .kt-gw .kt-t{filter:drop-shadow(0 0 calc(var(--gr) * .35) var(--gl)) drop-shadow(0 0 var(--gr) var(--gl))}
 .kt-it .kt-t{font-weight:800;font-style:italic;font-family:"Be Vietnam Pro",system-ui,sans-serif;letter-spacing:.02em}
+.kt-ci .kt-t{font-style:italic}
 .kt::before{content:"";position:absolute;inset:0;z-index:-2;border-radius:inherit;pointer-events:none}
 .kt-bg-plate::before{background:linear-gradient(135deg,var(--b1),var(--b2))}
 .kt-bg-scroll::before{background:radial-gradient(circle at 0 50%,var(--b2) 0 .45em,transparent .46em),radial-gradient(circle at 100% 50%,var(--b2) 0 .45em,transparent .46em),linear-gradient(180deg,var(--b2),var(--b1) 50%,var(--b2));border-radius:.8em}
@@ -727,7 +746,7 @@
 .t-bolt{border-radius:0;clip-path:polygon(40% 0,100% 0,60% 45%,90% 45%,20% 100%,40% 55%,10% 55%);width:calc(var(--s) * 1.4);height:calc(var(--s) * 2)}
 /* Chỉ chạy hiệu ứng khi danh hiệu đang hiện trên màn hình */
 .kg-on.kt-gm .kt-t{animation:kt-gm calc(5s * var(--sp)) linear infinite}
-.kg-on.kt-sw .kt-t::after{content:attr(data-t);position:absolute;inset:0;background:linear-gradient(100deg,transparent 40%,#ffffffe6 50%,transparent 60%) 0 0/300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;-webkit-text-stroke:0;animation:kt-sweep calc(3.6s * var(--sp)) ease-in-out infinite}
+.kg-on.kt-sw .kt-t::after{content:attr(data-t);position:absolute;inset:0;padding:inherit;line-height:inherit;background:linear-gradient(100deg,transparent 40%,#ffffffe6 50%,transparent 60%) 0 0/300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;-webkit-text-stroke:0;animation:kt-sweep calc(3.6s * var(--sp)) ease-in-out infinite}
 .kg-on .kt-aura{animation:kt-aura calc(4s * var(--sp)) ease-in-out infinite}
 .kg-on.kt-br .kt-fx{animation:kt-breathe calc(3.2s * var(--sp)) ease-in-out infinite}
 .kg-on .kt-ring{animation:kt-spin calc(14s * var(--sp)) linear infinite}
@@ -836,5 +855,6 @@
   (document.head || document.documentElement).appendChild(css);
   fxMode();
 
-  window.KG = { DECO, DZ: { frame: Object.keys(DECO.FR), avatar_fx: Object.keys(DECO.AX), name_color: Object.keys(DECO.NC), name_fx: DECO.NF, profile_bg: DECO.SC, banner: DECO.SC, comment_frame: DECO.CF, badge: Object.keys(DECO.SHP), metal: Object.keys(DECO.MET) }, THEMES, QN, QC, KINDS, FONTS, PARTS, DIRS, LAYERS, BGS, BORDERS, IC, esc, icon, girl, art: artHtml, preset, resolve, title, name, avatar, cframe, bgStyle, badge, preview, fxMode, setDefault, watch, IMGOK, pickItem, chosen };
+  window.KG = { DECO, DZ: { frame: Object.keys(DECO.FR), avatar_fx: Object.keys(DECO.AX), name_color: Object.keys(DECO.NC), name_fx: DECO.NF, profile_bg: DECO.SC, banner: DECO.SC, comment_frame: DECO.CF, badge: Object.keys(DECO.SHP), metal: Object.keys(DECO.MET) }, THEMES, QN, QC, KINDS, FONTS, PARTS, DIRS, LAYERS, BGS, BORDERS, IC, esc, icon, girl, art: artHtml, preset, resolve, title, name, avatar, cframe, bgStyle, badge, preview, fxMode, setDefault, watch, IMGOK, pickItem, chosen, addFonts };
+  try { if (typeof DATA !== "undefined" && DATA.site) addFonts(DATA.site.fonts) } catch (e) {}
 })();

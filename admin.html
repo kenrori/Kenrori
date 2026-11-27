@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="fonts/beaufort-medium.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="fonts/beaufort-bold.woff" as="font" type="font/woff" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/admin.css?v=20261128g">
+<link rel="stylesheet" href="css/admin.css?v=20261128h">
 </head>
 <body>
 <div id="gate"><div class="gc">
@@ -195,6 +195,9 @@
 <details class="gsx"><summary>Giscus (chỉ khi chọn kiểu Giscus)</summary><p class="mu">Lấy 4 giá trị tại giscus.app.</p>
 <div class="g2"><div><label for="g_repo">Repo <small>(tên-người-dùng/tên-repo)</small></label><input id="g_repo"></div><div><label for="g_rid">Repo ID</label><input id="g_rid"></div>
 <div><label for="g_cat">Tên danh mục</label><input id="g_cat"></div><div><label for="g_cid">Category ID</label><input id="g_cid"></div></div></details>
+<h4>Phông chữ cho danh hiệu</h4><p class="mu">Có sẵn 4 phông. Bạn thêm được phông từ Google Fonts (gõ đúng tên, ví dụ Pattaya, Lobster, Dancing Script, Bungee) hoặc tải file phông của mình (WOFF2, WOFF, TTF, OTF, tối đa 2 MB). Nên chọn phông có hỗ trợ tiếng Việt, nếu không dấu sẽ hiện bằng phông khác. Phông thêm ở đây sẽ có trong ô "Phông chữ" khi sửa danh hiệu.</p>
+<div id="fn_list" class="fnl"></div>
+<div class="g2"><div><label for="fn_g">Tên phông trên Google Fonts</label><input id="fn_g" placeholder="Ví dụ: Pattaya"></div><div class="acts" style="align-self:end"><button type="button" class="sec" id="fn_gadd">Thêm từ Google Fonts</button><label class="sec stkup">Tải file phông<input type="file" id="fn_file" accept=".woff2,.woff,.ttf,.otf" hidden></label></div></div>
 <h4>Cách hiện tên</h4><label class="ck"><input type="checkbox" id="tcap"> Viết hoa chữ cái đầu mỗi chữ trong tên truyện và tên chương <small>(ví dụ "cô gái bên cửa sổ" hiện thành "Cô Gái Bên Cửa Sổ"; chỉ đổi cách hiện, tên bạn đã nhập vẫn giữ nguyên)</small></label>
 <h4>Khu Sáng tác</h4><label class="ck"><input type="checkbox" id="st_on"> Bật khu Sáng tác: người đọc tạo tài khoản và tự đăng truyện của mình <small>(cần chạy thêm file supabase-setup.sql)</small></label>
 <div class="g2"><div class="full"><label for="st_rules">Nội quy Sáng tác <small>(mỗi dòng một điều; để trống để dùng nội quy mặc định)</small></label><textarea id="st_rules" style="min-height:120px"></textarea></div></div>
@@ -247,8 +250,8 @@
 <div id="log" class="fade"></div>
 <div id="pvw" hidden role="dialog" aria-label="Xem trước chương"><div class="pvb"><div class="pvh"><b>Xem trước</b><span id="pv_note"></span><button type="button" class="sec sm" id="pv_x">Đóng</button></div><div class="pvc" id="pv_c"></div></div></div>
 <input type="file" id="bk_in" accept=".json,application/json" hidden>
-<script src="js/admin.js?v=20261128g"></script>
-<script src="js/game.js?v=20261128g"></script>
-<script src="js/admin-game.js?v=20261128g"></script>
+<script src="js/admin.js?v=20261128h"></script>
+<script src="js/game.js?v=20261128h"></script>
+<script src="js/admin-game.js?v=20261128h"></script>
 </body>
 </html>
