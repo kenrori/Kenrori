@@ -1895,7 +1895,36 @@
    "cover": "images/nani-no-torie-mo-nai-heibon-na-ore-ga-bijin-futago-shimai-wo-inochigake-de-tasuke-ta-kekka-jitsuha-yandere-da-ta-ni-nin-wo-gachi-hore-sase-te-shima-ta-ken-bia.jpg"
   }
  ],
- "manga": [],
+ "manga": [
+  {
+   "slug": "jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru",
+   "chapters": [],
+   "title": "Jinsei Gyakuten - Uwaki Sare, Enzai Wo Kiserareta Ore Ga, Gakuen Ichi No Bishoujo Ni Natsukareru",
+   "orig": "人生逆転　浮気され、えん罪を着せられた俺が、学園一の美少女に懐かれる",
+   "alts": [
+    "Cuộc đời tôi đã thay đổi: Sau khi tôi bị phản bội và buộc tội oan, cô gái xinh đẹp nhất trường lại trở nên thân thiết với tôi~",
+    "My Life Turned Around: After Being Cheated on and Falsely Accused, I Ended up Being Adored by the Most Beautiful Girl in School",
+    "Life Reversal: I was Cheated on and Falsely Accused, but Now the Most Beautiful Girl in the School is Getting Close to Me"
+   ],
+   "artist": "",
+   "author": "Hige Neko, Ikaguchi Ei",
+   "status": "Đang dịch",
+   "genres": [
+    "tragedy"
+   ],
+   "desc": "",
+   "src": "",
+   "team": [
+    {
+     "r": "",
+     "n": "Zettai Translation"
+    }
+   ],
+   "prog": "",
+   "sched": "",
+   "cover": "images/jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru-bia.jpg"
+  }
+ ],
  "videos": [
   {
    "title": "NELKE - ステレオタイプヒロイック / Stereotype Heroic",
@@ -2336,5 +2365,5 @@
    }
   ]
  },
- "rev": 1795818588289
+ "rev": 1795818672346
 }
