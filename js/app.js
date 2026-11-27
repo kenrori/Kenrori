@@ -317,6 +317,143 @@ function detail(kind, s) {
   if (cmtMode() === "anon") { const bx = document.createElement("section"); bx.className = "cmside"; $(".tpl").appendChild(bx); CMT.mount(bx, `${kind}/${s.slug}`, "Bình luận về bộ truyện") }
 }
 const cmtMode = () => { const ok = !!(window.CMT && CMT.enabled()), m = DATA.site.cmt || (ok ? "anon" : "giscus"); return m === "anon" ? (ok ? "anon" : "") : m };
+/* ---------- Trình đọc manga: khung xem toàn màn hình + bảng điều khiển bên phải ---------- */
+const MRI = {
+  x: '<path d="M6 6l12 12M18 6 6 18"/>', pin: '<path d="M9 4h6l-1 6 4 3H6l4-3zM12 13v8"/>', menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
+  book: '<path d="M3 5c3-1 6-1 9 1 3-2 6-2 9-1v14c-3-1-6-1-9 1-3-2-6-2-9-1z"/><path d="M12 6v14"/>', page: '<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/>',
+  l: '<path d="m15 6-6 6 6 6"/>', r: '<path d="m9 6 6 6-6 6"/>', chat: '<path d="M4 5h16v11H9l-5 4z"/>', flag: '<path d="M5 21V4h11l-2 4 2 4H5"/>',
+  team: '<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5M16 5a3 3 0 0 1 0 6M18 15c2 1 3 3 3 5"/>', user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+  single: '<rect x="7" y="3" width="10" height="18" rx="1.5"/>', double: '<rect x="2.5" y="4" width="9" height="16" rx="1.5"/><rect x="12.5" y="4" width="9" height="16" rx="1.5"/>', strip: '<rect x="7" y="2" width="10" height="8" rx="1"/><rect x="7" y="13" width="10" height="9" rx="1"/>',
+  both: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>', width: '<path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/>', height: '<path d="M12 3v18M8 7l4-4 4 4M8 17l4 4 4-4"/>', none: '<rect x="5" y="5" width="14" height="14" rx="1.5"/><path d="M9 9h6v6H9z"/>',
+  ltr: '<circle cx="12" cy="12" r="9"/><path d="M8 12h8M13 9l3 3-3 3"/>', rtl: '<circle cx="12" cy="12" r="9"/><path d="M16 12H8M11 9l-3 3 3 3"/>',
+  head: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/>', headoff: '<rect x="3" y="4" width="18" height="16" rx="2"/>',
+  prog: '<path d="M3 17h18M3 17v-3M21 17v-3M8 17v-2M13 17v-2"/>', edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/>', key: '<rect x="2" y="6" width="20" height="13" rx="2"/><path d="M6 10h1M10 10h1M14 10h1M18 10h1M7 15h10"/>'
+};
+const mri = k => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${MRI[k]}</svg>`;
+const MRO = {
+  mode: [["single", "Từng trang"], ["double", "Hai trang"], ["strip", "Cuộn dọc"]],
+  fit: [["both", "Vừa màn hình"], ["width", "Vừa chiều ngang"], ["height", "Vừa chiều cao"], ["none", "Kích thước gốc"]],
+  dir: [["ltr", "Trái sang phải"], ["rtl", "Phải sang trái"]],
+  head: [["on", "Hiện thanh trên"], ["off", "Ẩn thanh trên"]],
+  prog: [["normal", "Thanh tiến độ"], ["light", "Thanh tiến độ mảnh"], ["off", "Ẩn thanh tiến độ"]]
+};
+function mrCfg() {
+  let o = {}; try { o = JSON.parse(ls.get("mr") || "{}") || {} } catch (e) {}
+  const small = innerWidth < 800, d = { mode: small ? "strip" : ls.get("mm") === "page" ? "single" : "single", fit: small ? "width" : "both", dir: "ltr", head: "on", prog: "normal", pin: small ? 0 : 1 };
+  for (const k of Object.keys(MRO)) if (!MRO[k].some(([v]) => v === o[k])) delete o[k];
+  return { ...d, ...o };
+}
+function mangaRead(kind, s, i, c, pg, base, repU) {
+  const n = s.chapters.length, key = `${kind}/${s.slug}`, N = pg.length, C = mrCfg(), small = () => innerWidth < 800;
+  const goto = j => { if (j >= 0 && j < n) location.hash = `${base}/${j}`; else if (j >= n) toast("Đây là chương mới nhất") };
+  const team = (s.team || []).filter(t => t.n), copts = s.chapters.map((x, j) => `<option value="${j}"${j === i ? " selected" : ""}>${esc((x.vol ? x.vol + " · " : "") + x.t)}</option>`).join("");
+  const cyc = k => { const L = MRO[k], j = L.findIndex(([v]) => v === C[k]), [v, l] = L[j < 0 ? 0 : j]; return `<button type="button" class="mro" data-k="${k}" title="Bấm để đổi">${mri(k === "head" ? (v === "on" ? "head" : "headoff") : k === "prog" ? "prog" : v)}<span>${l}</span></button>` };
+  document.body.classList.add("mrx");
+  app.innerHTML = `<div class="mr" id="mr" tabindex="-1">
+<header class="mrh"><a class="mrb" href="${base}" title="Về trang truyện" aria-label="Về trang truyện">${mri("l")}</a><div class="mrt"><a href="${base}">${esc(s.title)}</a><span>${c.vol ? esc(c.vol) + " · " : ""}${esc(c.t)}</span></div><b class="mrn" id="mrn"></b><button type="button" class="mrk" id="mrk" aria-label="Mở bảng điều khiển" title="Bảng điều khiển (M)">${mri("menu")}</button></header>
+<div class="mrw"><div class="mrv" id="mrv" aria-live="polite"></div><div class="mrq" id="mrq" role="navigation" aria-label="Các trang"></div></div>
+<button type="button" class="mrk mrkf" id="mrkf" aria-label="Mở bảng điều khiển" title="Bảng điều khiển (M)">${mri("menu")}</button>
+<aside class="mrp" id="mrp" aria-label="Bảng điều khiển đọc truyện">
+<div class="mrp0"><button type="button" class="mri" id="mrpx" aria-label="Đóng bảng điều khiển" title="Đóng">${mri("x")}</button><button type="button" class="mri mrpin" id="mrpin" aria-label="Ghim bảng điều khiển" title="Ghim bảng bên cạnh trang truyện">${mri("pin")}</button></div>
+<a class="mrl mrs" href="${base}">${mri("book")}<span>${esc(s.title)}</span></a>
+<div class="mrl">${mri("page")}<span>${c.vol ? esc(c.vol) + " · " : ""}${esc(c.t)}</span></div>
+<div class="mrsel"><button type="button" class="mra" id="mrpp" aria-label="Trang trước">${mri("l")}</button><label><small>Trang</small><select id="mrps" aria-label="Chọn trang"></select></label><button type="button" class="mra" id="mrpn" aria-label="Trang sau">${mri("r")}</button></div>
+<div class="mrsel"><button type="button" class="mra" id="mrcp" aria-label="Chương trước"${i > 0 ? "" : " disabled"}>${mri("l")}</button><label><small>Chương</small><select id="mrcs" aria-label="Chọn chương">${copts}</select></label><button type="button" class="mra" id="mrcn" aria-label="Chương sau"${i < n - 1 ? "" : " disabled"}>${mri("r")}</button></div>
+${/^https?:\/\//.test(repU || "") ? `<a class="mrbtn" href="${esc(repU)}" target="_blank" rel="noopener">${mri("flag")}Báo lỗi chương</a>` : ""}
+<hr>
+${cmtMode() === "anon" || (cmtMode() === "giscus" && (DATA.site.giscus || {}).repoId) ? `<button type="button" class="mrbtn" id="mrcm">${mri("chat")}Bình luận</button>` : ""}
+${team.length ? `<div class="mrg"><small>Nhóm thực hiện</small>${team.map(t => `<div class="mrl">${mri(/nhóm|team/i.test(t.r || "") ? "team" : "user")}<span>${esc(t.n)}${t.r ? `<em>${esc(t.r)}</em>` : ""}</span></div>`).join("")}</div>` : ""}
+<hr>
+<div class="mrset">${Object.keys(MRO).map(cyc).join("")}</div>
+${ADM ? `<a class="mrbtn" href="admin.html#editchap/${kind}/${s.slug}/${i}">${mri("edit")}Sửa chương</a>` : ""}
+<p class="mrhint">${mri("key")}<span>Phím ← → để lật trang, M để mở hoặc đóng bảng này. Bấm nửa trái hoặc nửa phải ảnh để lật.</span></p>
+</aside>
+<aside class="mrc" id="mrc" hidden aria-label="Bình luận"><div class="mrc0"><b>Bình luận</b><button type="button" class="mri" id="mrcx" aria-label="Đóng bình luận">${mri("x")}</button></div><div class="mrcb" id="mrcb"></div></aside>
+</div>`;
+  const mr = $("#mr"), V = $("#mrv"), Q = $("#mrq"), PS = $("#mrps");
+  let pi = 0, open = C.pin && !small();
+  let back = false; try { back = sessionStorage.getItem("mrlast") === "1"; sessionStorage.removeItem("mrlast") } catch (e) {}
+  if (back) pi = N - 1; // lùi từ trang đầu chương sau: mở ở trang cuối
+  else { const b = BM.get(key); if (b && String(b.c) === String(i) && b.p > 0 && b.p < N) { pi = b.p; setTimeout(() => toast(`Đã mở lại trang ${pi + 1}/${N} bạn đọc dở`), 300) } }
+  const spreads = () => { const L = [[0]]; for (let k = 1; k < N; k += 2) L.push(k + 1 < N ? [k, k + 1] : [k]); return L };
+  const spOf = p => spreads().findIndex(a => a.includes(p));
+  const save = () => { ls.set("mr", JSON.stringify(C)) };
+  const apply = () => {
+    Object.entries(C).forEach(([k, v]) => mr.dataset[k] = v); mr.classList.toggle("open", open); mr.classList.toggle("pinned", open && !!C.pin && !small());
+    $("#mrpin").classList.toggle("on", !!C.pin); $("#mrpin").setAttribute("aria-pressed", !!C.pin);
+    mr.querySelectorAll(".mro").forEach(b => b.outerHTML = cyc(b.dataset.k)); mr.querySelectorAll(".mro").forEach(b => b.onclick = () => { const L = MRO[b.dataset.k], j = L.findIndex(([v]) => v === C[b.dataset.k]); C[b.dataset.k] = L[(j + 1) % L.length][0]; save(); apply(); draw() });
+  };
+  const img = (p, cls = "") => `<img class="mrimg${cls}" src="${esc(pg[p])}" alt="Trang ${p + 1}" data-p="${p}" draggable="false"${C.mode === "strip" && Math.abs(p - pi) > 2 ? ' loading="lazy"' : ""}>`;
+  const mark = () => {
+    const cur = C.mode === "double" ? spreads()[spOf(pi)] : [pi], last = cur[cur.length - 1];
+    $("#mrn").textContent = `${cur.map(x => x + 1).join("–")} / ${N}`; PS.value = cur[0];
+    Q.querySelectorAll("button").forEach((b, k) => { b.classList.toggle("on", cur.includes(k)); b.classList.toggle("rd", k < cur[0]) });
+    BM.page(key, i, last, N); $("#mrpp").disabled = pi <= 0 && i <= 0; $("#mrpn").disabled = last >= N - 1 && i >= n - 1;
+  };
+  const pre = p => { for (const k of [p + 1, p + 2, p + 3]) if (pg[k]) new Image().src = pg[k] };
+  function draw() {
+    if (C.mode === "strip") {
+      V.innerHTML = `<div class="mrst">${pg.map((_, p) => img(p)).join("")}<div class="mrend">${endHtml()}</div></div>`;
+      const t = V.querySelector(`[data-p="${pi}"]`); if (t && pi > 0) requestAnimationFrame(() => t.scrollIntoView({ block: "start" })); else V.scrollTop = 0;
+      watchStrip();
+    } else {
+      const sp = C.mode === "double" ? spreads()[spOf(pi)] : [pi];
+      V.innerHTML = `<div class="mrpg${sp.length > 1 ? " two" : ""}">${sp.map(p => img(p)).join("")}</div>`; V.scrollTop = 0; V.scrollLeft = C.dir === "rtl" ? V.scrollWidth : 0; pre(sp[sp.length - 1]);
+    }
+    mark();
+  }
+  const endHtml = () => i < n - 1 ? `<p>Hết chương</p><button type="button" class="mrbtn pri" onclick="location.hash='${base}/${i + 1}'">Đọc chương tiếp: ${esc(s.chapters[i + 1].t)}</button>` : `<p>Bạn đã đọc tới chương mới nhất</p><a class="mrbtn" href="${base}">Về trang truyện</a>`;
+  let io = null;
+  function watchStrip() {
+    io?.disconnect(); io = new IntersectionObserver(E => { const vis = E.filter(e => e.isIntersecting).map(e => +e.target.dataset.p); if (!vis.length) return; const top = [...V.querySelectorAll(".mrimg")].find(el => el.getBoundingClientRect().bottom > V.getBoundingClientRect().top + 40); if (top) { pi = +top.dataset.p; mark() } }, { root: V, threshold: [0, .5] });
+    V.querySelectorAll(".mrimg").forEach(el => io.observe(el));
+  }
+  const prevCh = () => { if (i > 0) { try { sessionStorage.setItem("mrlast", "1") } catch (e) {} } goto(i - 1) };
+  const step = d => {
+    if (C.mode === "strip") { V.scrollBy({ top: d * V.clientHeight * .85, behavior: "smooth" }); return }
+    if (C.mode === "double") { const L = spreads(), j = spOf(pi) + d; if (j < 0) return prevCh(); if (j >= L.length) return goto(i + 1); pi = L[j][0] }
+    else { const x = pi + d; if (x < 0) return prevCh(); if (x >= N) return goto(i + 1); pi = x }
+    draw();
+  };
+  const jump = p => { pi = Math.max(0, Math.min(N - 1, p)); if (C.mode === "strip") { V.querySelector(`[data-p="${pi}"]`)?.scrollIntoView({ block: "start" }); mark() } else draw() };
+  PS.innerHTML = pg.map((_, p) => `<option value="${p}">${p + 1}</option>`).join("");
+  Q.innerHTML = pg.map((_, p) => `<button type="button" aria-label="Trang ${p + 1}" data-n="${p + 1}"></button>`).join("");
+  Q.onclick = e => { const b = e.target.closest("button"); if (b) jump([...Q.children].indexOf(b)) };
+  PS.onchange = () => { jump(+PS.value); PS.blur() };
+  $("#mrcs").onchange = e => goto(+e.target.value);
+  $("#mrpp").onclick = () => C.mode === "strip" ? (pi > 0 ? jump(pi - 1) : prevCh()) : step(-1); $("#mrpn").onclick = () => C.mode === "strip" ? (pi < N - 1 ? jump(pi + 1) : goto(i + 1)) : step(1);
+  $("#mrcp").onclick = () => goto(i - 1); $("#mrcn").onclick = () => goto(i + 1);
+  const panel = v => { open = v ?? !open; apply() };
+  $("#mrk").onclick = $("#mrkf").onclick = () => panel(); $("#mrpx").onclick = () => panel(false);
+  $("#mrpin").onclick = () => { C.pin = C.pin ? 0 : 1; save(); apply() };
+  V.onclick = e => {
+    if (open && !(C.pin && !small())) { panel(false); return }
+    if (C.mode === "strip" || e.target.closest("button,a")) return;
+    const r = V.getBoundingClientRect(), left = e.clientX < r.left + r.width / 2; step((left ? -1 : 1) * (C.dir === "rtl" ? -1 : 1));
+  };
+  if ($("#mrcm")) {
+    let mounted = false; const cm = $("#mrc");
+    $("#mrcm").onclick = () => { cm.hidden = !cm.hidden; if (!cm.hidden && !mounted) { mounted = true; mountCmt($("#mrcb"), `${kind}/${s.slug}/${c.file || (c.pages && c.pages[0]) || c.t}`) } };
+    $("#mrcx").onclick = () => { cm.hidden = true };
+  }
+  RDKEY = d => step(C.dir === "rtl" && C.mode !== "strip" ? -d : d);
+  const onKey = e => {
+    if (!mr.isConnected) return removeEventListener("keydown", onKey);
+    if (e.altKey || e.ctrlKey || e.metaKey || /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || "")) return;
+    if (e.key === "m" || e.key === "M") panel(); else if (e.key === "Escape") { if (!$("#mrc").hidden) $("#mrc").hidden = true; else if (open) panel(false) }
+    else if (e.key === " " && C.mode !== "strip") { e.preventDefault(); step(e.shiftKey ? -1 : 1) }
+  };
+  addEventListener("keydown", onKey);
+  const onR = () => { if (!mr.isConnected) return removeEventListener("resize", onR); apply() }; addEventListener("resize", onR);
+  apply(); draw(); mr.focus({ preventScroll: true });
+}
+function mountCmt(box, term) { // gắn khung bình luận (ẩn danh hoặc giscus) vào một phần tử bất kỳ
+  if (cmtMode() === "anon") return CMT.mount(box, term);
+  const G = DATA.site.giscus; if (cmtMode() !== "giscus" || !G || !G.repo || !G.repoId || !G.category || !G.categoryId) return;
+  const sc = document.createElement("script"); sc.src = "https://giscus.app/client.js";
+  Object.entries({ "data-repo": G.repo, "data-repo-id": G.repoId, "data-category": G.category, "data-category-id": G.categoryId, "data-mapping": "specific", "data-term": term, "data-strict": "0", "data-reactions-enabled": "1", "data-emit-metadata": "0", "data-input-position": "top", "data-theme": "preferred_color_scheme", "data-lang": "vi", crossorigin: "anonymous" }).forEach(([k, v]) => sc.setAttribute(k, v));
+  sc.async = true; box.appendChild(sc);
+}
 async function read(kind, s, i) {
   const c = s.chapters[i]; if (!c) { location.hash = `#${kind}/${s.slug}`; return }
   ls.set(kind + ":" + s.slug, i); ls.set("t:" + kind + ":" + s.slug, Date.now()); const rs = rdSet(kind, s); if (!rs.includes(i)) { rs.push(i); ls.set("r:" + kind + ":" + s.slug, JSON.stringify(rs)) }
@@ -330,6 +467,7 @@ async function read(kind, s, i) {
 <header class="rh"><a class="rs" href="${base}">${esc(s.title)}</a>${c.vol ? `<div class="rv">${esc(c.vol)}</div>` : ""}<h1>${esc(c.t)}</h1><p id="meta">${fmtD(c.date)}</p></header>${nav}<article id="rd" class="rd ${isImgCh(c) ? "gal" : kind} ${kind === "novel" && !isImgCh(c) ? RS.ff + " " + RS.bg : ""}"></article>${endc}
 ${isImgCh(c) ? "" : `<button class="fab" id="rsb" title="Tùy chỉnh đọc" aria-label="Tùy chỉnh đọc" aria-expanded="false" onclick="rsToggle()"><svg class="i" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg></button>
 <div class="rsp" id="rsp" hidden data-kind="${kind}"></div>`}`;
+  if (kind === "manga" && !isImgCh(c)) { const pg = c.pages || Array.from({ length: c.n }, (_, k) => c.dir + String(k + 1).padStart(c.pad || 2, "0") + "." + (c.ext || "jpg")); if (pg.length) { mangaRead(kind, s, i, c, pg, base, repU); if (window.KGP) KGP.read({ key: `${kind}/${s.slug}/${i}`, series: `${kind}/${s.slug}`, genres: s.genres || [] }); return } }
   const rd = $("#rd");
   if (isImgCh(c)) {
     rd.innerHTML = c.pages.map((u, j) => `<button class="gi" onclick="lbShow(${j})" aria-label="Xem ảnh ${j + 1}"><img src="${esc(u)}" alt="Ảnh minh họa ${j + 1}" loading="lazy"></button>`).join("");
@@ -430,7 +568,7 @@ window.BM = BM;
 function route() {
   BM.off();
   try { if (location.hash && !/^#(viet\/(dang-nhap|dang-ky|quen-mat-khau)|viet$|access_token|error)/.test(location.hash)) sessionStorage.setItem("klast", location.hash) } catch (e) {}
-  RDKEY = null; clearInterval(HT); HI = 0; document.body.classList.remove("so"); if (window.KGP) KGP.stop();
+  RDKEY = null; clearInterval(HT); HI = 0; document.body.classList.remove("so", "mrx"); if (window.KGP) KGP.stop();
   const [a, b, c] = decodeURIComponent(location.hash.slice(1)).split("/");
   if (window.KGP && KGP.handles(a)) {
     reading_ = false; sideMode(); document.body.classList.remove("rdg");
