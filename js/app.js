@@ -21,7 +21,11 @@ const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? "").normalize("NFC").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const fmtD = d => d ? d.split("-").reverse().join("/") : "";
 const fmtN = n => n ? Number(n).toLocaleString("vi-VN") + " chữ" : "";
-const hue = t => [...t].reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
+const TC0 = new Map(); // tên đã viết hoa -> tên gốc, để màu bìa tạm không đổi
+const hue = t => [...(TC0.get(t) ?? t)].reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
+/* Viết hoa chữ cái đầu của mỗi chữ (chỉ khi hiển thị, không sửa dữ liệu gốc). */
+const tcap = t => typeof t === "string" ? t.split(/(\s+)/).map(w => w.replace(/^([^\p{L}\p{N}]*)(\p{Ll})/u, (m, a, b) => a + b.toLocaleUpperCase("vi"))).join("") : t;
+const applyTcap = () => { if (DATA.site.tcap === false) return; for (const k of Object.values(KEY)) for (const s of DATA[k] || []) { const t = tcap(s.title); if (t !== s.title) { TC0.set(t, s.title); s._t0 = s.title; s.title = t } for (const c of s.chapters || []) c.t = tcap(c.t) } };
 const ls = { get: k => { try { return localStorage.getItem(k) } catch (e) {} }, set: (k, v) => { try { localStorage.setItem(k, v) } catch (e) {} }, del: k => { try { localStorage.removeItem(k) } catch (e) {} } };
 const ADM = !!ls.get("cfg2");
 const imgTag = s => s ? `<img src="${esc(s)}" alt="" loading="lazy" onerror="this.remove()">` : "";
@@ -298,7 +302,7 @@ function detail(kind, s) {
       h = G.map(([v, a]) => {
         if (desc) a = [...a].reverse();
         const cv = vc[v] || (v !== "Chương lẻ" ? s.cover : ""), cut = !q && !allOpen && a.length > LIM;
-        return `<section class="vblk"><div class="vhd">${cv ? `<img class="vmini" src="${esc(cv)}" alt="" loading="lazy" onerror="this.remove()">` : ""}<b>${esc(v)}</b><span>${a.length} chương</span></div><div class="vbd${cv ? "" : " nocv"}">${cv ? `<button class="vcv" style="--h:${hue(s.title + v)}" data-src="${esc(cv)}" onclick="LBL=[this.dataset.src];lbShow(0)" aria-label="Xem bìa ${esc(v)}"><img src="${esc(cv)}" alt="Bìa ${esc(v)}" loading="lazy" onerror="this.remove()"></button>` : ""}<div class="vlw"><div class="vls${cut ? " cut" : ""}">${a.map(rowHtml).join("")}</div>${cut ? `<button class="vmore" data-n="${a.length - LIM}" onclick="const c=this.previousElementSibling.classList.toggle('cut');this.textContent=c?'Xem tiếp ('+this.dataset.n+' chương)':'Thu gọn';if(c)this.closest('.vblk').scrollIntoView({block:'nearest'})">Xem tiếp (${a.length - LIM} chương)</button>` : ""}</div></div></section>`;
+        return `<section class="vblk"><div class="vhd">${cv ? `<img class="vmini" src="${esc(cv)}" alt="" loading="lazy" onerror="this.remove()">` : ""}<b>${esc(v)}</b><span>${a.length} chương</span></div><div class="vbd${cv ? "" : " nocv"}">${cv ? `<button class="vcv" style="--h:${hue((s._t0 || s.title) + v)}" data-src="${esc(cv)}" onclick="LBL=[this.dataset.src];lbShow(0)" aria-label="Xem bìa ${esc(v)}"><img src="${esc(cv)}" alt="Bìa ${esc(v)}" loading="lazy" onerror="this.remove()"></button>` : ""}<div class="vlw"><div class="vls${cut ? " cut" : ""}">${a.map(rowHtml).join("")}</div>${cut ? `<button class="vmore" data-n="${a.length - LIM}" onclick="const c=this.previousElementSibling.classList.toggle('cut');this.textContent=c?'Xem tiếp ('+this.dataset.n+' chương)':'Thu gọn';if(c)this.closest('.vblk').scrollIntoView({block:'nearest'})">Xem tiếp (${a.length - LIM} chương)</button>` : ""}</div></div></section>`;
       }).join("");
     }
     $("#cl").innerHTML = h || `<p class="empty">Không có chương nào khớp với từ khóa.</p>`;
@@ -489,7 +493,7 @@ const loadExtras = () => extrasP ??= Promise.all(EXTRAS.map(f => loadJs(f).catch
 if (ls.get("kx")) loadExtras();
 (async () => {
   try { const r = await fetch("data.json?v=" + Date.now()); if (r.ok) Object.assign(DATA, await r.json()) } catch (e) {}
-  DATA.site ??= {}; DATA.projects ??= [];
+  DATA.site ??= {}; DATA.projects ??= []; applyTcap();
   if (sbOn()) { ls.set("kx", "1"); await loadExtras() } else ls.del("kx");
   gcInit(); renderSide(); renderAnn(); if (window.ST) ST.initBtn();
   route();
