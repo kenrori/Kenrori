@@ -400,3 +400,21 @@ button,input,select,textarea{font-family:inherit}
 #side:hover{scrollbar-color:color-mix(in srgb,var(--mu) 40%,transparent) transparent}
 @media(hover:none),(pointer:coarse){#side{scrollbar-width:none}#side::-webkit-scrollbar{display:none}}
 #nv .sg{padding:14px 12px 5px}#nv a,#nv a.top{padding:7px 12px}
+
+/* Đánh dấu chỗ đọc */
+#bmbar{position:fixed;left:50%;bottom:22px;z-index:85;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 96px);padding:8px 8px 8px 14px;border-radius:999px;background:var(--tx);color:var(--bg);font-size:.88rem;box-shadow:0 10px 30px -10px #0008;opacity:0;transform:translate(-50%,14px);transition:opacity .25s,transform .25s}
+#bmbar.on{opacity:1;transform:translate(-50%,0)}
+#bmbar .i{width:17px;height:17px;flex:none;fill:var(--ac);stroke:none}
+#bmbar span{min-width:0}
+#bmbar button{flex:none;border:0;border-radius:999px;font:inherit;cursor:pointer}
+#bmbar .bmb{padding:5px 12px;background:color-mix(in srgb,var(--bg) 16%,transparent);color:inherit;font-weight:500}
+#bmbar .bmx{width:28px;height:28px;background:transparent;color:inherit;font-size:1.1rem;line-height:1;opacity:.7}
+#bmbar button:hover{opacity:1;background:color-mix(in srgb,var(--bg) 26%,transparent)}
+#bmbar button:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+.rd>.bmhit{position:relative;border-radius:6px;animation:bmhit 2.6s ease-out}
+.rd>.bmhit::before{content:"";position:absolute;left:-14px;top:.2em;bottom:.2em;width:3px;border-radius:2px;background:var(--ac);animation:bmbar 2.6s ease-out forwards}
+@keyframes bmhit{0%,35%{background:color-mix(in srgb,var(--ac) 14%,transparent)}100%{background:transparent}}
+@keyframes bmbar{0%,60%{opacity:1}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){#bmbar{transition:none}.rd>.bmhit,.rd>.bmhit::before{animation:none}}
+@media(max-width:600px){#bmbar{left:12px;right:12px;transform:translateY(14px);max-width:none;font-size:.82rem;bottom:78px}#bmbar.on{transform:none}}
+.btn .bmw{display:flex;flex-direction:column;align-items:flex-start;line-height:1.2;min-width:0}.btn .bmw small{font-size:.74rem;font-weight:500;opacity:.88;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
