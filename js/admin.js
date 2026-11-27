@@ -516,6 +516,94 @@ $("#up_go").onclick = () => run(async () => {
   log(`✅ Đã đặt ${ok.length} file vào đúng chỗ: ${[...new Set(ok.map(x => x.q.includes("/") ? x.q.split("/")[0] + "/" : x.q))].join(", ")}.${skip.length ? ` Bỏ qua ${skip.length} file không thuộc web (${skip.slice(0, 4).join(", ")}${skip.length > 4 ? "..." : ""}).` : ""} Web cập nhật sau 1–2 phút. Nếu chưa thấy thay đổi, tải lại trang bằng Ctrl+F5.`);
   if (ok.some(x => x.q === "admin.html" || x.q.startsWith("js/admin"))) log("Gói có cập nhật trang quản trị: tải lại trang này sau 2 phút để dùng bản mới.");
 });
+/* ===== Dịch cả tập ngay sau khi nhập file ===== */
+const IMGM = /^\u0000IMG(\d+)$/;
+let impTrOn = false;
+const iProg = m => { $("#i_tprog").textContent = m };
+function impTrSync() { // dùng chung cài đặt và bảng tên với mục Dịch chương, theo đúng bộ đang nhập
+  if ($("#i_ser").value !== "" && $("#t_ser").value !== $("#i_ser").value && data.novels[+$("#i_ser").value]) { $("#t_ser").value = $("#i_ser").value; trSer() }
+  for (const [a, b] of [["i_tsrc", "t_src"], ["i_tgen", "t_genre"]]) { if (!$("#" + a).options.length) $("#" + a).innerHTML = $("#" + b).innerHTML; $("#" + a).value = $("#" + b).value }
+  const n = trGl().length, on = PROV.filter(p => p.on).length;
+  $("#i_trsum").textContent = on ? `${n ? `Bảng tên của bộ có ${n} tên. ` : "Bộ này chưa có bảng tên, sẽ tự tạo khi dịch. "}Đang bật ${on} dịch vụ AI.` : "Chưa bật dịch vụ AI nào: vào mục Dịch chương, mở Cài đặt dịch tự động để thêm key.";
+  $("#i_tundo").hidden = !IMP.some(x => x.orig);
+}
+[["i_tsrc", "t_src"], ["i_tgen", "t_genre"]].forEach(([a, b]) => $("#" + a).addEventListener("change", () => { $("#" + b).value = $("#" + a).value; $("#" + b).dispatchEvent(new Event("change")) }));
+function impBusy(on) { impTrOn = on; ["i_tgo", "i_pub", "i_go", "i_tundo"].forEach(id => $("#" + id).disabled = on); $("#i_tstop").hidden = !on }
+const lsTry = (k, v) => { try { localStorage.setItem(k, v); return true } catch (e) { return false } };
+const lsJ = k => { try { return JSON.parse(localStorage.getItem(k) || "null") } catch (e) { return null } };
+function glAddFrom(brief) { // thêm tên mới trong phần phân tích vào bảng tên, không hỏi lại
+  const have = new Set(trGl().map(([x]) => x)), add = []; let sec = "";
+  for (const l of String(brief).split("\n")) {
+    const h = /^\s*(Nhân vật|Thuật ngữ mới|Xưng hô|Thể loại|Giọng kể)\s*:/i.exec(l); if (h) { sec = h[1].toLowerCase(); continue }
+    if (!/nhân vật|thuật ngữ/.test(sec)) continue;
+    const m = /^\s*[-•*]\s*(.+?)\s*=\s*(.+?)\s*(?:\(.*)?$/.exec(l); if (!m) continue;
+    const x = m[1].trim(), y = m[2].trim(); if (!x || !y || x === y || have.has(x) || x.length > 40 || y.length > 60) continue; have.add(x); add.push(x + "=" + y);
+  }
+  if (add.length) { const g = $("#t_gl"); g.value = (g.value.trim() ? g.value.trim() + "\n" : "") + add.join("\n"); if (trSlug) ls.set("gl:" + trSlug, g.value) }
+  return add.length;
+}
+async function impTitles(L) {
+  const T = L.map(([x]) => x.t), key = "itrt:" + hashS(T.join("\n")), C = lsJ(key);
+  let out = Array.isArray(C) && C.length === T.length ? C : null;
+  if (!out) {
+    iProg("Đang dịch tên các chương...");
+    const t = await gem(`Dịch các tên chương sau sang tiếng Việt, mỗi dòng một tên, giữ đúng thứ tự và đúng ${T.length} dòng, có đánh số như bản gốc. Có số chương thì viết dạng "Chương N: tên" (第3話, 第三章, Chapter 3 → Chương 3). Prologue, プロローグ, 序章 → Mở đầu; Epilogue, エピローグ, 尾声 → Vĩ thanh; Afterword, あとがき, 后记 → Lời bạt; Illustrations, 口絵, 插图 → Minh họa; Interlude, 幕間 → Giữa chương. Chỉ trả về danh sách.\n\n${T.map((t, i) => `${i + 1}. ${t}`).join("\n")}`, { sys: trSys() });
+    const R = t.replace(/```[\w-]*/g, "").split("\n").map(l => l.trim()).filter(l => /^\d+[.)]\s*/.test(l)).map(l => l.replace(/^\d+[.)]\s*/, "").trim());
+    if (R.length === T.length) { out = R; lsTry(key, JSON.stringify(R)) }
+  }
+  if (out) L.forEach(([x], k) => { if (out[k]) { x.orig ??= { t: x.t, body: x.body, w: x.w }; x.t = out[k].slice(0, 200) } });
+}
+async function impTrOne(x, n, N, t0) {
+  const src = (x.orig || x).body.map(l => { const m = IMGM.exec(l); return m ? `[img:${m[1]}]` : l }).join("\n"), fast = $("#t_mode").value === "fast";
+  const cs = chunks(trPre(src), fast ? 4200 : 2400), key = "itr:" + hashS(src) + ":" + cs.length, C = lsJ(key) || { parts: [] }, name = `Chương ${n + 1}/${N} "${x.t.slice(0, 40)}"`;
+  if (!cs.length) return true;
+  if ($("#i_tbr").checked && !C.brief) {
+    iProg(`${name}: đang đọc trước để chốt nhân vật và xưng hô...`);
+    try { await trBrief(trPre(src)); C.brief = $("#t_brief").value; const k = glAddFrom(C.brief); if (k) log(`Thêm ${k} tên mới vào bảng tên từ ${x.t.slice(0, 40)}.`); lsTry(key, JSON.stringify(C)) } catch (e) { log("Bỏ qua bước đọc trước của " + x.t.slice(0, 40) + ": " + e.message) }
+  }
+  $("#t_brief").value = C.brief || ""; const sys = trSys(), pol = $("#t_pol2").checked;
+  for (let k = 0; k < cs.length; k++) {
+    if (C.parts[k]) continue; if (trStop) return false;
+    x.trp = `Đang dịch ${k + 1}/${cs.length}`; impRender();
+    iProg(`${name}: phần ${k + 1}/${cs.length}, đã chạy ${trSec(t0)}${trLastBy ? ". Dịch vụ: " + trLastBy : ""}`);
+    const ctx = C.parts[k - 1] ? trParas(C.parts[k - 1]).slice(-3).join("\n").slice(-900) : "";
+    let t = await gem(trUser(cs[k], ctx), { sys });
+    if (pol && !trStop) { try { t = await gem(trPolishUser(cs[k], trClean(t)), { sys }) } catch (e) {} }
+    C.parts[k] = trClean(t); if (!lsTry(key, JSON.stringify(C)) && !impTrOne.warn) { impTrOne.warn = 1; log("Bộ nhớ trình duyệt đã đầy, phần đã dịch chỉ giữ tới khi đóng trang. Nhớ đăng trước khi đóng.") }
+  }
+  // Ghép bản dịch, đưa ảnh về đúng chỗ (ảnh AI làm rơi thì đặt lại theo vị trí tương ứng)
+  let out = trParas(C.parts.join("\n\n")); const seen = new Set();
+  out = out.map(l => { const m = /^\[img:(\d+)\]$/.exec(l.replace(/\s+/g, "")); if (m && x.imgs[+m[1]] != null && !seen.has(+m[1])) { seen.add(+m[1]); return "\u0000IMG" + m[1] } return m ? "" : l }).filter(Boolean);
+  const sb = (x.orig || x).body;
+  x.imgs.forEach((_, j) => { if (seen.has(j)) return; const at = sb.findIndex(l => l === "\u0000IMG" + j); out.splice(Math.round(Math.max(0, at) / Math.max(1, sb.length) * out.length), 0, "\u0000IMG" + j) });
+  x.orig ??= { t: x.t, body: x.body, w: x.w }; x.body = out; x.w = out.filter(l => l[0] !== "\u0000").join(" ").split(/\s+/).filter(Boolean).length; x.tr = 1; delete x.trp;
+  return true;
+}
+$("#i_tgo").onclick = async () => {
+  if (impTrOn) return; impTrSync();
+  if (!PROV.some(p => p.on)) return log("❌ Chưa bật dịch vụ AI nào. Vào mục Dịch chương, mở Cài đặt dịch tự động để thêm key (Gemini có gói miễn phí).");
+  const L = IMP.map((x, i) => [x, i]).filter(([x]) => x.on && x.type === "text" && !x.tr);
+  if (!L.length) return log(IMP.some(x => x.tr) ? "Các chương đã chọn đều đã dịch xong." : "Hãy chọn ít nhất một chương chữ để dịch.");
+  const fast = $("#t_mode").value === "fast", chars = L.reduce((a, [x]) => a + x.body.filter(l => !IMGM.test(l)).join("").length, 0);
+  const calls = L.reduce((a, [x]) => a + chunks(trPre(x.body.join("\n")), fast ? 4200 : 2400).length, 0) * ($("#t_pol2").checked ? 2 : 1) + ($("#i_tbr").checked ? L.length : 0) + 1;
+  if (!confirm(`Dịch ${L.length} chương (${chars.toLocaleString("vi-VN")} ký tự, khoảng ${calls} lượt gọi AI)?\n\nGiữ trang này mở tới khi xong. Nếu bị gián đoạn, nhập lại đúng file này rồi bấm Dịch các chương đã chọn, phần đã dịch được giữ lại.`)) return;
+  trStop = false; impBusy(true); const t0 = Date.now(), brief0 = $("#t_brief").value; let ok = 0, err = null;
+  try {
+    const LT = IMP.map((x, i) => [x, i]).filter(([x]) => x.on && !x.orig); // tên chương (cả chương minh họa) dịch một lượt
+    try { if (LT.length) await impTitles(LT) } catch (e) { log("Chưa dịch được tên chương, giữ tên gốc: " + e.message) }
+    impRender();
+    for (const [n, [x]] of L.entries()) { if (trStop) break; if (await impTrOne(x, n, L.length, t0)) ok++; impRender() }
+  } catch (e) { err = e } finally {
+    L.forEach(([x]) => delete x.trp); $("#t_brief").value = brief0; trDraft(); impBusy(false); impRender(); impTrSync();
+  }
+  const left = L.length - ok;
+  if (err) { iProg(`❌ ${err.message} Đã dịch xong ${ok}/${L.length} chương, bấm Dịch các chương đã chọn để dịch tiếp.`); log("❌ " + err.message) }
+  else if (left) iProg(`Đã dừng. Xong ${ok}/${L.length} chương, bấm Dịch các chương đã chọn để dịch tiếp.`);
+  else { iProg(`✅ Đã dịch xong ${ok} chương trong ${trSec(t0)}. Bấm Xem ở từng chương để đọc soát, rồi bấm Đăng các chương đã chọn.`); log(`✅ Đã dịch ${ok} chương. Nhớ bấm Lưu bảng tên lên repo trong mục Dịch chương nếu muốn giữ bảng tên mới.`) }
+};
+$("#i_tstop").onclick = () => { trStop = true; iProg("Đang dừng sau khi xong phần đang dịch...") };
+$("#i_tundo").onclick = () => { if (impTrOn || !confirm("Bỏ bản dịch của tất cả chương và trở về bản gốc? (Phần đã dịch vẫn được nhớ, bấm Dịch lại sẽ lấy ra ngay.)")) return; IMP.forEach(x => { if (x.orig) { x.t = x.orig.t; x.body = x.orig.body; x.w = x.orig.w; delete x.orig; delete x.tr } }); impRender(); impTrSync(); iProg("") };
+$("#i_ser").addEventListener("change", impTrSync);
 /* ===== Bộ đồ thêm cho trợ lý Kiku ===== */
 function kkoRender() {
   const L = ((data.site || {}).kiku || {}).outfits || [];
@@ -1329,12 +1417,13 @@ function impSplit(B) {
   return { useH, segs: segs.map(g => { const w = g.body.filter(x => x[0] !== "\u0000").join(" ").split(/\s+/).filter(Boolean).length, img = g.imgs.length > 0 && (w <= 5 || (w < 30 && /minh h(ọa|oạ)|illustration|口絵|挿絵|插图|彩页/i.test(g.t))); return { ...g, w, type: img ? "img" : "text", on: g.pre ? (w >= 50 || img) : (w > 0 || img), t: g.pre && img ? "Minh họa" : g.t } }) };
 }
 const VNRE = /(?:^|[^\p{L}])(?:tập|tap|volume|vol|quyển|quyen)\.?\s*[-_#:]?\s*(\d+|[IVXLC]+)(?![\p{L}\d])/iu;
+const volIn = t => { t = String(t).replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)); return VNRE.exec(t) || /第?\s*(\d{1,3})\s*[巻卷册冊]/.exec(t) };
 function impVols(segs, name, s, carry) {
   // Trả về { n, src }: số tập đã nhận ra (để file sau nối tiếp)
   const own = $("#i_vol").value.trim(), multi = $("#i_file").files.length > 1; let n = null, src = "";
-  const fm = VNRE.exec(name.replace(/\.[^.]+$/, "").replace(/[_.]+/g, " "));
+  const fm = volIn(name.replace(/\.[^.]+$/, "").replace(/[_.]+/g, " "));
   if (fm) { n = numOf(fm[1]); src = "tên file" }
-  if (n == null) { const pre = segs.find(g => g.pre), L = [...(pre ? pre.body.slice(0, 30) : []), ...segs.slice(0, 3).map(g => g.t)]; for (const t of L) { if (t.length > 150) continue; const m = VNRE.exec(t); if (m) { n = numOf(m[1]); src = "trang đầu file"; break } } }
+  if (n == null) { const pre = segs.find(g => g.pre), L = [...(pre ? pre.body.slice(0, 30) : []), ...segs.slice(0, 3).map(g => g.t)]; for (const t of L) { if (t.length > 150) continue; const m = volIn(t); if (m) { n = numOf(m[1]); src = "trang đầu file"; break } } }
   const has = segs.some(g => g.vol);
   if (has) { let i = 0; const fv = segs.find(g => g.vol).vol; while (i < segs.length && !segs[i].vol) segs[i++].vol = fv; src = "các dòng Tập trong file" }
   else if (own && !multi) { segs.forEach(g => g.vol = own); src = "ô Tập" }
@@ -1354,7 +1443,7 @@ function impRender() {
   const sel = IMP.filter(x => x.on), lost = IMP.filter(x => x.type === "text" && x.imgs.length).reduce((a, x) => a + x.imgs.length, 0);
   $("#i_sum").textContent = `Tìm thấy ${IMP.length} phần, đã chọn ${sel.length} để đăng`;
   $("#i_note").textContent = [IMPINFO, lost ? `Có ${lost} ảnh nằm giữa các chương chữ, sẽ được đăng kèm ngay tại vị trí đó trong chương. Ảnh nằm riêng trong phần "Minh họa" được đăng thành chương minh họa.` : ""].filter(Boolean).join(" ");
-  $("#i_list").innerHTML = IMP.map((x, i) => `<div class="irow${x.on ? "" : " off"}"><input type="checkbox" data-ion="${i}" ${x.on ? "checked" : ""} aria-label="Chọn"><span class="n">${i + 1}</span><input type="text" class="vi" data-ivol="${i}" value="${esc(x.vol)}" placeholder="Tập"><input type="text" data-it="${i}" value="${esc(x.t)}"><small>${x.type === "img" ? x.imgs.length + " ảnh" : x.w.toLocaleString("vi-VN") + " chữ"}</small><button type="button" class="sec sm" data-ipv="${i}">Xem</button><span class="sn">${esc(x.type === "img" ? "Chương minh họa" : (x.body[0] || "").slice(0, 140))}</span></div>`).join("");
+  $("#i_list").innerHTML = IMP.map((x, i) => `<div class="irow${x.on ? "" : " off"}"><input type="checkbox" data-ion="${i}" ${x.on ? "checked" : ""} aria-label="Chọn"><span class="n">${i + 1}</span><input type="text" class="vi" data-ivol="${i}" value="${esc(x.vol)}" placeholder="Tập"><input type="text" data-it="${i}" value="${esc(x.t)}"><small>${x.type === "img" ? x.imgs.length + " ảnh" : x.w.toLocaleString("vi-VN") + " chữ"}${x.trp ? `<em class="itg run">${esc(x.trp)}</em>` : x.tr ? '<em class="itg">Đã dịch</em>' : ""}</small><button type="button" class="sec sm" data-ipv="${i}">Xem</button><span class="sn">${esc(x.type === "img" ? "Chương minh họa" : (x.body[0] || "").slice(0, 140))}</span></div>`).join("");
 }
 $("#i_go").onclick = () => run(async () => {
   if (!data.novels[+$("#i_ser").value]) throw new Error("Hãy tạo bộ truyện (novel) trước ở mục Bộ truyện");
@@ -1365,7 +1454,7 @@ $("#i_go").onclick = () => run(async () => {
     info.push(`${src.name ? src.name + ": " : ""}${r.segs.length} phần, ${v.vols.length ? v.vols.join(", ") + (v.src ? " (nhận từ " + v.src + ")" : "") : "chưa nhận ra tập"}`);
   }
   if (!IMP.length) throw new Error("Không tìm thấy nội dung để chia");
-  $("#i_res").hidden = false; $("#i_vols").innerHTML = [...new Set([...s.chapters.map(c => (c.vol || "").trim()), ...IMP.map(x => x.vol)].filter(Boolean))].map(v => `<option value="${esc(v)}">`).join(""); IMPINFO = info.join(". ") + "."; impRender();
+  $("#i_res").hidden = false; $("#i_tprog").textContent = ""; setTimeout(impTrSync, 0); $("#i_vols").innerHTML = [...new Set([...s.chapters.map(c => (c.vol || "").trim()), ...IMP.map(x => x.vol)].filter(Boolean))].map(v => `<option value="${esc(v)}">`).join(""); IMPINFO = info.join(". ") + "."; impRender();
   log(`✅ Đã chia thành ${IMP.length} phần (${useH ? "theo tiêu đề trong file" : "theo từ khóa"}). ${IMP.some(x => !x.vol) ? "Có phần chưa có tập, hãy điền ở cột Tập. " : ""}Hãy xem lại trước khi đăng.`);
   if (IMP.length === 1) log("Chỉ tìm thấy 1 phần. Thử đổi cách chia hoặc thêm từ khóa trong mục Cách chia chương.");
 });

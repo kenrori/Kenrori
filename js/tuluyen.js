@@ -150,9 +150,9 @@
 <path class="tl-m3" d="M520 260l70-48 46 18 60-34 48 28 52-22 66 36 58-24 80 46v0z"/></svg>
 <div class="tl-mc"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="96"/><circle cx="100" cy="100" r="84" stroke-dasharray="2 7"/><circle cx="100" cy="100" r="62"/><path d="M100 4 183 148H17zM100 196 17 52h166z"/></svg></div>
 ${[[6, 0, 15, 1], [22, 5, 18, .8], [41, 2.5, 16, 1.1], [58, 8, 20, .7], [73, 1, 14, .9], [86, 6, 17, 1.2], [95, 10, 19, .8]].map(([x, d, t, s]) => `<i class="tl-pt" style="--x:${x}%;--d:-${d}s;--t:${t}s;--s:${s}"></i>`).join("")}`;
-  // Thành tựu có sẵn dùng ảnh trong img/tt/, thành tựu tự thêm vẫn dùng biểu tượng nét vẽ
-  const ACHI = new Set(["so-nhap-giang-ho", "tieu-thanh-doc-gia", "bach-chuong-doc-gia", "thien-chuong-hanh-gia", "van-quyen-thu-sinh", "nhat-khac-tu-hanh", "thap-thoi-tinh-tu", "bach-thoi-nhap-dinh", "thien-thoi-dai-dinh", "truong-da-tu-hanh", "that-nhat-tu-dao", "nguyet-vien", "bach-nhat-tu-dao", "nhat-nien-luan-hoi", "van-phap-quy-tong", "bach-gia-chu-tu", "suu-tam-gia", "tang-bao-cac", "thien-kim-tan-tan", "ky-ngo-dau-tien", "khai-son-nguyen-lao"]);
-  const achIc = (id, ic) => ACHI.has(id) ? `<img class="tl-ai" src="img/tt/${id}.webp" alt="" loading="lazy" decoding="async">` : KG.icon(ic || "star");
+  // Thành tựu có sẵn: biểu tượng hợp nghĩa hơn trong bộ biểu tượng mới; thành tựu tự thêm dùng biểu tượng đã chọn
+  const ACHI = { "so-nhap-giang-ho": "sword", "tieu-thanh-doc-gia": "book", "bach-chuong-doc-gia": "bookopen", "thien-chuong-hanh-gia": "scroll", "van-quyen-thu-sinh": "crown", "nhat-khac-tu-hanh": "hourglass", "thap-thoi-tinh-tu": "clock", "bach-thoi-nhap-dinh": "lotus", "thien-thoi-dai-dinh": "taiji", "truong-da-tu-hanh": "crescent", "that-nhat-tu-dao": "sun", "nguyet-vien": "moon", "bach-nhat-tu-dao": "mountain", "nhat-nien-luan-hoi": "phoenix", "van-phap-quy-tong": "magic", "bach-gia-chu-tu": "brush", "suu-tam-gia": "medal", "tang-bao-cac": "pagoda", "thien-kim-tan-tan": "coin", "ky-ngo-dau-tien": "comet", "khai-son-nguyen-lao": "seal" };
+  const achIc = (id, ic) => KG.icon(ACHI[id] || ic || "star");
   const medal = (ic, st, id) => `<span class="tl-md ${st}"><svg class="tl-mdr" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30.5"/><circle class="tl-tk" cx="32" cy="32" r="26.5"/></svg>${st === "hid" ? KG.icon(ic || "star") : achIc(id, ic)}${st === "got" ? `<svg class="tl-mds" viewBox="-7 -7 14 14" aria-hidden="true"><path class="tl-spk" d="M0-6C.7-1.2 1.2-.7 6 0 1.2.7.7 1.2 0 6-.7 1.2-1.2.7-6 0-1.2-.7-.7-1.2 0-6z"/></svg>` : ""}</span>`;
   const dmy = s => { const d = new Date(s), z = v => String(v).padStart(2, "0"); return `${z(d.getDate())}/${z(d.getMonth() + 1)}/${d.getFullYear()}` };
   const hm2 = s => { const d = new Date(s), z = v => String(v).padStart(2, "0"); return `${z(d.getHours())}:${z(d.getMinutes())}` };
@@ -604,9 +604,8 @@ body.clear #kchip{background:#ffffff26;color:#fff}
 .tl-ac.hid{border-style:dashed;border-color:var(--bd)}
 .tl-acb{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}.tl-acb h3{margin:0;font-family:var(--fd);font-weight:700;font-size:1.05rem}.tl-acb p{margin:0;color:var(--mu);font-size:.84rem;line-height:1.45}
 .tl-md{--mc:var(--run);position:relative;flex:none;display:grid;place-items:center;width:58px;height:58px;border-radius:50%;color:var(--mc);background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--mc) 30%,transparent),color-mix(in srgb,var(--mc) 6%,transparent) 70%)}
-.tl-ai{position:relative;z-index:1;width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 2px 4px #0006)}.tl-md.run .tl-ai{filter:grayscale(.75) brightness(.85);opacity:.8}.kpi .tl-ai{width:30px;height:30px}.kpach .tl-ai{width:20px;height:20px;filter:none}
 .tl-md.got{--mc:#e0a526;color:var(--gt)}.tl-md.hid{--mc:var(--mu)}
-.tl-md .kg-i{width:26px;height:26px;position:relative;z-index:1}
+.tl-md .kg-i{width:34px;height:34px;position:relative;z-index:1;filter:drop-shadow(0 2px 3px #0005)}
 .tl-mdr{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:var(--mc);stroke-width:2}.tl-tk{stroke-width:2.4;stroke-dasharray:1 4.2;opacity:.8;transform-box:view-box;transform-origin:50% 50%}
 .tl-md.got .tl-mdr circle:first-child{stroke:url(#tlgb);stroke-width:2.6}
 .tl-mds{position:absolute;top:-4px;right:-4px;width:18px;height:18px;overflow:visible}

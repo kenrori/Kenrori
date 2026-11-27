@@ -249,3 +249,8 @@ button,input,select,textarea{font-family:inherit}
 .kkoi img{width:44px;height:50px;object-fit:contain;flex:none}.kkoi div{flex:1;min-width:0}.kkoi b{display:block;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.kkoi small{color:var(--mu);font-size:.78rem}
 
 .upk{border:1px solid var(--bd);border-radius:12px;padding:14px 16px;margin-bottom:18px;background:var(--s1)}
+
+.itr{border:1px solid var(--bd);border-radius:12px;padding:14px 16px;margin:12px 0;background:var(--s1)}
+.itrh{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}.itrh b{font-size:1rem}
+.itp:empty{display:none}.itp{margin:8px 0 0;font-weight:500;color:var(--tx)}
+.itg{display:block;font-style:normal;font-size:.72rem;font-weight:600;color:var(--ok);margin-top:2px}.itg.run{color:var(--ac)}
