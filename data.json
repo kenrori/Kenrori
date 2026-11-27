@@ -1865,6 +1865,34 @@
    "sched": "",
    "format": "Light Novel",
    "cover": "images/jorge-joestar-bia.jpg"
+  },
+  {
+   "slug": "nani-no-torie-mo-nai-heibon-na-ore-ga-bijin-futago-shimai-wo-inochigake-de-tasuke-ta-kekka-jitsuha-yandere-da-ta-ni-nin-wo-gachi-hore-sase-te-shima-ta-ken",
+   "chapters": [],
+   "title": "nani no torie mo nai heibon na ore ga bijin futago shimai wo inochigake de tasuke ta kekka, jitsuha yandere da ta ni nin wo gachi hore sase te shima ta ken",
+   "orig": "何の取り柄もない平凡な俺が美人双子姉妹を命懸けで助けた結果、実はヤンデレだった二人をガチ惚れさせてしまった件",
+   "alts": [
+    "I Risked My Life to Save a Pair of Beautiful Twin Sisters, and Now These Secret Yanderes Are Totally Obsessed With Me"
+   ],
+   "artist": "Niwada",
+   "author": "Mizushima Satori",
+   "status": "Đang dịch",
+   "genres": [
+    "Lãng mạn",
+    "Học đường",
+    "Harem",
+    "Romance",
+    "Hài hước",
+    "Slice of Life",
+    "Comedy"
+   ],
+   "desc": "“Là của chúng ta nhé—chỉ giữa chúng ta thôi. Bọn mình không cho kẻ khác bén mảng tới cậu đâu.”\n\nTsurugi Reona và Riona—cặp chị em sinh đôi đẹp nhất trường—đột nhiên được cứu khỏi một kẻ tấn công bạo lực bởi một vị cứu tinh chẳng ai ngờ tới: Yagami Ryoya, một nam sinh trung học bình thường, cô độc và chẳng có điểm gì nổi bật.\n\nKể từ khoảnh khắc đó, cuộc sống yên bình của Ryoya hoàn toàn đảo lộn. Để bày tỏ lòng biết ơn vì đã cứu mạng mình, cặp sinh đôi bắt đầu ngập tràn tình cảm với cậu, cuốn cậu vào một cơn lốc những ngày tháng ngọt ngào, đong đầy yêu thương.\n\nKhông thể bắt kịp nhịp độ dồn dập của hai chị em, Ryoya liên tục rơi vào cảnh bối rối. Nhưng khi khoảng cách giữa họ ngày càng thu hẹp, cậu vẫn không hề hay biết rằng có điều gì đó trong tình huống này thực sự không ổn chút nào…\n\nMột bộ rom-com ngập tràn tình cảm và hỗn loạn—chào mừng đến với sự ra đời của một chuyến tàu lượn siêu tốc lãng mạn đầy hoang dã và khó đoán!",
+   "src": "",
+   "team": [],
+   "prog": "",
+   "sched": "",
+   "format": "Light Novel",
+   "cover": "images/nani-no-torie-mo-nai-heibon-na-ore-ga-bijin-futago-shimai-wo-inochigake-de-tasuke-ta-kekka-jitsuha-yandere-da-ta-ni-nin-wo-gachi-hore-sase-te-shima-ta-ken-bia.jpg"
   }
  ],
  "manga": [],
@@ -2083,7 +2111,8 @@
     "g": "Kenrori Emote"
    }
   ],
-  "gc": "<script data-goatcounter=\"https://kenrori"
+  "gc": "<script data-goatcounter=\"https://kenrori",
+  "fonts": []
  },
- "rev": 1795800021300
+ "rev": 1795815938078
 }
