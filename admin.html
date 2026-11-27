@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="fonts/beaufort-medium.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="fonts/beaufort-bold.woff" as="font" type="font/woff" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/admin.css?v=20261127h">
+<link rel="stylesheet" href="css/admin.css?v=20261127m">
 </head>
 <body>
 <div id="gate"><div class="gc">
@@ -197,6 +197,15 @@
 <div class="g2"><div><label for="stk_g">Tên bộ emote</label><input id="stk_g" list="stk_gs" placeholder="Ví dụ: Discord Kenrori"><datalist id="stk_gs"></datalist></div><div class="acts" style="align-self:end"><button type="button" class="sec" id="dc_go">Lấy emote từ mã Discord</button><label class="sec stkup">Tải ảnh từ máy<input type="file" id="stk_in" accept="image/gif,image/png,image/webp,image/jpeg" multiple hidden></label></div></div>
 <div class="acts" style="margin-top:4px"><button type="button" class="sec" id="kemo_go">Thêm bộ emote Kenrori có sẵn (12 emote)</button></div></div>
 <div id="stk_list"></div>
+<h4>Trợ lý ở góc web</h4><p class="mu">Cô trợ lý nhỏ đứng ở góc dưới bên phải: trò chuyện, tìm và gợi ý truyện, chỉ cách dùng web, kể chuyện cười, chơi trò chơi nhỏ. Người đọc thay đồ được cho cô ấy, và tự thu nhỏ nếu thấy vướng.</p>
+<label class="ck"><input type="checkbox" id="kk_on"> Hiện trợ lý ở góc web</label>
+<div class="g2"><div><label for="kk_name">Tên trợ lý</label><input id="kk_name" maxlength="20" placeholder="Kiku"></div>
+<div><label class="ck kkai"><input type="checkbox" id="kk_ai"> Trả lời bằng AI cho người đã đăng nhập <small>(không bắt buộc, cần cài thêm theo file kiku-ai.md)</small></label></div></div>
+<h4>Bộ đồ thêm cho trợ lý</h4><p class="mu">Có sẵn 6 bộ. Muốn thêm bộ khác (đồng phục học sinh, áo dài, kimono...), hãy tạo ảnh nhân vật mặc bộ đó, nền trong suốt (PNG), tốt nhất là cùng dáng đứng với ảnh gốc, rồi tải lên đây.</p>
+<div class="g2"><div><label for="kko_n">Tên bộ đồ</label><input id="kko_n" maxlength="30" placeholder="Ví dụ: Áo dài Tết"></div><div><label for="kko_f">Ảnh <small>(PNG nền trong suốt, dưới 3 MB)</small></label><input id="kko_f" type="file" accept="image/png,image/webp"></div>
+<div class="full"><label class="ck"><input type="checkbox" id="kko_acc"> Cùng dáng đứng với ảnh gốc <small>(cho phép đội mũ, tai mèo, vòng hoa)</small></label></div></div>
+<div class="acts"><button type="button" class="sec" id="kko_go">Thêm bộ đồ</button></div>
+<div id="kko_list" class="kkol"></div>
 <h4>Thống kê lượt xem (GoatCounter)</h4><p class="mu">Đăng ký miễn phí tại goatcounter.com, rồi nhập mã trang của bạn (phần đứng trước .goatcounter.com). Để trống để tắt. Lượt xem trên máy đã đăng nhập quản trị không được tính.</p>
 <label for="gc_code">Mã GoatCounter</label><input id="gc_code" placeholder="kenrori">
 <h4>Địa chỉ web cho RSS</h4><label for="w_url">Để trống nếu dùng địa chỉ github.io mặc định</label><input id="w_url" placeholder="https://username.github.io/kho-game/">
@@ -229,8 +238,8 @@
 <div id="log" class="fade"></div>
 <div id="pvw" hidden role="dialog" aria-label="Xem trước chương"><div class="pvb"><div class="pvh"><b>Xem trước</b><span id="pv_note"></span><button type="button" class="sec sm" id="pv_x">Đóng</button></div><div class="pvc" id="pv_c"></div></div></div>
 <input type="file" id="bk_in" accept=".json,application/json" hidden>
-<script src="js/admin.js?v=20261127h"></script>
-<script src="js/game.js?v=20261127h"></script>
-<script src="js/admin-game.js?v=20261127h"></script>
+<script src="js/admin.js?v=20261127m"></script>
+<script src="js/game.js?v=20261127m"></script>
+<script src="js/admin-game.js?v=20261127m"></script>
 </body>
 </html>
