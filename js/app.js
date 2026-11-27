@@ -119,7 +119,23 @@ const isImgCh = c => c.type === "img";
 const obi = s => s.chapters.length ? `<i class="obi"><span>${s.chapters.length} chương</span>${isNew(s) ? "<em>Mới</em>" : ""}</i>` : '<i class="obi soon">Sắp ra mắt</i>';
 const newest = s => s.chapters.reduce((m, c) => (c.date || "") >= (m.date || "") ? c : m, s.chapters[0]);
 const hasJP = t => /[\u3040-\u30ff\u3400-\u9fff]/.test(t || "");
-const card = (k, s) => `<a class="sc" href="#${k}/${s.slug}"><div class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b>${obi(s)}</div><div class="ct" title="${esc(s.title)}${s.orig ? "\n" + esc(s.orig) : ""}">${esc(s.title)}</div><small>${stDot(s)}<span>${fmtOf(k, s)}</span></small></a>`;
+/* ---------- Giới hạn tuổi: chọn ở từng bộ, hoặc tự theo thể loại (ví dụ Ecchi 16+) ---------- */
+const AGE_DEF = { "Ecchi": 16, "Gore": 16, "Mature": 18, "Adult": 18, "Smut": 18, "Người lớn": 18, "18+": 18 };
+const ageTags = () => { const m = DATA.site.ageTags && typeof DATA.site.ageTags === "object" ? DATA.site.ageTags : AGE_DEF, o = new Map(); for (const [k, v] of Object.entries(m)) if (+v > 0) o.set(k.trim().toLowerCase(), +v); return o };
+function ageOf(s) {
+  const own = String(s.age ?? ""); if (own === "0") return { a: 0, why: [] };
+  const T = ageTags(), why = (s.genres || []).filter(g => T.has(g.toLowerCase())), tg = Math.max(0, ...why.map(g => T.get(g.toLowerCase())));
+  const a = Math.max(+own || 0, tg); return { a, why: tg && tg >= (+own || 0) ? why.filter(g => T.get(g.toLowerCase()) === tg) : [] };
+}
+const ageOk = a => a < 16 || ss2.get("age" + (a >= 18 ? 18 : 16)) === "1" || ss2.get("age18") === "1";
+const ss2 = { get: k => { try { return sessionStorage.getItem(k) } catch (e) {} }, set: (k, v) => { try { sessionStorage.setItem(k, v) } catch (e) {} } };
+const ageBadge = s => { const { a } = ageOf(s); return a >= 13 ? `<i class="agb a${a}" title="Dành cho người từ ${a} tuổi">${a}+</i>` : "" };
+function ageGate(kind, s) {
+  const { a, why } = ageOf(s);
+  return `<section class="sec agate"><div class="agi a${a}">${a}+</div><h1>Truyện dành cho người từ ${a} tuổi</h1><p>"${esc(s.title)}" ${why.length ? `có thể loại ${why.map(esc).join(", ")}, nên` : ""} có nội dung chỉ phù hợp với người từ ${a} tuổi trở lên. Bạn chỉ cần xác nhận một lần cho mỗi lần mở web.</p><div class="acts"><button class="btn pri" onclick="ageYes(${a})">Tôi đủ ${a} tuổi, tiếp tục</button><a class="btn" href="#${kind === "manga" ? "manga" : isWN(s) ? "webnovel" : "novels"}">Quay lại</a></div></section>`;
+}
+function ageYes(a) { ss2.set("age" + (a >= 18 ? 18 : 16), "1"); if (a >= 18) ss2.set("age16", "1"); route() }
+const card = (k, s) => `<a class="sc" href="#${k}/${s.slug}"><div class="cover${ageOf(s).a >= 18 && !ageOk(18) ? " nsfw" : ""}" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b>${ageBadge(s)}${obi(s)}</div><div class="ct" title="${esc(s.title)}${s.orig ? "\n" + esc(s.orig) : ""}">${esc(s.title)}</div><small>${stDot(s)}<span>${fmtOf(k, s)}</span></small></a>`;
 const gridOf = (k, a) => a.length ? `<div class="series">${byNew(a).map(s => card(k, s)).join("")}</div>` : EMPTY;
 const recent = n => { const a = []; for (const { k, s } of allS()) s.chapters.forEach((c, i) => a.push({ k, s, c, i })); return a.sort((x, y) => (y.c.date || "").localeCompare(x.c.date || "") || y.i - x.i).slice(0, n) };
 const rdSet = (k, s) => { try { return JSON.parse(ls.get("r:" + k + ":" + s.slug) || "[]") } catch (e) { return [] } };
@@ -131,7 +147,7 @@ function latestUpdates(f = "all") {
 }
 let HI = 0, HT = null;
 function heroHtml() {
-  const byU = (x, y) => latest(y.s).localeCompare(latest(x.s)), L = allS().filter(x => x.s.chapters.length).sort(byU).slice(0, 10); if (!L.length) return "";
+  const byU = (x, y) => latest(y.s).localeCompare(latest(x.s)), L = allS().filter(x => x.s.chapters.length && ageOf(x.s).a < 18).sort(byU).slice(0, 10); if (!L.length) return "";
   return `<section class="hero" id="hero" aria-label="Truyện mới cập nhật">${L.map(({ k, s }, i) => `<div class="hs${i ? "" : " on"}" data-u="${latest(s)}"><div class="hb" ${bgStyle(s)}></div>${hasJP(s.orig) ? `<div class="hv" lang="ja" aria-hidden="true">${esc(s.orig)}</div>` : ""}<div class="hw"><a class="book" href="#${k}/${s.slug}" aria-label="${esc(s.title)}"><span class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></span>${s.chapters.length ? `<span class="obi"><small>Mới nhất</small><b>${(c => esc((c.vol ? c.vol.trim() + " - " : "") + c.t))(newest(s))}</b></span>` : '<span class="obi soon"><b>Sắp ra mắt</b></span>'}</a><div class="hi"><a href="#${k}/${s.slug}"><h2>${esc(s.title)}</h2></a>${s.orig ? `<div class="hor" lang="ja">${esc(s.orig)}</div>` : ""}<div class="hau">${s.author ? `<span>Tác giả</span><b>${esc(s.author)}</b>` : ""}${s.artist && s.artist !== s.author ? `<span>Minh họa</span><b>${esc(s.artist)}</b>` : ""}</div><div class="htg">${(s.genres || []).slice(0, 6).map(g => `<span>${esc(g)}</span>`).join("")}</div><p>${esc(s.desc)}</p><div class="hcta">${s.chapters.length ? (l => `<a class="btn pri" href="#${k}/${s.slug}/${l ?? 0}">${ic(I.play)}${l != null ? "Đọc tiếp" : "Đọc ngay"}</a>`)(ls.get(k + ":" + s.slug)) : ""}<a class="btn hsec" href="#${k}/${s.slug}">Xem chi tiết</a></div></div></div></div>`).join("")}${L.length > 1 ? `<div class="hn" role="tablist" aria-label="Chọn truyện nổi bật">${L.map(({ s }, i) => `<button class="hdot${i ? "" : " on"}" role="tab" aria-selected="${!i}" data-u="${latest(s)}" style="--h:${hue(s.title)}" onclick="heroTo([...this.parentNode.children].indexOf(this))" title="${esc(s.title)}" aria-label="${esc(s.title)}">${imgTag(s.cover)}</button>`).join("")}</div>` : ""}</section>`;
 }
 function heroTo(n) { const ss = document.querySelectorAll(".hs"), ds = document.querySelectorAll(".hdot"); if (ss.length < 2) return; ss[HI].classList.remove("on"); HI = (n + ss.length) % ss.length; ss[HI].classList.add("on"); ds.forEach((d, i) => { d.classList.toggle("on", i === HI); d.setAttribute("aria-selected", i === HI) }); clearInterval(HT); HT = setInterval(() => heroGo(1), 8000) }
@@ -260,6 +276,7 @@ const fmtColor = (k, s) => (FMTS.find(([f]) => f === fKey(k, s)) || FMTS[0])[3];
 const resumeHref = (k, s) => { const r = ls.get(k + ":" + s.slug); return r != null && s.chapters[+r] ? [`#${k}/${s.slug}/${r}`, "Đọc tiếp"] : [`#${k}/${s.slug}/0`, "Đọc từ đầu"] };
 function fmtShelf(f, label, more, col, desc, L) {
   if (!L.length) return "";
+  const fi = Math.max(0, L.findIndex(x => ageOf(x.s).a < 18)); L = [L[fi], ...L.filter((_, j) => j !== fi)];
   const [{ k, s }, ...rest] = L, lc = newest(s), [rh, rl] = resumeHref(k, s), G = (s.genres || []).slice(0, 3);
   const feat = `<article class="fsf"><a class="fsc" href="#${k}/${s.slug}" aria-label="${esc(s.title)}"><span class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></span></a>
 <div class="fsi"><span class="fsk">Mới cập nhật${lc && lc.date ? `, ${ago(lc.date).toLowerCase()}` : ""}</span><h3><a href="#${k}/${s.slug}">${esc(s.title)}</a></h3>${s.orig ? `<p class="fso" lang="${hasJP(s.orig) ? "ja" : "vi"}">${esc(s.orig)}</p>` : ""}
@@ -350,7 +367,7 @@ function detail(kind, s) {
   const tags = (s.genres || []).filter(g => !gHid(g)).map(g => `<a class="pill" href="${gHref(g)}"${(gMeta(g) || {}).color ? ` style="box-shadow:inset 3px 0 0 ${esc(gMeta(g).color)}"` : ""}>${esc(g)}</a>`).join("");
   const shownAlt = s.orig || (s.alts || [])[0], alt = [s.orig, ...(s.alts || [])].filter(x => x && x !== shownAlt);
   const team = (s.team || []).filter(t => t.n), vc = s.vc || {};
-  const info = [["Tác giả", pLinks(s.author) || "Chưa rõ"], s.artist ? ["Họa sĩ minh họa", pLinks(s.artist)] : null, /^https?:\/\//.test(s.src || "") ? ["Tác phẩm gốc", `<a class="al" href="${esc(s.src)}" target="_blank" rel="noopener">${esc(s.src.replace(/^https?:\/\//, "").slice(0, 40))}</a>`] : null, team.length ? ["Nhóm thực hiện", team.map(t => `<div><span class="tr">${esc(t.r || "Thành viên")}</span> ${esc(t.n)}</div>`).join("")] : null, alt.length ? ["Tên khác", altHtml(alt, hasJP(s.orig))] : null, ["Loại", fmtOf(kind, s)], ctryOf(kind, s) ? ["Quốc gia", ctryName(ctryOf(kind, s))] : null, ["Tình trạng", stDot(s) || "Chưa rõ"], ["Số chương", n], nv ? ["Số tập", nv] : null, kind === "novel" ? ["Tổng số chữ", fmtN(sum(s)) || "Chưa rõ"] : null, ["Cập nhật", fmtD(latest(s)) || "Chưa có"]].filter(Boolean);
+  const info = [["Tác giả", pLinks(s.author) || "Chưa rõ"], s.artist ? ["Họa sĩ minh họa", pLinks(s.artist)] : null, /^https?:\/\//.test(s.src || "") ? ["Tác phẩm gốc", `<a class="al" href="${esc(s.src)}" target="_blank" rel="noopener">${esc(s.src.replace(/^https?:\/\//, "").slice(0, 40))}</a>`] : null, team.length ? ["Nhóm thực hiện", team.map(t => `<div><span class="tr">${esc(t.r || "Thành viên")}</span> ${esc(t.n)}</div>`).join("")] : null, alt.length ? ["Tên khác", altHtml(alt, hasJP(s.orig))] : null, ["Loại", fmtOf(kind, s)], ageOf(s).a >= 13 ? ["Độ tuổi", `<span class="agb a${ageOf(s).a} inl">${ageOf(s).a}+</span>${ageOf(s).why.length ? ` <small>do thể loại ${ageOf(s).why.map(esc).join(", ")}</small>` : ""}`] : null, ctryOf(kind, s) ? ["Quốc gia", ctryName(ctryOf(kind, s))] : null, ["Tình trạng", stDot(s) || "Chưa rõ"], ["Số chương", n], nv ? ["Số tập", nv] : null, kind === "novel" ? ["Tổng số chữ", fmtN(sum(s)) || "Chưa rõ"] : null, ["Cập nhật", fmtD(latest(s)) || "Chưa có"]].filter(Boolean);
   const fav = isFav(kind, s.slug), lu = latest(s); markSeen(kind, s);
   const upd = lu ? `<div class="cr cru${(Date.now() - Date.parse(lu)) / 864e5 < 3 ? " fresh" : ""}" title="Cập nhật ngày ${fmtD(lu)}"><span>Cập nhật</span><b>${ago(lu)}</b></div>` : "";
   app.innerHTML = `<div class="tpb"><div class="hb" ${bgStyle(s)}></div>${hasJP(s.orig) ? `<div class="hv" lang="ja" aria-hidden="true">${esc(s.orig)}</div>` : ""}</div>
@@ -660,7 +677,7 @@ function route() {
   if (a === "tim-kiem") { if (b === "g" && c) FS = { ...FS0, k: [], st: [], g: [(GREG().find(x => x.slug === c) || {}).name || c] }; app.innerHTML = P["tim-kiem"](); searchInit() }
   else if (a === "the-loai") app.innerHTML = P.genre(b, c);
   else if (a === "tac-gia") app.innerHTML = P.author(b || "");
-  else if (s) c !== undefined ? read(a, s, +c) : detail(a, s);
+  else if (s) { if (!ageOk(ageOf(s).a)) { app.innerHTML = ageGate(a, s); document.title = s.title + " | Kenrori" } else c !== undefined ? read(a, s, +c) : detail(a, s) }
   else app.innerHTML = (P[k] || P.home)();
   scrollTo(0, 0); setClear(); shArrows(); setTitle(a, b, c, s); gcCount(); if ($("#fpg")) fpInit();
   if ($("#st_home") && window.ST) ST.homeShelf();

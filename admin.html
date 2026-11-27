@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="fonts/beaufort-medium.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="fonts/beaufort-bold.woff" as="font" type="font/woff" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/admin.css?v=20261128n">
+<link rel="stylesheet" href="css/admin.css?v=20261128o">
 </head>
 <body>
 <div id="gate"><div class="gc">
@@ -63,6 +63,7 @@
 <div><div class="g2">
 <div><label for="s_kind">Loại</label><select id="s_kind"><option value="novel">Light Novel</option><option value="webnovel">Web Novel</option><option value="manga">Manga</option></select></div>
 <div><label for="s_country">Quốc gia</label><select id="s_country"><option value="">Chưa chọn (tự đoán theo tên gốc)</option><option value="jp">Nhật Bản</option><option value="kr">Hàn Quốc</option><option value="cn">Trung Quốc</option><option value="tw">Đài Loan</option><option value="vn">Việt Nam</option><option value="us">Mỹ</option><option value="gb">Anh</option><option value="other">Khác</option></select></div>
+<div><label for="s_age">Giới hạn tuổi</label><select id="s_age"><option value="">Tự động theo thể loại</option><option value="0">Mọi lứa tuổi (tắt cảnh báo)</option><option value="13">13+ (chỉ hiện nhãn)</option><option value="16">16+ (hỏi xác nhận)</option><option value="18">18+ (hỏi xác nhận, làm mờ bìa)</option></select></div>
 <div><label for="s_status">Tình trạng</label><select id="s_status"><option>Đang dịch</option><option>Hoàn thành</option><option>Tạm ngưng</option><option>Sắp ra mắt</option></select></div>
 <div class="full"><label class="ck" style="margin-top:6px"><input type="checkbox" id="s_feat"> Đưa lên khối nổi bật ở trang chủ <small>(nếu không chọn bộ nào, trang chủ tự lấy các bộ mới cập nhật)</small></label></div>
 <div class="full"><label for="s_title">Tên truyện</label><input id="s_title" required></div>
@@ -199,6 +200,7 @@
 <h4>Phông chữ cho danh hiệu</h4><p class="mu">Có sẵn 4 phông. Bạn thêm được phông từ Google Fonts (gõ đúng tên, ví dụ Pattaya, Lobster, Dancing Script, Bungee) hoặc tải file phông của mình (WOFF2, WOFF, TTF, OTF, tối đa 2 MB). Nên chọn phông có hỗ trợ tiếng Việt, nếu không dấu sẽ hiện bằng phông khác. Phông thêm ở đây sẽ có trong ô "Phông chữ" khi sửa danh hiệu.</p>
 <div id="fn_list" class="fnl"></div>
 <div class="g2"><div><label for="fn_g">Tên phông trên Google Fonts</label><input id="fn_g" placeholder="Ví dụ: Pattaya"></div><div class="acts" style="align-self:end"><button type="button" class="sec" id="fn_gadd">Thêm từ Google Fonts</button><label class="sec stkup">Tải file phông<input type="file" id="fn_file" accept=".woff2,.woff,.ttf,.otf" hidden></label></div></div>
+<h4>Cảnh báo độ tuổi theo thể loại</h4><p class="mu">Mỗi dòng một thể loại và số tuổi, ví dụ <code>Ecchi: 16</code>. Bộ nào có thể loại trong danh sách sẽ tự hiện nhãn và hỏi xác nhận tuổi trước khi đọc (16 trở lên). Ở từng bộ, ô "Giới hạn tuổi" có thể nâng lên hoặc tắt hẳn cảnh báo.</p><textarea id="agetags" style="min-height:96px" placeholder="Ecchi: 16"></textarea>
 <h4>Cách hiện tên</h4><label class="ck"><input type="checkbox" id="tcap"> Viết hoa chữ cái đầu mỗi chữ trong tên truyện và tên chương <small>(ví dụ "cô gái bên cửa sổ" thành "Cô Gái Bên Cửa Sổ". Khi bật, mỗi lần bạn lưu, tên mới nhập cũng tự được viết hoa)</small></label>
 <div class="acts"><button type="button" class="sec" id="tcap_go">Viết hoa tất cả tên đã lưu ngay</button></div>
 <h4>Khu Sáng tác</h4><label class="ck"><input type="checkbox" id="st_on"> Bật khu Sáng tác: người đọc tạo tài khoản và tự đăng truyện của mình <small>(cần chạy thêm file supabase-setup.sql)</small></label>
@@ -252,8 +254,8 @@
 <div id="log" class="fade"></div>
 <div id="pvw" hidden role="dialog" aria-label="Xem trước chương"><div class="pvb"><div class="pvh"><b>Xem trước</b><span id="pv_note"></span><button type="button" class="sec sm" id="pv_x">Đóng</button></div><div class="pvc" id="pv_c"></div></div></div>
 <input type="file" id="bk_in" accept=".json,application/json" hidden>
-<script src="js/admin.js?v=20261128n"></script>
-<script src="js/game.js?v=20261128n"></script>
-<script src="js/admin-game.js?v=20261128n"></script>
+<script src="js/admin.js?v=20261128o"></script>
+<script src="js/game.js?v=20261128o"></script>
+<script src="js/admin-game.js?v=20261128o"></script>
 </body>
 </html>
