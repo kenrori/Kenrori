@@ -141,12 +141,14 @@ const NI = {
   vid: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/>', site: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
   man: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>'
 };
-const TABS = [["dash", "Tổng quan"], ["—", "Truyện"], ["ws", "Quản lý bộ"], ["series", "Bộ truyện"], ["chap", "Thêm chương"], ["tr", "Dịch chương"], ["imp", "Nhập từ file"], ["genre", "Thể loại"], ["—", "Game và công cụ"], ["proj", "Dự án"], ["tip", "Mẹo game"], ["—", "Khác"], ["link", "Liên kết"], ["vid", "Video"], ["—", "Hệ thống"], ["game", "Tu luyện"], ["site", "Cài đặt trang web"], ["man", "Quản lý"]];
-const PT = { edit: "Sửa chương", vol: "Tập và bìa tập" };
+const TABS = [["dash", "Tổng quan"], ["—", "Truyện"], ["ws", "Bộ truyện"], ["genre", "Thể loại"], ["—", "Game và công cụ"], ["proj", "Dự án"], ["tip", "Mẹo game"], ["—", "Khác"], ["link", "Liên kết"], ["vid", "Video"], ["—", "Hệ thống"], ["game", "Tu luyện"], ["site", "Cài đặt trang web"], ["man", "Quản lý"]];
+const PT = { edit: "Sửa chương", vol: "Tập và bìa tập", series: "Bộ truyện", chap: "Thêm chương", tr: "Dịch chương", imp: "Nhập từ file" };
+/* Các trang chỉ mở được từ bên trong một bộ (không có trên menu) */
+const HID = ["series", "chap", "tr", "imp"];
 $("#tabs").innerHTML = TABS.map(([k, l]) => k === "—" ? `<div class="tg">${l}</div>` : `<button type="button" data-k="${k}"><svg class="i" viewBox="0 0 24 24">${NI[k]}</svg>${l}</button>`).join("");
-const tab = k => { if (k !== "ws") wsPark(); $("#retbar").hidden = !(RET === "ws" && k !== "ws" && WS.k); if (!$("#retbar").hidden) $("#ret_go span").textContent = data[WS.k]?.[WS.i]?.title || ""; document.querySelector("main").classList.toggle("wide", ["tr", "dash", "game", "genre"].includes(k)); $("#ptitle").textContent = PT[k] || (TABS.find(x => x[0] === k) || [])[1] || ""; scrollTo(0, 0); [...TABS.map(x => x[0]).filter(x => x !== "—"), "edit", "vol"].forEach(t => $("#p-" + t).classList.toggle("on", t === k)); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === k)); if ($("#p-chap").classList.contains("inws")) $("#p-chap").classList.add("on") };
+const tab = k => { if (k !== "ws") wsPark(); $("#retbar").hidden = !(RET === "ws" && k !== "ws" && WS.k); if (!$("#retbar").hidden) $("#ret_go span").textContent = data[WS.k]?.[WS.i]?.title || ""; document.querySelector("main").classList.toggle("wide", ["tr", "dash", "game", "genre"].includes(k)); $("#ptitle").textContent = PT[k] || (TABS.find(x => x[0] === k) || [])[1] || ""; scrollTo(0, 0); [...TABS.map(x => x[0]).filter(x => x !== "—"), "edit", "vol", ...HID].forEach(t => $("#p-" + t).classList.toggle("on", t === k)); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === (HID.includes(k) ? "ws" : k))); if ($("#p-chap").classList.contains("inws")) $("#p-chap").classList.add("on") };
 let RET = null; const WS = { k: null, i: -1, W: null, dirty: false, f: "all", open: null, last: null };
-$("#tabs").onclick = e => { const b = e.target.closest("button[data-k]"); if (!b) return; if (WS.dirty && !confirm("Bỏ các thay đổi chưa lưu ở trang Quản lý bộ?")) return; WS.dirty = false; RET = null; tab(b.dataset.k); if (b.dataset.k === "ws") wsHome() }; tab("dash");
+$("#tabs").onclick = e => { const b = e.target.closest("button[data-k]"); if (!b) return; if (WS.dirty && !confirm("Bỏ các thay đổi chưa lưu ở trang Bộ truyện?")) return; WS.dirty = false; RET = null; tab(b.dataset.k); if (b.dataset.k === "ws") wsHome() }; tab("dash");
 
 function fillSel() {
   const o = []; for (const k of ["novel", "manga"]) data[KEYS[k]].forEach((s, i) => o.push(`<option value="${k}|${i}">${k === "novel" ? "📖" : "🖼️"} ${esc(s.title)}</option>`));
@@ -328,7 +330,7 @@ function wsPark() { const f = $("#p-chap"); if (!f.classList.contains("inws")) r
 const wsS = () => WS.k ? data[WS.k][WS.i] : null;
 const wsType = (k, s) => k === "manga" ? "manga" : s.format === "Web Novel" ? "wn" : "ln";
 const wsLat = s => s.chapters.reduce((m, c) => (c.date || "") > m ? c.date : m, "");
-function wsHome() { WS.k = null; WS.W = null; WS.dirty = false; wsPark(); $("#ws_one").hidden = true; $("#ws_home").hidden = false; $("#ptitle").textContent = "Quản lý bộ"; wsGrid() }
+function wsHome(pick) { WS.pick = pick || null; const pk = $("#ws_pk"); pk.hidden = !WS.pick; pk.textContent = WS.pick === "tr" ? "Chọn bộ truyện chữ muốn dịch chương mới." : WS.pick === "chap" ? "Chọn bộ muốn đăng chương. Mỗi chương chỉ đăng được vào bộ của nó." : ""; WS.k = null; WS.W = null; WS.dirty = false; wsPark(); $("#ws_one").hidden = true; $("#ws_home").hidden = false; $("#ptitle").textContent = "Bộ truyện"; wsGrid() }
 function wsGrid() {
   const q = $("#ws_q").value.trim().toLowerCase(), L = [];
   for (const k of ["novels", "manga"]) data[k].forEach((s, i) => { const t = wsType(k, s); if (WS.f !== "all" && WS.f !== t) return; if (q && ![s.title, s.orig, ...(s.alts || [])].join(" ").toLowerCase().includes(q)) return; L.push({ k, i, s, t }) });
@@ -339,16 +341,16 @@ $("#ws_q").oninput = wsGrid;
 $("#ws_f").onclick = e => { const b = e.target.closest("[data-wf]"); if (!b) return; WS.f = b.dataset.wf; document.querySelectorAll("#ws_f .chip").forEach(x => x.classList.toggle("on", x === b)); wsGrid() };
 $("#ws_grid").onclick = e => { const b = e.target.closest("[data-ws]"); if (b) { const [k, i] = b.dataset.ws.split("|"); wsOpen(k, +i) } };
 $("#ws_new").onclick = () => { RET = "ws"; WS.k = null; tab("series"); $("#s_new").click() };
-function wsOpen(k, i) { WS.k = k; WS.i = +i; WS.W = null; WS.dirty = false; WS.open = null; WS.last = null; RET = null; tab("ws"); $("#ws_home").hidden = true; $("#ws_one").hidden = false; wsDraw(); scrollTo(0, 0) }
+function wsOpen(k, i) { const pick = WS.pick; WS.pick = null; $("#ws_pk").hidden = true; WS.k = k; WS.i = +i; WS.W = null; WS.dirty = false; WS.open = null; WS.last = null; RET = null; tab("ws"); $("#ws_home").hidden = true; $("#ws_one").hidden = false; wsDraw(); scrollTo(0, 0); if (pick === "chap") $("#ws_addb").click(); else if (pick === "tr") { if (k === "manga") log("Manga không dùng mục Dịch chương, hãy bấm + Thêm chương để đăng ảnh."); else $("#ws_tr").click() } }
 $("#ws_back").onclick = () => { if (WS.dirty && !confirm("Bỏ các thay đổi chưa lưu?")) return; wsHome() };
 const wsVol = c => (c.vol || "").trim();
 function wsDraw() {
   const s = wsS(); if (!s) return wsHome();
   if (!WS.dirty || !WS.W) WS.W = s.chapters.map(c => ({ ...c, _o: c }));
   const W = WS.W, k = WS.k, kind = k === "manga" ? "manga" : "novel", vs = [...new Set(W.map(wsVol).filter(Boolean))];
-  $("#ptitle").textContent = "Quản lý bộ"; $("#ws_t").textContent = s.title;
+  $("#ptitle").textContent = "Bộ truyện"; $("#ws_t").textContent = s.title;
   $("#ws_m").textContent = `${k === "manga" ? "Manga" : s.format || "Light Novel"}, ${s.status || "Đang dịch"}, ${s.chapters.length} chương${vs.length ? ", " + vs.length + " tập" : ""}`;
-  $("#ws_cvw").style.setProperty("--h", hueOf(s.title)); $("#ws_cv").src = s.cover || ""; $("#ws_web").href = `index.html#${kind}/${s.slug}`; $("#ws_imp").hidden = k === "manga";
+  $("#ws_cvw").style.setProperty("--h", hueOf(s.title)); $("#ws_cv").src = s.cover || ""; $("#ws_web").href = `index.html#${kind}/${s.slug}`; $("#ws_imp").hidden = k === "manga"; $("#ws_tr").hidden = k === "manga";
   const runs = []; W.forEach((c, j) => { const v = wsVol(c), r = runs[runs.length - 1]; if (r && r.v === v) r.js.push(j); else runs.push({ v, js: [j] }) });
   if (!WS.open) WS.open = new Set(W.length <= 25 ? runs.map(r => r.v) : runs.filter(r => !r.v).map(r => r.v));
   const vc = s.vc || {}, wd = c => (c.type === "img" || (c.pages && kind === "novel")) ? (c.pages || []).length + " ảnh" : kind === "novel" ? (c.words || 0).toLocaleString("vi-VN") + " chữ" : (c.pages ? c.pages.length : c.n || 0) + " trang";
@@ -415,16 +417,18 @@ $("#ws_save").onclick = () => run(async () => { const s = wsS(); if (!s || !WS.d
 $("#ws_undo").onclick = () => { WS.dirty = false; WS.W = null; WS.last = null; wsDraw(); log("Đã hoàn tác.") };
 $("#ws_addb").onclick = () => { const f = $("#p-chap"); if (f.classList.contains("inws")) return wsPark(); if (WS.dirty) return log("❌ Hãy Lưu thay đổi hoặc Hoàn tác trước khi thêm chương");
   $("#ws_add").appendChild(f); f.classList.add("inws", "on"); $("#ws_addb").classList.add("on"); $("#ws_addb").textContent = "Đóng khung thêm chương"; $("#c_ser").value = (WS.k === "manga" ? "manga" : "novel") + "|" + WS.i; chapUI(); $("#c_title").focus() };
+$("#ws_tr").onclick = () => { if (WS.dirty) return log("❌ Hãy Lưu thay đổi hoặc Hoàn tác trước"); if (WS.k !== "novels") return; RET = "ws"; tab("tr"); trFill(); $("#t_ser").value = WS.i; $("#t_ser").dispatchEvent(new Event("change")) };
 $("#ws_imp").onclick = () => { if (WS.dirty) return log("❌ Hãy Lưu thay đổi hoặc Hoàn tác trước"); RET = "ws"; tab("imp"); impFill(); $("#i_ser").value = WS.i };
 $("#ws_edit").onclick = () => { if (WS.dirty) return log("❌ Hãy Lưu thay đổi hoặc Hoàn tác trước"); RET = "ws"; let b = $("#manage").querySelector(`button[data-s="${WS.k}|${WS.i}"]`); if (!b) { $("#m_q").value = ""; manage(); b = $("#manage").querySelector(`button[data-s="${WS.k}|${WS.i}"]`) } b?.click() };
 $("#ws_cvf").onchange = e => { const f = e.target.files[0], s = wsS(); if (!f || !s) return; run(async () => { log("Đang tải ảnh bìa..."); const p = `images/${s.slug}-bia-${rid()}.jpg`; await put(p, await resize(f), "Bìa: " + s.title); s.cover = p; await save("Đổi bìa: " + s.title); try { await writeShare(WS.k === "manga" ? "manga" : "novel", s) } catch (err) {} e.target.value = ""; done("✅ Đã đổi ảnh bìa. Web cập nhật sau 1–2 phút."); wsDraw() }) };
 addEventListener("beforeunload", e => { if (WS.dirty) { e.preventDefault(); e.returnValue = "" } });
 function deepLink() {
   const [a, k, slug, j] = decodeURIComponent(location.hash.slice(1)).split("/");
+  if (HID.includes(a) && !k) { tab("ws"); wsHome(a === "chap" || a === "tr" ? a : null); return }
   if (TABS.some(x => x[0] === a && a !== "—")) { tab(a); if (a === "site" && k === "mk") setTimeout(() => { const x = $("#cm_pw"); if (x) { x.closest("details")?.setAttribute("open", ""); x.scrollIntoView({ block: "center" }); x.focus() } }, 50); return }
   if (!a || !KEYS[k]) return;
   const key = KEYS[k], i = data[key].findIndex(x => x.slug === slug); if (i < 0) { log("Không tìm thấy bộ truyện này trong dữ liệu."); return }
-  if (a === "chap") { $("#c_ser").value = k + "|" + i; chapUI(); tab("chap"); $("#c_title").focus(); log("Thêm chương cho: " + data[key][i].title) }
+  if (a === "chap") { wsOpen(key, i); $("#ws_addb").click() }
   else if (a === "series") $(`#manage button[data-s="${key}|${i}"]`)?.click();
   else if (a === "bo") wsOpen(key, i);
   else if (a === "editchap") $(`#manage button[data-e="${key}|${i}|${j}"]`)?.click();
@@ -938,9 +942,9 @@ function dash() {
   const nch = S.reduce((a, [, s]) => a + s.chapters.length, 0), nw = data.novels.reduce((a, s) => a + s.chapters.reduce((b, c) => b + (c.words || 0), 0), 0);
   const rec = []; S.forEach(([k, s, i]) => s.chapters.forEach((c, j) => rec.push({ k, s, i, c, j }))); rec.sort((a, b) => (b.c.date || "").localeCompare(a.c.date || "") || b.j - a.j);
   const drafts = []; try { for (let x = 0; x < localStorage.length; x++) { const key = localStorage.key(x); if (!key.startsWith("dr:")) continue; const d = JSON.parse(localStorage.getItem(key) || "{}"); if ((d.i || "").trim() || (d.o || "").trim()) drafts.push({ s: data.novels.find(n => n.slug === key.slice(3)), slug: key.slice(3), d }) } } catch (e) {}
-  const qa = [["series", "Thêm bộ truyện mới", "s_new"], ["chap", "Đăng chương"], ["tr", "Dịch chương mới"], ["man", "Quản lý nội dung"]];
+  const qa = [["series", "Thêm bộ truyện mới", "$('#ws_new').click()"], ["chap", "Đăng chương", "tab('ws');wsHome('chap')"], ["tr", "Dịch chương mới", "tab('ws');wsHome('tr')"], ["man", "Quản lý nội dung", "tab('man')"]];
   el.innerHTML = `<div class="dgrid"><div class="dmain"><div class="stats"><div class="stat"><b>${data.novels.filter(s => s.format !== "Web Novel").length}</b><span>Light Novel</span></div><div class="stat"><b>${data.novels.filter(s => s.format === "Web Novel").length}</b><span>Web Novel</span></div><div class="stat"><b>${data.manga.length}</b><span>Manga</span></div><div class="stat"><b>${nch.toLocaleString("vi-VN")}</b><span>Chương đã đăng</span></div><div class="stat"><b>${nw.toLocaleString("vi-VN")}</b><span>Chữ đã dịch</span></div></div>
-<h4>Làm nhanh</h4><div class="qa">${qa.map(([k, l, x]) => `<button type="button" onclick="${x ? `$('#${x}').click();` : ""}tab('${k}')"><svg class="i" viewBox="0 0 24 24">${NI[k]}</svg>${l}</button>`).join("")}</div>
+<h4>Làm nhanh</h4><div class="qa">${qa.map(([k, l, x]) => `<button type="button" onclick="${x}"><svg class="i" viewBox="0 0 24 24">${NI[k]}</svg>${l}</button>`).join("")}</div>
 <h4>Bảo trì</h4><div class="acts" style="margin-top:8px"><button type="button" onclick="backupDl()">Tải bản sao lưu</button><button type="button" class="sec" onclick="$('#bk_in').click()">Khôi phục từ bản sao lưu</button><button type="button" class="sec" onclick="regenShare()">Tạo lại trang chia sẻ cho tất cả bộ</button>${/^[a-z0-9-]+$/i.test(data.site?.gc || "") ? `<a class="btnl" href="https://${data.site.gc}.goatcounter.com" target="_blank" rel="noopener">Xem thống kê lượt xem</a>` : ""}</div><p class="mu" style="margin-top:6px">Nên tải bản sao lưu trước những thay đổi lớn như gộp thể loại hay gỡ bộ truyện.</p><p class="mu" style="margin-top:6px">Trang chia sẻ giúp link từng bộ hiện đúng bìa, tên và tóm tắt khi dán lên Discord, Facebook. Bộ mới hoặc vừa sửa được tạo tự động; nút này dùng cho các bộ đăng từ trước.</p>
 ${drafts.length ? `<h4>Bản dịch đang dở trên máy này</h4><div class="lst">${drafts.map(({ s, slug, d }) => `<div class="li"><span class="lt">${esc(s ? s.title : slug)}${d.t ? ` <em>${esc(d.t)}</em>` : ""}</span><small>${(d.o || "").trim() ? d.o.trim().split(/\s+/).length.toLocaleString("vi-VN") + " chữ" : "chưa dịch"}</small><button type="button" class="sec sm" onclick="openDraft('${esc(slug)}')">Mở</button></div>`).join("")}</div>` : ""}
 <h4>Chương mới đăng</h4>${rec.length ? `<div class="lst">${rec.slice(0, 8).map(r => `<div class="li">${thumb(r.s)}<span class="lt">${esc(r.s.title)} <em>${r.c.vol ? esc(r.c.vol) + ", " : ""}${esc(r.c.t)}</em></span><small>${r.c.date || ""}</small><button type="button" class="sec sm" onclick="goEdit('${r.k}',${r.i},${r.j})">Sửa</button></div>`).join("")}</div>` : '<p class="mu">Chưa có chương nào. Tạo bộ truyện rồi đăng chương đầu tiên.</p>'}</div>
@@ -975,7 +979,7 @@ async function stPanel(force) {
     el.insertAdjacentHTML("beforeend", `<button type="button" class="lnk stpre" onclick="stPanel(true)">Tải lại số liệu</button>`);
   } catch (e) { el.querySelector(".stpg").outerHTML = `<p class="stpn err">${esc(/mật khẩu|kiểm duyệt/i.test(e.message) ? "Mật khẩu kiểm duyệt lưu trên máy này không còn đúng. Hãy nhập lại trong Cài đặt." : e.message)}</p>` }
 }
-function openDraft(slug) { const i = data.novels.findIndex(n => n.slug === slug); if (i >= 0) { $("#t_ser").value = i; $("#t_ser").dispatchEvent(new Event("change")) } tab("tr") }
+function openDraft(slug) { const i = data.novels.findIndex(n => n.slug === slug); if (i < 0) return log("Bộ của bản nháp này không còn trên web."); WS.k = "novels"; WS.i = i; WS.W = null; WS.dirty = false; RET = "ws"; tab("tr"); trFill(); $("#t_ser").value = i; $("#t_ser").dispatchEvent(new Event("change")) }
 
 /* ===== Bìa từng tập ===== */
 function vcRender() {
