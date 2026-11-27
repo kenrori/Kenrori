@@ -245,13 +245,6 @@
      "vol": "Tập 1"
     },
     {
-     "t": "Mở Đầu: Cơ cấu xã hội Nhật Bản",
-     "date": "2026-11-26",
-     "vol": "Tập 1",
-     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c2_mwxjqkk9.txt",
-     "words": 549
-    },
-    {
      "t": "Mở đầu: Cơ cấu xã hội Nhật Bản",
      "date": "2026-11-26",
      "file": "novels/youkoso-jitsuryoku-shijou-shugi/c3_mwxl55qo.txt",
@@ -1926,5 +1919,5 @@
   "gc": "<script data-goatcounter=\"https://kenrori",
   "game": true
  },
- "rev": 1795780271439
+ "rev": 1795780485361
 }
