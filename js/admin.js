@@ -462,6 +462,7 @@ $("#manage").addEventListener("click", e => {
 
 function siteLoad() {
   const S = data.site, A = S.about || {}, G = S.giscus || {};
+  const K = S.kiku || {}; $("#kk_on").checked = K.on !== false; $("#kk_name").value = K.name || ""; $("#kk_ai").checked = !!K.ai; kkoRender();
   $("#a_text").value = S.announce?.text || ""; $("#a_url").value = S.announce?.url || ""; $("#b_name").value = A.name || ""; $("#b_intro").value = A.intro || ""; $("#b_dc").value = A.discord || "";
   $("#b_ct").value = (A.contacts || []).map(c => c.label + " | " + c.url).join("\n");
   $("#g_repo").value = G.repo || ""; $("#g_rid").value = G.repoId || ""; $("#g_cat").value = G.category || ""; $("#g_cid").value = G.categoryId || ""; $("#w_url").value = S.url || ""; $("#b_rep").value = S.report || ""; $("#gc_code").value = S.gc || ""; $("#sb_url").value = (S.sb || {}).url || ""; $("#sb_key").value = (S.sb || {}).key || ""; $("#st_rules").value = S.rules || ""; $("#cm_mode").value = S.cmt || "anon"; $("#gp_key").value = S.giphy || ""; $("#st_on").checked = S.st === true; try { $("#cm_pw").value = localStorage.getItem("cmtMod") || "" } catch (e) {} stkRender();
@@ -471,9 +472,68 @@ $("#p-site").onsubmit = e => { e.preventDefault(); run(async () => {
   if (/service_role|sb_secret_/.test(t("sb_key")) || (t("sb_key").split(".").length === 3 && /service_role/.test((() => { try { return atob((t("sb_key").split(".")[1] || "").replace(/-/g, "+").replace(/_/g, "/")) } catch (e) { return "" } })()))) throw new Error("Đây là key bí mật (secret/service_role). Hãy dùng publishable key hoặc anon key.");
   if (t("sb_url") && !/^https:\/\/[a-z0-9-]+\.supabase\.(co|in)\/?$/i.test(t("sb_url"))) throw new Error("Project URL Supabase có dạng https://xxxx.supabase.co");
   if (!ok(t("b_dc")) || !ok(t("a_url")) || !ok(t("w_url")) || !ok(t("b_rep"))) throw new Error("Link phải bắt đầu bằng https://");
-  data.site = { announce: { text: t("a_text"), url: t("a_url") }, about: { name: t("b_name"), intro: t("b_intro"), discord: t("b_dc"), contacts: $("#b_ct").value.split("\n").map(l => { const [x, ...y] = l.split("|"); return { label: (x || "").trim(), url: y.join("|").trim() } }).filter(c => c.label) }, giscus: { repo: t("g_repo"), repoId: t("g_rid"), category: t("g_cat"), categoryId: t("g_cid") }, url: t("w_url"), report: t("b_rep"), sb: { url: t("sb_url").replace(/\/+$/, ""), key: t("sb_key") }, rules: $("#st_rules").value.trim(), cmt: $("#cm_mode").value, giphy: t("gp_key"), st: $("#st_on").checked, game: !!(data.site && data.site.game), genres: (data.site && data.site.genres) || undefined, stickers: data.site.stickers || [], gc: t("gc_code").replace(/^https?:\/\//, "").replace(/\.goatcounter\.com.*$/, "") };
+  data.site = { announce: { text: t("a_text"), url: t("a_url") }, about: { name: t("b_name"), intro: t("b_intro"), discord: t("b_dc"), contacts: $("#b_ct").value.split("\n").map(l => { const [x, ...y] = l.split("|"); return { label: (x || "").trim(), url: y.join("|").trim() } }).filter(c => c.label) }, giscus: { repo: t("g_repo"), repoId: t("g_rid"), category: t("g_cat"), categoryId: t("g_cid") }, url: t("w_url"), report: t("b_rep"), sb: { url: t("sb_url").replace(/\/+$/, ""), key: t("sb_key") }, rules: $("#st_rules").value.trim(), cmt: $("#cm_mode").value, giphy: t("gp_key"), st: $("#st_on").checked, game: !!(data.site && data.site.game), genres: (data.site && data.site.genres) || undefined, stickers: data.site.stickers || [], kiku: { ...((data.site && data.site.kiku) || {}), on: $("#kk_on").checked, name: t("kk_name").slice(0, 20), ai: $("#kk_ai").checked }, gc: t("gc_code").replace(/^https?:\/\//, "").replace(/\.goatcounter\.com.*$/, "") };
   await save("Cập nhật cài đặt trang web"); done("✅ Đã lưu cài đặt. Web cập nhật sau 1–2 phút.");
 }) };
+/* ===== Cập nhật web bằng gói .zip (đọc zip ngay trong trình duyệt, không cần thư viện) ===== */
+async function unzipFile(file) {
+  const buf = new Uint8Array(await file.arrayBuffer()), dv = new DataView(buf.buffer); let e = buf.length - 22;
+  while (e >= 0 && dv.getUint32(e, true) !== 0x06054b50) e--;
+  if (e < 0) throw new Error("File này không phải .zip hợp lệ");
+  const n = dv.getUint16(e + 10, true), out = []; let p = dv.getUint32(e + 16, true);
+  for (let i = 0; i < n; i++) {
+    if (dv.getUint32(p, true) !== 0x02014b50) throw new Error("File .zip bị hỏng, hãy tải lại file");
+    const meth = dv.getUint16(p + 10, true), csz = dv.getUint32(p + 20, true), nl = dv.getUint16(p + 28, true), xl = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true), off = dv.getUint32(p + 42, true);
+    const name = new TextDecoder().decode(buf.subarray(p + 46, p + 46 + nl)).replace(/\\/g, "/"); p += 46 + nl + xl + cl;
+    if (name.endsWith("/")) continue;
+    const st = off + 30 + dv.getUint16(off + 26, true) + dv.getUint16(off + 28, true), raw = buf.subarray(st, st + csz);
+    let d;
+    if (meth === 0) d = raw;
+    else if (meth === 8 && window.DecompressionStream) d = new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer());
+    else throw new Error("Trình duyệt này không giải nén được " + name + ". Hãy dùng Chrome hoặc Edge bản mới.");
+    out.push({ name, d });
+  }
+  return out;
+}
+const UPOK = /^(index\.html|admin\.html|sw\.js|manifest\.webmanifest|(js|css)\/[\w.-]+\.(js|css)|(img|fonts|icons|stickers)\/[\w\/.-]+\.(webp|png|jpe?g|gif|svg|woff2?|ico))$/;
+function upPath(name) { // bỏ thư mục bọc ngoài nếu có, chỉ nhận file của web
+  if (/(^|\/)(__MACOSX|\.DS_Store)/.test(name)) return "";
+  const seg = name.split("/").filter(Boolean);
+  for (let k = 0; k < seg.length; k++) { const q = seg.slice(k).join("/"); if (UPOK.test(q) && !q.includes("..")) return q }
+  return "";
+}
+const u8b64 = u => { let s = ""; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s) };
+$("#up_go").onclick = () => run(async () => {
+  const f = $("#up_zip").files[0]; if (!f) throw new Error("Hãy chọn file .zip trước");
+  if (f.size > 60e6) throw new Error("Gói lớn hơn 60 MB, hãy chia nhỏ ra");
+  log("Đang đọc gói " + f.name + "...");
+  const L = await unzipFile(f), ok = [], skip = [];
+  for (const x of L) { const q = upPath(x.name); if (q) ok.push({ q, d: x.d }); else if (!/(^|\/)(__MACOSX|\.DS_Store)/.test(x.name)) skip.push(x.name) }
+  if (!ok.length) throw new Error("Trong gói không có file nào của web (cần các thư mục js, css, img... hoặc index.html).");
+  log(`Đang tải ${ok.length} file lên GitHub...`);
+  for (const x of ok) await put(x.q, u8b64(x.d), "Cập nhật " + x.q);
+  await flush("Cập nhật web từ gói " + f.name); $("#up_zip").value = "";
+  log(`✅ Đã đặt ${ok.length} file vào đúng chỗ: ${[...new Set(ok.map(x => x.q.includes("/") ? x.q.split("/")[0] + "/" : x.q))].join(", ")}.${skip.length ? ` Bỏ qua ${skip.length} file không thuộc web (${skip.slice(0, 4).join(", ")}${skip.length > 4 ? "..." : ""}).` : ""} Web cập nhật sau 1–2 phút. Nếu chưa thấy thay đổi, tải lại trang bằng Ctrl+F5.`);
+  if (ok.some(x => x.q === "admin.html" || x.q.startsWith("js/admin"))) log("Gói có cập nhật trang quản trị: tải lại trang này sau 2 phút để dùng bản mới.");
+});
+/* ===== Bộ đồ thêm cho trợ lý Kiku ===== */
+function kkoRender() {
+  const L = ((data.site || {}).kiku || {}).outfits || [];
+  let base = ""; try { base = siteBase() } catch (e) {}
+  $("#kko_list").innerHTML = L.length ? L.map((o, i) => `<div class="kkoi"><img src="${esc(base + o.src)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><div><b>${esc(o.n)}</b><small>${o.acc ? "Đội được phụ kiện" : "Không đội phụ kiện"}</small></div><button type="button" class="dng sm" data-kkx="${i}">Gỡ</button></div>`).join("") : '<p class="mu">Chưa thêm bộ đồ nào.</p>';
+}
+$("#kko_list").onclick = e => { const b = e.target.closest("[data-kkx]"); if (!b) return; const L = data.site.kiku.outfits, o = L[+b.dataset.kkx]; if (!o || !confirm(`Gỡ bộ đồ "${o.n}"?`)) return; run(async () => { L.splice(+b.dataset.kkx, 1); await save("Gỡ bộ đồ của trợ lý: " + o.n); kkoRender(); done("✅ Đã gỡ bộ đồ " + o.n) }) };
+$("#kko_go").onclick = () => run(async () => {
+  const n = $("#kko_n").value.trim(), f = $("#kko_f").files[0];
+  if (n.length < 2) throw new Error("Hãy đặt tên cho bộ đồ"); if (!f) throw new Error("Hãy chọn ảnh bộ đồ");
+  if (!/png|webp/i.test(f.type)) throw new Error("Ảnh cần là PNG hoặc WebP có nền trong suốt"); if (f.size > 3e6) throw new Error("Ảnh lớn hơn 3 MB, hãy giảm kích thước rồi thử lại");
+  let b64 = null, ext = /webp/i.test(f.type) ? "webp" : "png"; const r = await squeeze(f, 576, .9); if (r && r.ext === "webp") { b64 = r.b64; ext = "webp" } if (!b64) b64 = await fileB64(f);
+  const id = rid(), path = `img/kiku/c-${(slugify(n) || "bo-do").slice(0, 30)}-${id}.${ext}`; log("Đang tải ảnh bộ đồ lên...");
+  await put(path, b64, "Bộ đồ trợ lý: " + n);
+  const K = data.site.kiku = { on: true, name: "Kiku", ...(data.site.kiku || {}) }; K.outfits = [...(K.outfits || []), { id, n, src: path, acc: $("#kko_acc").checked }];
+  await save("Thêm bộ đồ cho trợ lý: " + n); $("#kko_n").value = ""; $("#kko_f").value = ""; kkoRender();
+  done(`✅ Đã thêm bộ đồ "${n}". Người đọc chọn được trong tủ đồ sau 1–2 phút.`);
+});
 /* ===== Kiểm duyệt bình luận và nhãn dán ===== */
 $("#cm_pwgo").onclick = () => run(async () => {
   const pw = $("#cm_pw").value, u = $("#sb_url").value.trim().replace(/\/+$/, ""), k = $("#sb_key").value.trim();
@@ -1109,13 +1169,122 @@ const rxq = x => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const NUMKW = /^(chương|chapter|chap|ch|hồi|phần|episode|tập|volume|vol|quyển)$/i;
 function loadMammoth() { return window.mammoth ? Promise.resolve() : new Promise((res, rej) => { const sc = document.createElement("script"); sc.src = "https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.13.0/mammoth.browser.min.js"; sc.onload = res; sc.onerror = () => rej(new Error("Không tải được thư viện đọc file Word. Kiểm tra mạng rồi thử lại.")); document.head.appendChild(sc) }) }
 const linesToBlocks = t => String(t).replace(/\r/g, "").normalize("NFC").split("\n").map(l => l.trim()).filter(Boolean).map(l => { const m = /^(#{1,6})\s+(.+)$/.exec(l); return m ? { h: m[1].length, t: m[2].trim() } : { h: 0, t: l } });
+/* ----- EPUB: đọc theo mục lục, mỗi mục là một chương, giữ đoạn văn và ảnh minh họa ----- */
+const EBLK = /^(p|div|h[1-6]|li|blockquote|section|article|figure|figcaption|pre|dd|dt|tr|td|aside|header|footer|center|table|tbody|thead|ul|ol|dl|main|nav|body|hr)$/i;
+const IMIME = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", gif: "image/gif", webp: "image/webp" };
+const nTxt = s => String(s || "").normalize("NFC").replace(/\s+/g, " ").trim().toLowerCase();
+async function epubBlocks(f) {
+  log("Đang đọc " + f.name + "...");
+  const Z = await unzipFile(f), M = new Map(Z.map(x => [x.name.replace(/^\/+/, ""), x.d])), td = new TextDecoder();
+  const txt = p => { const d = M.get(p); return d ? td.decode(d) : "" };
+  const xml = (s, t = "application/xml") => new DOMParser().parseFromString(s, t);
+  const dir = p => p.includes("/") ? p.slice(0, p.lastIndexOf("/") + 1) : "";
+  const res = (b, h) => { try { return decodeURIComponent(new URL(h, "https://e/" + b).pathname.slice(1)) } catch (e) { return "" } };
+  const opfP = (xml(txt("META-INF/container.xml")).querySelector("rootfile") || { getAttribute: () => "" }).getAttribute("full-path");
+  if (!opfP || !M.has(opfP)) throw new Error(f.name + " không phải file EPUB hợp lệ");
+  const opf = xml(txt(opfP)), man = {};
+  opf.querySelectorAll("manifest > item").forEach(i => { man[i.getAttribute("id")] = { href: res(dir(opfP), i.getAttribute("href") || ""), type: i.getAttribute("media-type") || "", props: i.getAttribute("properties") || "" } });
+  // Mục lục: EPUB 3 (nav) hoặc EPUB 2 (toc.ncx)
+  const toc = {}, addToc = (b, h, t) => { const k = res(b, h).split("#")[0]; t = String(t || "").replace(/\s+/g, " ").trim(); if (k && t && !toc[k]) toc[k] = t };
+  const nav = Object.values(man).find(i => /\bnav\b/.test(i.props));
+  if (nav) { const d = xml(txt(nav.href), "application/xhtml+xml"), ns = [...d.getElementsByTagName("nav")], n = ns.find(x => /toc/.test(x.getAttribute("epub:type") || x.getAttribute("type") || "")) || ns[0]; if (n) [...n.getElementsByTagName("a")].forEach(a => a.getAttribute("href") && addToc(dir(nav.href), a.getAttribute("href"), a.textContent)) }
+  if (!Object.keys(toc).length) { const sp = opf.querySelector("spine"), nx = sp && man[sp.getAttribute("toc")]; if (nx) { const d = xml(txt(nx.href)); [...d.getElementsByTagName("navPoint")].forEach(p => { const c = p.getElementsByTagName("content")[0], l = p.getElementsByTagName("text")[0]; if (c && l) addToc(dir(nx.href), c.getAttribute("src") || "", l.textContent) }) } }
+  const spine = [...opf.querySelectorAll("spine > itemref")].map(r => man[r.getAttribute("idref")]).filter(i => i && /html/.test(i.type) && !/\bnav\b/.test(i.props));
+  const out = [];
+  for (const it of spine) {
+    const s = txt(it.href); if (!s) continue;
+    let d = xml(s, "application/xhtml+xml"); if (d.getElementsByTagName("parsererror").length) d = xml(s, "text/html");
+    const body = d.getElementsByTagName("body")[0] || d.documentElement;
+    [...body.querySelectorAll("rt, rp, script, style")].forEach(x => x.remove()); // bỏ chữ phiên âm furigana
+    const B = [];
+    const pushImg = im => { const src = im.getAttribute("src") || im.getAttribute("xlink:href") || im.getAttribute("href") || "", p = res(dir(it.href), src), dd = M.get(p), mt = IMIME[(p.split(".").pop() || "").toLowerCase()]; if (dd && mt) B.push({ img: `data:${mt};base64,${u8b64(dd)}` }) };
+    const walk = el => {
+      for (const n of [...el.childNodes]) {
+        if (n.nodeType === 3) { const t = n.textContent.replace(/\s+/g, " ").trim(); if (t && el === body) B.push({ h: 0, t: t.normalize("NFC") }); continue }
+        if (n.nodeType !== 1) continue;
+        const tg = n.localName.toLowerCase();
+        if (tg === "img" || tg === "image") { pushImg(n); continue }
+        if (tg === "svg") { [...n.getElementsByTagName("image")].forEach(pushImg); continue }
+        if (tg === "br" || tg === "hr") continue;
+        if ([...n.children].some(c => EBLK.test(c.localName))) { walk(n); continue }
+        [...n.querySelectorAll("img, image")].forEach(pushImg);
+        const c = n.cloneNode(true); [...c.querySelectorAll("br")].forEach(b => b.replaceWith("\n"));
+        const hm = /^h([1-6])$/.exec(tg);
+        c.textContent.split("\n").map(x => x.replace(/\s+/g, " ").trim()).filter(Boolean).forEach(x => B.push({ h: hm ? +hm[1] : 0, t: x.normalize("NFC") }));
+      }
+    };
+    walk(body);
+    const tt = toc[it.href]; let head = null;
+    if (tt) { const i0 = B.findIndex(b => !b.img); if (i0 >= 0 && i0 < 4 && (B[i0].h || nTxt(B[i0].t) === nTxt(tt))) B.splice(i0, 1); head = { h: 1, t: tt.normalize("NFC") } }
+    else { const i0 = B.findIndex(b => !b.img); if (i0 >= 0 && B[i0].h) { head = { h: 1, t: B[i0].t }; B.splice(i0, 1) } }
+    B.forEach(b => { if (b.h) b.h = 0 });
+    if (head) out.push(head); out.push(...B);
+  }
+  out.title = ((opf.getElementsByTagName("dc:title")[0] || opf.querySelector("metadata title") || {}).textContent || "").trim();
+  if (!out.some(b => !b.img)) throw new Error(f.name + ": không tìm thấy chữ trong EPUB");
+  return out;
+}
+/* ----- PDF: lấy chữ theo dòng rồi ghép lại thành đoạn, bỏ số trang và dòng lặp đầu/cuối trang ----- */
+const PDFJS = "https://cdn.jsdelivr.net/npm/pdfjs-dist@6.2.108/legacy/build/";
+let pdfP = null;
+const loadPdf = () => pdfP ??= import(PDFJS + "pdf.min.mjs").then(m => { m.GlobalWorkerOptions.workerSrc = PDFJS + "pdf.worker.min.mjs"; return m }).catch(e => { pdfP = null; throw new Error("Không tải được thư viện đọc PDF. Kiểm tra mạng rồi thử lại.") });
+const CJK = /[぀-ヿ㐀-鿿가-힯]/;
+const med = a => { const b = [...a].sort((x, y) => x - y); return b.length ? b[b.length >> 1] : 0 };
+async function pdfBlocks(f) {
+  log("Đang đọc " + f.name + "..."); const lib = await loadPdf();
+  const doc = await lib.getDocument({ data: new Uint8Array(await f.arrayBuffer()), isEvalSupported: false }).promise, P = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    if (i % 20 === 1 && doc.numPages > 20) log(`Đang đọc ${f.name}: trang ${i}/${doc.numPages}...`);
+    const pg = await doc.getPage(i), tc = await pg.getTextContent(), L = [];
+    for (const it of tc.items) {
+      if (!it.str) continue;
+      const x = it.transform[4], y = it.transform[5], h = Math.abs(it.transform[3]) || it.height || 10;
+      let l = L.find(q => Math.abs(q.y - y) < Math.max(1.5, Math.min(q.h, h) * .45));
+      if (!l) L.push(l = { y, h, P: [] }); l.P.push({ x, w: it.width || 0, s: it.str }); if (it.str.trim()) l.h = Math.max(l.h, h);
+    }
+    for (const l of L) {
+      l.P.sort((a, b) => a.x - b.x); let s = "", end = -1e9;
+      for (const p of l.P) { if (s && p.x - end > l.h * .18 && !/\s$/.test(s) && !/^\s/.test(p.s) && !(CJK.test(s.slice(-1)) && CJK.test(p.s[0]))) s += " "; s += p.s; end = Math.max(end, p.x + p.w) }
+      l.t = s.replace(/\s+/g, " ").trim().normalize("NFC"); l.x = l.P.find(p => p.s.trim())?.x ?? l.P[0].x; l.r = end;
+    }
+    P.push(L.filter(l => l.t).sort((a, b) => b.y - a.y));
+  }
+  const all = P.flat(), chars = all.reduce((a, l) => a + l.t.length, 0);
+  if (!all.length || chars < 30 * doc.numPages) throw new Error(f.name + " là PDF dạng ảnh chụp (scan), không có chữ để lấy. Cần chạy nhận dạng chữ (OCR) trước, hoặc dùng file Word/EPUB.");
+  // Dòng lặp lại ở đầu/cuối nhiều trang (tên truyện, số trang) thì bỏ
+  const key = t => t.toLowerCase().replace(/\d+/g, "#").replace(/\s+/g, " ").trim(), cnt = {};
+  P.forEach(L => new Set([...L.slice(0, 2), ...L.slice(-2)].map(l => key(l.t))).forEach(k => cnt[k] = (cnt[k] || 0) + 1));
+  const lim = Math.max(3, P.length * .3), isPgNum = t => /^(trang|page|p\.)?\s*[-–—]?\s*\d{1,4}\s*[-–—]?\s*(\/\s*\d{1,4})?$/i.test(t);
+  P.forEach(L => { const edge = new Set([...L.slice(0, 2), ...L.slice(-2)]); for (let k = L.length - 1; k >= 0; k--) if (edge.has(L[k]) && (isPgNum(L[k].t) || cnt[key(L[k].t)] >= lim)) L.splice(k, 1) });
+  const body = P.flat(), hm = med(body.map(l => l.h)) || 10, gaps = [];
+  P.forEach(L => { for (let k = 1; k < L.length; k++) { const g = L[k - 1].y - L[k].y; if (g > 0 && g < hm * 3) gaps.push(g) } });
+  const gap = med(gaps) || hm * 1.3, left = med(body.filter(l => l.h < hm * 1.2).map(l => Math.round(l.x))), right = med(body.filter(l => l.h < hm * 1.2).map(l => l.r));
+  const out = []; let cur = "", prev = null;
+  const flush = () => { if (cur.trim()) out.push({ h: 0, t: cur.trim() }); cur = "" };
+  const join = (a, b) => /[a-zà-ỹ]-$/i.test(a) && /^[a-zà-ỹ]/.test(b) ? a.slice(0, -1) + b : CJK.test(a.slice(-1)) || CJK.test(b[0]) ? a + b : a + " " + b;
+  P.forEach((L, pi) => L.forEach(l => {
+    if (l.h >= hm * 1.3 && l.t.length <= 90) { // chữ to hơn hẳn: tiêu đề chương
+      flush(); const last = out[out.length - 1];
+      if (last && last.h && prev && prev.big && prev.pi === pi && prev.y - l.y < l.h * 2.2) last.t += " " + l.t; else out.push({ h: 1, t: l.t });
+      prev = { ...l, pi, big: true }; return;
+    }
+    const same = prev && prev.pi === pi && !prev.big;
+    const nw = !prev || prev.big || (same && prev.y - l.y > gap * 1.55) || l.x > left + hm * .9 || (/[.!?…:"”'’」』)\]]$/.test(prev.t) && prev.r < right - hm * 2.5);
+    if (nw) { flush(); cur = l.t } else cur = join(cur, l.t);
+    prev = { ...l, pi };
+  }));
+  flush();
+  return out;
+}
 async function impSources() {
   const fs = [...$("#i_file").files].sort((a, b) => a.name.localeCompare(b.name, "vi", { numeric: true })), out = [];
-  if (fs.length) { for (const f of fs) out.push({ name: f.name, B: await impBlocks(f) }); return out }
+  if (fs.length) { for (const f of fs) { const B = await impBlocks(f); out.push({ name: B.title ? `${B.title} (${f.name})` : f.name, B }) } return out }
   return [{ name: "", B: await impBlocks(null) }];
 }
 async function impBlocks(f) {
   const url = $("#i_url").value.trim(), paste = $("#i_paste").value;
+  if (f && /\.epub$/i.test(f.name)) return await epubBlocks(f);
+  if (f && /\.pdf$/i.test(f.name)) return await pdfBlocks(f);
   if (f && /\.docx$/i.test(f.name)) {
     log("Đang đọc " + f.name + "..."); await loadMammoth();
     const r = await mammoth.convertToHtml({ arrayBuffer: await f.arrayBuffer() }), doc = new DOMParser().parseFromString(r.value, "text/html"), out = [], pushImg = im => { const u = im.getAttribute("src") || ""; if (/^data:image\/(png|jpe?g|gif|webp);base64,/.test(u)) out.push({ img: u }) };
@@ -1197,7 +1366,7 @@ $("#i_go").onclick = () => run(async () => {
   }
   if (!IMP.length) throw new Error("Không tìm thấy nội dung để chia");
   $("#i_res").hidden = false; $("#i_vols").innerHTML = [...new Set([...s.chapters.map(c => (c.vol || "").trim()), ...IMP.map(x => x.vol)].filter(Boolean))].map(v => `<option value="${esc(v)}">`).join(""); IMPINFO = info.join(". ") + "."; impRender();
-  log(`✅ Đã chia thành ${IMP.length} phần (${useH ? "theo tiêu đề trong Word" : "theo từ khóa"}). ${IMP.some(x => !x.vol) ? "Có phần chưa có tập, hãy điền ở cột Tập. " : ""}Hãy xem lại trước khi đăng.`);
+  log(`✅ Đã chia thành ${IMP.length} phần (${useH ? "theo tiêu đề trong file" : "theo từ khóa"}). ${IMP.some(x => !x.vol) ? "Có phần chưa có tập, hãy điền ở cột Tập. " : ""}Hãy xem lại trước khi đăng.`);
   if (IMP.length === 1) log("Chỉ tìm thấy 1 phần. Thử đổi cách chia hoặc thêm từ khóa trong mục Cách chia chương.");
 });
 $("#i_list").addEventListener("input", e => { const t = e.target; if (t.dataset.it != null) IMP[+t.dataset.it].t = t.value; if (t.dataset.ivol != null) IMP[+t.dataset.ivol].vol = t.value });
