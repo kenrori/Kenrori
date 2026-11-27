@@ -2313,8 +2313,28 @@
     "parent": "",
     "hidden": false,
     "order": 19
+   },
+   {
+    "name": "Seinen",
+    "slug": "seinen",
+    "desc": "",
+    "color": "",
+    "icon": "",
+    "parent": "",
+    "hidden": false,
+    "order": 20
+   },
+   {
+    "name": "Adaptation",
+    "slug": "adaptation",
+    "desc": "",
+    "color": "",
+    "icon": "",
+    "parent": "",
+    "hidden": false,
+    "order": 21
    }
   ]
  },
- "rev": 1795818570736
+ "rev": 1795818588289
 }
