@@ -9,7 +9,14 @@
   const cur = () => (S && S.cfg && S.cfg.currency) || "Linh Thạch";
   const n0 = v => (+v || 0).toLocaleString("vi-VN");
   const hrs = s => { s = +s || 0; const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return h ? `${n0(h)} giờ ${m} phút` : `${m} phút` };
-  const STONE = '<svg class="kst" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 19 8 16 21H8L5 8z" fill="url(#kstg)"/><path d="M5 8h14M12 2 9.5 8 12 21 14.5 8z" fill="none" stroke="#fff8" stroke-width="1"/><defs><linearGradient id="kstg" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#9ff3ff"/><stop offset=".5" stop-color="#5b8cff"/><stop offset="1" stop-color="#c06bff"/></linearGradient></defs></svg>';
+  const STONE = '<svg class="kst" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5 19.5 7.5 17 20 12 22.5 7 20 4.5 7.5z" fill="url(#kstg)"/><path d="M12 1.5 9 7.5h6z" fill="#ffffff66"/><path d="M4.5 7.5h15M12 1.5 9 7.5l3 15 3-15z" fill="none" stroke="#ffffffa8" stroke-width=".8" stroke-linejoin="round"/><path class="kst-s" d="M19.5 1.5c.2 1.3.5 1.6 1.8 1.8-1.3.2-1.6.5-1.8 1.8-.2-1.3-.5-1.6-1.8-1.8 1.3-.2 1.6-.5 1.8-1.8z" fill="#fff"/></svg>';
+  /* Bộ gradient dùng chung cho mọi biểu tượng, khai báo một lần để không trùng id */
+  if (!document.getElementById("tl-defs")) document.body.insertAdjacentHTML("beforeend", `<svg id="tl-defs" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden"><defs>
+<linearGradient id="kstg" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#c4fcff"/><stop offset=".45" stop-color="#6aa8ff"/><stop offset="1" stop-color="#c06bff"/></linearGradient>
+<linearGradient id="tlg" gradientUnits="userSpaceOnUse" x1="8" y1="4" x2="40" y2="44"><stop offset="0" stop-color="#fff3b8"/><stop offset=".45" stop-color="#ffd84d"/><stop offset="1" stop-color="#d0901a"/></linearGradient>
+<linearGradient id="tlgb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3b8"/><stop offset=".45" stop-color="#ffd84d"/><stop offset="1" stop-color="#d0901a"/></linearGradient>
+<linearGradient id="tlv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb8ff"/><stop offset=".5" stop-color="#ff2bff"/><stop offset="1" stop-color="#8a2be2"/></linearGradient>
+<clipPath id="tlcup"><path d="M15 7.5h18v9.5c0 6-4 11-9 11s-9-5-9-11z"/></clipPath><linearGradient id="tlf" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff00ff"/><stop offset=".6" stop-color="#ffb3ff"/><stop offset="1" stop-color="#fff"/></linearGradient></defs></svg>`);
   async function client() { if (!sb) sb = await ST.client(); return sb }
   async function rpc(fn, args) { await client(); const r = await sb.rpc(fn, args || {}); if (r.error) throw r.error; return r.data }
   const msg = e => { const m = String((e && (e.message || e.error_description)) || e || ""); return /function .* does not exist|schema cache|404/i.test(m) ? "Máy chủ chưa có hệ thống Tu luyện. Hãy chạy file tu-luyen.sql trong Supabase." : m || "Có lỗi xảy ra, hãy thử lại." };
@@ -44,7 +51,7 @@
       if (e.t === "level") pop(`<span class="kpi kpl">${n0(e.to)}</span><div><b>Thăng cấp!</b><span>Bạn đã đạt cấp ${n0(e.to)}</span></div>`, "lv big");
       else if (e.t === "drop") pop(`<span class="kpi kpc">${STONE}</span><div><b>+${n0(e.n)} ${esc(cur())}</b><span>${e.tier && e.tier !== "Thường" ? esc(e.tier) + ", " : ""}nhặt được khi đang đọc</span></div>`, "drop" + (e.n >= 50 ? " rare" : ""));
       else if (e.t === "stones") pop(`<span class="kpi kpc">${STONE}</span><div><b>+${n0(e.n)} ${esc(cur())}</b><span>${esc(e.why || "")}</span></div>`, "drop");
-      else if (e.t === "ach") pop(`<span class="kpi kpa">${KG.icon(e.icon || "star")}</span><div><b>Thành tựu: ${esc(e.name)}</b><span>Đã mở khóa, xem phần thưởng trong Tu luyện</span></div>`, "ach big");
+      else if (e.t === "ach") pop(`<span class="kpi kpa">${achIc(e.id, e.icon)}</span><div><b>Thành tựu: ${esc(e.name)}</b><span>Đã mở khóa, xem phần thưởng trong Tu luyện</span></div>`, "ach big");
       else if (e.t === "encounter") pop(`<span class="kpi kpe">${KG.icon("comet")}</span><div><b>Kỳ ngộ!</b><span>+${n0(e.n)} ${esc(cur())}, +${n0(e.exp)} EXP${e.item ? `, nhận danh hiệu bí mật ${esc(e.item.name)}` : ""}</span></div>`, "enc big");
       else if (e.t === "item") pop(`<span class="kpi kpa">${KG.icon("gem")}</span><div><b>Nhận vật phẩm</b><span>${esc(e.why || "")}</span></div>`, "ach");
     }
@@ -119,6 +126,37 @@
   const loading = () => { app.innerHTML = '<section class="sec"><p class="empty">Đang tải...</p></section>' };
   const avOf = (c, size = 56) => KG.avatar(`<span class="kav" style="--s:${size}px">${c.avatar && /^https:\/\//.test(c.avatar) ? `<img src="${esc(c.avatar)}" alt="">` : esc([...(c.name || "?")][0])}</span>`, c.eq, size);
 
+  /* ---------- Biểu tượng động của trang Tu luyện (SVG tự vẽ, màu lấy từ bộ gradient chung) ---------- */
+  const SPK = (x, y, s = 1, d = 0) => `<g transform="translate(${x} ${y}) scale(${s})"><path class="tl-spk" style="animation-delay:${d}s" d="M0-6C.7-1.2 1.2-.7 6 0 1.2.7.7 1.2 0 6-.7 1.2-1.2.7-6 0-1.2-.7-.7-1.2 0-6z"/></g>`;
+  const TLI = {
+    hourglass: `<g class="tl-flip"><path d="M14 7c0 9 7 12 9 17-2 5-9 8-9 17h20c0-9-7-12-9-17 2-5 9-8 9-17z" class="tl-gl"/><path class="tl-st" d="M17.5 12h13c-1 4-4.5 7-6.5 9.5-2-2.5-5.5-5.5-6.5-9.5z"/><path class="tl-sb" d="M16.5 39.5c1-5.5 4.5-7.5 7.5-8.5 3 1 6.5 3 7.5 8.5z"/><path class="tl-fl" d="M24 22v16"/><path d="M11 6.5h26M11 41.5h26" class="tl-ln"/></g>${SPK(41, 9, .8, 1.2)}`,
+    book: `<path d="M24 13c-5-3.5-12-4.5-19-3.5v27c7-1 14 0 19 3.5 5-3.5 12-4.5 19-3.5v-27c-7-1-14 0-19 3.5z" class="tl-gl"/><path d="M9 16.5c4-.5 8 0 11 1.5M9 21.5c4-.5 8 0 11 1.5M9 26.5c4-.5 8 0 11 1.5M28 18c3-1.5 7-2 11-1.5M28 23c3-1.5 7-2 11-1.5M28 28c3-1.5 7-2 11-1.5" class="tl-tx"/><path class="tl-pg" d="M24 13c4.5-3 9.5-3.6 15-3.2v27c-5.5-.4-10.5.2-15 3.2z"/><path d="M24 13v27" class="tl-ln"/>${SPK(42, 7, .8, .4)}`,
+    books: `<rect x="7" y="31" width="33" height="8.5" rx="2" class="tl-gf"/><rect x="10" y="22" width="30" height="8.5" rx="2" class="tl-vf"/><g class="tl-bob"><rect x="8" y="12.5" width="30" height="8.5" rx="2" class="tl-gf" transform="rotate(-7 23 17)"/></g><path d="M12 35.2h24M15 26.2h21" class="tl-tx"/>${SPK(42, 8, .8, 2)}`,
+    calendar: `<rect x="7" y="10" width="34" height="31" rx="5" class="tl-gl"/><path d="M7.5 18h33" class="tl-ln"/><path d="M15.5 6v8M32.5 6v8" class="tl-ln"/><path class="tl-ck" d="M16 29.5l6 6 11-12"/>${SPK(41, 37, .7, .8)}`,
+    crown: `<path d="M7 17l9 8 8-13 8 13 9-8-4 21H11z" class="tl-gf"/><path d="M11 38.5h26" class="tl-ln"/><circle class="tl-gm" cx="16.5" cy="31" r="2.3"/><circle class="tl-gm" cx="24" cy="28.5" r="2.7" style="animation-delay:.6s"/><circle class="tl-gm" cx="31.5" cy="31" r="2.3" style="animation-delay:1.2s"/>${SPK(24, 6, .85, 1.6)}`,
+    trophy: `<path d="M15 11H8.5c0 6 3 9 8 9.5M33 11h6.5c0 6-3 9-8 9.5" class="tl-ln"/><path d="M15 7.5h18v9.5c0 6-4 11-9 11s-9-5-9-11z" class="tl-gf"/><path d="M24 28v6M16.5 41h15l-2-6.5h-11z" class="tl-gf"/><g clip-path="url(#tlcup)"><path class="tl-sh" d="M14 6h5l-9 26H5z"/></g><path d="M19.5 13.5l2 2 4-4.5" class="tl-tx"/>${SPK(40, 6, .8, .3)}`
+  };
+  const tli = (k, cls = "") => `<svg class="tli tli-${k} ${cls}" viewBox="0 0 48 48" aria-hidden="true">${TLI[k]}</svg>`;
+  const BAGUA = [7, 0, 3, 6, 5, 2, 4, 1];
+  const SEAL = `<svg class="tl-sl" viewBox="0 0 160 160" aria-hidden="true"><circle cx="80" cy="80" r="77" class="tl-s0"/>
+<g class="tl-s1"><circle cx="80" cy="80" r="73" class="tl-sr" stroke-dasharray="1.5 5.5"/><circle cx="80" cy="80" r="60" class="tl-sr"/>${BAGUA.map((b, i) => `<g transform="rotate(${i * 45} 80 80)">${[0, 1, 2].map(l => (b >> l) & 1 ? `<path d="M72 ${10 + l * 3.6}h16"/>` : `<path d="M72 ${10 + l * 3.6}h6.5M81.5 ${10 + l * 3.6}h6.5"/>`).join("")}</g>`).join("")}</g>
+<g class="tl-s2"><rect x="48" y="48" width="64" height="64"/><rect x="48" y="48" width="64" height="64" transform="rotate(45 80 80)"/><circle cx="80" cy="80" r="45"/></g></svg>`;
+  const RING = `<svg class="tl-rg" viewBox="0 0 140 140" aria-hidden="true"><circle cx="70" cy="70" r="64" class="tl-r1"/><g class="tl-r2w"><circle cx="70" cy="70" r="68.5" class="tl-r2" stroke-dasharray="46 10 3 10"/></g>${[0, 90, 180, 270].map(a => `<path class="tl-r3" d="M70 0l4.5 6.5L70 13l-4.5-6.5z" transform="rotate(${a} 70 70)"/>`).join("")}</svg><i class="tl-orb"></i><i class="tl-orb b"></i>`;
+  const EMBLEM = `<svg class="tl-emb" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="36" r="24" class="tl-eh"/><path class="tl-lot" d="M32 55c-9.5 0-18-4-21-11.5 6-1 11.5 1 14.5 4.2-3-8.5 0-16.5 6.5-21.7 6.5 5.2 9.5 13.2 6.5 21.7 3-3.2 8.5-5.2 14.5-4.2C50 51 41.5 55 32 55z"/><path class="tl-flm" d="M32 31c-5 0-8.5-3.6-8.5-8.2 0-6.3 6.3-8.4 6.3-15.6 4.4 3 10.7 8.4 10.7 14.8 0 5.3-3.4 9-8.5 9z"/>${SPK(50, 14, .9, .5)}${SPK(13, 22, .6, 1.7)}</svg>`;
+  const SCENE = `<svg class="tl-mt" viewBox="0 0 1000 260" preserveAspectRatio="xMaxYMax slice" aria-hidden="true">
+<path class="tl-m1" d="M0 260V178l70-34 55 22 80-62 62 40 58-24 85-66 66 52 74-30 90 56 62-38 84 32 72-48 82 40 60-18 100 62v98z"/>
+<path class="tl-m2" d="M300 260l95-82 52 26 74-70 44 32 66-62 58 46 42-12 52 52 34-46 38 30 48-58 34 30 62 46 0 0 0 68z"/>
+<g class="tl-m2"><path d="M762 106h40v30h-40z"/><path d="M748 110q20-4 34-16 14 12 34 16z"/><path d="M752 92q16-3 30-13 14 10 30 13z"/><path d="M758 77q12-3 24-12 12 9 24 12z"/><path d="M780 66v-12h4v12z"/></g>
+<path class="tl-m3" d="M520 260l70-48 46 18 60-34 48 28 52-22 66 36 58-24 80 46v0z"/></svg>
+<div class="tl-mc"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="96"/><circle cx="100" cy="100" r="84" stroke-dasharray="2 7"/><circle cx="100" cy="100" r="62"/><path d="M100 4 183 148H17zM100 196 17 52h166z"/></svg></div>
+${[[6, 0, 15, 1], [22, 5, 18, .8], [41, 2.5, 16, 1.1], [58, 8, 20, .7], [73, 1, 14, .9], [86, 6, 17, 1.2], [95, 10, 19, .8]].map(([x, d, t, s]) => `<i class="tl-pt" style="--x:${x}%;--d:-${d}s;--t:${t}s;--s:${s}"></i>`).join("")}`;
+  // Thành tựu có sẵn dùng ảnh trong img/tt/, thành tựu tự thêm vẫn dùng biểu tượng nét vẽ
+  const ACHI = new Set(["so-nhap-giang-ho", "tieu-thanh-doc-gia", "bach-chuong-doc-gia", "thien-chuong-hanh-gia", "van-quyen-thu-sinh", "nhat-khac-tu-hanh", "thap-thoi-tinh-tu", "bach-thoi-nhap-dinh", "thien-thoi-dai-dinh", "truong-da-tu-hanh", "that-nhat-tu-dao", "nguyet-vien", "bach-nhat-tu-dao", "nhat-nien-luan-hoi", "van-phap-quy-tong", "bach-gia-chu-tu", "suu-tam-gia", "tang-bao-cac", "thien-kim-tan-tan", "ky-ngo-dau-tien", "khai-son-nguyen-lao"]);
+  const achIc = (id, ic) => ACHI.has(id) ? `<img class="tl-ai" src="img/tt/${id}.webp" alt="" loading="lazy" decoding="async">` : KG.icon(ic || "star");
+  const medal = (ic, st, id) => `<span class="tl-md ${st}"><svg class="tl-mdr" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30.5"/><circle class="tl-tk" cx="32" cy="32" r="26.5"/></svg>${st === "hid" ? KG.icon(ic || "star") : achIc(id, ic)}${st === "got" ? `<svg class="tl-mds" viewBox="-7 -7 14 14" aria-hidden="true"><path class="tl-spk" d="M0-6C.7-1.2 1.2-.7 6 0 1.2.7.7 1.2 0 6-.7 1.2-1.2.7-6 0-1.2-.7-.7-1.2 0-6z"/></svg>` : ""}</span>`;
+  const dmy = s => { const d = new Date(s), z = v => String(v).padStart(2, "0"); return `${z(d.getDate())}/${z(d.getMonth() + 1)}/${d.getFullYear()}` };
+  const hm2 = s => { const d = new Date(s), z = v => String(v).padStart(2, "0"); return `${z(d.getHours())}:${z(d.getMinutes())}` };
+
   /* ---------- Trang Tu luyện ---------- */
   async function pHome() {
     document.title = "Tu luyện | Kenrori";
@@ -128,24 +166,60 @@
     const [cd, ach, led] = await Promise.all([rpc("player_public", { ids: [me().id] }).then(r => r[me().id]).catch(() => null), rpc("ach_list").catch(() => []), rpc("my_ledger", { lim: 60 }).catch(() => [])]);
     ACH = ach; const c = cd || { name: (ST.prof() || {}).display_name || "Bạn", eq: {} }, p = Math.min(100, S.exp / Math.max(1, S.need) * 100), got = ach.filter(a => a.at).length;
     const prv = a => { if (!a.rule) return null; const v = { chapters: S.chapters, read_hours: S.read_seconds / 3600, night_min: S.night_seconds / 60, days: S.days, genres: S.genres, series: S.series, level: S.level, titles: S.titles, spent: S.spent, encounters: S.encounters }[a.rule.t]; return v == null ? null : [Math.min(v, a.rule.v), a.rule.v] };
-    const bf = (S.buffs || []).map(b => `<span class="kbf">${{ exp: "EXP", stones: cur(), drop: "Tỷ lệ rơi", encounter: "Kỳ ngộ" }[b.kind]} x${+(+b.mult).toFixed(2)}${b.ends_at ? `, tới ${new Date(b.ends_at).toLocaleDateString("vi-VN")}` : ", vĩnh viễn"}${b.note ? ` (${esc(b.note)})` : ""}</span>`).join("");
+    const maxed = S.cfg && +S.cfg.max_level && S.level >= +S.cfg.max_level;
     const capE = S.cfg && +S.cfg.daily_exp_cap, capS = S.cfg && +S.cfg.daily_stone_cap;
-    app.innerHTML = nav("tu-luyen") + `<section class="sec khero">
-<div class="khc">${avOf(c, 84)}<div class="khi"><div class="khn"><b>${KG.name(c.name, c.eq)}</b>${c.eq && c.eq.title ? KG.title(c.eq.title, { size: "md" }) : '<a class="kno" href="#kho-do">Chưa trang bị danh hiệu</a>'}</div>
-<div class="klvl"><span class="klb">Cấp</span><b>${n0(S.level)}</b><div class="kxp"><div class="kxb" role="progressbar" aria-valuemin="0" aria-valuemax="${S.need}" aria-valuenow="${S.exp}" aria-label="Kinh nghiệm"><i style="width:${p.toFixed(2)}%"></i></div><small>${n0(S.exp)} / ${n0(S.need)} EXP để lên cấp ${n0(S.level + 1)}</small></div></div></div>
-<div class="kbal">${STONE}<b>${n0(S.stones)}</b><span>${esc(cur())}</span><a class="btn pri sm" href="#cua-hang">Cửa hàng</a></div></div>
-<div class="kstats">${[["Thời gian đọc", hrs(S.read_seconds)], ["Chương đã đọc xong", n0(S.chapters)], ["Bộ đã đọc", n0(S.series)], ["Ngày ghé Kenrori", n0(S.days)], ["Danh hiệu sở hữu", n0(S.titles)], ["Thành tựu", `${got}/${ach.length}`]].map(([l, v]) => `<div><b>${v}</b><span>${l}</span></div>`).join("")}</div>
-${capE ? `<p class="kcap">Hôm nay: ${n0(S.daily_exp)}/${n0(capE)} EXP${capS ? `, ${n0(S.daily_stones)}/${n0(capS)} ${esc(cur())} nhặt khi đọc` : ""}. Giới hạn này đặt lại mỗi ngày, không có hình phạt khi nghỉ đọc.</p>` : ""}
-${bf ? `<div class="kbfs"><b>Đang được tăng thưởng</b>${bf}</div>` : ""}</section>
-<section class="sec">${head("Thành tựu", `<span class="shn">${got} đã mở khóa</span>`)}<div class="kach">${ach.map(a => { const pr = !a.at && prv(a); return `<div class="kac${a.at ? " got" : ""}${a.hidden && !a.at ? " hid" : ""}"><span class="kai">${KG.icon(a.icon || "star")}</span><div><b>${esc(a.name)}</b><small>${esc(a.description)}</small>${pr ? `<span class="kap"><i style="width:${(pr[0] / pr[1] * 100).toFixed(1)}%"></i></span><small>${n0(Math.floor(pr[0]))}/${n0(pr[1])}</small>` : ""}${a.at ? `<small class="kat">Mở khóa ${new Date(a.at).toLocaleDateString("vi-VN")}</small>` : ""}${a.reward && !a.at ? `<small class="krw">Thưởng: ${[a.reward.exp ? n0(a.reward.exp) + " EXP" : "", a.reward.stones ? n0(a.reward.stones) + " " + esc(cur()) : "", (a.reward.items || []).length ? "vật phẩm" : ""].filter(Boolean).join(", ")}</small>` : ""}</div></div>` }).join("")}</div></section>
-<section class="sec">${head("Lịch sử nhận và tiêu", `<div class="utabs" role="tablist">${[["all", "Tất cả"], ["stones", cur()], ["exp", "EXP"], ["item", "Vật phẩm"]].map(([k, l], i) => `<button data-lf="${k}" class="${i ? "" : "on"}">${esc(l)}</button>`).join("")}</div>`)}<div id="kled"></div></section>
-<section class="sec">${head("Cài đặt")}<div class="kset"><label>Hiệu ứng danh hiệu<select id="kfx">${[["full", "Đầy đủ"], ["simple", "Đơn giản"], ["off", "Tắt hiệu ứng"]].map(([v, l]) => `<option value="${v}"${KG.fxMode() === v ? " selected" : ""}>${l}</option>`).join("")}</select></label>
+    const bf = (S.buffs || []).map(b => `<span class="tl-bf">${{ exp: "EXP", stones: esc(cur()), drop: "Tỷ lệ rơi", encounter: "Kỳ ngộ" }[b.kind]} x${+(+b.mult).toFixed(2)}<small>${b.ends_at ? `tới ${new Date(b.ends_at).toLocaleDateString("vi-VN")}` : "vĩnh viễn"}${b.note ? `, ${esc(b.note)}` : ""}</small></span>`).join("");
+    const u = (v, w) => `${v}<small>${w}</small>`;
+    const hm = s => { s = +s || 0; const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return h ? `${n0(h)}<small>giờ</small> ${m}<small>phút</small>` : `${m}<small>phút</small>` };
+    const stats = [["hourglass", "Thời gian đọc", hm(S.read_seconds)], ["book", "Chương đã đọc xong", u(n0(S.chapters), "chương")], ["books", "Bộ đã đọc", u(n0(S.series), "bộ")],
+      ["calendar", "Ngày ghé Kenrori", u(n0(S.days), "ngày")], ["crown", "Danh hiệu sở hữu", u(n0(S.titles), "danh hiệu")], ["trophy", "Thành tựu", `${got}<small>/ ${ach.length}</small>`]];
+    const rw = r => [r.exp ? n0(r.exp) + " EXP" : "", r.stones ? n0(r.stones) + " " + esc(cur()) : "", (r.items || []).length ? "vật phẩm" : ""].filter(Boolean).join(", ");
+    const achCard = a => {
+      const st = a.at ? "got" : a.hidden ? "hid" : "run", pr = !a.at && prv(a);
+      return `<article class="tl-ac ${st}">${medal(a.icon, st, a.id)}<div class="tl-acb"><h3>${esc(a.name)}</h3><p>${esc(a.description)}</p>
+${a.at ? `<span class="tl-done">${KG.icon("shield")}Hoàn thành ngày ${dmy(a.at)}</span>` : pr ? `<div class="tl-pr"><span class="tl-bar"><i style="width:${(pr[0] / pr[1] * 100).toFixed(1)}%"></i></span><span class="tl-num"><b>${n0(Math.floor(pr[0]))}</b> / ${n0(pr[1])}</span></div>` : ""}
+${a.reward && !a.at && rw(a.reward) ? `<small class="tl-rw">Thưởng ${rw(a.reward)}</small>` : ""}</div></article>` };
+    const rec = ach.filter(a => a.at).sort((x, y) => new Date(y.at) - new Date(x.at));
+    const run = ach.filter(a => !a.at).map(a => { const pr = prv(a); return { a, r: pr ? pr[0] / pr[1] : -1 } }).sort((x, y) => y.r - x.r).map(x => x.a);
+    const pick = [...rec.slice(0, 2), ...run, ...rec.slice(2)].slice(0, 6);
+    let allA = false;
+
+    app.innerHTML = nav("tu-luyen") + `<section class="tl-scene">
+<div class="tl-bgs" aria-hidden="true">${SCENE}</div>
+<header class="tl-hd">${EMBLEM}<div><h1>Tu luyện</h1><p>Đọc truyện để tích EXP, nhặt ${esc(cur())} và mở khóa thành tựu. Không cần làm nhiệm vụ.</p></div></header>
+<div class="tl-card">
+<div class="tl-av">${RING}${avOf(c, 104)}</div>
+<div class="tl-who"><div class="tl-nm">${KG.name(c.name, c.eq)}</div>${c.eq && c.eq.title ? `<div class="tl-tt">${KG.title(c.eq.title, { size: "md" })}</div>` : '<a class="tl-not" href="#kho-do">Chọn danh hiệu để đeo trong Kho đồ</a>'}</div>
+<div class="tl-seal" title="Cấp độ hiện tại">${SEAL}<div><small>Cấp</small><b>${n0(S.level)}</b></div></div>
+<a class="tl-bal" href="#cua-hang" title="Mở cửa hàng"><span class="tl-gem">${STONE}</span><span class="tl-bv"><small>${esc(cur())}</small><b>${n0(S.stones)}</b></span><em>Cửa hàng</em></a>
+<div class="tl-xp"><div class="tl-xpb" role="progressbar" aria-valuemin="0" aria-valuemax="${S.need}" aria-valuenow="${S.exp}" aria-label="Kinh nghiệm"><i style="width:${p.toFixed(2)}%"></i></div>
+<div class="tl-xpt"><span>${maxed ? "Đã đạt cấp tối đa" : `Còn ${n0(Math.max(0, S.need - S.exp))} EXP để lên cấp ${n0(S.level + 1)}`}</span><span><b>${n0(S.exp)}</b> / ${n0(S.need)} EXP (${p.toLocaleString("vi-VN", { maximumFractionDigits: 2 })}%)</span></div>
+${capE || bf ? `<div class="tl-meta">${capE ? `<span>Hôm nay ${n0(S.daily_exp)}/${n0(capE)} EXP${capS ? `, ${n0(S.daily_stones)}/${n0(capS)} ${esc(cur())} nhặt khi đọc` : ""}</span>` : ""}${bf}</div>` : ""}</div>
+</div></section>
+<section class="tl-stats" aria-label="Thống kê">${stats.map(([k, l, v]) => `<div class="tl-sc">${tli(k)}<div><span>${l}</span><b>${v}</b></div></div>`).join("")}</section>
+<section class="sec tl-sec"><div class="tl-sh"><h2>${tli("trophy", "sm")}Thành tựu</h2><span class="tl-cnt">${got}/${ach.length} đã mở khóa</span>${ach.length > 6 ? `<button class="tl-more" id="tlall">Xem tất cả</button>` : ""}</div><div class="tl-ach" id="tlach">${pick.map(achCard).join("")}</div></section>
+<section class="sec tl-sec"><div class="tl-sh"><h2>${tli("hourglass", "sm")}Lịch sử</h2></div>
+<div class="tl-tabs" role="tablist"><button role="tab" data-lf="in" aria-selected="true" class="on">${KG.icon("star4")}Lịch sử nhận</button><button role="tab" data-lf="out" aria-selected="false">${KG.icon("gem")}Lịch sử tiêu</button></div><div id="kled"></div></section>
+<details class="sec tl-set"><summary>Cài đặt hiển thị và riêng tư</summary><div class="kset"><label>Hiệu ứng danh hiệu và trang Tu luyện<select id="kfx">${[["full", "Đầy đủ"], ["simple", "Đơn giản"], ["off", "Tắt hiệu ứng"]].map(([v, l]) => `<option value="${v}"${KG.fxMode() === v ? " selected" : ""}>${l}</option>`).join("")}</select></label>
 <label class="ck"><input type="checkbox" id="kopt"${S.lb_opt_out ? " checked" : ""}> Không hiện tôi trên bảng xếp hạng</label><label class="ck"><input type="checkbox" id="kpub"${S.public_stats ? " checked" : ""}> Công khai thời gian đọc và số chương trên hồ sơ</label>
-<p class="mu">${esc(cur())} và lịch sử nhận, tiêu chỉ bạn và quản trị viên thấy. Cách tính: thời gian đọc thực tế khi tab đang mở và bạn có cuộn hoặc chuyển trang; mỗi chương chỉ tính hoàn thành một lần.</p></div></section>`;
+<p class="mu">${esc(cur())} và lịch sử nhận, tiêu chỉ bạn và quản trị viên thấy. Thời gian đọc chỉ tính khi tab đang mở và bạn có cuộn hoặc chuyển trang; mỗi chương chỉ tính hoàn thành một lần.</p></div></details>`;
+
+    const allBtn = $("#tlall"); if (allBtn) allBtn.onclick = () => { allA = !allA; $("#tlach").innerHTML = (allA ? ach : pick).map(achCard).join(""); allBtn.textContent = allA ? "Thu gọn" : "Xem tất cả" };
     const SRC = { read: "Đọc truyện", complete: "Hoàn thành chương", series: "Bộ mới", daily: "Đăng nhập", drop: "Rơi khi đọc", encounter: "Kỳ ngộ", level: "Thưởng lên cấp", achievement: "Thành tựu", shop: "Cửa hàng", admin: "Quản trị viên", event: "Sự kiện" };
-    const drawL = f => { const L = led.filter(l => f === "all" || l.kind === f || (f === "exp" && l.kind === "level")); $("#kled").innerHTML = L.length ? `<div class="kled">${L.map(l => `<div class="kle"><span class="kld ${l.delta < 0 ? "neg" : ""}">${l.kind === "item" ? KG.icon("gem") : l.kind === "achievement" ? KG.icon("star") : (l.delta > 0 ? "+" : "") + n0(l.delta)}${l.kind === "stones" ? STONE : l.kind === "exp" ? " EXP" : l.kind === "level" ? " cấp" : ""}</span><span class="klt"><b>${esc(l.reason || SRC[l.source] || l.source)}</b><small>${SRC[l.source] || esc(l.source)}${l.before_v != null && l.kind === "stones" ? `, số dư ${n0(l.before_v)} → ${n0(l.after_v)}` : ""}</small></span><time>${new Date(l.at).toLocaleString("vi-VN")}</time></div>`).join("")}</div>` : '<p class="empty">Chưa có gì. Cứ đọc truyện, lịch sử sẽ hiện ở đây.</p>' };
-    drawL("all");
-    app.querySelector(".utabs").onclick = e => { const b = e.target.closest("[data-lf]"); if (!b) return; app.querySelectorAll("[data-lf]").forEach(x => x.classList.toggle("on", x === b)); drawL(b.dataset.lf) };
+    const SIC = { read: "book", complete: "scroll", series: "book", daily: "sun", drop: "gem", encounter: "comet", level: "star4", achievement: "crown", shop: "gem", admin: "shield", event: "sakura" };
+    const amt = l => l.kind === "item" || l.kind === "achievement" ? `<span class="tl-am it">${KG.icon(l.kind === "item" ? "gem" : "crown")}${l.kind === "item" ? "Vật phẩm" : "Mở khóa"}</span>`
+      : `<span class="tl-am${l.delta < 0 ? " neg" : ""}">${l.delta > 0 ? "+" : ""}${n0(l.delta)}${l.kind === "stones" ? STONE : `<small>${l.kind === "level" ? "cấp" : "EXP"}</small>`}</span>`;
+    let LF = "in", LN = 10;
+    const drawL = () => {
+      const L = led.filter(l => LF === "in" ? !(l.delta < 0) : l.delta < 0), box = $("#kled");
+      if (!L.length) { box.innerHTML = LF === "in" ? '<p class="empty">Chưa có gì. Cứ đọc truyện, phần thưởng sẽ hiện ở đây.</p>' : `<p class="empty">Bạn chưa tiêu ${esc(cur())} nào. <a href="#cua-hang">Ghé Cửa hàng</a> để đổi danh hiệu, khung và màu tên.</p>`; return }
+      box.innerHTML = `<div class="tl-tb" role="table" aria-label="${LF === "in" ? "Lịch sử nhận" : "Lịch sử tiêu"}"><div class="tl-tr tl-th" role="row"><span role="columnheader">Thời gian</span><span role="columnheader">Nội dung</span><span role="columnheader">Số lượng</span></div>
+${L.slice(0, LN).map(l => `<div class="tl-tr" role="row"><time role="cell" datetime="${esc(l.at)}">${dmy(l.at)} <span>${hm2(l.at)}</span></time><span class="tl-ct" role="cell"><i>${KG.icon(SIC[l.source] || "star")}</i><span><b>${esc(l.reason || SRC[l.source] || l.source)}</b><small>${SRC[l.source] || esc(l.source)}${l.before_v != null && l.kind === "stones" ? `, số dư ${n0(l.before_v)} → ${n0(l.after_v)}` : ""}</small></span></span><span role="cell">${amt(l)}</span></div>`).join("")}</div>
+${L.length > LN ? `<button class="tl-more wide" id="tlmore">Xem thêm ${n0(Math.min(10, L.length - LN))} dòng</button>` : ""}`;
+      const m = $("#tlmore"); if (m) m.onclick = () => { LN += 10; drawL() };
+    };
+    drawL();
+    app.querySelector(".tl-tabs").onclick = e => { const b = e.target.closest("[data-lf]"); if (!b) return; app.querySelectorAll(".tl-tabs [data-lf]").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-selected", x === b) }); LF = b.dataset.lf; LN = 10; drawL() };
     $("#kfx").onchange = e => { KG.fxMode(e.target.value); toast("Đã đổi chế độ hiệu ứng") };
     const sv = async () => { try { set(await rpc("player_settings", { opt_out: $("#kopt").checked, pub: $("#kpub").checked })); toast("Đã lưu cài đặt") } catch (e) { toast(msg(e)) } };
     $("#kopt").onchange = sv; $("#kpub").onchange = sv;
@@ -263,7 +337,7 @@ ${C.length ? `<ul class="kcond">${C.map(x => `<li>${esc(x)}</li>`).join("")}</ul
 <div class="klvl"><span class="klb">Cấp</span><b>${n0(P.level)}</b><div class="kxp"><div class="kxb"><i style="width:${p.toFixed(1)}%"></i></div><small>${n0(P.exp)} / ${n0(P.need)} EXP</small></div></div>
 <div class="kstats sm">${[["Danh hiệu", n0(P.titles)], ["Thành tựu", n0(P.achievements)], ["Tham gia", new Date(P.joined).toLocaleDateString("vi-VN")], ...(P.stats ? [["Thời gian đọc", hrs(P.stats.read_seconds)], ["Chương đã đọc", n0(P.stats.chapters)]] : []), ...(P.stones != null ? [[cur(), n0(P.stones)]] : [])].map(([l, v]) => `<div><b>${v}</b><span>${esc(l)}</span></div>`).join("")}</div>
 ${P.private ? '<p class="mu">Người này giữ riêng thời gian đọc và số chương.</p>' : ""}
-${(P.ach || []).length ? `<div class="kpach">${P.ach.slice(0, 24).map(a => `<span title="${esc(a.name)}, ${new Date(a.at).toLocaleDateString("vi-VN")}">${KG.icon(a.icon || "star")}<b>${esc(a.name)}</b></span>`).join("")}</div>` : ""}</div>`;
+${(P.ach || []).length ? `<div class="kpach">${P.ach.slice(0, 24).map(a => `<span title="${esc(a.name)}, ${new Date(a.at).toLocaleDateString("vi-VN")}">${achIc(a.id, a.icon)}<b>${esc(a.name)}</b></span>`).join("")}</div>` : ""}</div>`;
   }
 
   /* ---------- Bảng điều chỉnh thành viên (Kiểm duyệt › Tài khoản) ---------- */
@@ -334,6 +408,7 @@ ${(P.ach || []).length ? `<div class="kpach">${P.ach.slice(0, 24).map(a => `<spa
 .kcs{display:inline-flex;align-items:center;gap:3px}.kst{width:15px;height:15px;flex:none;vertical-align:-2px}
 body.clear #kchip{background:#ffffff26;color:#fff}
 @media(max-width:700px){#kchip .kcb{display:none}#kchip{padding:0 9px;gap:5px}}
+@media(max-width:420px){#kchip{padding:0 7px;gap:4px;font-size:.76rem;height:32px}#kchip .kst{width:13px;height:13px}}
 #kpop{position:fixed;right:16px;bottom:84px;z-index:95;display:flex;flex-direction:column;gap:8px;align-items:flex-end;pointer-events:none}
 .kpo{display:flex;align-items:center;gap:10px;max-width:320px;padding:9px 14px 9px 9px;border-radius:12px;background:#1b1630f2;color:#fff;box-shadow:0 8px 24px -8px #0008;animation:kpo-in .35s ease-out;font-size:.86rem}
 .kpo div{display:flex;flex-direction:column;line-height:1.3}.kpo span{opacity:.85;font-size:.8rem}.kpo.out{opacity:0;transform:translateY(6px);transition:.5s}
@@ -415,6 +490,163 @@ body.clear #kchip{background:#ffffff26;color:#fff}
 .kmi{display:flex;flex-wrap:wrap;gap:6px}.kmi>span{display:flex;flex-direction:column;gap:2px;background:var(--s1);border-radius:8px;padding:6px 10px;font-size:.85rem}.kmi>span.dead{opacity:.5}.kmi small{color:var(--mu);font-size:.72rem}
 .cmi .klvb{font-size:.72rem;font-weight:700;color:var(--ac);background:var(--acs);border-radius:4px;padding:0 5px}
 .cmh .kt{margin:0 2px}
+/* ===== Trang Tu luyện: thẻ đạo, ô thống kê có biểu tượng động, thành tựu dạng huy chương ===== */
+.tl-scene,.tl-stats,.tl-sec,.tl-set{--gold:#ffd84d;--gt:#8a5c00;--gbd:#e6cf8f;--tile:linear-gradient(160deg,#fff,#fbf5ff);--tl-glass:#fff6d6;--tl-ol:#9a6400;--tl-ink:#9a6a00;--vio:#b42fd6;--run:#c026d3}
+:root[data-theme=dark] :is(.tl-scene,.tl-stats,.tl-sec,.tl-set){--gt:#ffd84d;--gbd:#6b5222;--tile:linear-gradient(160deg,#2a1c3d,#1c1729 70%);--tl-glass:#ffffff10;--tl-ol:#ffe7a1;--tl-ink:#ffe7a1;--vio:#e27bff;--run:#f472ff}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) :is(.tl-scene,.tl-stats,.tl-sec,.tl-set){--gt:#ffd84d;--gbd:#6b5222;--tile:linear-gradient(160deg,#2a1c3d,#1c1729 70%);--tl-glass:#ffffff10;--tl-ol:#ffe7a1;--tl-ink:#ffe7a1;--vio:#e27bff;--run:#f472ff}}
+/* Biểu tượng */
+.tli{width:52px;height:52px;flex:none;overflow:visible}.tli.sm{width:28px;height:28px}
+.tli .tl-gl{fill:var(--tl-glass);stroke:url(#tlg);stroke-width:2.2;stroke-linejoin:round}
+.tli .tl-ln{fill:none;stroke:url(#tlg);stroke-width:2.6;stroke-linecap:round}
+.tli .tl-tx{fill:none;stroke:var(--tl-ink);stroke-width:1.5;stroke-linecap:round;opacity:.65}
+.tli .tl-gf{fill:url(#tlg);stroke:var(--tl-ol);stroke-width:1;stroke-linejoin:round;stroke-opacity:.6}
+.tli .tl-vf{fill:url(#tlv);stroke:var(--tl-ol);stroke-width:1;stroke-opacity:.5}
+.tli .tl-st,.tli .tl-sb,.tli .tl-pg{fill:url(#tlg)}
+.tli .tl-fl{stroke:#f5b82e;stroke-width:1.7;stroke-dasharray:2 3}
+.tli .tl-ck{fill:none;stroke:url(#tlv);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:30;stroke-dashoffset:0}
+.tli .tl-gm{fill:#fff;stroke:#ff6bf0;stroke-width:1.2}
+.tli .tl-sh{fill:#fff;opacity:0}
+.tl-spk{fill:#fff;transform-box:fill-box;transform-origin:center;filter:drop-shadow(0 0 2px #ffd84d) drop-shadow(0 0 4px #ff8af5)}
+.tl-flip{transform-box:view-box;transform-origin:50% 50%}.tl-st,.tl-sb{transform-box:fill-box;transform-origin:50% 100%}
+.tl-pg{transform-box:view-box;transform-origin:24px 24px}.tl-bob{transform-box:view-box}
+@media(prefers-reduced-motion:no-preference){
+.tl-spk{animation:tl-tw 2.8s ease-in-out infinite}
+.tli-hourglass .tl-flip{animation:tl-flip 9s ease-in-out infinite}.tli-hourglass .tl-st{animation:tl-sdt 9s linear infinite}.tli-hourglass .tl-sb{animation:tl-sdb 9s linear infinite}.tli-hourglass .tl-fl{animation:tl-flow .7s linear infinite,tl-flo 9s linear infinite}
+.tli-book .tl-pg{animation:tl-page 5s ease-in-out infinite}
+.tli-books .tl-bob{animation:tl-bob 3.2s ease-in-out infinite}
+.tli-calendar .tl-ck{animation:tl-draw 5s ease-out infinite}
+.tli-crown .tl-gm{animation:tl-gem 1.8s ease-in-out infinite}
+.tli-trophy .tl-sh{animation:tl-shine 4.5s ease-in-out infinite}
+}
+@keyframes tl-tw{0%,100%{opacity:0;transform:scale(.3) rotate(0)}45%,55%{opacity:1;transform:scale(1) rotate(45deg)}}
+@keyframes tl-flip{0%,88%{transform:rotate(0)}100%{transform:rotate(180deg)}}
+@keyframes tl-sdt{0%{transform:scaleY(1)}86%,100%{transform:scaleY(.08)}}
+@keyframes tl-sdb{0%{transform:scaleY(.15)}86%,100%{transform:scaleY(1)}}
+@keyframes tl-flow{to{stroke-dashoffset:-5}}@keyframes tl-flo{0%,84%{opacity:1}86%,100%{opacity:0}}
+@keyframes tl-page{0%,40%{transform:scaleX(1);opacity:0}45%{opacity:.95}75%{transform:scaleX(-1);opacity:.95}82%,100%{transform:scaleX(-1);opacity:0}}
+@keyframes tl-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}
+@keyframes tl-draw{0%{stroke-dashoffset:30}30%,85%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+@keyframes tl-gem{0%,100%{fill:#fff}50%{fill:#ffb3fb}}
+@keyframes tl-shine{0%,55%{opacity:0;transform:translateX(0)}65%{opacity:.75}85%,100%{opacity:0;transform:translateX(34px)}}
+/* Thẻ đạo (luôn là cảnh đêm, ở cả giao diện sáng) */
+.tl-scene{position:relative;isolation:isolate;overflow:hidden;margin:20px 0 0;padding:26px 28px 24px;border-radius:20px;color:#f6f1ff;
+  background:radial-gradient(120% 90% at 85% 0%,#4a1f63 0%,transparent 55%),linear-gradient(170deg,#241536 0%,#17122a 60%,#120e1f 100%);box-shadow:0 18px 40px -24px #2a0a3f}
+.tl-scene::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(130deg,#ffd84d99,#ff00ff40 40%,#ffd84d26 70%,#ffd84d80);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.tl-bgs{position:absolute;inset:0;z-index:-1;pointer-events:none}
+.tl-mt{position:absolute;right:0;bottom:0;width:100%;height:78%}
+.tl-m1{fill:#2b1c45;opacity:.85}.tl-m2{fill:#22153a}.tl-m3{fill:#1a1129}
+.tl-mc{position:absolute;right:9%;top:-30px;width:230px;height:230px;transform:perspective(500px) rotateX(64deg);opacity:.55;border-radius:50%;background:radial-gradient(circle,#ff00ff30,transparent 65%)}
+.tl-mc svg{width:100%;height:100%;fill:none;stroke:#ffd84d;stroke-width:1;filter:drop-shadow(0 0 4px #ff8af5)}
+.tl-pt{position:absolute;top:-12px;left:var(--x);width:9px;height:7px;border-radius:80% 0 80% 0;background:linear-gradient(135deg,#ffe0f3,#ff79c6);opacity:0;transform:scale(var(--s))}
+@media(prefers-reduced-motion:no-preference){
+.tl-mc svg{animation:tl-spin 60s linear infinite}
+.tl-pt{animation:tl-fall var(--t) linear var(--d) infinite}
+}
+@keyframes tl-spin{to{transform:rotate(360deg)}}
+@keyframes tl-fall{0%{opacity:0;transform:translate(0,0) rotate(0) scale(var(--s))}8%{opacity:.85}50%{transform:translate(-40px,190px) rotate(260deg) scale(var(--s))}90%{opacity:.7}100%{opacity:0;transform:translate(-14px,400px) rotate(540deg) scale(var(--s))}}
+.tl-hd{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.tl-hd h1{margin:0;font-family:var(--fd);font-weight:700;font-size:clamp(1.9rem,3.4vw,2.6rem);line-height:1.05;letter-spacing:.01em;background:linear-gradient(180deg,#fff7d6 10%,#ffd84d 60%,#e0a526);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 10px #ff00ff40)}
+.tl-hd p{margin:4px 0 0;color:#d9cdea;font-size:.9rem;max-width:60ch}
+.tl-emb{width:58px;height:58px;flex:none;overflow:visible}.tl-eh{fill:#ff00ff;opacity:.16;filter:blur(6px)}.tl-lot{fill:url(#tlv)}.tl-flm{fill:url(#tlf);transform-box:fill-box;transform-origin:50% 100%}
+@media(prefers-reduced-motion:no-preference){.tl-flm{animation:tl-flk 2.4s ease-in-out infinite}.tl-eh{animation:tl-br 3.6s ease-in-out infinite}}
+@keyframes tl-flk{0%,100%{transform:scale(1,1) skewX(0)}30%{transform:scale(.96,1.06) skewX(-3deg)}60%{transform:scale(1.03,.97) skewX(2deg)}}
+@keyframes tl-br{0%,100%{opacity:.12}50%{opacity:.3}}
+.tl-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;grid-template-areas:"av who seal bal" "av xp xp bal";column-gap:24px;row-gap:14px;align-items:center;padding:20px 22px;border-radius:16px;background:linear-gradient(120deg,#ffffff0d,#ffffff05);border:1px solid #ffd84d40;backdrop-filter:blur(3px);box-shadow:inset 0 1px 0 #ffffff14}
+.tl-av{grid-area:av;position:relative;display:grid;place-items:center;width:140px;height:140px}
+.tl-av>.kfr,.tl-av>.kav{position:relative;z-index:1}
+.tl-rg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}.tl-r1{fill:none;stroke:url(#tlgb);stroke-width:3;filter:drop-shadow(0 0 5px #ffd84d80)}.tl-r2{fill:none;stroke:#ffd84d;stroke-width:1.2;opacity:.7}.tl-r3{fill:url(#tlgb);stroke:#fff6cc;stroke-width:.6}
+.tl-r2w{transform-box:view-box;transform-origin:50% 50%}
+.tl-orb{position:absolute;inset:-2px;border-radius:50%;pointer-events:none}.tl-orb::after{content:"";position:absolute;top:-3px;left:50%;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:#fff;box-shadow:0 0 8px 2px #ff8af5,0 0 2px #fff}
+.tl-orb.b{inset:12px}.tl-orb.b::after{width:5px;height:5px;box-shadow:0 0 6px 2px #ffd84d}
+@media(prefers-reduced-motion:no-preference){.tl-r2w{animation:tl-spin 40s linear infinite}.tl-orb{animation:tl-spin 9s linear infinite}.tl-orb.b{animation:tl-spin 13s linear infinite reverse}}
+.tl-who{grid-area:who;min-width:0;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.tl-nm{font-family:var(--fd);font-weight:700;font-size:clamp(1.4rem,2.4vw,1.9rem);line-height:1.15;overflow-wrap:anywhere}
+.tl-not{font-size:.85rem;color:#e6d8ff;border:1px dashed #ffffff40;border-radius:999px;padding:4px 12px}.tl-not:hover{border-color:#ffd84d;color:#fff}
+.tl-seal{grid-area:seal;position:relative;width:128px;height:128px;display:grid;place-items:center}
+.tl-sl{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.tl-s0{fill:#ff00ff12;stroke:#ffd84d55;stroke-width:1}
+.tl-s1,.tl-s2{transform-box:view-box;transform-origin:50% 50%}.tl-s1{fill:none;stroke:#ffd84d;stroke-width:1.6;stroke-linecap:round}.tl-sr{stroke-width:1}
+.tl-s2{fill:none;stroke:#ff6bf0;stroke-width:1;opacity:.55}
+@media(prefers-reduced-motion:no-preference){.tl-s1{animation:tl-spin 48s linear infinite}.tl-s2{animation:tl-spin 30s linear infinite reverse}}
+.tl-seal>div{position:relative;display:flex;flex-direction:column;align-items:center;line-height:1}
+.tl-seal small{font-size:.75rem;color:#e9dcff;letter-spacing:.04em}
+.tl-seal b{font-family:var(--fd);font-weight:700;font-size:2.6rem;background:linear-gradient(180deg,#fffbe8 5%,#ffd84d 55%,#d89416);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 10px #ff00ff66)}
+.tl-bal{grid-area:bal;display:flex;align-items:center;gap:12px;align-self:center;padding:14px 16px;border-radius:14px;background:linear-gradient(150deg,#2b1745,#1a1430);border:1px solid #ffd84d55;color:#fff;min-width:210px;box-shadow:inset 0 0 22px #9ff3ff10}
+.tl-bal:hover{border-color:#ffd84d;color:#fff}.tl-bal:focus-visible{outline:2px solid #ffd84d;outline-offset:2px}
+.tl-gem{position:relative;display:grid;place-items:center;width:52px;height:52px;flex:none}.tl-gem .kst{width:46px;height:46px;filter:drop-shadow(0 0 8px #9ff3ff80)}
+.tl-bv{display:flex;flex-direction:column;line-height:1.15}.tl-bv small{font-size:.8rem;color:#d9cdea}.tl-bv b{font-family:var(--fd);font-weight:700;font-size:1.65rem;color:#ffd84d}
+.tl-bal em{margin-left:auto;font-style:normal;font-size:.78rem;color:#ffd84d;border:1px solid #ffd84d80;border-radius:999px;padding:3px 10px;white-space:nowrap}
+.tl-xp{grid-area:xp;min-width:0}
+.tl-xpb{position:relative;height:14px;border-radius:999px;background:#0d0a18;box-shadow:inset 0 0 0 1px #ffffff1f;overflow:hidden}
+.tl-xpb i{position:relative;display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#9b1fd6,#ff00ff 70%,#ff8af5);box-shadow:0 0 12px #ff00ffaa;transition:width .8s}
+.tl-xpb i::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,#ffffff70 50%,transparent 70%) 0 0/200% 100% no-repeat;border-radius:inherit}
+@media(prefers-reduced-motion:no-preference){.tl-xpb i::after{animation:tl-run 3.4s ease-in-out infinite}}
+@keyframes tl-run{0%{background-position:150% 0}70%,100%{background-position:-60% 0}}
+.tl-xpt{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:6px;font-size:.82rem;color:#d9cdea}.tl-xpt b{color:#fff}
+.tl-meta{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin-top:10px;font-size:.8rem;color:#cbbfe0}
+.tl-bf{display:inline-flex;align-items:baseline;gap:5px;padding:2px 10px;border-radius:999px;background:#ff00ff26;color:#ffc4fb;font-weight:700}.tl-bf small{font-weight:500;opacity:.85}
+/* Ô thống kê */
+.tl-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
+.tl-sc{position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:14px;background:var(--tile);border:1px solid var(--gbd)}
+.tl-sc::after{content:"";position:absolute;right:-6px;bottom:-8px;width:120px;height:56px;opacity:.09;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 56'%3E%3Cpath fill='%23ff00ff' d='M0 56l26-22 14 8 22-26 12 10 18-14 28 28v16z'/%3E%3Cpath fill='%23ff00ff' d='M66 18h12v8H66zM62 19q6-1 10-5 4 4 10 5zM64 13q5-1 8-4 3 3 8 4z'/%3E%3C/svg%3E") no-repeat right bottom/contain;pointer-events:none}
+.tl-sc>div{display:flex;flex-direction:column;gap:2px;min-width:0}.tl-sc span{font-size:.85rem;color:var(--mu)}
+.tl-sc b{font-family:var(--fd);font-weight:700;font-size:1.55rem;line-height:1.15;color:var(--gt)}.tl-sc b small{font-size:.62em;font-weight:500;margin:0 .25em 0 .2em}
+/* Tiêu đề mục */
+.tl-sec{margin-top:28px}
+.tl-sh{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}.tl-sh h2{display:flex;align-items:center;gap:10px;margin:0;font-family:var(--fd);font-weight:700;font-size:1.45rem}
+.tl-cnt{color:var(--mu);font-size:.88rem}
+.tl-more{margin-left:auto;border:1px solid var(--gbd);background:transparent;color:var(--gt);border-radius:999px;padding:5px 14px;font:inherit;font-size:.85rem;cursor:pointer}.tl-more:hover{background:color-mix(in srgb,var(--gold) 14%,transparent)}
+.tl-more.wide{display:block;margin:12px auto 0}
+/* Thành tựu */
+.tl-ach{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.tl-ac{display:flex;gap:14px;align-items:flex-start;padding:16px;border-radius:14px;background:var(--tile);border:1px solid color-mix(in srgb,var(--run) 35%,transparent)}
+.tl-ac.got{border-color:var(--gbd);background:linear-gradient(160deg,color-mix(in srgb,var(--gold) 16%,transparent),transparent 60%),var(--tile);box-shadow:0 0 0 1px color-mix(in srgb,var(--gold) 30%,transparent)}
+.tl-ac.hid{border-style:dashed;border-color:var(--bd)}
+.tl-acb{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}.tl-acb h3{margin:0;font-family:var(--fd);font-weight:700;font-size:1.05rem}.tl-acb p{margin:0;color:var(--mu);font-size:.84rem;line-height:1.45}
+.tl-md{--mc:var(--run);position:relative;flex:none;display:grid;place-items:center;width:58px;height:58px;border-radius:50%;color:var(--mc);background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--mc) 30%,transparent),color-mix(in srgb,var(--mc) 6%,transparent) 70%)}
+.tl-ai{position:relative;z-index:1;width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 2px 4px #0006)}.tl-md.run .tl-ai{filter:grayscale(.75) brightness(.85);opacity:.8}.kpi .tl-ai{width:30px;height:30px}.kpach .tl-ai{width:20px;height:20px;filter:none}
+.tl-md.got{--mc:#e0a526;color:var(--gt)}.tl-md.hid{--mc:var(--mu)}
+.tl-md .kg-i{width:26px;height:26px;position:relative;z-index:1}
+.tl-mdr{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:var(--mc);stroke-width:2}.tl-tk{stroke-width:2.4;stroke-dasharray:1 4.2;opacity:.8;transform-box:view-box;transform-origin:50% 50%}
+.tl-md.got .tl-mdr circle:first-child{stroke:url(#tlgb);stroke-width:2.6}
+.tl-mds{position:absolute;top:-4px;right:-4px;width:18px;height:18px;overflow:visible}
+@media(prefers-reduced-motion:no-preference){.tl-md.got .tl-tk{animation:tl-spin 20s linear infinite}}
+.tl-pr{display:flex;align-items:center;gap:10px;margin-top:6px}.tl-bar{flex:1;height:8px;border-radius:999px;background:color-mix(in srgb,var(--run) 14%,transparent);overflow:hidden}.tl-bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#9b1fd6,#ff00ff);box-shadow:0 0 8px #ff00ff80}
+.tl-num{font-size:.82rem;color:var(--mu);white-space:nowrap}.tl-num b{color:var(--tx)}
+.tl-done{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-size:.82rem;font-weight:700;color:var(--gt)}.tl-done .kg-i{width:16px;height:16px}
+.tl-rw{color:var(--vio);font-size:.8rem}
+/* Lịch sử */
+.tl-tabs{display:grid;grid-template-columns:1fr 1fr;padding:4px;border-radius:12px;background:var(--s1);gap:4px;margin-bottom:12px}
+.tl-tabs button{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border:0;border-radius:9px;background:transparent;color:var(--mu);font:inherit;font-weight:500;cursor:pointer}
+.tl-tabs button .kg-i{width:17px;height:17px}.tl-tabs button:hover{color:var(--tx)}
+.tl-tabs button.on{background:linear-gradient(180deg,color-mix(in srgb,#ff00ff 22%,var(--bg)),var(--bg));color:var(--tx);box-shadow:inset 0 0 0 1px #ff00ff80,0 4px 14px -6px #ff00ff}
+.tl-tabs button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.tl-tb{border-radius:12px;background:var(--s1);overflow:hidden}
+.tl-tr{display:grid;grid-template-columns:170px minmax(0,1fr) auto;gap:14px;align-items:center;padding:11px 16px;border-top:1px solid var(--bd)}
+.tl-th{border-top:0;font-size:.8rem;color:var(--mu);padding-block:9px;background:color-mix(in srgb,var(--s2) 50%,transparent)}.tl-th span:last-child{text-align:right}
+.tl-tr time{font-size:.85rem;color:var(--mu);font-variant-numeric:tabular-nums}.tl-tr time span{margin-left:6px}
+.tl-ct{display:flex;align-items:center;gap:10px;min-width:0}.tl-ct>i{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--bg);color:var(--vio)}.tl-ct>i .kg-i{width:17px;height:17px}
+.tl-ct>span{display:flex;flex-direction:column;min-width:0}.tl-ct b{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tl-ct small{color:var(--mu);font-size:.76rem}
+.tl-am{display:inline-flex;align-items:center;gap:4px;justify-content:flex-end;font-weight:700;color:var(--on);font-variant-numeric:tabular-nums;white-space:nowrap}.tl-am.neg{color:#e5484d}.tl-am small{font-size:.78em;font-weight:500}.tl-am .kst{width:17px;height:17px}
+.tl-am.it{color:var(--vio);font-weight:500;font-size:.85rem}.tl-am.it .kg-i{width:15px;height:15px}
+/* Cài đặt gọn lại */
+.tl-set{border:1px solid var(--bd);border-radius:12px;padding:0 16px}.tl-set summary{cursor:pointer;padding:12px 0;font-weight:500}.tl-set .kset{padding-bottom:16px}
+/* Thẻ chuyển trang Tu luyện / Cửa hàng / Kho đồ / Bảng xếp hạng */
+.ktabs a.on{border-image:linear-gradient(90deg,#ff00ff,#ffd84d) 1}
+/* Màn hình vừa và nhỏ */
+@media(max-width:1100px){.tl-card{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"av who who" "av seal bal" "xp xp xp"}.tl-bal{min-width:0}.tl-ach{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){
+.tl-scene{padding:18px 14px;border-radius:16px}.tl-hd{gap:10px;margin-bottom:14px}.tl-emb{width:46px;height:46px}.tl-hd p{font-size:.84rem}
+.tl-card{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"av who" "seal bal" "xp xp";column-gap:14px;padding:14px}
+.tl-av{zoom:.72}.tl-seal{width:104px;height:104px;justify-self:center}.tl-seal b{font-size:2.1rem}
+.tl-bal{flex-wrap:wrap;gap:8px;padding:12px}.tl-gem{width:40px;height:40px}.tl-gem .kst{width:36px;height:36px}.tl-bv b{font-size:1.35rem}.tl-bal em{margin-left:0}
+.tl-mc{width:150px;height:150px;right:-10px}
+.tl-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.tl-sc{flex-direction:column;align-items:flex-start;gap:8px;padding:12px 14px}.tl-sc .tli{width:40px;height:40px}.tl-sc b{font-size:1.25rem}
+.tl-ach{grid-template-columns:minmax(0,1fr)}.tl-ac{padding:12px}
+.tl-tr{grid-template-columns:minmax(0,1fr) auto;row-gap:2px;padding:10px 12px}.tl-th{display:none}.tl-tr time{grid-row:2;grid-column:1/-1;font-size:.76rem;padding-left:40px}.tl-ct{grid-row:1}
+}
+.kst-s{transform-box:fill-box;transform-origin:center;opacity:0}
+@media(prefers-reduced-motion:no-preference){.kst-s{animation:tl-tw 3.2s ease-in-out infinite}}
 `;
   document.head.appendChild(css);
 

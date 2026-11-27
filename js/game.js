@@ -146,9 +146,18 @@
   };
 
   /* ---------- Vẽ danh hiệu ---------- */
+  // Khung ảnh cho danh hiệu kiểu mặc định (theo hệ và phẩm): [tâm vùng chữ theo chiều cao, tỉ lệ cao/rộng]
+  const FRM = {"tutien-1":[0.655,0.451],"tutien-2":[0.624,0.381],"tutien-3":[0.692,0.465],"tutien-4":[0.686,0.44],"tutien-5":[0.605,0.479],"tutien-6":[0.678,0.487],"tutien-7":[0.526,0.572],"matu-1":[0.614,0.402],"matu-2":[0.625,0.44],"matu-3":[0.616,0.454],"matu-4":[0.539,0.527],"matu-5":[0.609,0.4],"matu-6":[0.567,0.503],"matu-7":[0.543,0.481],"tinhkhong-1":[0.631,0.481],"tinhkhong-2":[0.629,0.379],"tinhkhong-3":[0.527,0.535],"tinhkhong-4":[0.664,0.49],"tinhkhong-5":[0.627,0.48],"tinhkhong-6":[0.584,0.411],"tinhkhong-7":[0.625,0.415],"anime-1":[0.585,0.396],"anime-2":[0.665,0.442],"anime-3":[0.645,0.416],"anime-4":[0.695,0.44],"anime-5":[0.652,0.423],"anime-6":[0.611,0.411],"anime-7":[0.519,0.367]};
+  function frameTitle(item, th, q, opt) {
+    const st = item.style || {}, pk = st.preset || `${th}-${q}`, F = FRM[pk];
+    if (!F || opt.css || Object.keys(st).some(k => !["preset", "icon", "v"].includes(k))) return ""; // danh hiệu đã tự chỉnh kiểu thì giữ kiểu CSS
+    const n = String(item.name), fz = Math.min(1.08, 11.6 / ([...n].length * .56)).toFixed(3), ex = item.ex ?? item.exclusive;
+    return `<span class="kt kt-fr kt-f-${pk.split("-")[0]} kt-${opt.size || "sm"}${ex ? " kt-ex" : ""}" style="--ty:${F[0]};--ar:${F[1]};--fz:${fz}" title="${esc(n)}, ${QN[q - 1]}${ex ? ", độc quyền" : ""}"><img class="kt-fi" src="img/dh/${pk}.webp" alt="" loading="lazy" decoding="async" draggable="false"><span class="kt-t">${esc(n)}</span></span>`;
+  }
   function title(item, opt = {}) {
     if (!item || !item.name) return "";
-    const th = ok(item.theme, Object.keys(THEMES), "tutien"), q = Math.round(num(item.q ?? item.quality, 1, 7, 1)), s = resolve({ ...(item.style || {}), preset: (item.style && item.style.preset) || `${th}-${q}` });
+    const th0 = ok(item.theme, Object.keys(THEMES), "tutien"), q0 = Math.round(num(item.q ?? item.quality, 1, 7, 1)), fr = frameTitle(item, th0, q0, opt); if (fr) return fr;
+    const th = th0, q = q0, s = resolve({ ...(item.style || {}), preset: (item.style && item.style.preset) || `${th}-${q}` });
     const r = rng(item.id || item.name), L = new Set(s.layers), g = s.grad.length ? s.grad : [s.color];
     const vars = [`--tc:${s.color}`, `--g:${gradCss(g.length > 1 ? g : [g[0], g[0]])}`, `--gl:${s.glow.c}`, `--gi:${s.glow.i}`, `--sk:${s.stroke.w}px`, `--skc:${s.stroke.c}`, `--sp:${(1 / s.spd).toFixed(2)}`, `--op:${s.op}`,
       `--b1:${s.bgc[0] || "#1b1630"}`, `--b2:${s.bgc[1] || s.bgc[0] || "#2b2448"}`, `--bc:${s.bc}`, `--ic:${s.iconc || g[Math.min(1, g.length - 1)]}`, `--isz:${s.isz}em`, `--ff:${FONTS[s.font][1]}`].join(";");
@@ -266,6 +275,16 @@
 .kg-i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .kt{--sp:1;position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:.32em;height:1.6em;padding:0 .6em;font:700 .78em/1 var(--ff);letter-spacing:.01em;white-space:nowrap;vertical-align:middle;border-radius:.4em;max-width:100%;contain:layout style}
 .kt.kt-md{font-size:1em}.kt.kt-lg{font-size:1.35em}
+.kt.kt-fr{display:inline-block;position:relative;width:12em;height:2.2em;padding:0;margin:.45em .1em;border:0;border-radius:0;background:none;box-shadow:none;overflow:visible;vertical-align:middle;contain:none;isolation:isolate}
+.kt.kt-fr::before,.kt.kt-fr::after{display:none}
+.kt-fr .kt-fi{position:absolute;left:0;top:calc(1.1em - var(--ty) * var(--ar) * 12em);width:100%;height:auto;max-width:none;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.kt.kt-fr .kt-t{position:absolute;left:50%;top:50%;z-index:1;transform:translate(-50%,-50%);overflow:visible;max-width:none;font:italic 700 calc(var(--fz) * 1em)/1.25 "Noto Serif",Georgia,serif;letter-spacing:.01em;white-space:nowrap;-webkit-text-stroke:0;color:transparent;-webkit-text-fill-color:transparent;background:var(--tg);background-size:100% 100%;-webkit-background-clip:text;background-clip:text;animation:none;filter:drop-shadow(0 1px 0 rgba(0,0,0,.95)) drop-shadow(0 0 3px rgba(0,0,0,.85))}
+.kt.kt-fr .kt-t::after{display:none}
+.kt-f-tutien{--tg:linear-gradient(180deg,#fff8dc 15%,#ffd36b 55%,#d0912a 92%)}
+.kt-f-matu{--tg:linear-gradient(180deg,#ffe6e1 15%,#ff8a74 55%,#e0393a 92%)}
+.kt-f-tinhkhong{--tg:linear-gradient(180deg,#f4f9ff 15%,#b3dbff 55%,#64aefc 92%)}
+.kt-f-anime{--tg:linear-gradient(180deg,#fff5fb 15%,#ffb8e8 55%,#ff63c6 92%)}
+.kt.kt-fr.kt-sm{font-size:.82em;margin:1.05em .15em}.kt.kt-fr.kt-md{font-size:.86em}.kt.kt-fr.kt-lg{font-size:1.2em}
 .kt-t{position:relative;min-width:0;color:var(--tc);background:var(--g);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;-webkit-text-stroke:var(--sk) var(--skc);paint-order:stroke fill;background-size:200% 100%;overflow:hidden;text-overflow:ellipsis}
 .kt-q1 .kt-t{-webkit-text-fill-color:var(--tc);background:none}
 .kt-q3 .kt-t,.kt-q4 .kt-t,.kt-q5 .kt-t,.kt-q6 .kt-t,.kt-q7 .kt-t,.kt-ex .kt-t{filter:drop-shadow(0 0 calc(5px * var(--gi)) var(--gl))}
