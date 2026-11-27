@@ -1967,11 +1967,6 @@
     "g": "Kenrori Emote"
    },
    {
-    "p": "stickers/dc-nhangay-658133.png",
-    "n": "nhangay",
-    "g": "Kenrori Emote"
-   },
-   {
     "p": "stickers/dc-3959hmm-271763.png",
     "n": "3959hmm",
     "g": "Kenrori Emote"
@@ -1990,5 +1985,5 @@
   "gc": "<script data-goatcounter=\"https://kenrori",
   "game": true
  },
- "rev": 1795781643645
+ "rev": 1795787980755
 }
