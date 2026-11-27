@@ -1603,6 +1603,29 @@
      "vol": "Tập 11",
      "file": "novels/youkoso-jitsuryoku-shijou-shugi/c185_mwywpy3n.txt",
      "words": 447
+    },
+    {
+     "t": "Minh họa",
+     "date": "2026-11-27",
+     "vol": "Tập 11.75",
+     "type": "img",
+     "pages": [
+      "novels/youkoso-jitsuryoku-shijou-shugi/c186_mwywqec2/001.webp"
+     ]
+    },
+    {
+     "t": "Ngoại truyện – Ayanokouji Kiyotaka: Cuộc gọi đầu tiên.",
+     "date": "2026-11-27",
+     "vol": "Tập 11.75",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c187_mwywqee2.txt",
+     "words": 2468
+    },
+    {
+     "t": "Ngoại truyện – Honami: Một khởi đầu mới.",
+     "date": "2026-11-27",
+     "vol": "Tập 11.75",
+     "file": "novels/youkoso-jitsuryoku-shijou-shugi/c188_mwywqee2.txt",
+     "words": 485
     }
    ],
    "title": "Youkoso Jitsuryoku Shijou Shugi No Kyoushitsu E Năm Nhất",
@@ -1895,5 +1918,5 @@
   "gc": "<script data-goatcounter=\"https://kenrori",
   "game": true
  },
- "rev": 1795779453155
+ "rev": 1795779474266
 }
