@@ -1877,11 +1877,6 @@
     "g": "Kenrori Emote"
    },
    {
-    "p": "stickers/dc-dongiau-851974.png",
-    "n": "dongiau",
-    "g": "Kenrori Emote"
-   },
-   {
     "p": "stickers/dc-simp-590505.gif",
     "n": "Simp",
     "g": "Kenrori Emote"
@@ -1985,5 +1980,5 @@
   "gc": "<script data-goatcounter=\"https://kenrori",
   "game": true
  },
- "rev": 1795787980755
+ "rev": 1795787987025
 }
