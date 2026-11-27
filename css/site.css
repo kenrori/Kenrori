@@ -418,3 +418,12 @@ button,input,select,textarea{font-family:inherit}
 @media(prefers-reduced-motion:reduce){#bmbar{transition:none}.rd>.bmhit,.rd>.bmhit::before{animation:none}}
 @media(max-width:600px){#bmbar{left:12px;right:12px;transform:translateY(14px);max-width:none;font-size:.82rem;bottom:78px}#bmbar.on{transform:none}}
 .btn .bmw{display:flex;flex-direction:column;align-items:flex-start;line-height:1.2;min-width:0}.btn .bmw small{font-size:.74rem;font-weight:500;opacity:.88;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Tên khác: mỗi tên một dòng, có nhãn loại tên, bấm để sao chép */
+.alts{display:flex;flex-direction:column;gap:6px;margin-top:2px}
+.ibx .alt{display:flex;align-items:flex-start;gap:9px;width:100%;padding:7px 10px;border:1px solid var(--bd);border-radius:9px;background:var(--s1);color:var(--tx);font:inherit;font-size:.92rem;line-height:1.4;text-align:left;cursor:pointer;transition:border-color .15s,background .15s}
+.ibx .alt:hover{border-color:hsl(var(--ah) 70% 60% / .7);background:var(--s2)}
+.ibx .alt:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.alt i{flex:none;min-width:58px;margin-top:1px;padding:2px 7px;border-radius:6px;font-style:normal;font-size:.7rem;font-weight:700;line-height:1.5;text-align:center;color:hsl(var(--ah) 75% 72%);background:hsl(var(--ah) 70% 55% / .16)}
+[data-theme=light] .alt i,.light .alt i{color:hsl(var(--ah) 65% 38%);background:hsl(var(--ah) 70% 50% / .13)}
+.alt span{min-width:0;overflow-wrap:anywhere}

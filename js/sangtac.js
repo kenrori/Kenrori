@@ -114,6 +114,7 @@
     app.innerHTML = `<section class="sec"><div class="sh"><h2>Sáng tác</h2><a class="more all" href="#viet">${me ? "Góc tác giả" : "Đăng truyện của bạn"}</a></div><p class="lead">Truyện do các tác giả tự viết và đăng tại Kenrori. Trước khi đăng, hãy đọc <a class="al" href="#noi-quy">nội quy</a>.</p>
 <div class="flt"><input id="sq" type="search" placeholder="Tìm theo tên truyện"><div class="frow"><span>Thể loại</span><div>${GENRES.map(g => `<button class="fc" data-g="${esc(g)}">${esc(g)}</button>`).join("")}</div></div><div class="frow"><span>Sắp xếp</span><div><select id="ssort"><option value="updated_at">Mới cập nhật</option><option value="created_at">Mới đăng</option><option value="title">Tên A đến Z</option></select></div></div></div>
 <div id="slist"><p class="empty">Đang tải...</p></div><div class="acts" style="justify-content:center;margin-top:18px"><button class="btn" id="smore" hidden>Xem thêm</button></div></section>`;
+    (async () => { try { const { data } = await sb.from("works").select(WSEL).eq("visibility", "published").eq("hidden", false).order("updated_at", { ascending: false }).limit(12); await heroAdd(data) } catch (e) {} })();
     let page = 0, gs = [], q = "", tmr = null, all = [];
     const load = async more => {
       page = more ? page + 1 : 0; if (!more) all = [];
@@ -541,12 +542,12 @@ Ban quản trị có quyền ẩn truyện hoặc khóa tài khoản vi phạm m
   }
 
 
-  /* ---------- Đưa truyện Sáng tác vào khung lớn đầu trang chủ ---------- */
+  /* ---------- Khung lớn đầu trang, chỉ ở tab Sáng tác (trang chủ không trộn truyện Sáng tác) ---------- */
   async function heroAdd(ws) {
-    ws = (ws || []).filter(w => !w.mature).slice(0, 6); if (!ws.length) return;
+    ws = (ws || []).filter(w => !w.mature).slice(0, 8); if (!ws.length) return;
     const { data: cs } = await sb.from("chapters").select("id,work_id,title,vol,ord").in("work_id", ws.map(w => w.id)).eq("published", true);
     const H0 = ws.map(w => { const L = (cs || []).filter(c => c.work_id === w.id).sort((a, b) => (a.ord || 0) - (b.ord || 0)); return L.length ? { w, L } : null }).filter(Boolean);
-    if (!H0.length || !/^#?(home)?$/.test(location.hash)) return;
+    if (!H0.length || location.hash !== "#sang-tac" || $("#hero")) return;
     let hero = $("#hero"), fresh = false;
     if (!hero) { app.insertAdjacentHTML("afterbegin", '<section class="hero" id="hero" aria-label="Truyện mới cập nhật"></section>'); hero = $("#hero"); fresh = true }
     let hn = hero.querySelector(".hn"); if (!hn) { hero.insertAdjacentHTML("beforeend", '<div class="hn" role="tablist" aria-label="Chọn truyện nổi bật"></div>'); hn = hero.querySelector(".hn") }
@@ -563,7 +564,7 @@ Ban quản trị có quyền ẩn truyện hoặc khóa tài khoản vi phạm m
     all.forEach(x => { const d = dm.get(x); if (d) hn.appendChild(d) });
     if (!all.some(x => x.classList.contains("on"))) all[0].classList.add("on");
     HI = all.findIndex(x => x.classList.contains("on")); [...hn.children].forEach((d, i) => { d.classList.toggle("on", i === HI); d.setAttribute("aria-selected", i === HI) });
-    hn.hidden = all.length < 2; if (all.length > 1) heroTo(HI); if (fresh && typeof setClear === "function") setClear();
+    hn.hidden = all.length < 2; if (all.length > 1) { heroTo(HI); clearInterval(HT); HT = setInterval(() => heroGo(1), 8000) } if (fresh && typeof setClear === "function") setClear();
   }
 
   /* ---------- Hành động gọi từ nút ---------- */
@@ -572,7 +573,7 @@ Ban quản trị có quyền ẩn truyện hoặc khóa tài khoản vi phạm m
     handles: a => ST_ROUTES.includes(a) || /^(access_token|error|type)=/.test(a || ""), route,
     async homeShelf() {
       const el = $("#st_home"); if (!el) return; if (!enabled()) return el.remove();
-      try { await init(); const { data } = await sb.from("works").select(WSEL).eq("visibility", "published").eq("hidden", false).order("updated_at", { ascending: false }).limit(18); if (!$("#st_home")) return; if (!(data || []).length) return el.remove(); el.outerHTML = shelfSec("Sáng tác mới", "sang-tac", data.map(wCard)); shArrows(); await heroAdd(data) } catch (e) { const x = $("#st_home"); if (x) x.remove() }
+      try { await init(); const { data } = await sb.from("works").select(WSEL).eq("visibility", "published").eq("hidden", false).order("updated_at", { ascending: false }).limit(18); if (!$("#st_home")) return; if (!(data || []).length) return el.remove(); el.outerHTML = shelfSec("Sáng tác mới", "sang-tac", data.map(wCard)); shArrows() } catch (e) { const x = $("#st_home"); if (x) x.remove() }
       if (stFavs().length) ST.libRefresh();
     },
     follow() { const [id, m] = ST._meta || []; if (id) toggleFav("st", id, m) },

@@ -1125,6 +1125,32 @@ $("#m_q").addEventListener("input", () => manage());
 $("#manage").addEventListener("click", e => { if (e.target.closest("summary button")) e.preventDefault() }, true);
 function cvPrev(src) { const im = $("#s_prev"); if (src) { im.onerror = () => { im.hidden = true; $("#s_ph").hidden = false }; im.src = src; im.hidden = false; $("#s_ph").hidden = true } else { im.hidden = true; im.removeAttribute("src"); $("#s_ph").hidden = false } }
 $("#s_cover").addEventListener("change", e => { const f = e.target.files[0]; cvPrev(f ? URL.createObjectURL(f) : "") });
+/* Ô nhập nhiều người (tác giả, họa sĩ): mỗi người một thẻ, lưu lại dạng "A, B" như cũ */
+const PSPLIT = /\s*[,、&;]\s*|\s+\/\s+/;
+function pChips(src) {
+  const box = document.createElement("div"), inp = document.createElement("input"), D = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
+  box.className = "pchips"; inp.id = src.id + "_in"; inp.placeholder = "Gõ tên rồi nhấn Enter"; inp.autocomplete = "off";
+  src.hidden = true; src.tabIndex = -1; src.after(box);
+  const get = () => String(D.get.call(src) || "").split(PSPLIT).map(x => x.trim()).filter(Boolean);
+  const put = L => { D.set.call(src, [...new Set(L)].join(", ")); draw() };
+  const add = t => { const L = String(t || "").split(PSPLIT).map(x => x.trim()).filter(Boolean); if (L.length) put([...get(), ...L]); inp.value = "" };
+  function draw() {
+    const L = get(); box.querySelectorAll(".pchip").forEach(x => x.remove());
+    L.forEach((n, i) => { const c = document.createElement("span"); c.className = "pchip"; c.innerHTML = `${i ? `<button type="button" class="pmv" title="Đưa lên trước" aria-label="Đưa ${esc(n)} lên trước">‹</button>` : ""}<b>${esc(n)}</b><button type="button" class="px" title="Bỏ người này" aria-label="Bỏ ${esc(n)}">×</button>`;
+      c.querySelector(".px").onclick = () => put(get().filter((_, j) => j !== i));
+      const mv = c.querySelector(".pmv"); if (mv) mv.onclick = () => { const A = get(); [A[i - 1], A[i]] = [A[i], A[i - 1]]; put(A) };
+      box.insertBefore(c, inp) });
+    inp.placeholder = L.length ? "Thêm người nữa..." : "Gõ tên rồi nhấn Enter";
+  }
+  Object.defineProperty(src, "value", { configurable: true, get() { return D.get.call(this) }, set(v) { D.set.call(this, v); draw() } });
+  inp.onkeydown = e => { if ((e.key === "Enter" || e.key === ",") && inp.value.trim()) { e.preventDefault(); add(inp.value) } else if (e.key === "Enter") e.preventDefault(); else if (e.key === "Backspace" && !inp.value) { const L = get(); if (L.length) { L.pop(); put(L) } } };
+  inp.onblur = () => { if (inp.value.trim()) add(inp.value) };
+  inp.onpaste = e => { const t = (e.clipboardData || {}).getData?.("text") || ""; if (PSPLIT.test(t)) { e.preventDefault(); add(t) } };
+  box.onclick = e => { if (e.target === box) inp.focus() };
+  box.appendChild(inp); src.form?.addEventListener("reset", () => setTimeout(draw));
+  draw();
+}
+document.querySelectorAll(".pchip-src").forEach(pChips);
 $("#s_new").onclick = () => { $("#p-series").reset(); cvPrev(""); gChips(); $("#ptitle").textContent = "Bộ truyện"; $("#s_title").focus() };
 function goEdit(k, i, j) { $("#m_q").value = ""; manage(); $(`#manage button[data-e="${k}|${i}|${j}"]`)?.click() }
 function dash() {
