@@ -1765,24 +1765,6 @@
    "slug": "jorge-joestar",
    "chapters": [
     {
-     "t": "Jorge Joestar",
-     "date": "2026-11-27",
-     "file": "novels/jorge-joestar/c1_mwz4uhqc.txt",
-     "words": 1
-    },
-    {
-     "t": "Maijo Otaro",
-     "date": "2026-11-27",
-     "file": "novels/jorge-joestar/c2_mwz4uhqc.txt",
-     "words": 6
-    },
-    {
-     "t": "Araki Hirohiko",
-     "date": "2026-11-27",
-     "file": "novels/jorge-joestar/c3_mwz4uhqc.txt",
-     "words": 3
-    },
-    {
      "t": "Tsukumojuku",
      "date": "2026-11-27",
      "file": "novels/jorge-joestar/c4_mwz4uhqc.txt",
@@ -2079,5 +2061,5 @@
   ],
   "gc": "<script data-goatcounter=\"https://kenrori"
  },
- "rev": 1795793102197
+ "rev": 1795793598110
 }
