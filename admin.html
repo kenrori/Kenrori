@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="fonts/beaufort-medium.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="fonts/beaufort-bold.woff" as="font" type="font/woff" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/admin.css?v=20261127m">
+<link rel="stylesheet" href="css/admin.css?v=20261128a">
 </head>
 <body>
 <div id="gate"><div class="gc">
@@ -124,7 +124,7 @@
 
 <div class="panel" id="p-imp"><h3>Nhập từ file</h3><p class="mu">Tải lên cả bộ trong một file Word (.docx) hoặc văn bản (.txt), công cụ tự chia thành từng chương theo tiêu đề hoặc theo các dòng như "Chương 1", "Tập 2". Bạn xem lại danh sách, sửa tên, bỏ chọn phần thừa rồi mới đăng.</p>
 <div class="g2"><div class="full"><label for="i_ser">Nhập vào bộ</label><select id="i_ser" disabled></select></div>
-<div><label for="i_file">File .docx, .txt hoặc .md <small>(chọn được nhiều file, mỗi file một tập)</small></label><input id="i_file" type="file" multiple accept=".docx,.txt,.md,text/plain"></div>
+<div><label for="i_file">File .epub, .docx, .pdf, .txt hoặc .md <small>(chọn được nhiều file, mỗi file một tập; PDF nên đọc soát lại sau khi nhập)</small></label><input id="i_file" type="file" multiple accept=".epub,.docx,.pdf,.txt,.md,text/plain,application/epub+zip,application/pdf"></div>
 <div><label for="i_url">Hoặc link Google Docs</label><input id="i_url" placeholder="https://docs.google.com/document/d/..."></div>
 <div class="full"><label for="i_vol">Tập <small>(để trống để tự nhận từ tên file, ví dụ "Youjitsu Tập 2.docx", hoặc từ trang đầu file)</small></label><input id="i_vol" placeholder="Tự nhận"></div>
 <div class="full"><label for="i_paste">Hoặc dán toàn bộ nội dung <small>(mở Google Docs, Ctrl+A, Ctrl+C rồi dán vào đây)</small></label><textarea id="i_paste" style="min-height:90px"></textarea></div></div>
@@ -173,6 +173,8 @@
 <div class="panel" id="p-game"><h3>Tu luyện</h3><div id="gm"></div></div>
 <div class="panel" id="p-genre"><h3>Thể loại</h3><div id="gn"></div></div>
 <form class="panel" id="p-site"><h3>Cài đặt trang web</h3>
+<div class="upk"><h4 style="margin-top:0">Cập nhật web bằng gói .zip</h4><p class="mu">Khi nhận được gói cập nhật (file .zip gồm code và ảnh), chọn file đó ở đây. Trang quản trị tự đặt từng file vào đúng thư mục trên GitHub, không cần giải nén. Không bao giờ ghi đè data.json, nên truyện và cài đặt của bạn giữ nguyên.</p>
+<div class="g2"><div><label for="up_zip">Gói cập nhật (.zip)</label><input id="up_zip" type="file" accept=".zip,application/zip"></div><div class="acts" style="align-self:end"><button type="button" id="up_go">Tải lên web</button></div></div></div>
 <h4>Thông báo đầu trang</h4><p class="mu">Để trống nội dung để tắt thông báo.</p>
 <div class="g2"><div><label for="a_text">Nội dung</label><input id="a_text" placeholder="Ví dụ: Đã ra Tập 3!"></div><div><label for="a_url">Link <small>(không bắt buộc)</small></label><input id="a_url" placeholder="https://..."></div></div>
 <h4>Giới thiệu và liên hệ</h4>
@@ -238,8 +240,8 @@
 <div id="log" class="fade"></div>
 <div id="pvw" hidden role="dialog" aria-label="Xem trước chương"><div class="pvb"><div class="pvh"><b>Xem trước</b><span id="pv_note"></span><button type="button" class="sec sm" id="pv_x">Đóng</button></div><div class="pvc" id="pv_c"></div></div></div>
 <input type="file" id="bk_in" accept=".json,application/json" hidden>
-<script src="js/admin.js?v=20261127m"></script>
-<script src="js/game.js?v=20261127m"></script>
-<script src="js/admin-game.js?v=20261127m"></script>
+<script src="js/admin.js?v=20261128a"></script>
+<script src="js/game.js?v=20261128a"></script>
+<script src="js/admin-game.js?v=20261128a"></script>
 </body>
 </html>
