@@ -207,6 +207,31 @@ function discordCta() {
   const A = DATA.site.about || {}; if (!/^https?:\/\//.test(A.discord || "")) return "";
   return `<section class="dcta"><div><h2>Tham gia cộng đồng ${esc(A.name || "Kenrori")}</h2><p>${esc((A.intro || "Nhận thông báo chương mới, góp ý bản dịch và trò chuyện cùng nhóm dịch.").slice(0, 220))}</p></div><div class="acts"><a class="btn dcbtn" href="${esc(A.discord)}" target="_blank" rel="noopener">Tham gia Discord</a><a class="btn" href="#about">Giới thiệu nhóm</a></div></section>`;
 }
+/* ---------- Trang chủ: mỗi loại truyện một kệ riêng (1 bộ nổi bật + lưới), Sắp ra mắt và Trọn bộ có kiểu riêng ---------- */
+const FMTS = [["ln", "Light Novel", "novels", "#ff00ff", "Tiểu thuyết có minh họa, dịch theo từng tập"], ["wn", "Web Novel", "webnovel", "#ffd84d", "Truyện đăng theo chương trên mạng"], ["manga", "Manga", "manga", "#2bb6a3", "Truyện tranh Nhật Bản"]];
+const fmtColor = (k, s) => (FMTS.find(([f]) => f === fKey(k, s)) || FMTS[0])[3];
+const resumeHref = (k, s) => { const r = ls.get(k + ":" + s.slug); return r != null && s.chapters[+r] ? [`#${k}/${s.slug}/${r}`, "Đọc tiếp"] : [`#${k}/${s.slug}/0`, "Đọc từ đầu"] };
+function fmtShelf(f, label, more, col, desc, L) {
+  if (!L.length) return "";
+  const [{ k, s }, ...rest] = L, lc = newest(s), [rh, rl] = resumeHref(k, s), G = (s.genres || []).slice(0, 3);
+  const feat = `<article class="fsf"><a class="fsc" href="#${k}/${s.slug}" aria-label="${esc(s.title)}"><span class="cover" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></span></a>
+<div class="fsi"><span class="fsk">Mới cập nhật${lc && lc.date ? `, ${ago(lc.date).toLowerCase()}` : ""}</span><h3><a href="#${k}/${s.slug}">${esc(s.title)}</a></h3>${s.orig ? `<p class="fso" lang="${hasJP(s.orig) ? "ja" : "vi"}">${esc(s.orig)}</p>` : ""}
+${G.length ? `<div class="fsgn">${G.map(g => `<a class="pill" href="#the-loai/${encodeURIComponent(g)}">${esc(g)}</a>`).join("")}</div>` : ""}${s.desc ? `<p class="fsd">${esc(s.desc)}</p>` : ""}
+${lc ? `<a class="fsl" href="#${k}/${s.slug}/${s.chapters.indexOf(lc)}"><span>Chương mới nhất</span><b>${esc((lc.vol ? lc.vol + " · " : "") + lc.t)}</b></a>` : ""}
+<div class="fsa"><a class="btn pri" href="${rh}">${rl}</a><a class="btn" href="#${k}/${s.slug}">Xem chi tiết</a></div></div></article>`;
+  return `<section class="sec fsh" style="--fc:${col}" aria-labelledby="fs-${f}"><div class="fsh-h"><i class="fsh-t" aria-hidden="true"></i><div><h2 id="fs-${f}">${label}</h2><p>${L.length} bộ, ${desc.charAt(0).toLowerCase() + desc.slice(1)}</p></div><a class="more all" href="#${more}">Xem tất cả</a></div>
+<div class="fsh-b${rest.length ? "" : " solo"}">${feat}${rest.length ? `<div class="fsg">${rest.slice(0, 8).map(({ k, s }) => card(k, s)).join("")}</div>` : ""}</div></section>`;
+}
+function soonSec(L) {
+  if (!L.length) return "";
+  return `<section class="sec ssn" aria-labelledby="ssn-h"><div class="sh"><div><h2 id="ssn-h">Sắp ra mắt</h2><p class="shs">Những bộ nhóm đang chuẩn bị. Bấm Theo dõi để biết ngay khi có chương đầu tiên.</p></div></div>
+<div class="ssg">${L.map(({ k, s }) => { const on = isFav(k, s.slug); return `<article class="sst" style="--fc:${fmtColor(k, s)}"><a class="cover" href="#${k}/${s.slug}" style="--h:${hue(s.title)}" aria-label="${esc(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></a><div class="ssi"><span class="ssf">${fmtOf(k, s)}</span><h3><a href="#${k}/${s.slug}">${esc(s.title)}</a></h3>${s.desc ? `<p>${esc(s.desc)}</p>` : ""}<button type="button" class="btn ssb${on ? " on" : ""}" onclick="toggleFav('${k}','${esc(s.slug)}');this.classList.toggle('on');this.textContent=this.classList.contains('on')?'Đang theo dõi':'Theo dõi'">${on ? "Đang theo dõi" : "Theo dõi"}</button></div></article>` }).join("")}</div></section>`;
+}
+function finSec(L) {
+  if (!L.length) return "";
+  return `<section class="sec sfn" aria-labelledby="sfn-h"><div class="sh"><div><h2 id="sfn-h">Trọn bộ</h2><p class="shs">Đã dịch xong, đọc một mạch không phải chờ.</p></div></div>
+<div class="sfg">${L.map(({ k, s }) => { const nv = new Set(s.chapters.map(c => (c.vol || "").trim()).filter(Boolean)).size, w = k === "novel" ? sum(s) : 0, [rh, rl] = resumeHref(k, s); return `<article class="sft" style="--fc:${fmtColor(k, s)}"><a class="cover" href="#${k}/${s.slug}" style="--h:${hue(s.title)}" aria-label="${esc(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></a><div class="sfi"><span class="ssf">${fmtOf(k, s)}</span><h3><a href="#${k}/${s.slug}">${esc(s.title)}</a></h3><p>${[s.chapters.length + " chương", nv ? nv + " tập" : "", w ? fmtN(w) : ""].filter(Boolean).join(", ")}</p><a class="lnk" href="${rh}">${rl}</a></div></article>` }).join("")}</div></section>`;
+}
 function shelfSec(t, more, items) { return `<section class="sec"><div class="sh"><h2>${t}</h2><div class="sha"><button class="more arw" onclick="shScroll(this,-1)" title="Cuộn sang trái" aria-label="Cuộn sang trái">${ic(I.prev)}</button><button class="more arw" onclick="shScroll(this,1)" title="Cuộn sang phải" aria-label="Cuộn sang phải">${ic(I.next)}</button>${more ? `<a class="more all" href="#${more}">Xem tất cả</a>` : ""}</div></div><div class="shelf">${items.join("")}</div></section>` }
 function shArrows() { document.querySelectorAll(".shelf").forEach(sh => sh.closest("section").querySelectorAll(".arw").forEach(a => a.hidden = sh.scrollWidth <= sh.clientWidth + 4)) }
 addEventListener("resize", () => shArrows());
@@ -224,13 +249,9 @@ const P = {
       + (fl.length ? shelfSec("Đang theo dõi", "library", fl.slice(0, 18).map(x => x.h)) : "")
       + `<section class="sec"><div class="sh"><h2>Mới cập nhật</h2>${tabs.length > 2 ? `<div class="utabs" role="tablist">${tabs.map(([f, l]) => `<button role="tab" data-f="${f}" class="${f === lt ? "on" : ""}" onclick="luTab('${f}')">${l}</button>`).join("")}</div>` : ""}</div><div id="lu">${latestUpdates(tabs.some(([f]) => f === lt) ? lt : "all")}</div></section>`
       + schedSec()
-      + [["ln", "Light Novel", "novels"], ["wn", "Web Novel", "webnovel"], ["manga", "Manga", "manga"]].map(([f, l, h]) => { const L = cat(f); return L.length ? shelfSec(l, h, L.map(({ k, s }) => card(k, s))) : "" }).join("")
+      + FMTS.map(([f, l, h, c, d]) => fmtShelf(f, l, h, c, d, cat(f))).join("")
+      + soonSec(soon) + finSec(fin)
       + (window.ST && ST.enabled() ? '<div id="st_home"></div>' : "")
-      + (soon.length ? shelfSec("Sắp ra mắt", null, soon.map(({ k, s }) => card(k, s))) : "")
-      + (fin.length ? shelfSec("Đã hoàn thành", null, fin.map(({ k, s }) => card(k, s))) : "")
-      + (DATA.videos.length ? sec("Video Vietsub", "videos", `<div class="vgrid">${DATA.videos.slice(0, 4).map(R.videos).join("")}</div>`) : "")
-      + (DATA.projects.length ? sec("Dự án", "projects", `<div class="grid">${DATA.projects.slice(0, 3).map(projCard).join("")}</div>`) : "")
-      + (allG().length ? sec("Thể loại", "the-loai", gChips("all")) : "")
       + discordCta();
   },
   "tim-kiem": () => { const ch = (f, opts) => opts.map(([v, l]) => `<button class="fc" data-f="${f}" data-v="${esc(v)}">${esc(l)}</button>`).join(""); return `<section class="sec"><div class="sh"><h2>Tìm truyện</h2></div><div class="flt"><input id="fq" type="search" placeholder="Tên truyện, tên khác, tác giả, họa sĩ"><div class="frow"><span>Loại</span><div>${ch("k", [["ln", "Light Novel"], ["wn", "Web Novel"], ["manga", "Manga"]])}</div></div><div class="frow"><span>Tình trạng</span><div>${ch("st", [["on", "Đang dịch"], ["done", "Hoàn thành"], ["pause", "Tạm ngưng"], ["soon", "Sắp ra mắt"]])}</div></div>${allG().length ? `<div class="frow"><span>Thể loại</span><div>${ch("g", allG().map(([g]) => [g, g]))}</div></div>` : ""}<div class="frow"><span>Sắp xếp</span><div><select id="fsort"><option value="upd">Mới cập nhật</option><option value="new">Mới thêm</option><option value="az">Tên A đến Z</option><option value="ch">Nhiều chương nhất</option></select><button class="lnk" id="frs">Xóa bộ lọc</button></div></div></div><div id="fres"></div></section>` },
