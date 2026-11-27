@@ -240,3 +240,5 @@ details.ms>summary::-webkit-details-marker{display:none}
 button,input,select,textarea{font-family:inherit}
 #tabs .tg{font-weight:500}
 .brand,#ptitle,.stat b,.pvhd h1,h1,h2,h3{font-weight:700}
+.wspk{margin:0 0 14px;padding:10px 14px;border-radius:10px;background:color-mix(in srgb,var(--ac) 12%,transparent);border:1px solid color-mix(in srgb,var(--ac) 45%,transparent);font-weight:500}
+#t_ser:disabled,#i_ser:disabled{opacity:1;color:inherit;cursor:default;font-weight:600}
