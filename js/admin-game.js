@@ -106,9 +106,17 @@ ${f("daily_exp_cap", "Giới hạn EXP mỗi ngày (0 = không giới hạn)", c
 <h4>Thư viện hiệu ứng mẫu</h4><div class="g2"><div><label>Mẫu</label><select id="ge_pre">${presetOpts.map(([k, l]) => `<option value="${k}"${k === st.preset ? " selected" : ""}>${esc(l)}</option>`).join("")}</select></div><div><label>Hoặc chép hiệu ứng từ</label><select id="ge_copy"><option value="">Chọn vật phẩm</option>${G.items.filter(x => x.kind === it.kind).map(x => `<option value="${esc(x.id)}">${esc(x.name)}</option>`).join("")}</select></div></div><button type="button" class="sec sm" id="ge_apply">Áp dụng mẫu (ghi đè các ô hiệu ứng bên dưới)</button>
 ${T ? `<h4>Chữ</h4><div class="g2"><div><label>Phông chữ (đều hỗ trợ tiếng Việt)</label><select id="ge_font">${opt(Object.fromEntries(Object.entries(KG.FONTS).map(([k, v]) => [k, v[0]])), st.font)}</select></div><div><label>Màu chữ chính</label><input type="color" id="ge_color" value="${st.color.slice(0, 7)}"></div>
 <div class="full"><label>Chuyển sắc (nhiều điểm màu)</label>${colors(st.grad, "ge_grad")}<label class="ck"><input type="checkbox" id="ge_gm"${st.gmove ? " checked" : ""}> Chữ chuyển sắc động</label></div>
-<div><label>Viền chữ (px)</label><input type="range" id="ge_sw" min="0" max="3" step="0.1" value="${st.stroke.w}"></div><div><label>Màu viền chữ</label><input type="color" id="ge_sc" value="${st.stroke.c.slice(0, 7)}"></div>
-<div><label>Phát sáng</label><input type="range" id="ge_gi" min="0" max="1" step="0.05" value="${st.glow.i}"></div><div><label>Màu phát sáng</label><input type="color" id="ge_gc" value="${st.glow.c.slice(0, 7)}"></div></div>
-<h4>Biểu tượng</h4>${iconPick(st.icon, "icon")}<div class="g2"><div><label>Cỡ biểu tượng</label><input type="range" id="ge_isz" min="0.6" max="1.8" step="0.05" value="${st.isz}"></div><div><label>Màu biểu tượng</label><input type="color" id="ge_icc" value="${(st.iconc || "#ffffff").slice(0, 7)}"></div>
+</div>
+<div class="gfx2"><section class="gfxc"><h5>Viền chữ (stroke)</h5><p class="mu">Nét liền bám sát mép từng chữ. Giúp chữ rõ trên nền sáng hoặc nền nhiều màu.</p>
+<div class="gfxs" id="pv_sk"></div>
+<label for="ge_sw">Độ dày <output id="ge_swv"></output></label><input type="range" id="ge_sw" min="0" max="3" step="0.1" value="${st.stroke.w}">
+<label for="ge_sc">Màu viền</label><input type="color" id="ge_sc" value="${st.stroke.c.slice(0, 7)}"></section>
+<section class="gfxc"><h5>Phát sáng (glow)</h5><p class="mu">Quầng sáng mờ tỏa ra quanh chữ. Đẹp nhất trên nền tối.</p>
+<div class="gfxs" id="pv_gw"></div>
+<label for="ge_gi">Độ mạnh <output id="ge_giv"></output></label><input type="range" id="ge_gi" min="0" max="1" step="0.05" value="${st.glow.i}">
+<label for="ge_gr">Độ lan <output id="ge_grv"></output></label><input type="range" id="ge_gr" min="1" max="16" step="1" value="${st.glow.r ?? Math.max(1, Math.round(st.glow.i * 7))}">
+<label for="ge_gc">Màu phát sáng</label><input type="color" id="ge_gc" value="${st.glow.c.slice(0, 7)}"></section></div>
+<h4>Biểu tượng</h4>${iconPick(st.icon, "icon")}<div class="g2"><div><label>Cỡ biểu tượng</label><input type="range" id="ge_isz" min="0.6" max="2.8" step="0.05" value="${st.isz}"></div><div><label>Màu biểu tượng</label><input type="color" id="ge_icc" value="${(st.iconc || "#ffffff").slice(0, 7)}"></div>
 <div><label>Ảnh biểu tượng riêng (PNG, WebP, GIF, tối đa 300 KB)</label><input type="file" id="ge_img" accept="image/png,image/webp,image/gif,image/jpeg"><small class="mu" id="ge_imgv">${esc(st.img || "Chưa có")}</small> <button type="button" class="sec sm" id="ge_imgx">Bỏ ảnh</button></div>
 <div><label>Nhân vật đi kèm</label><select id="ge_art"><option value="">Không</option>${[1, 2, 3, 4].map(n => `<option value="girl:${n}"${st.art === "girl:" + n ? " selected" : ""}>Nhân vật gốc ${n}</option>`).join("")}${st.art && !/^girl:/.test(st.art) ? `<option value="${esc(st.art)}" selected>Ảnh đã tải</option>` : ""}</select><input type="file" id="ge_artf" accept="image/png,image/webp,image/jpeg"></div></div>
 <h4>Nền và đường viền</h4><div class="g2"><div><label>Kiểu nền</label><select id="ge_bg">${opt(KG.BGS, st.bg)}</select></div><div><label>Màu nền (2 màu)</label><div class="kmr2"><input type="color" id="ge_b1" value="${(st.bgc[0] || "#1b1630").slice(0, 7)}"><input type="color" id="ge_b2" value="${(st.bgc[1] || st.bgc[0] || "#2b2448").slice(0, 7)}"></div></div>
@@ -133,7 +141,7 @@ ${it.kind === "bundle" ? `<label>Các món trong gói</label><div class="kgp-pic
     const grad = () => QA("#ge_grad input[type=color]").map(i => i.value);
     function collect() {
       const s = { preset: Q("#ge_pre").value };
-      if (T) Object.assign(s, { font: v("#ge_font"), color: v("#ge_color"), grad: grad(), gmove: Q("#ge_gm").checked, stroke: { w: +v("#ge_sw"), c: v("#ge_sc") }, glow: { i: +v("#ge_gi"), c: v("#ge_gc") },
+      if (T) Object.assign(s, { font: v("#ge_font"), color: v("#ge_color"), grad: grad(), gmove: Q("#ge_gm").checked, stroke: { w: +v("#ge_sw"), c: v("#ge_sc") }, glow: { i: +v("#ge_gi"), r: +v("#ge_gr"), c: v("#ge_gc") },
         icon: (Q(".gic .on") || {}).dataset?.ic || "", isz: +v("#ge_isz"), iconc: v("#ge_icc"), img: st.img || "", art: v("#ge_art"), bg: v("#ge_bg"), bgc: [v("#ge_b1"), v("#ge_b2")], border: v("#ge_bd"), bc: v("#ge_bc"),
         layers: QA("[data-ly]").filter(x => x.checked).map(x => x.dataset.ly).concat(Q("#ge_gm").checked ? [] : []), parts: QA(".gpt").map(r => ({ t: r.querySelector("[data-p=t]").value, n: +r.querySelector("[data-p=n]").value, dir: r.querySelector("[data-p=dir]").value, spd: +r.querySelector("[data-p=spd]").value, sz: +r.querySelector("[data-p=sz]").value, c: r.querySelector("[data-p=c]").value })),
         spd: +v("#ge_spd"), op: +v("#ge_op") });
@@ -151,6 +159,14 @@ ${it.kind === "bundle" ? `<label>Các món trong gói</label><div class="kgp-pic
       Q("#pv_c").innerHTML = `<small>Trong bình luận</small><div class="gcm${cf.cls}" style="${cf.style}">${KG.avatar('<span class="kav" style="--s:34px">Đ</span>', eq, 34)}<div><div class="gch"><b>${KG.name(who, eq)}</b><em class="klvb">Lv.42</em>${T ? sm : ""}</div><p>Chương này hay quá, mong chương mới!</p></div></div>`;
       Q("#pv_p").innerHTML = `<small>Trang hồ sơ</small><div class="gpp ${x.kind === "profile_bg" || x.kind === "banner" ? KG.bgStyle(I) : ""}">${KG.avatar('<span class="kav" style="--s:64px">Đ</span>', eq, 64)}<div><b class="gpn2">${KG.name(who, eq)}</b>${T ? KG.title(I, { size: "lg" }) : x.kind === "badge" ? KG.badge(I, 34) : ""}</div></div>`;
       Q("#pv_m").innerHTML = `<small>Điện thoại</small><div class="gmob"><div class="gch">${KG.avatar('<span class="kav" style="--s:28px">Đ</span>', eq, 28)}<b>${KG.name(who, eq)}</b>${sm}</div><p>Danh hiệu dài có bị tràn không?</p></div>`;
+      if (T && Q("#pv_sk")) { // mẫu riêng cho viền và phát sáng, dùng đúng phông và màu đang chọn
+        const S2 = x.style, ff = (KG.FONTS[S2.font] || KG.FONTS.beaufort)[1].replace(/"/g, "'"), g = S2.grad && S2.grad.length > 1 ? `linear-gradient(90deg,${S2.grad.join(",")})` : S2.color, nm = esc(x.name || "Danh hiệu"), it2 = S2.font === "bold" ? "italic" : "normal";
+        const txt = (bg, ex) => `<span class="${bg}"><b style="font-family:${ff};font-style:${it2};background:${g};-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;${ex}">${nm}</b></span>`;
+        Q("#pv_sk").innerHTML = txt("d", `-webkit-text-stroke:${S2.stroke.w}px ${S2.stroke.c};paint-order:stroke fill`) + txt("l", `-webkit-text-stroke:${S2.stroke.w}px ${S2.stroke.c};paint-order:stroke fill`);
+        const gc = S2.glow.c, a = Math.min(1, .25 + .85 * S2.glow.i), rr = S2.glow.r, hx = Math.round(a * 255).toString(16).padStart(2, "0"), gl = S2.glow.i > 0 ? `filter:drop-shadow(0 0 ${(rr * .35).toFixed(1)}px ${gc}${hx}) drop-shadow(0 0 ${rr}px ${gc}${hx})` : "";
+        Q("#pv_gw").innerHTML = txt("d", gl) + txt("l", gl);
+        Q("#ge_swv").textContent = S2.stroke.w ? S2.stroke.w + " px" : "tắt"; Q("#ge_giv").textContent = S2.glow.i ? Math.round(S2.glow.i * 100) + "%" : "tắt"; Q("#ge_grv").textContent = rr + " px";
+      }
       Q("#pv_art").innerHTML = T && x.style.art ? `<small>Nhân vật đi kèm</small><div class="gart">${KG.art(x.style.art, 140)}</div>` : "";
     }
     if (Q("#ge_bpk")) { const drawB = () => { Q("#ge_bcs").innerHTML = (it.bundle || []).length ? it.bundle.map(i => KG.chosen(G.items.find(x => x.id === i))).join("") : KG.chosen(null) }; drawB();
@@ -177,7 +193,7 @@ ${it.kind === "bundle" ? `<label>Các món trong gói</label><div class="kgp-pic
       const path = `images/fx/${slug(v("#ge_id") || "fx")}-${rid()}.${ext}`, b64 = await new Promise(r => { const x = new FileReader(); x.onload = () => r(x.result.split(",")[1]); x.readAsDataURL(blob) });
       await put(path, b64, "Ảnh hiệu ứng: " + v("#ge_name")); return path;
     };
-    Q("#ge_img").onchange = e => run(async () => { const f = e.target.files[0]; if (!f) return; st.img = await upload(f, 128); Q("#ge_imgv").textContent = st.img; pv(); log("✅ Đã tải ảnh lên. Ảnh hiện trên web sau 1–2 phút.") });
+    Q("#ge_img").onchange = e => run(async () => { const f = e.target.files[0]; if (!f) return; st.img = await upload(f, 160); Q("#ge_imgv").textContent = st.img; if (+v("#ge_isz") < 1.7) Q("#ge_isz").value = 1.7; pv(); log("✅ Đã tải ảnh lên. Ảnh hiện trên web sau 1–2 phút.") });
     Q("#ge_imgx").onclick = () => { st.img = ""; Q("#ge_imgv").textContent = "Chưa có"; pv() };
     if (Q("#ge_artf")) Q("#ge_artf").onchange = e => run(async () => { const f = e.target.files[0]; if (!f) return; const p = await upload(f, 480); Q("#ge_art").insertAdjacentHTML("beforeend", `<option value="${esc(p)}" selected>Ảnh đã tải</option>`); Q("#ge_art").value = p; pv(); log("✅ Đã tải ảnh nhân vật lên.") });
     const saveIt = status => run(async () => {

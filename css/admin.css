@@ -254,3 +254,14 @@ button,input,select,textarea{font-family:inherit}
 .itrh{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}.itrh b{font-size:1rem}
 .itp:empty{display:none}.itp{margin:8px 0 0;font-weight:500;color:var(--tx)}
 .itg{display:block;font-style:normal;font-size:.72rem;font-weight:600;color:var(--ok);margin-top:2px}.itg.run{color:var(--ac)}
+
+/* Viền chữ và phát sáng: hai thẻ riêng, mỗi thẻ có mẫu xem trước */
+.gfx2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0 4px}
+.gfxc{border:1px solid var(--bd);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.gfxc h5{margin:0;font-size:1rem}.gfxc p{margin:0 0 4px;font-size:.85rem}
+.gfxc output{color:var(--mu);font-weight:500;margin-left:6px}
+.gfxs{display:grid;grid-template-columns:1fr 1fr;border-radius:10px;overflow:hidden;margin:6px 0 8px;border:1px solid var(--bd)}
+.gfxs>span{display:grid;place-items:center;min-height:72px;padding:8px;overflow:hidden}
+.gfxs>.d{background:#15131f}.gfxs>.l{background:#f6f5fa}
+.gfxs b{font-size:24px;font-weight:700;white-space:nowrap;max-width:100%;overflow:visible}
+@media (max-width:760px){.gfx2{grid-template-columns:1fr}}

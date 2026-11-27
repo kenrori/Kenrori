@@ -136,6 +136,8 @@
 <ellipse cx="33" cy="73" rx="4" ry="2" fill="#ff9db5" opacity=".6"/><ellipse cx="67" cy="73" rx="4" ry="2" fill="#ff9db5" opacity=".6"/>
 <path d="M46 76c2 2 6 2 8 0" stroke="#2a1838" stroke-width="1.6" fill="none" stroke-linecap="round"/>${acc}</svg>`;
   }
+  // Màu phát sáng kèm độ mạnh (0..1) thành rgba, để độ mạnh và độ lan chỉnh riêng được
+  const glowC = (c, i) => { let h = String(c || "#ffffff").slice(1); if (h.length < 6) h = [...h.slice(0, 3)].map(x => x + x).join(""); const n = k => parseInt(h.slice(k, k + 2), 16) || 0; return `rgba(${n(0)},${n(2)},${n(4)},${Math.min(1, .25 + .85 * i).toFixed(2)})` };
   const artHtml = (a, size) => { if (!a) return ""; const m = /^girl:(\d)$/.exec(a); if (m) return girl(+m[1], size); return IMGOK(a) ? `<img class="kg-art" src="${esc(a)}" alt="" loading="lazy" width="${size}">` : "" };
 
   /* ---------- Bảng màu và cấu hình mẫu ---------- */
@@ -185,8 +187,8 @@
     }
     return {
       font: ok(s.font, Object.keys(FONTS), "beaufort"), color: col(s.color, "#9a9aa8"), grad: (Array.isArray(s.grad) ? s.grad : []).map(c => col(c, "")).filter(Boolean).slice(0, 6), gmove: !!s.gmove,
-      stroke: { w: num(s.stroke && s.stroke.w, 0, 3, 0), c: col(s.stroke && s.stroke.c, "#000000") }, glow: { c: col(s.glow && s.glow.c, "#ffffff"), i: num(s.glow && s.glow.i, 0, 1, 0) },
-      icon: IC[s.icon] ? s.icon : "", isz: num(s.isz, .6, 1.8, 1), iconc: col(s.iconc, ""), img: IMGOK(s.img) ? s.img : "", art: /^girl:[1-4]$/.test(s.art || "") || IMGOK(s.art) ? s.art : "",
+      stroke: { w: num(s.stroke && s.stroke.w, 0, 3, 0), c: col(s.stroke && s.stroke.c, "#000000") }, glow: { c: col(s.glow && s.glow.c, "#ffffff"), i: num(s.glow && s.glow.i, 0, 1, 0), r: s.glow && s.glow.r != null && s.glow.r !== "" ? num(s.glow.r, 0, 20, 6) : null },
+      icon: IC[s.icon] ? s.icon : "", isz: num(s.isz, .6, 2.8, 1), iconc: col(s.iconc, ""), img: IMGOK(s.img) ? s.img : "", art: /^girl:[1-4]$/.test(s.art || "") || IMGOK(s.art) ? s.art : "",
       bg: ok(s.bg, Object.keys(BGS), "none"), bgc: (Array.isArray(s.bgc) ? s.bgc : []).map(c => col(c, "")).filter(Boolean).slice(0, 2), border: ok(s.border, Object.keys(BORDERS), "none"), bc: col(s.bc, "#ffffff"),
       layers: (Array.isArray(s.layers) ? s.layers : []).filter(x => LAYERS[x]).slice(0, 8),
       parts: (Array.isArray(s.parts) ? s.parts : []).slice(0, 4).map(x => ({ t: ok(x.t, Object.keys(PARTS), "spark"), n: Math.round(num(x.n, 0, 16, 4)), dir: ok(x.dir, Object.keys(DIRS), "up"), spd: num(x.spd, .3, 3, 1), sz: num(x.sz, .4, 2.5, 1), c: col(x.c, "#ffffff") })),
@@ -227,7 +229,7 @@
     // Danh hiệu kiểu mặc định: tự chọn biểu tượng hợp với tên; danh hiệu đã tự chỉnh kiểu thì giữ biểu tượng đã chọn
     const dflt = !Object.keys(st0).some(k => !["preset", "icon", "v"].includes(k)), s = resolve({ ...st0, preset: st0.preset || `${th}-${q}`, ...(dflt ? { icon: autoIcon(item.name, th, st0.icon), isz: 1.32 } : {}) });
     const r = rng(item.id || item.name), L = new Set(s.layers), g = s.grad.length ? s.grad : [s.color];
-    const vars = [`--tc:${s.color}`, `--g:${gradCss(g.length > 1 ? g : [g[0], g[0]])}`, `--gl:${s.glow.c}`, `--gi:${s.glow.i}`, `--sk:${s.stroke.w}px`, `--skc:${s.stroke.c}`, `--sp:${(1 / s.spd).toFixed(2)}`, `--op:${s.op}`,
+    const vars = [`--tc:${s.color}`, `--g:${gradCss(g.length > 1 ? g : [g[0], g[0]])}`, `--gl:${glowC(s.glow.c, s.glow.i)}`, `--gi:${s.glow.i}`, `--gr:${s.glow.r ?? Math.max(1, Math.round(s.glow.i * 7))}px`, `--sk:${s.stroke.w}px`, `--skc:${s.stroke.c}`, `--sp:${(1 / s.spd).toFixed(2)}`, `--op:${s.op}`,
       `--b1:${s.bgc[0] || "#1b1630"}`, `--b2:${s.bgc[1] || s.bgc[0] || "#2b2448"}`, `--bc:${s.bc}`, `--ic:${s.iconc || g[Math.min(1, g.length - 1)]}`, `--isz:${s.isz}em`, `--ff:${FONTS[s.font][1]}`].join(";");
     let fx = "";
     if (L.has("aura")) fx += '<i class="kt-aura"></i>';
@@ -241,7 +243,7 @@
     const ring = L.has("ring") ? `<i class="kt-ring">${RING[th]}</i>` : "";
     const art = opt.noart ? "" : s.art ? `<span class="kt-av">${artHtml(s.art, 40)}</span>` : "";
     const ic = art ? art + (s.img ? `<span class="kt-ic"><img src="${esc(s.img)}" alt=""></span>` : "") : (s.img ? `<span class="kt-ic"><img src="${esc(s.img)}" alt=""></span>` : s.icon ? `<span class="kt-ic">${ring}${icon(s.icon)}</span>` : ring ? `<span class="kt-ic">${ring}</span>` : "");
-    const cls = `kt kt-q${q} kt-${th} kt-bg-${s.bg} kt-bd-${s.border}${s.gmove ? " kt-gm" : ""}${L.has("sweep") ? " kt-sw" : ""}${L.has("breathe") ? " kt-br" : ""}${item.ex ?? item.exclusive ? " kt-ex" : ""} kt-${opt.size || "sm"}${s.font === "bold" ? " kt-it" : ""}`;
+    const cls = `kt kt-q${q} kt-${th} kt-bg-${s.bg} kt-bd-${s.border}${s.gmove ? " kt-gm" : ""}${L.has("sweep") ? " kt-sw" : ""}${L.has("breathe") ? " kt-br" : ""}${s.glow.i > 0 ? " kt-gw" : ""}${s.img ? " kt-hi" : ""}${item.ex ?? item.exclusive ? " kt-ex" : ""} kt-${opt.size || "sm"}${s.font === "bold" ? " kt-it" : ""}`;
     return `<span class="${cls}" style="${vars}" title="${esc(item.name)}, ${QN[q - 1]}${item.ex ?? item.exclusive ? ", độc quyền" : ""}">${fx || ps ? `<span class="kt-fx" aria-hidden="true">${fx}${ps ? `<span class="kt-ps">${ps}</span>` : ""}</span>` : ""}${ic}<span class="kt-t" data-t="${esc(item.name)}">${esc(item.name)}</span></span>`;
   }
 
@@ -677,7 +679,7 @@
 .kt.kt-md{font-size:1em}.kt.kt-lg{font-size:1.35em}
 .kt-t{position:relative;min-width:0;color:var(--tc);background:var(--g);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;-webkit-text-stroke:var(--sk) var(--skc);paint-order:stroke fill;background-size:200% 100%;overflow:hidden;text-overflow:ellipsis}
 .kt-q1 .kt-t{-webkit-text-fill-color:var(--tc);background:none}
-.kt-q3 .kt-t,.kt-q4 .kt-t,.kt-q5 .kt-t,.kt-q6 .kt-t,.kt-q7 .kt-t,.kt-ex .kt-t{filter:drop-shadow(0 0 calc(5px * var(--gi)) var(--gl))}
+.kt-gw .kt-t{filter:drop-shadow(0 0 calc(var(--gr) * .35) var(--gl)) drop-shadow(0 0 var(--gr) var(--gl))}
 .kt-it .kt-t{font-weight:800;font-style:italic;font-family:"Be Vietnam Pro",system-ui,sans-serif;letter-spacing:.02em}
 .kt::before{content:"";position:absolute;inset:0;z-index:-2;border-radius:inherit;pointer-events:none}
 .kt-bg-plate::before{background:linear-gradient(135deg,var(--b1),var(--b2))}
@@ -700,6 +702,7 @@
 .kt-ex{outline:1px dashed color-mix(in srgb,var(--gl) 60%,transparent);outline-offset:2px}
 .kt-ic,.kt-av{position:relative;display:inline-grid;place-items:center;width:var(--isz);height:var(--isz);color:var(--ic);flex:none}
 .kt-ic img{width:100%;height:100%;object-fit:contain}
+.kt-hi .kt-ic img{border-radius:.28em}
 .kt-av{width:1.5em;height:1.5em;margin:0 .05em 0 -.35em;border-radius:50%;overflow:hidden;background:color-mix(in srgb,var(--ic) 30%,#fff);box-shadow:0 0 0 1.5px var(--bc)}.kt-av svg,.kt-av img{width:160%;height:auto;margin-top:22%}
 .kt-av img.kg-art{width:100%;height:100%;margin:0;object-fit:cover;object-position:50% 25%}
 .kt-ring{position:absolute;inset:-.45em;color:var(--ic);opacity:calc(.7 * var(--op));pointer-events:none}.kt-ring svg{width:100%;height:100%;display:block}
