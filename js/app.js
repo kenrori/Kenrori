@@ -280,7 +280,7 @@ function detail(kind, s) {
   app.innerHTML = `<div class="tpb"><div class="hb" ${bgStyle(s)}></div>${hasJP(s.orig) ? `<div class="hv" lang="ja" aria-hidden="true">${esc(s.orig)}</div>` : ""}</div>
 <div class="tp"><div class="tph"><div class="cover tpcv" style="--h:${hue(s.title)}">${imgTag(s.cover)}<b>${esc(s.title)}</b></div>
 <div class="tpt"><h1>${esc(s.title)}</h1>${s.orig || (s.alts || [])[0] ? `<div class="tpo" lang="${s.orig ? "ja" : "vi"}">${esc(s.orig || s.alts[0])}</div>` : ""}${s.author || s.artist || upd ? `<div class="crs">${credit("Tác giả", s.author)}${s.artist && s.artist !== s.author ? credit("Minh họa", s.artist) : ""}${upd}</div>` : ""}</div>
-<div class="tpm"><div class="acts tpa2">${n ? `<a class="btn pri big" href="#${kind}/${s.slug}/${last ?? 0}">${ic(I.play)}${last != null ? "Đọc tiếp" : "Đọc từ đầu"}</a>` : ""}<button class="btn flw${fav ? " on" : ""}" id="fvb" title="${fav ? "Bỏ theo dõi" : "Theo dõi để biết khi có chương mới"}" aria-pressed="${fav}" onclick="toggleFav('${kind}','${esc(s.slug)}')">${favLabel(fav)}</button><button class="btn ico" title="Chia sẻ" aria-label="Chia sẻ" onclick="shareS('${kind}','${esc(s.slug)}')">${ic(I.share)}</button>${n ? `<span class="subl">${last != null ? `<a href="#${kind}/${s.slug}/0">Đọc từ đầu</a>` : ""}<a href="#${kind}/${s.slug}/${n - 1}">Chương mới nhất</a></span>` : ""}${ADM ? `<span class="admb"><a class="btn ico sm" title="Thêm chương" href="admin.html#chap/${kind}/${s.slug}">${ic(I.plus)}</a><a class="btn ico sm" title="Quản lý bộ này" href="admin.html#bo/${kind}/${s.slug}">${ic(I.edit)}</a></span>` : ""}</div><div class="tptg">${stDot(s)}${tags}</div>${s.prog || s.sched ? `<div class="prog">${s.prog ? `<span><i>Tiến độ</i>${esc(s.prog)}</span>` : ""}${s.sched ? `<span><i>Lịch ra chương</i>${esc(s.sched)}</span>` : ""}</div>` : ""}</div></div>
+<div class="tpm"><div class="acts tpa2">${n ? `<a class="btn pri big" href="#${kind}/${s.slug}/${last ?? 0}">${ic(I.play)}${last != null && s.chapters[last] ? `<span class="bmw"><span>Đọc tiếp</span><small>${esc(s.chapters[last].t)}${BM.pct(kind + "/" + s.slug, last) ? `, đã đọc ${BM.pct(kind + "/" + s.slug, last)}%` : ""}</small></span>` : last != null ? "Đọc tiếp" : "Đọc từ đầu"}</a>` : ""}<button class="btn flw${fav ? " on" : ""}" id="fvb" title="${fav ? "Bỏ theo dõi" : "Theo dõi để biết khi có chương mới"}" aria-pressed="${fav}" onclick="toggleFav('${kind}','${esc(s.slug)}')">${favLabel(fav)}</button><button class="btn ico" title="Chia sẻ" aria-label="Chia sẻ" onclick="shareS('${kind}','${esc(s.slug)}')">${ic(I.share)}</button>${n ? `<span class="subl">${last != null ? `<a href="#${kind}/${s.slug}/0">Đọc từ đầu</a>` : ""}<a href="#${kind}/${s.slug}/${n - 1}">Chương mới nhất</a></span>` : ""}${ADM ? `<span class="admb"><a class="btn ico sm" title="Thêm chương" href="admin.html#chap/${kind}/${s.slug}">${ic(I.plus)}</a><a class="btn ico sm" title="Quản lý bộ này" href="admin.html#bo/${kind}/${s.slug}">${ic(I.edit)}</a></span>` : ""}</div><div class="tptg">${stDot(s)}${tags}</div>${s.prog || s.sched ? `<div class="prog">${s.prog ? `<span><i>Tiến độ</i>${esc(s.prog)}</span>` : ""}${s.sched ? `<span><i>Lịch ra chương</i>${esc(s.sched)}</span>` : ""}</div>` : ""}</div></div>
 <div class="tpd"><p class="sum clamp" id="dsc">${esc(s.desc) || "Chưa có tóm tắt."}</p><button class="lnk" id="dmore" hidden>Xem thêm</button></div>
 <div class="tpc"><div class="tpl"><div class="sh"><h2>Danh sách chương</h2></div><div class="bar2"><input id="cq" type="search" placeholder="Tìm chương theo tên hoặc số"><button id="cs" title="Đổi thứ tự">${ls.get("cdesc") === "1" ? "Mới nhất trước" : "Từ chương đầu"}</button>${nv ? `<button id="cx">Hiện tất cả chương</button>` : ""}</div><div id="cl"></div></div>
 <aside class="tpx">${info.map(([a, b]) => `<div class="ibx"><h4>${a}</h4><div>${b}</div></div>`).join("")}</aside></div></div>`;
@@ -334,13 +334,14 @@ ${isImgCh(c) ? "" : `<button class="fab" id="rsb" title="Tùy chỉnh đọc" ar
   } else {
     const pg = c.pages || Array.from({ length: c.n }, (_, k) => c.dir + String(k + 1).padStart(c.pad || 2, "0") + "." + (c.ext || "jpg"));
     if (ls.get("mm") === "page") {
-      let pi = 0; rd.innerHTML = `<div class="pgv"><img id="pgimg" alt=""><div class="pgn"></div></div>`;
-      const show = () => { $("#pgimg").src = pg[pi]; $(".pgn").textContent = `Trang ${pi + 1} / ${pg.length}`; if (pg[pi + 1]) new Image().src = pg[pi + 1]; scrollTo({ top: Math.max(0, rd.offsetTop - 120) }) };
+      let pi = 0; { const b = BM.get(`${kind}/${s.slug}`); if (b && String(b.c) === String(i) && b.p > 0 && b.p < pg.length) { pi = b.p; toast(`Đã mở lại trang ${pi + 1}/${pg.length} bạn đọc dở`) } } rd.innerHTML = `<div class="pgv"><img id="pgimg" alt=""><div class="pgn"></div></div>`;
+      const show = () => { BM.page(`${kind}/${s.slug}`, i, pi, pg.length); $("#pgimg").src = pg[pi]; $(".pgn").textContent = `Trang ${pi + 1} / ${pg.length}`; if (pg[pi + 1]) new Image().src = pg[pi + 1]; scrollTo({ top: Math.max(0, rd.offsetTop - 120) }) };
       const step = d => { const x = pi + d; if (x < 0) goto(i - 1); else if (x >= pg.length) goto(i + 1); else { pi = x; show() } };
       $(".pgv").onclick = e => { const r = e.currentTarget.getBoundingClientRect(); step(e.clientX < r.left + r.width / 2 ? -1 : 1) };
       RDKEY = step; if (pg.length) show();
     } else rd.innerHTML = pg.map(u => `<img src="${esc(u)}" alt="" loading="lazy">`).join("");
   }
+  if (rd.isConnected && !$(".pgv")) BM.init(`${kind}/${s.slug}`, i, rd, isImgCh(c) ? "ảnh" : kind === "manga" ? "trang" : "đoạn");
   if (window.KGP && rd.isConnected) KGP.read({ key: `${kind}/${s.slug}/${i}`, series: `${kind}/${s.slug}`, genres: s.genres || [] });
   if (cmtMode() === "anon" && rd.isConnected) { const bx = document.createElement("section"); app.appendChild(bx); CMT.mount(bx, `${kind}/${s.slug}/${c.file || (c.pages && c.pages[0]) || c.t}`) }
   const G = DATA.site.giscus;
@@ -358,7 +359,69 @@ function setClear() { document.body.classList.toggle("clear", !!$("#hero, .tpb")
 $("#hb").onclick = () => { if (innerWidth >= 1100 && !reading_) { ls.set("sc", ls.get("sc") === "1" ? "0" : "1"); sideMode() } else document.body.classList.toggle("so") };
 $("#sx").onclick = $("#scrim").onclick = () => document.body.classList.remove("so");
 addEventListener("resize", sideMode);
+
+/* ---------- Đánh dấu chỗ đọc: tự nhớ đoạn đang đọc của mỗi bộ, lần sau mở lại đúng chỗ ---------- */
+const BM = (() => {
+  let cur = null, T = 0;
+  const K = k => "bm:" + k;
+  const get = k => { try { return JSON.parse(ls.get(K(k)) || "null") } catch (e) { return null } };
+  const top = () => { let h = $("#top") ? $("#top").offsetHeight : 56; const rb = $(".rbar"); if (rb && /sticky|fixed/.test(getComputedStyle(rb).position)) h += rb.offsetHeight; return h + 14 };
+  function pos(rd) {
+    const L = rd.children, n = L.length; if (!n) return null;
+    const r = rd.getBoundingClientRect();
+    if (r.bottom <= innerHeight + 4) return n; // đã đọc tới cuối chương
+    if (r.top > top()) return 0;
+    for (let j = 0; j < n; j++) if (L[j].getBoundingClientRect().bottom > top() + 8) return j;
+    return n - 1;
+  }
+  function save() {
+    if (!cur) return; if (!cur.rd.isConnected) return off();
+    const p = pos(cur.rd); if (p == null || p === cur.p) return; cur.p = p;
+    ls.set(K(cur.key), JSON.stringify({ c: cur.c, p, n: cur.rd.children.length, t: Date.now() }));
+  }
+  const onS = () => { clearTimeout(T); T = setTimeout(save, 350) };
+  const onV = () => { if (document.visibilityState !== "visible") save() };
+  const manual = () => { if (cur) cur.user = true };
+  function bar(txt, back) {
+    $("#bmbar")?.remove();
+    const b = document.createElement("div"); b.id = "bmbar"; b.setAttribute("role", "status");
+    b.innerHTML = `<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg><span>${txt}</span><button type="button" class="bmb">Đọc từ đầu</button><button type="button" class="bmx" aria-label="Đóng">×</button>`;
+    document.body.appendChild(b); requestAnimationFrame(() => b.classList.add("on"));
+    const hide = () => { b.classList.remove("on"); setTimeout(() => b.remove(), 300) };
+    b.querySelector(".bmb").onclick = () => { back(); hide() }; b.querySelector(".bmx").onclick = hide; setTimeout(hide, 9000);
+  }
+  function jump(p, unit) {
+    if (!cur) return; const el = cur.rd.children[p]; if (!el) return;
+    const go = () => scrollTo(0, Math.max(0, el.getBoundingClientRect().top + scrollY - top()));
+    go(); el.classList.add("bmhit"); setTimeout(() => el.classList.remove("bmhit"), 2600);
+    // Ảnh phía trên tải xong có thể đẩy chữ xuống: giữ đúng chỗ trong vài giây đầu, trừ khi người đọc tự cuộn
+    const c0 = cur, t0 = Date.now(), fix = () => { if (cur === c0 && !c0.user && Date.now() - t0 < 4000) go() };
+    cur.rd.addEventListener("load", fix, true); setTimeout(() => c0.rd.removeEventListener("load", fix, true), 4200);
+    bar(`Đã mở lại chỗ bạn đọc dở, ${unit} ${p + 1}/${cur.rd.children.length}`, () => { scrollTo(0, 0); el.classList.remove("bmhit") });
+  }
+  function init(key, c, rd, unit = "đoạn") {
+    off(); if (!rd || !rd.children.length) return;
+    cur = { key, c: String(c), rd, p: null, user: false };
+    addEventListener("scroll", onS, { passive: true }); document.addEventListener("visibilitychange", onV); addEventListener("pagehide", save);
+    ["wheel", "touchstart", "keydown", "pointerdown"].forEach(e => addEventListener(e, manual, { passive: true }));
+    const b = get(key);
+    if (b && String(b.c) === cur.c && b.p > 0 && b.p < rd.children.length) { cur.p = b.p; setTimeout(() => jump(b.p, unit), 80) }
+  }
+  function off() {
+    if (!cur) return; clearTimeout(T); if (cur.rd.isConnected) save();
+    removeEventListener("scroll", onS); document.removeEventListener("visibilitychange", onV); removeEventListener("pagehide", save);
+    ["wheel", "touchstart", "keydown", "pointerdown"].forEach(e => removeEventListener(e, manual)); cur = null; $("#bmbar")?.remove();
+  }
+  // Chế độ lật từng trang của manga: lưu số trang thay cho vị trí cuộn
+  const page = (key, c, p, n) => ls.set(K(key), JSON.stringify({ c: String(c), p: p >= n - 1 ? n : p, n, t: Date.now() }));
+  // Phần trăm đã đọc của chương đang dở, để hiện trên nút Đọc tiếp
+  const pct = (key, c) => { const b = get(key); return b && String(b.c) === String(c) && b.p > 0 && b.p < b.n ? Math.max(1, Math.round(b.p / b.n * 100)) : null };
+  return { init, off, get, page, pct };
+})();
+window.BM = BM;
 function route() {
+  BM.off();
+  try { if (location.hash && !/^#(viet\/(dang-nhap|dang-ky|quen-mat-khau)|viet$|access_token|error)/.test(location.hash)) sessionStorage.setItem("klast", location.hash) } catch (e) {}
   RDKEY = null; clearInterval(HT); HI = 0; document.body.classList.remove("so"); if (window.KGP) KGP.stop();
   const [a, b, c] = decodeURIComponent(location.hash.slice(1)).split("/");
   if (window.KGP && KGP.handles(a)) {
@@ -428,5 +491,6 @@ if (ls.get("kx")) loadExtras();
   try { const r = await fetch("data.json?v=" + Date.now()); if (r.ok) Object.assign(DATA, await r.json()) } catch (e) {}
   DATA.site ??= {}; DATA.projects ??= [];
   if (sbOn()) { ls.set("kx", "1"); await loadExtras() } else ls.del("kx");
-  gcInit(); renderSide(); renderAnn(); if (window.ST) ST.initBtn(); route();
+  gcInit(); renderSide(); renderAnn(); if (window.ST) ST.initBtn();
+  route();
 })();

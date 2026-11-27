@@ -189,6 +189,7 @@
 <article id="rd" class="${B.gal ? "rd gal" : `rd novel ${RS.ff} ${RS.bg}`}">${B.html || '<p class="mu">Chương chưa có nội dung.</p>'}</article>
 <section class="endc"><div class="endr">${prv ? `<a class="btn" href="${base}/${esc(prv.id)}">${ic(I.prev)}Chương trước</a>` : ""}${nx ? `<a class="nxc" href="${base}/${esc(nx.id)}"><span>Chương tiếp theo</span><b>${esc(nx.title)}</b>${ic(I.next)}</a>` : `<div class="nxc last"><span>Bạn đã đọc đến chương mới nhất</span><b>Hãy quay lại sau để đọc chương mới</b></div>`}</div><div class="endf"><a href="${base}">Danh sách chương</a><a href="#tg/${esc(w.author_id)}">Truyện khác của ${esc(aName(w))}</a>${me && me.id !== w.author_id ? `<a href="javascript:void 0" onclick="ST.report('${esc(wid)}','${esc(cid)}')">Báo cáo vi phạm</a>` : ""}</div></section>
 <button class="fab" id="rsb" title="Tùy chỉnh đọc" aria-label="Tùy chỉnh đọc" aria-expanded="false" onclick="rsToggle()"><svg class="i" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg></button><div class="rsp" id="rsp" hidden data-kind="novel"></div>`;    if (window.KGP && c.published) KGP.read({ key: `st/${wid}/${cid}`, series: `st/${wid}`, genres: w.genres || [] });
+    if (window.BM && $("#rd") && !B.gal) BM.init("st/" + wid, cid, $("#rd"));
     if (c.published && (DATA.site.cmt || "anon") === "anon") { const bx = document.createElement("section"); $("#rsb").before(bx); CMT.mount(bx, "st/" + cid) }
   }
 
@@ -209,14 +210,25 @@ ${L.length ? `<div class="tgl">${L.map(l => `<a class="btn sm" href="${esc(l.u)}
   const afterWriter = uid => { if (window.KGP && KGP.on()) KGP.profile(uid, $("#tg_game"), $(".tgp")); else { const x = $("#tg_game"); if (x) x.remove() } };
   function pAuth(mode) {
     document.title = "Góc tác giả | Kenrori";
-    const T = { login: "Đăng nhập", reg: "Tạo tài khoản tác giả", forgot: "Quên mật khẩu" }[mode] || "Đăng nhập";
-    app.innerHTML = `<section class="authw"><div class="authc stf"><h2>${T}</h2>${mode === "reg" ? `<p class="mu">Tài khoản dùng để đăng và quản lý truyện sáng tác của bạn. Tên hiển thị sẽ được ghi là tác giả trên truyện.</p>
+    const T = { login: "Đăng nhập", reg: "Tạo tài khoản", forgot: "Quên mật khẩu" }[mode] || "Đăng nhập", em = mode === "forgot";
+    app.innerHTML = `<section class="authw"><div class="authc stf"><h2>${T}</h2>${em ? "" : `<p class="mu">Dùng tài khoản Google là xong, không cần nhớ thêm mật khẩu. Lần đầu đăng nhập sẽ tự tạo tài khoản Kenrori cho bạn.</p>
+<button class="btn gbtn wide" id="a_g" type="button"><b class="gG" aria-hidden="true">G</b><span>Tiếp tục với Google</span></button>
+<p class="mu sm">Bằng việc tiếp tục, bạn đồng ý với <a class="al" href="#noi-quy" target="_blank">nội quy</a> của Kenrori.</p><p class="aerr" id="a_gerr" role="alert"></p>
+<details class="aem"><summary>Dùng email và mật khẩu</summary>`}${mode === "reg" ? `<p class="mu">Tài khoản dùng để đăng và quản lý truyện sáng tác của bạn. Tên hiển thị sẽ được ghi là tác giả trên truyện.</p>
 <label for="a_name">Tên hiển thị</label><input id="a_name" maxlength="40" autocomplete="nickname">` : mode === "forgot" ? `<p class="mu">Nhập email tài khoản, chúng tôi sẽ gửi link đặt lại mật khẩu.</p>` : `<p class="mu">Đăng nhập để viết và đăng truyện của bạn.</p>`}
 <label for="a_email">Email</label><input id="a_email" type="email" autocomplete="email">
 ${mode === "forgot" ? "" : `<label for="a_pw">Mật khẩu${mode === "reg" ? " <small>(ít nhất 8 ký tự)</small>" : ""}</label><input id="a_pw" type="password" autocomplete="${mode === "reg" ? "new-password" : "current-password"}">`}
 ${mode === "reg" ? `<label class="ck"><input type="checkbox" id="a_ok"> Tôi đã đọc và đồng ý với <a class="al" href="#noi-quy" target="_blank">nội quy</a></label>` : ""}
 <p class="aerr" id="a_err" role="alert"></p><button class="btn pri wide" id="a_go">${mode === "reg" ? "Tạo tài khoản" : mode === "forgot" ? "Gửi link đặt lại" : "Đăng nhập"}</button>
-<div class="alinks">${mode === "login" || !mode ? `<a href="#viet/dang-ky">Tạo tài khoản mới</a><a href="#viet/quen-mat-khau">Quên mật khẩu?</a>` : `<a href="#viet">Đã có tài khoản? Đăng nhập</a>`}</div></div></section>`;
+<div class="alinks">${mode === "login" || !mode ? `<a href="#viet/dang-ky">Tạo tài khoản bằng email</a><a href="#viet/quen-mat-khau">Quên mật khẩu?</a>` : `<a href="#viet/dang-nhap">Đã có tài khoản? Đăng nhập</a>`}</div>${em ? "" : "</details>"}</div></section>`;
+    if ($("#a_g")) $("#a_g").onclick = async e => {
+      const b = e.currentTarget; busy(b, true); $("#a_gerr").textContent = "";
+      try {
+        try { sessionStorage.setItem("kret", sessionStorage.getItem("klast") || "#home") } catch (x) {}
+        const { error } = await sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: location.origin + location.pathname, queryParams: { prompt: "select_account" } } });
+        if (error) throw error;
+      } catch (x) { busy(b, false); $("#a_gerr").textContent = /not enabled|unsupported provider|provider/i.test(x.message || "") ? "Đăng nhập Google chưa được bật. Quản trị viên cần bật Google trong Supabase › Authentication." : viMsg(x) }
+    };
     const err = m => { $("#a_err").textContent = m };
     $("#a_go").onclick = async e => {
       const b = e.currentTarget, email = $("#a_email").value.trim(), pw = $("#a_pw") ? $("#a_pw").value : "";
@@ -528,12 +540,17 @@ Ban quản trị có quyền ẩn truyện hoặc khóa tài khoản vi phạm m
       }
     } catch (e) { app.innerHTML = errBox(e) }
   }
+  // Quay về từ Google hoặc từ link trong email: chờ đăng nhập xong rồi đưa người dùng về trang đang xem trước đó
   async function authCallback() {
     const h = location.hash.slice(1), err = /error_description=([^&]+)/.exec(h);
-    if (err) { history.replaceState(null, "", location.pathname + "#viet"); app.innerHTML = notice("Link không hợp lệ hoặc đã hết hạn: " + esc(decodeURIComponent(err[1].replace(/\+/g, " "))) + `. <a class="al" href="#viet">Thử lại</a>`); return }
-    await new Promise(r => setTimeout(r, 300)); const { data } = await sb.auth.getSession(); me = (data.session && data.session.user) || null; await loadProf(); authBtn();
-    location.replace(location.pathname + (/type=recovery/.test(h) ? "#viet/doi-mat-khau" : "#viet"));
+    let back = ""; try { back = sessionStorage.getItem("kret") || ""; sessionStorage.removeItem("kret") } catch (e) {}
+    if (!back || /^#(viet\/(dang-nhap|dang-ky)|access_token|error)/.test(back)) back = enabled() ? "#viet" : DATA.site.game === true ? "#tu-luyen" : "#home";
+    if (err) { history.replaceState(null, "", location.pathname + "#viet/dang-nhap"); app.innerHTML = notice("Đăng nhập không thành công: " + esc(decodeURIComponent(err[1].replace(/\+/g, " "))) + `. <a class="al" href="#viet/dang-nhap">Thử lại</a>`); return }
+    await new Promise(r => setTimeout(r, 300)); const { data } = await sb.auth.getSession(); me = (data.session && data.session.user) || null; await loadProf(); authBtn(); kauth();
+    if (me && prof) toast("Xin chào " + prof.display_name);
+    location.replace(location.pathname + (/type=recovery/.test(h) ? "#viet/doi-mat-khau" : back));
   }
+
 
   /* ---------- Đưa truyện Sáng tác vào khung lớn đầu trang chủ ---------- */
   async function heroAdd(ws) {
@@ -751,6 +768,10 @@ Ban quản trị có quyền ẩn truyện hoặc khóa tài khoản vi phạm m
   const css = document.createElement("style");
   css.textContent = `.avs{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:.9rem;background:linear-gradient(160deg,hsl(var(--h) 55% 50%),hsl(calc(var(--h) + 50) 55% 32%))}
 .m18{left:auto;right:6px;background:#d93636}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:10px;margin:6px 0 8px;background:#fff;color:#1f1f1f;border:1px solid #dadce0;font-weight:500}.gbtn:hover{background:#f6f6f8}
+.gG{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1f1f1f;color:#fff;font:700 .8rem/1 "Be Vietnam Pro",sans-serif}
+.mu.sm{font-size:.82rem;margin:0 0 6px}
+.aem{margin-top:14px;border-top:1px solid var(--bd);padding-top:10px}.aem summary{cursor:pointer;color:var(--mu);font-size:.9rem;margin-bottom:6px}.aem[open] summary{margin-bottom:10px}
 .acbulk{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;background:var(--s1);margin-bottom:10px}.acbulk span{margin-right:auto;font-size:.88rem;color:var(--mu)}.acsel{width:auto;flex:none;margin:0 4px 0 0;accent-color:var(--ac)}
 .htg span.hst{background:var(--ac);color:#fff}
 .stmodg{max-width:640px;border:1px solid var(--bd);border-radius:12px;padding:22px 24px;background:var(--s1)}.stmodg h2{margin:0 0 8px}.stmodg ol{padding-left:20px;line-height:1.7}.stmodg code{background:var(--bg);padding:1px 6px;border-radius:4px;font-size:.85em}
