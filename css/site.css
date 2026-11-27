@@ -633,3 +633,5 @@ body.mrx .kk,body.mrx #up,body.mrx #ann{display:none!important}
 .agate .acts{justify-content:center;margin-top:18px}
 .agi{display:inline-grid;place-items:center;width:76px;height:76px;border-radius:50%;font-size:1.5rem;font-weight:800;color:#fff;background:#e8590c;box-shadow:0 8px 24px -8px #e8590c}
 .agi.a18{background:#d6153c;box-shadow:0 8px 24px -8px #d6153c}
+
+.fph .fsh-t,.fsh-h .fsh-t{height:30px}

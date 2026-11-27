@@ -214,7 +214,7 @@ function fpPage(key) {
   const chip = (f, v, l, n) => `<button type="button" class="fpc" data-f="${f}" data-v="${esc(v)}" aria-pressed="false">${esc(l)}<span>${n}</span></button>`;
   const G = [...gc].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "vi"));
   const row = (id, lbl, body, n) => n ? `<div class="fpr" id="${id}"><span class="fpl">${lbl}</span><div class="fpv">${body}</div></div>` : "";
-  return `<section class="sec fpg" id="fpg" style="--fc:${col}"><header class="fph"><i class="fsh-t" aria-hidden="true"></i><div><h1>${label}</h1><p>${L.length} bộ, ${desc.charAt(0).toLowerCase() + desc.slice(1)}</p></div></header>
+  return `<section class="sec fpg" id="fpg" style="--fc:${col}"><header class="fph"><i class="fsh-t" aria-hidden="true"></i><h1>${label}</h1></header>
 <div class="fpf" role="search">
 <div class="fpt"><label class="fpq"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="fpq" type="search" placeholder="Tìm trong ${label}: tên, tên khác, tác giả" aria-label="Tìm trong ${label}"></label>
 <label class="fps"><span>Sắp xếp</span><select id="fpsort"><option value="upd">Mới cập nhật</option><option value="new">Mới thêm</option><option value="az">Tên A đến Z</option><option value="ch">Nhiều chương nhất</option></select></label></div>
@@ -283,7 +283,7 @@ function fmtShelf(f, label, more, col, desc, L) {
 ${G.length ? `<div class="fsgn">${G.map(g => `<a class="pill" href="#the-loai/${encodeURIComponent(g)}">${esc(g)}</a>`).join("")}</div>` : ""}${s.desc ? `<p class="fsd">${esc(s.desc)}</p>` : ""}
 ${lc ? `<a class="fsl" href="#${k}/${s.slug}/${s.chapters.indexOf(lc)}"><span>Chương mới nhất</span><b>${esc((lc.vol ? lc.vol + " · " : "") + lc.t)}</b></a>` : ""}
 <div class="fsa"><a class="btn pri" href="${rh}">${rl}</a><a class="btn" href="#${k}/${s.slug}">Xem chi tiết</a></div></div></article>`;
-  return `<section class="sec fsh" style="--fc:${col}" aria-labelledby="fs-${f}"><div class="fsh-h"><i class="fsh-t" aria-hidden="true"></i><div><h2 id="fs-${f}">${label}</h2><p>${L.length} bộ, ${desc.charAt(0).toLowerCase() + desc.slice(1)}</p></div><a class="more all" href="#${more}">Xem tất cả</a></div>
+  return `<section class="sec fsh" style="--fc:${col}" aria-labelledby="fs-${f}"><div class="fsh-h"><i class="fsh-t" aria-hidden="true"></i><h2 id="fs-${f}">${label}</h2><a class="more all" href="#${more}">Xem tất cả</a></div>
 <div class="fsh-b${rest.length ? "" : " solo"}">${feat}${rest.length ? `<div class="fsg">${rest.slice(0, 8).map(({ k, s }) => card(k, s)).join("")}</div>` : ""}</div></section>`;
 }
 function soonSec(L) {
