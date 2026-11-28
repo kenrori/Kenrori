@@ -4012,6 +4012,66 @@
     "p": "stickers/dc-cringepepe-140799.png",
     "n": "CringePepe",
     "g": "Kenrori Emote"
+   },
+   {
+    "p": "stickers/kenrori-cuoi.svg",
+    "n": "Cười",
+    "g": "Kenrori"
+   },
+   {
+    "p": "stickers/kenrori-khoc.svg",
+    "n": "Khóc",
+    "g": "Kenrori"
+   },
+   {
+    "p": "stickers/kenrori-soc.svg",
+    "n": "Sốc",
+    "g": "Kenrori"
+   },
+   {
+    "p": "stickers/kenrori-ngai.svg",
+    "n": "Ngại",
+    "g": "Kenrori"
+   },
+   {
+    "p": "stickers/kenrori-gian.svg",
+    "n": "Giận",
+    "g": "Kenrori"
+   },
+   {
+    "p": "stickers/kenrori-tim.svg",
+    "n": "Thả tim",
+    "g": "Kenrori"
+   },
+   {
+    "p": "stickers/kenrori-ngu.svg",
+    "n": "Buồn ngủ",
+    "g": "Kenrori"
+   },
+   {
+    "p": "stickers/kenrori-suy-nghi.svg",
+    "n": "Suy nghĩ",
+    "g": "Kenrori"
+   },
+   {
+    "p": "stickers/kenrori-ok.svg",
+    "n": "OK",
+    "g": "Kenrori"
+   },
+   {
+    "p": "stickers/kenrori-hong.svg",
+    "n": "Hóng",
+    "g": "Kenrori"
+   },
+   {
+    "p": "stickers/kenrori-cam-on.svg",
+    "n": "Cảm ơn",
+    "g": "Kenrori"
+   },
+   {
+    "p": "stickers/kenrori-can-loi.svg",
+    "n": "Cạn lời",
+    "g": "Kenrori"
    }
   ],
   "gc": "<script data-goatcounter=\"https://kenrori",
@@ -4239,5 +4299,5 @@
    }
   ]
  },
- "rev": 1795827320021
+ "rev": 1795827572141
 }
