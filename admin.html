@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="fonts/beaufort-medium.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="fonts/beaufort-bold.woff" as="font" type="font/woff" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/admin.css?v=20261128t">
+<link rel="stylesheet" href="css/admin.css?v=20261128u">
 </head>
 <body>
 <div id="gate"><div class="gc">
@@ -47,8 +47,15 @@
 <button type="button" class="sec sm" id="ws_back">← Tất cả bộ</button>
 <div class="wsh"><div class="wscv" id="ws_cvw"><img id="ws_cv" alt=""><label class="wscb">Đổi ảnh bìa<input type="file" id="ws_cvf" accept="image/*" hidden></label></div>
 <div class="wsi"><h3 id="ws_t"></h3><p class="mu" id="ws_m"></p><div class="acts"><button type="button" class="sec sm" id="ws_edit">Sửa thông tin bộ</button><a class="sbtn" id="ws_web" target="_blank" rel="noopener">Xem trên web</a></div></div></div>
-<div class="wstb"><button type="button" id="ws_addb">+ Thêm chương</button><button type="button" class="sec" id="ws_tr">Dịch chương mới</button><button type="button" class="sec" id="ws_imp">Nhập từ file</button><button type="button" class="sec" id="ws_sort" title="Minh họa, Mở đầu, Chương 1, 2..., Vĩ thanh, Lời bạt">Sắp xếp tự động</button><button type="button" class="sec" id="ws_auto" title="Tập mới bắt đầu ở mỗi Minh họa hoặc Mở đầu, rồi xếp lại chương trong từng tập">Tự chia tập</button><button type="button" class="sec" id="ws_exp">Mở hết</button></div>
+<div class="wstb"><button type="button" id="ws_addb">+ Thêm chương</button><button type="button" class="sec" id="ws_tr">Dịch chương mới</button><button type="button" class="sec" id="ws_imp">Nhập từ file</button><button type="button" class="sec" id="ws_mb" hidden>Đăng nhiều chương</button><button type="button" class="sec" id="ws_sort" title="Minh họa, Mở đầu, Chương 1, 2..., Vĩ thanh, Lời bạt">Sắp xếp tự động</button><button type="button" class="sec" id="ws_auto" title="Tập mới bắt đầu ở mỗi Minh họa hoặc Mở đầu, rồi xếp lại chương trong từng tập">Tự chia tập</button><button type="button" class="sec" id="ws_exp">Mở hết</button></div>
 <div id="ws_add"></div>
+<section class="mbx" id="ws_mbox" hidden aria-labelledby="mb_h"><div class="mbh"><h3 id="mb_h">Đăng nhiều chương manga một lượt</h3><button type="button" class="sec sm" id="mb_x">Đóng</button></div>
+<p class="mu">Chọn một file .zip (hoặc .cbz) chứa nhiều thư mục, mỗi thư mục là một chương. Cũng chọn được nhiều file .zip cùng lúc (mỗi file một chương), hoặc chọn thẳng một thư mục trên máy. Trang trong mỗi chương được xếp theo tên file. Thư mục có chữ "Vol 2" hay "Tập 2" sẽ tự gán vào tập đó. Chỉ đăng truyện bạn tự dịch hoặc đã được nhóm dịch đồng ý.</p>
+<div class="acts mbpick"><label class="sec stkup">Chọn file .zip<input type="file" id="mb_zip" accept=".zip,.cbz" multiple hidden></label><label class="sec stkup">Chọn thư mục<input type="file" id="mb_dir" webkitdirectory multiple hidden></label><span class="mu" id="mb_src"></span></div>
+<div id="mb_list"></div>
+<div class="g2 mbopt" id="mb_opt" hidden><div><label for="mb_date">Ngày đăng</label><input id="mb_date" type="date"></div><div><label class="ck" style="margin-top:28px"><input type="checkbox" id="mb_cz" checked> Nén ảnh trước khi tải lên (nhẹ hơn, đọc nhanh hơn)</label></div></div>
+<div class="acts" id="mb_act" hidden><button type="button" id="mb_go">Đăng các chương đã chọn</button><button type="button" class="sec" id="mb_stop" hidden>Dừng sau chương này</button><span class="mu" id="mb_sum"></span></div>
+</section>
 <p class="mu wshint">Thay đổi thứ tự, chia tập hay gỡ chương chỉ được lưu khi bạn bấm <b>Lưu thay đổi</b>. Bấm vào số thứ tự để chuyển chương tới vị trí khác, bấm <b>✂ Tách tập</b> để bắt đầu tập mới từ chương đó.</p>
 <div id="ws_list"></div>
 <div class="wsdock"><div id="ws_sel" class="wsbar" hidden><span id="ws_cnt"></span><input id="ws_vol" list="ws_vols" placeholder="Tên tập" aria-label="Tên tập"><datalist id="ws_vols"></datalist><button type="button" id="ws_set" class="sec">Gán vào tập</button><button type="button" id="ws_unset" class="sec">Bỏ khỏi tập</button><button type="button" id="ws_rm" class="dng">Gỡ</button><button type="button" id="ws_none" class="sec">Bỏ chọn</button></div>
@@ -258,8 +265,8 @@
 <div id="log" class="fade"></div>
 <div id="pvw" hidden role="dialog" aria-label="Xem trước chương"><div class="pvb"><div class="pvh"><b>Xem trước</b><span id="pv_note"></span><button type="button" class="sec sm" id="pv_x">Đóng</button></div><div class="pvc" id="pv_c"></div></div></div>
 <input type="file" id="bk_in" accept=".json,application/json" hidden>
-<script src="js/admin.js?v=20261128t"></script>
-<script src="js/game.js?v=20261128t"></script>
-<script src="js/admin-game.js?v=20261128t"></script>
+<script src="js/admin.js?v=20261128u"></script>
+<script src="js/game.js?v=20261128u"></script>
+<script src="js/admin-game.js?v=20261128u"></script>
 </body>
 </html>

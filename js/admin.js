@@ -83,7 +83,7 @@ const tcap = t => typeof t === "string" ? t.split(/(\s+)/).map(w => w.replace(/^
 function tcapAll() { let n = 0; for (const k of Object.values(KEYS)) for (const s of data[k] || []) { const t = tcap(s.title); if (t !== s.title) { s.title = t; n++ } for (const c of s.chapters || []) { const u = tcap(c.t); if (u !== c.t) { c.t = u; n++ } } } return n }
 /* ===== Báo chương mới lên Discord (webhook khóa bằng PIN, chỉ lưu trên máy này) ===== */
 const DCRX = /^https:\/\/(?:ptb\.|canary\.)?discord(?:app)?\.com\/api\/webhooks\/\d+\/[\w-]+$/;
-let DCW = null, DCK = null; // DCW: {url, on, all}; DCK: các chương đã biết, để chỉ báo chương mới
+let DCW = null, DCK = null, DCHOLD = false; // DCW: {url, on, all}; DCK: các chương đã biết, để chỉ báo chương mới
 const dcId = (s, c) => s.slug + "|" + (c.file || (c.pages && c.pages[0]) || ((c.vol || "") + "/" + c.t));
 function dcKnown() { DCK = new Set(); for (const k of Object.values(KEYS)) for (const s of data[k] || []) for (const c of s.chapters || []) DCK.add(dcId(s, c)) }
 async function dcLoad() { DCW = null; try { const o = JSON.parse(ls.get("dcwh") || "null"); if (o && sessionPin) DCW = JSON.parse(await unseal(sessionPin, o)) } catch (e) {} dcUI() }
@@ -100,7 +100,7 @@ async function dcSend(body) {
 }
 const absU = u => !u ? "" : /^https?:\/\//.test(u) ? u : siteBase() + u.replace(/^\.?\//, "");
 async function dcNotify() {
-  if (!DCK) return dcKnown(); const fresh = new Map();
+  if (DCHOLD) return; if (!DCK) return dcKnown(); const fresh = new Map();
   for (const [k, kind] of [["novels", "novel"], ["manga", "manga"]]) for (const s of data[k] || []) s.chapters.forEach((c, j) => { const id = dcId(s, c); if (!DCK.has(id)) { DCK.add(id); if (!fresh.has(s)) fresh.set(s, { kind, L: [] }); fresh.get(s).L.push([c, j]) } });
   if (!fresh.size || !DCW || !DCW.url || DCW.on === false) return;
   const S = data.site || {}, col = { novel: 0xff00ff, manga: 0x2bb6a3 };
@@ -423,7 +423,7 @@ function wsDraw() {
   const W = WS.W, k = WS.k, kind = k === "manga" ? "manga" : "novel", vs = [...new Set(W.map(wsVol).filter(Boolean))];
   $("#ptitle").textContent = "Bộ truyện"; $("#ws_t").textContent = s.title;
   $("#ws_m").textContent = `${k === "manga" ? "Manga" : s.format || "Light Novel"}, ${s.status || "Đang dịch"}, ${s.chapters.length} chương${vs.length ? ", " + vs.length + " tập" : ""}`;
-  $("#ws_cvw").style.setProperty("--h", hueOf(s.title)); $("#ws_cv").src = s.cover || ""; $("#ws_web").href = `index.html#${kind}/${s.slug}`; $("#ws_imp").hidden = k === "manga"; $("#ws_tr").hidden = k === "manga";
+  $("#ws_cvw").style.setProperty("--h", hueOf(s.title)); $("#ws_cv").src = s.cover || ""; $("#ws_web").href = `index.html#${kind}/${s.slug}`; $("#ws_imp").hidden = k === "manga"; $("#ws_tr").hidden = k === "manga"; $("#ws_mb").hidden = k !== "manga"; if (k !== "manga") $("#ws_mbox").hidden = true;
   const runs = []; W.forEach((c, j) => { const v = wsVol(c), r = runs[runs.length - 1]; if (r && r.v === v) r.js.push(j); else runs.push({ v, js: [j] }) });
   if (!WS.open) WS.open = new Set(W.length <= 25 ? runs.map(r => r.v) : runs.filter(r => !r.v).map(r => r.v));
   const vc = s.vc || {}, wd = c => (c.type === "img" || (c.pages && kind === "novel")) ? (c.pages || []).length + " ảnh" : kind === "novel" ? (c.words || 0).toLocaleString("vi-VN") + " chữ" : (c.pages ? c.pages.length : c.n || 0) + " trang";
@@ -1647,6 +1647,75 @@ $("#i_pub").onclick = () => {
   });
 };
 
+/* ===== Đăng nhiều chương manga một lượt (từ .zip/.cbz hoặc thư mục) ===== */
+let MB = [], MBSTOP = false;
+const MBIMG = /\.(jpe?g|png|webp|gif|avif)$/i, mbMime = n => ({ jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp", gif: "image/gif", avif: "image/avif" })[(n.split(".").pop() || "").toLowerCase()] || "application/octet-stream";
+const natCmp = (a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+function mbTitle(leaf) {
+  const m = /(?:^|[\s_\-\[(])(?:ch(?:apter)?|chap|chương|chuong|第|c|ep(?:isode)?)\s*\.?\s*(\d+(?:\.\d+)?)\s*(?:話)?(.*)$/i.exec(leaf) || /^(\d+(?:\.\d+)?)(.*)$/.exec(leaf.trim());
+  if (!m) return { t: leaf.trim(), n: Infinity };
+  const rest = (m[2] || "").replace(/^[\s:_\-–—.)\]]+/, "").replace(/_/g, " ").trim();
+  return { t: `Chương ${+m[1]}${rest ? ": " + rest : ""}`, n: +m[1] };
+}
+function mbGroup(entries) { // entries: [{path, blob}]
+  const imgs = entries.filter(e => MBIMG.test(e.path) && !/(^|\/)(__MACOSX|\.)/.test(e.path)); if (!imgs.length) throw new Error("Không thấy ảnh nào trong file đã chọn");
+  const G = new Map(); for (const e of imgs) { const d = e.path.includes("/") ? e.path.slice(0, e.path.lastIndexOf("/")) : ""; if (!G.has(d)) G.set(d, []); G.get(d).push(e) }
+  let dirs = [...G.keys()].map(d => d.split("/").filter(Boolean)); // bỏ các thư mục chung ở đầu (ví dụ tên bộ truyện)
+  while (dirs.length > 1 && dirs.every(p => p.length > 1 && p[0] === dirs[0][0])) dirs = dirs.map(p => p.slice(1));
+  if (dirs.length === 1 && dirs[0].length > 1) dirs = [dirs[0].slice(-1)];
+  const s = wsS(), have = new Set((s ? s.chapters : []).map(c => ((c.vol || "") + "|" + c.t).toLowerCase()));
+  const out = [...G.values()].map((L, j) => {
+    const parts = dirs[j], leaf = parts[parts.length - 1] || "Chương", vm = /(?:vol(?:ume)?|tập|tap|v)\s*\.?\s*(\d+)/i.exec(parts.join(" ")), { t, n } = mbTitle(leaf);
+    const vol = vm ? `Tập ${+vm[1]}` : "", ok = !have.has((vol + "|" + t).toLowerCase());
+    return { t, n, vol, vn: vm ? +vm[1] : 0, leaf: parts.join("/") || "(thư mục gốc)", pages: L.sort((a, b) => natCmp(a.path, b.path)), on: ok, dup: !ok, size: L.reduce((a, e) => a + e.blob.size, 0) };
+  });
+  return out.sort((a, b) => a.vn - b.vn || a.n - b.n || natCmp(a.leaf, b.leaf));
+}
+const mbMB = b => (b / 1048576).toFixed(b < 10485760 ? 1 : 0) + " MB";
+function mbDraw() {
+  const box = $("#mb_list"), on = MB.filter(c => c.on);
+  $("#mb_opt").hidden = $("#mb_act").hidden = !MB.length;
+  box.innerHTML = MB.length ? `<div class="mbt"><div class="mbr mbhd"><span><input type="checkbox" id="mb_all" aria-label="Chọn tất cả"${on.length === MB.length ? " checked" : ""}></span><span>Tên chương</span><span>Tập</span><span>Số trang</span></div>${MB.map((c, i) => `<div class="mbr${c.on ? "" : " off"}" data-i="${i}"><span><input type="checkbox" class="mb_on" aria-label="Đăng chương này"${c.on ? " checked" : ""}></span><span><input class="mb_t" value="${esc(c.t)}" aria-label="Tên chương"><small>${esc(c.leaf)}${c.dup ? ' · <b class="mbdup">đã có chương trùng tên</b>' : ""}</small></span><span><input class="mb_v" value="${esc(c.vol)}" placeholder="Không chia tập" aria-label="Tập" list="ws_vols"></span><span class="mbn">${c.pages.length} trang<small>${mbMB(c.size)}</small></span></div>`).join("")}</div>` : "";
+  $("#mb_sum").textContent = MB.length ? `${on.length}/${MB.length} chương, ${on.reduce((a, c) => a + c.pages.length, 0)} trang, khoảng ${mbMB(on.reduce((a, c) => a + c.size, 0))} trước khi nén` : "";
+  $("#mb_go").textContent = on.length ? `Đăng ${on.length} chương đã chọn` : "Chưa chọn chương nào"; $("#mb_go").disabled = !on.length;
+}
+async function mbLoad(entries, src) { MB = mbGroup(entries); $("#mb_src").textContent = src; mbDraw(); log(`✅ Tìm thấy ${MB.length} chương. Kiểm tra tên chương và tập rồi bấm Đăng.`) }
+$("#ws_mb").onclick = () => { if (WS.dirty) return log("❌ Hãy Lưu thay đổi hoặc Hoàn tác trước"); const b = $("#ws_mbox"); b.hidden = !b.hidden; if (!b.hidden) { $("#mb_date").value = new Date().toISOString().slice(0, 10); b.scrollIntoView({ block: "start", behavior: "smooth" }) } };
+$("#mb_x").onclick = () => { $("#ws_mbox").hidden = true; MB = []; mbDraw(); $("#mb_src").textContent = "" };
+$("#mb_zip").onchange = e => { const F = [...e.target.files]; e.target.value = ""; if (!F.length) return; run(async () => {
+  const all = []; for (const f of F) { log(`Đang mở ${f.name}...`); const L = await unzipFile(f), base = f.name.replace(/\.(zip|cbz)$/i, ""), root = L.filter(x => MBIMG.test(x.name)).every(x => !x.name.includes("/"));
+    for (const x of L) all.push({ path: (F.length > 1 || root ? base + "/" : "") + x.name, blob: new Blob([x.d], { type: mbMime(x.name) }) }) }
+  await mbLoad(all, F.length > 1 ? `${F.length} file .zip` : F[0].name);
+}) };
+$("#mb_dir").onchange = e => { const F = [...e.target.files]; e.target.value = ""; if (!F.length) return; run(async () => { await mbLoad(F.map(f => ({ path: f.webkitRelativePath || f.name, blob: f })), (F[0].webkitRelativePath || "").split("/")[0] || "Thư mục") }) };
+$("#mb_list").addEventListener("input", e => { const r = e.target.closest(".mbr[data-i]"); if (!r) return; const c = MB[+r.dataset.i]; if (e.target.classList.contains("mb_t")) c.t = e.target.value; if (e.target.classList.contains("mb_v")) c.vol = e.target.value });
+$("#mb_list").addEventListener("change", e => { if (e.target.id === "mb_all") { MB.forEach(c => c.on = e.target.checked); return mbDraw() } const r = e.target.closest(".mbr[data-i]"); if (r && e.target.classList.contains("mb_on")) { MB[+r.dataset.i].on = e.target.checked; mbDraw() } });
+$("#mb_stop").onclick = () => { MBSTOP = true; $("#mb_stop").disabled = true; log("Sẽ dừng sau khi xong chương đang tải.") };
+$("#mb_go").onclick = () => run(async () => {
+  const s = wsS(); if (!s || WS.k !== "manga") throw new Error("Hãy mở một bộ manga trước");
+  const L = MB.filter(c => c.on); if (!L.length) throw new Error("Chưa chọn chương nào");
+  if (L.some(c => !c.t.trim())) throw new Error("Có chương chưa có tên");
+  const cz = $("#mb_cz").checked, date = $("#mb_date").value; MBSTOP = false; DCHOLD = true; $("#mb_stop").hidden = false; $("#mb_stop").disabled = false; $("#mb_stop").removeAttribute("disabled");
+  let nOk = 0, szA = 0, szB = 0;
+  try {
+    for (const c of L) {
+      if (MBSTOP) break;
+      const id = `c${s.chapters.length + 1}_${rid()}${nOk}`, ch = { t: c.t.trim(), date, pages: [] }; if (c.vol.trim()) ch.vol = c.vol.trim();
+      for (let j = 0; j < c.pages.length; j++) {
+        const f = c.pages[j].blob; let ext = (c.pages[j].path.split(".").pop() || "jpg").toLowerCase(), b64 = null; szA += f.size;
+        log(`Chương ${nOk + 1}/${L.length} (${ch.t}): ${cz ? "nén và " : ""}tải trang ${j + 1}/${c.pages.length}...`);
+        if (cz) { const r = await squeeze(f); if (r) { b64 = r.b64; ext = r.ext; szB += r.size } }
+        if (!b64) { b64 = await fileB64(f); szB += f.size }
+        const p = `manga/${s.slug}/${id}/${String(j + 1).padStart(3, "0")}.${ext}`; await put(p, b64, `${s.title} ${ch.t} tr.${j + 1}`); ch.pages.push(p);
+      }
+      const vols = s.chapters.map(x => (x.vol || "").trim()), at = ch.vol ? vols.lastIndexOf(ch.vol) : -1;
+      if (at >= 0) s.chapters.splice(at + 1, 0, ch); else s.chapters.push(ch);
+      log(`Chương ${nOk + 1}/${L.length}: đang lưu lên GitHub...`); await save(`Thêm chương: ${s.title} - ${ch.t}`);
+      nOk++; c.on = false; c.dup = true;
+    }
+  } finally { DCHOLD = false; $("#mb_stop").hidden = true; mbDraw(); wsDraw(); if (nOk) await dcNotify() }
+  done(`✅ Đã đăng ${nOk}/${L.length} chương. Ảnh: ${mbMB(szA)} → ${mbMB(szB)}. Web cập nhật sau 1–2 phút.`);
+});
 /* Gắn sự kiện: lưu nháp chương, cài Discord */
 ["c_title", "c_vol", "c_text"].forEach(id => $("#" + id)?.addEventListener("input", chdSave));
 $("#dc_save") && ($("#dc_save").onclick = () => run(async () => {
