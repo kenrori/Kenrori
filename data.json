@@ -3763,6 +3763,40 @@
    "prog": "",
    "sched": "",
    "cover": "images/taida-na-akujoku-kizoku-ni-tensei-shita-ore-scenario-wo-bukkowashitara-kikakugai-no-maryoku-de-saikyou-ni-natta-bia.jpg"
+  },
+  {
+   "slug": "futago-matomete-kanojo-ni-shinai",
+   "chapters": [],
+   "title": "Futago Matomete \"Kanojo\" Ni Shinai?",
+   "orig": "双子まとめて『カノジョ』にしない？",
+   "alts": [
+    "Sao lại không biến cặp chị em song sinh thành \"bạn gái\" luôn nhỉ?",
+    "Why Don't You Make the Twins Your \"Girlfriend\" Together?",
+    "Why Not Make Both Twins \"Girlfriends\"?"
+   ],
+   "artist": "Ameiro Miso",
+   "author": "Shirai Muku",
+   "country": "",
+   "age": "",
+   "status": "Đang dịch",
+   "genres": [
+    "Drama",
+    "Harem",
+    "Romance",
+    "Comedy",
+    "Slice of Life"
+   ],
+   "desc": "Usami là một cô bạn cùng lớp xinh xắn, nề nếp và luôn đứng top đầu khối. Ở trường, cô ấy coi Sakuto là đối thủ cạnh tranh của mình. Nhưng khi cậu đụng phải cô ấy sau giờ tan học, cậu lại thấy một mặt hoàn toàn khác của cô. Cô ấy đang chơi game ở một tiệm máy xèng sau giờ học, và nở một nụ cười ngây thơ mà người ta chẳng thể nào tưởng tượng nổi khi ở trường. Vì muốn hòa hợp với cô, cậu đã tiếp cận cô ở trường rồi cùng cô chơi đùa sau giờ học. Cả hai đều có những chốn riêng để thắt chặt tình cảm, và cuối cùng...",
+   "src": "",
+   "team": [
+    {
+     "r": "",
+     "n": "The Greenhorn Translation"
+    }
+   ],
+   "prog": "",
+   "sched": "",
+   "cover": "images/futago-matomete-kanojo-ni-shinai-bia.jpg"
   }
  ],
  "videos": [
@@ -4205,5 +4239,5 @@
    }
   ]
  },
- "rev": 1795826568184
+ "rev": 1795827320021
 }
