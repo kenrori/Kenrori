@@ -183,7 +183,7 @@ async function connect(c, after) {
     for (const k of ["tips", "links", "novels", "manga", "videos", "projects"]) data[k] ??= []; data.site ??= {};
     if (after) await after();
     $("#login").hidden = $("#setup").hidden = true; $("#bye").hidden = false; $("#app").hidden = false; $("#gate").hidden = true; $("#c_date").value = $("#j_date").value = $("#t_date").value = new Date().toISOString().slice(0, 10);
-    fillSel(); manage(); siteLoad(); trLoadKey(); glLoad(); dcKnown(); dcLoad(); log("✅ Đã đăng nhập. Chọn mục cần thêm."); deepLink();
+    fillSel(); manage(); siteLoad(); trLoadKey(); glLoad(); dcKnown(); dcLoad(); relUI(); log("✅ Đã đăng nhập. Chọn mục cần thêm."); deepLink();
   });
 }
 let sealed = null; try { sealed = JSON.parse(ls.get("cfg2") || "null") } catch (e) {}
@@ -236,11 +236,34 @@ function volList() {
 }
 $("#c_ser").onchange = chapUI;
 
+/* ===== Liên kết các bản khác của cùng tác phẩm ===== */
+let RELME = null; // "novel:slug" của bộ đang sửa
+const relName = id => { const [k, ...r] = id.split(":"), sl = r.join(":"), s = (data[KEYS[k]] || []).find(x => x.slug === sl); return s ? `${k === "manga" ? "Manga" : s.format === "Web Novel" ? "Web Novel" : "Light Novel"}: ${s.title}` : null };
+function relUI(kind, slug) {
+  if (kind) RELME = kind + ":" + slug; else if (kind === undefined && slug === undefined && !$("#s_rel").value) RELME = null;
+  const L = $("#s_rel").value.split(",").filter(Boolean).filter(relName), box = $("#rel_list"), sel = $("#rel_add");
+  box.querySelectorAll(".pchip").forEach(x => x.remove());
+  L.forEach(id => { const c = document.createElement("span"); c.className = "pchip"; c.innerHTML = `<b>${esc(relName(id))}</b><button type="button" class="px" aria-label="Bỏ liên kết">×</button>`; c.querySelector("button").onclick = () => { $("#s_rel").value = L.filter(x => x !== id).join(","); relUI(null) }; box.insertBefore(c, sel) });
+  const opts = []; for (const [kk, key] of [["novel", "novels"], ["manga", "manga"]]) for (const s of data[key] || []) { const id = kk + ":" + s.slug; if (id !== RELME && !L.includes(id)) opts.push([id, relName(id)]) }
+  sel.innerHTML = `<option value="">${opts.length ? "+ Thêm bản khác..." : "Không còn bộ nào để liên kết"}</option>` + opts.sort((a, b) => a[1].localeCompare(b[1], "vi")).map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join("");
+}
+$("#p-series").addEventListener("reset", () => setTimeout(() => relUI()));
+$("#rel_add").onchange = e => { const v = e.target.value; if (!v) return; $("#s_rel").value = [...$("#s_rel").value.split(",").filter(Boolean), v].join(","); relUI(null) };
+function relApply(kind, s) { // lưu liên kết vào bộ này và gắn ngược ở các bộ kia
+  const me = kind + ":" + s.slug, L = [...new Set($("#s_rel").value.split(",").filter(Boolean))].filter(id => id !== me && relName(id));
+  if (L.length) s.rel = L; else delete s.rel;
+  for (const [kk, key] of [["novel", "novels"], ["manga", "manga"]]) for (const y of data[key] || []) {
+    const id = kk + ":" + y.slug; if (id === me) continue; const R = new Set(y.rel || []);
+    if (L.includes(id)) R.add(me); else R.delete(me);
+    if (R.size) y.rel = [...R]; else delete y.rel;
+  }
+}
 $("#p-series").onsubmit = e => { e.preventDefault(); run(async () => {
   const fmt = $("#s_kind").value, kind = fmt === "webnovel" ? "novel" : fmt, title = $("#s_title").value.trim(), src = $("#s_src").value.trim(); if (src && !/^https?:\/\//.test(src)) throw new Error("Link tác phẩm gốc phải bắt đầu bằng https://"); if (!title) throw new Error("Hãy nhập tên truyện");
   const slug = slugify($("#s_slug").value || title), list = data[KEYS[kind]]; let s = list.find(x => x.slug === slug);
   if (!s) { s = { slug, chapters: [] }; list.push(s) }
   Object.assign(s, { title, orig: $("#s_orig").value.trim(), alts: $("#s_alts").value.split("\n").map(x => x.trim()).filter(Boolean), artist: $("#s_artist").value.trim(), author: $("#s_author").value.trim(), country: $("#s_country").value, age: $("#s_age").value, status: $("#s_status").value, genres: $("#s_genres").value.split(",").map(x => x.trim()).filter(Boolean), desc: $("#s_desc").value.trim(), src, team: $("#s_team").value.split("\n").map(l => { const [r, ...n] = l.split("|"); return n.length ? { r: r.trim(), n: n.join("|").trim() } : { r: "", n: r.trim() } }).filter(t => t.n), prog: $("#s_prog").value.trim(), sched: $("#s_sched").value.trim() }); if ($("#s_feat").checked) s.feat = true; else delete s.feat; if (kind === "novel") s.format = fmt === "webnovel" ? "Web Novel" : "Light Novel";
+  relApply(kind, s);
   const f = $("#s_cover").files[0];
   if (f) { log("Đang tải ảnh bìa..."); const p = `images/${slug}-bia.jpg`; await put(p, await resize(f), "Bìa: " + title); s.cover = p }
   await save("Thêm/sửa truyện: " + title);
@@ -340,7 +363,7 @@ function manage() {
   dash(); if ($("#g_list")) gRender();
 }
 $("#manage").onclick = e => { const b = e.target.closest("button[data-d]"); if (!b) return; const [k, i, j] = b.dataset.d.split("|"); if (!confirm("Gỡ mục này khỏi web?")) return;
-  run(async () => { j === undefined ? data[k].splice(+i, 1) : data[k][+i].chapters.splice(+j, 1); await save("Xóa mục"); done("✅ Đã gỡ.") }) };
+  run(async () => { if (j === undefined) { const x = data[k][+i], id = (k === "manga" ? "manga" : "novel") + ":" + x.slug; for (const kk of Object.values(KEYS)) for (const y of data[kk] || []) if (y.rel) y.rel = y.rel.filter(r => r !== id); data[k].splice(+i, 1) } else data[k][+i].chapters.splice(+j, 1); await save("Xóa mục"); done("✅ Đã gỡ.") }) };
 
 async function getText(p) {
   const r = await fetch(`https://api.github.com/repos/${cfg.u}/${cfg.r}/contents/${p}?ref=${cfg.b}&_=${Date.now()}`, { cache: "no-store", headers: { Authorization: "Bearer " + cfg.t, Accept: "application/vnd.github.raw+json" } });
@@ -358,7 +381,7 @@ $("#manage").addEventListener("click", e => {
   } else if (bs) {
     const [k, i] = bs.dataset.s.split("|"), s = data[k][+i];
     $("#s_kind").value = k === "novels" ? (s.format === "Web Novel" ? "webnovel" : "novel") : "manga"; $("#s_src").value = s.src || ""; $("#s_team").value = (s.team || []).map(t => t.r ? t.r + " | " + t.n : t.n).join("\n"); $("#s_prog").value = s.prog || ""; $("#s_feat").checked = !!s.feat; $("#s_sched").value = s.sched || ""; $("#s_title").value = s.title; $("#s_slug").value = s.slug; $("#s_author").value = s.author || ""; $("#s_country").value = s.country || ""; $("#s_age").value = s.age ?? ""; $("#s_orig").value = s.orig || ""; $("#s_alts").value = (s.alts || []).join("\n"); $("#s_artist").value = s.artist || "";
-    $("#s_status").value = s.status || "Đang dịch"; $("#s_desc").value = s.desc || ""; $("#s_genres").value = (s.genres || []).join(", "); gChips(); $("#s_cover").value = ""; cvPrev(s.cover); tab("series"); $("#ptitle").textContent = "Sửa bộ: " + s.title; log("Đang sửa bộ " + s.title + ". Chọn ảnh bìa mới nếu muốn đổi.");
+    $("#s_rel").value = (s.rel || []).join(","); relUI(k === "novels" ? "novel" : "manga", s.slug); $("#s_status").value = s.status || "Đang dịch"; $("#s_desc").value = s.desc || ""; $("#s_genres").value = (s.genres || []).join(", "); gChips(); $("#s_cover").value = ""; cvPrev(s.cover); tab("series"); $("#ptitle").textContent = "Sửa bộ: " + s.title; log("Đang sửa bộ " + s.title + ". Chọn ảnh bìa mới nếu muốn đổi.");
   } else if (bm) {
     const [k, i, j, d] = bm.dataset.m.split("|"), a = data[k][+i].chapters, x = +j, y = x + +d; if (y < 0 || y >= a.length) return;
     [a[x], a[y]] = [a[y], a[x]]; run(async () => { await save("Đổi thứ tự chương"); done("✅ Đã đổi thứ tự chương.") });
@@ -1223,7 +1246,7 @@ function pChips(src) {
   draw();
 }
 document.querySelectorAll(".pchip-src").forEach(pChips);
-$("#s_new").onclick = () => { $("#p-series").reset(); cvPrev(""); gChips(); $("#ptitle").textContent = "Bộ truyện"; $("#s_title").focus() };
+$("#s_new").onclick = () => { $("#p-series").reset(); $("#s_rel").value = ""; relUI(); cvPrev(""); gChips(); $("#ptitle").textContent = "Bộ truyện"; $("#s_title").focus() };
 function goEdit(k, i, j) { $("#m_q").value = ""; manage(); $(`#manage button[data-e="${k}|${i}|${j}"]`)?.click() }
 function dash() {
   const el = $("#dash"); if (!el || !data) return;

@@ -338,3 +338,7 @@ h4 .cnt{margin-left:6px;padding:1px 8px;border-radius:999px;background:var(--s1)
 .mbopt{margin-top:10px}
 @media (max-width:700px){.mbr{grid-template-columns:30px minmax(0,1fr) 84px}.mbr>span:nth-child(3){grid-column:2}.mbhd>span:nth-child(3){display:none}}
 .mbx .stkup{background:var(--bg);border:1px solid var(--bd)}.mbx .stkup:hover{border-color:var(--ac)}
+
+/* Liên kết bản khác */
+.relbox .pchips select{flex:1 1 220px;min-width:200px;margin:0;border:0;background:transparent;color:var(--tx);padding:6px 4px;font:inherit;cursor:pointer}
+.relbox .pchip b{font-weight:600}
