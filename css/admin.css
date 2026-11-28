@@ -369,3 +369,10 @@ h4 .cnt{margin-left:6px;padding:1px 8px;border-radius:999px;background:var(--s1)
 .relno{margin:0;padding:10px;color:var(--mu);font-size:.88rem}
 
 .mtfn{display:inline-flex;align-items:center;gap:8px;margin:0;font-size:.86rem;color:var(--mu)}.mtfn input{width:150px;margin:0;padding:4px 8px}
+
+.hkbox{margin:10px 0 14px;padding:12px 16px;border-radius:12px;background:var(--s1);border:1px dashed color-mix(in srgb,var(--ac) 45%,var(--bd))}
+.hkbox summary{cursor:pointer;font-weight:700}
+.hkbox>p{margin:8px 0;font-size:.88rem}
+.hkst{margin:8px 0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:.92rem}
+.hkbm{display:inline-block;margin-left:4px;padding:3px 12px;border-radius:999px;background:var(--ac);color:#fff;font-weight:700;text-decoration:none;cursor:grab}
+.hkbm:active{cursor:grabbing}

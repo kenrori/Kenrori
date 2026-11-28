@@ -1684,9 +1684,27 @@ async function pdfBlocks(f) {
   flush();
   return out;
 }
+function hakoSegs(J) { // file xuất từ Hako: mỗi tập một nguồn, mỗi chương một phần, ảnh nằm đúng chỗ
+  const out = []; let miss = 0;
+  for (const v of J.volumes || []) {
+    const segs = (v.chapters || []).map(c => {
+      const body = [], imgs = [];
+      for (const b of c.blocks || []) {
+        if (b.p) body.push(String(b.p));
+        else if (b.img && /^data:image\//.test(b.img)) { imgs.push(b.img); body.push("\u0000IMG" + (imgs.length - 1)) }
+        else if (b.imgfail || b.img) { miss++; body.push(`[Thiếu ảnh minh họa: ${b.imgfail || b.img}]`) }
+      }
+      const w = body.filter(x => x[0] !== "\u0000" && !/^\[Thiếu ảnh/.test(x)).join(" ").split(/\s+/).filter(Boolean).length, img = imgs.length > 0 && w <= 5;
+      return { t: String(c.t || "").slice(0, 200), vol: String(v.title || "").trim(), body, imgs, w, type: img ? "img" : "text", on: w > 0 || imgs.length > 0 };
+    });
+    out.push({ name: v.title || "Tập", segs });
+  }
+  return { out, miss };
+}
 async function impSources() {
   const fs = [...$("#i_file").files].sort((a, b) => a.name.localeCompare(b.name, "vi", { numeric: true })), out = [];
-  if (fs.length) { for (const f of fs) { const B = await impBlocks(f); out.push({ name: B.title ? `${B.title} (${f.name})` : f.name, B }) } return out }
+  if (fs.length) { for (const f of fs) {
+    if (/\.json$/i.test(f.name)) { log("Đang đọc " + f.name + "..."); let J; try { J = JSON.parse(await f.text()) } catch (e) { throw new Error(f.name + " không phải file xuất từ Hako") } if (J.kind !== "hako-export") throw new Error(f.name + " không phải file xuất từ Hako"); const r = hakoSegs(J); r.out.forEach(x => x.miss = r.miss); out.push(...r.out); continue } const B = await impBlocks(f); out.push({ name: B.title ? `${B.title} (${f.name})` : f.name, B }) } return out }
   return [{ name: "", B: await impBlocks(null) }];
 }
 async function impBlocks(f) {
@@ -1769,6 +1787,11 @@ $("#i_go").onclick = () => run(async () => {
   if (!data.novels[+$("#i_ser").value]) throw new Error("Hãy tạo bộ truyện (novel) trước ở mục Bộ truyện");
   const s = data.novels[+$("#i_ser").value], S = await impSources(), info = []; let carry = null, useH = false; IMP = [];
   for (const src of S) {
+    if (src.segs) { // từ Hako: đã chia sẵn, chỉ đổi tên tập cho khớp tập đã có trong bộ (ví dụ "Tập 1: Lớp D")
+      const ex = [...new Set(s.chapters.map(c => (c.vol || "").trim()).filter(Boolean))];
+      src.segs.forEach(g => { if (!g.vol || ex.includes(g.vol)) return; const k = volNum(g.vol), m = k != null && ex.find(v => volNum(v) === k); if (m) g.vol = m });
+      IMP.push(...src.segs); info.push(`${src.name}: ${src.segs.length} chương${src.miss && src === S.find(x => x.segs) ? `. Có ${src.miss} ảnh không lấy được từ Hako, chỗ đó ghi "Thiếu ảnh minh họa" để bạn bổ sung sau` : ""}`); continue;
+    }
     if (!src.B.length) { info.push((src.name || "Nội dung") + ": trống"); continue }
     const r = impSplit(src.B); useH ||= r.useH; const v = impVols(r.segs, src.name, s, carry); carry = v.n; IMP.push(...r.segs);
     info.push(`${src.name ? src.name + ": " : ""}${r.segs.length} phần, ${v.vols.length ? v.vols.join(", ") + (v.src ? " (nhận từ " + v.src + ")" : "") : "chưa nhận ra tập"}`);
@@ -1903,3 +1926,10 @@ $("#dc_save") && ($("#dc_save").onclick = () => run(async () => {
 }));
 $("#dc_test") && ($("#dc_test").onclick = () => run(async () => { if (!DCW || !DCW.url) throw new Error("Chưa có webhook"); const S = data.site || {}; await dcSend({ username: (S.about && S.about.name) || "Kenrori", embeds: [{ title: "Thử kết nối", description: "Nếu bạn thấy tin này, web sẽ tự báo vào kênh này mỗi khi đăng chương mới.", url: siteBase(), color: 0xff00ff }] }); log("✅ Đã gửi tin thử. Mở Discord để xem.") }));
 $("#dc_del") && ($("#dc_del").onclick = () => { if (!confirm("Xóa webhook Discord khỏi máy này?")) return; ls.del("dcwh"); DCW = null; dcUI(); log("✅ Đã xóa webhook.") });
+
+/* ===== Dấu trang xuất chương từ Hako ===== */
+let HKC = null;
+const hkCode = async () => HKC || (HKC = await (await fetch("tools/hako-export.js?v=" + rid(), { cache: "no-store" })).text());
+$("#hk").addEventListener("toggle", async () => { if (!$("#hk").open) return; try { $("#hk_bm").href = "javascript:" + encodeURIComponent((await hkCode()) + "\nvoid 0") } catch (e) { log("❌ Chưa có file tools/hako-export.js trên web. Hãy tải đủ các file trong bản cập nhật lên GitHub.") } });
+$("#hk_bm").addEventListener("click", e => { e.preventDefault(); log("Hãy kéo nút Xuất từ Hako lên thanh dấu trang, rồi bấm nó khi đang mở trang bộ truyện trên Hako.") });
+$("#hk_copy").onclick = () => run(async () => { await navigator.clipboard.writeText(await hkCode()); done("✅ Đã sao chép mã. Mở trang bộ truyện trên Hako, bấm F12, vào Console, dán và bấm Enter.") });

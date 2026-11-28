@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="fonts/beaufort-medium.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="fonts/beaufort-bold.woff" as="font" type="font/woff" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/admin.css?v=20261129d">
+<link rel="stylesheet" href="css/admin.css?v=20261129e">
 </head>
 <body>
 <div id="gate"><div class="gc">
@@ -137,8 +137,15 @@
 <button type="button" id="t_join" class="trb sec">Nối dòng gốc</button><button type="button" id="t_apply" class="trb sec">Áp dụng bảng tên</button><button type="button" id="t_clear" class="trb dng">Xóa nháp</button><span class="sp"></span><button type="button" id="t_pv" class="trb sec">Xem trước</button><button type="button" id="t_pub" class="trb">Đăng chương lên web</button></div></div>
 
 <div class="panel" id="p-imp"><h3>Nhập từ file</h3><p class="mu">Tải lên cả tập trong một file EPUB, Word, PDF hoặc văn bản, công cụ tự chia thành từng chương theo tiêu đề hoặc theo các dòng như "Chương 1", "Tập 2". Bạn xem lại danh sách, sửa tên, bỏ chọn phần thừa rồi mới đăng.</p>
+<details class="hkbox" id="hk"><summary>Chuyển chương bạn đã đăng trên Hako (docln.net, ln.hako.vn)</summary>
+<p class="mu">Chỉ dùng cho bản dịch của bạn hoặc nhóm bạn, hoặc bản dịch nhóm dịch đã cho phép đăng lại. Web của bạn không tự vào Hako lấy được, nên bạn chạy một dấu trang nhỏ ngay trên trang Hako. Nó lấy chậm rãi từng chương rồi lưu thành một file để nhập vào đây.</p>
+<ol class="hkst"><li>Kéo nút này lên thanh dấu trang của trình duyệt (bấm Ctrl+Shift+B nếu chưa thấy thanh dấu trang): <a id="hk_bm" class="hkbm" href="#" draggable="true">Xuất từ Hako</a></li>
+<li>Mở trang bộ truyện trên Hako (trang có danh sách tập và chương), rồi bấm dấu trang <b>Xuất từ Hako</b> vừa tạo.</li>
+<li>Ở góc màn hình hiện bảng nhỏ: chọn tập, tích ô xác nhận bản dịch, bấm <b>Bắt đầu</b>. Mỗi chương mất khoảng 2 giây. Xong thì trình duyệt tải về file <code>hako-....json</code>.</li>
+<li>Quay lại đây, chọn bộ truyện ở ô <b>Nhập vào bộ</b>, chọn file đó ở ô bên dưới, rồi bấm <b>Đọc và chia chương</b>.</li></ol>
+<p class="mu">Không kéo được? <button type="button" class="sec sm" id="hk_copy">Sao chép mã</button> rồi trên trang Hako bấm F12, mở thẻ Console, dán vào và bấm Enter (Chrome sẽ bắt gõ <code>allow pasting</code> lần đầu).</p></details>
 <div class="g2"><div class="full"><label for="i_ser">Nhập vào bộ</label><select id="i_ser" disabled></select></div>
-<div><label for="i_file">File .epub, .docx, .pdf, .txt hoặc .md <small>(chọn được nhiều file, mỗi file một tập; PDF nên đọc soát lại sau khi nhập)</small></label><input id="i_file" type="file" multiple accept=".epub,.docx,.pdf,.txt,.md,text/plain,application/epub+zip,application/pdf"></div>
+<div><label for="i_file">File .epub, .docx, .pdf, .txt, .md hoặc file xuất từ Hako (.json) <small>(chọn được nhiều file, mỗi file một tập; PDF nên đọc soát lại sau khi nhập)</small></label><input id="i_file" type="file" multiple accept=".json,application/json,.epub,.docx,.pdf,.txt,.md,text/plain,application/epub+zip,application/pdf"></div>
 <div><label for="i_url">Hoặc link Google Docs</label><input id="i_url" placeholder="https://docs.google.com/document/d/..."></div>
 <div class="full"><label for="i_vol">Tập <small>(để trống để tự nhận từ tên file, ví dụ "Youjitsu Tập 2.docx", hoặc từ trang đầu file)</small></label><input id="i_vol" placeholder="Tự nhận"></div>
 <div class="full"><label for="i_paste">Hoặc dán toàn bộ nội dung <small>(mở Google Docs, Ctrl+A, Ctrl+C rồi dán vào đây)</small></label><textarea id="i_paste" style="min-height:90px"></textarea></div></div>
@@ -270,8 +277,8 @@
 <div id="log" class="fade"></div>
 <div id="pvw" hidden role="dialog" aria-label="Xem trước chương"><div class="pvb"><div class="pvh"><b>Xem trước</b><span id="pv_note"></span><button type="button" class="sec sm" id="pv_x">Đóng</button></div><div class="pvc" id="pv_c"></div></div></div>
 <input type="file" id="bk_in" accept=".json,application/json" hidden>
-<script src="js/admin.js?v=20261129d"></script>
-<script src="js/game.js?v=20261129d"></script>
-<script src="js/admin-game.js?v=20261129d"></script>
+<script src="js/admin.js?v=20261129e"></script>
+<script src="js/game.js?v=20261129e"></script>
+<script src="js/admin-game.js?v=20261129e"></script>
 </body>
 </html>
