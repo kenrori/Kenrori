@@ -1900,6 +1900,7 @@
    "title": "Jinsei Gyakuten - Uwaki Sare, Enzai Wo Kiserareta Ore Ga, Gakuen Ichi No Bishoujo Ni Natsukareru",
    "orig": "人生逆転 浮気され、えん罪を着せられた俺が、学園一の美少女に懐かれる",
    "alts": [
+    "人生逆転 浮気され、えん罪を着せられた俺が、学園一の美少女に懐かれる",
     "Life Reversal ~ I Was Cheated On and Falsely Accused, but Now the Most Beautiful Girl in the School Is Getting Close to Me"
    ],
    "artist": "Higeneko",
@@ -1908,12 +1909,11 @@
    "age": "",
    "status": "Đang dịch",
    "genres": [
-    "Lãng mạn",
     "Học đường",
     "Hài hước",
-    "Comedy",
+    "Drama",
     "Romance",
-    "Slice of Life"
+    "tragedy"
    ],
    "desc": "Từ vực thẳm của tuyệt vọng, lấy lại tuổi trẻ của mình!\n\nEiji, bị cô bạn gái thời thơ ấu phản bội, cô ta ngoại tình và còn bịa ra tội bạo lực gia đình, rơi vào bờ vực của tuyệt vọng. Tìm nơi ẩn náu trên mái trường, anh gặp Ai, cô gái xinh đẹp nhất trường, cũng đã chán nản với cuộc sống. Hai người quyết định bỏ trốn khỏi trường và bắt đầu một khởi đầu mới.\n\nĐây là câu chuyện về sự trả thù và tình yêu, khi Eiji và Ai hỗ trợ nhau và cố gắng xây dựng lại cuộc đời từ đáy sâu nhất.",
    "src": "",
@@ -1921,7 +1921,7 @@
    "prog": "",
    "sched": "",
    "format": "Light Novel",
-   "cover": "images/jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru-bia-mwzvazty.jpg",
+   "cover": "images/jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru-bia-mwzvpjkp.jpg",
    "rel": [
     "manga:jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru"
    ]
@@ -4869,5 +4869,5 @@
    }
   ]
  },
- "rev": 1795837542150
+ "rev": 1795838220919
 }
