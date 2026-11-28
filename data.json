@@ -3813,6 +3813,17 @@
       "manga/futago-matomete-kanojo-ni-shinai/c1_mwzpicgh0/040.webp",
       "manga/futago-matomete-kanojo-ni-shinai/c1_mwzpicgh0/041.webp"
      ]
+    },
+    {
+     "t": "Chương 1.5:",
+     "date": "2026-11-28",
+     "pages": [
+      "manga/futago-matomete-kanojo-ni-shinai/c2_mwzpix721/001.webp",
+      "manga/futago-matomete-kanojo-ni-shinai/c2_mwzpix721/002.webp",
+      "manga/futago-matomete-kanojo-ni-shinai/c2_mwzpix721/003.webp",
+      "manga/futago-matomete-kanojo-ni-shinai/c2_mwzpix721/004.webp",
+      "manga/futago-matomete-kanojo-ni-shinai/c2_mwzpix721/005.webp"
+     ]
     }
    ],
    "title": "Futago Matomete \"Kanojo\" Ni Shinai?",
@@ -4287,5 +4298,5 @@
    }
   ]
  },
- "rev": 1795827818123
+ "rev": 1795827835933
 }
