@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="fonts/beaufort-medium.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="fonts/beaufort-bold.woff" as="font" type="font/woff" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/admin.css?v=20261128y">
+<link rel="stylesheet" href="css/admin.css?v=20261128z">
 </head>
 <body>
 <div id="gate"><div class="gc">
@@ -86,7 +86,7 @@
 <div class="full"><label for="s_team">Nhóm thực hiện <small>(mỗi dòng: Vai trò | Tên, ví dụ Dịch | Kenrori)</small></label><textarea id="s_team" style="min-height:70px" placeholder="Dịch | Kenrori&#10;Biên tập | ...&#10;Làm ảnh | ..."></textarea></div>
 <div><label for="s_prog">Tiến độ <small>(không bắt buộc)</small></label><input id="s_prog" placeholder="Đã dịch 2/14 tập"></div>
 <div><label for="s_sched">Lịch ra chương <small>(không bắt buộc)</small></label><input id="s_sched" placeholder="Thứ 7 hàng tuần"></div>
-<div class="full"><label for="rel_add">Bản khác của bộ này <small>(cùng tác phẩm ở dạng Manga, Light Novel hoặc Web Novel; liên kết tự gắn cả hai chiều)</small></label><div class="relbox"><div id="rel_list" class="pchips"><select id="rel_add" aria-label="Chọn bộ để liên kết"></select></div></div><input id="s_rel" hidden></div>
+<div class="full"><label for="rel_q">Bản khác của bộ này <small>(cùng tác phẩm ở dạng Manga, Light Novel hoặc Web Novel; liên kết tự gắn cả hai chiều)</small></label><div class="relbox"><div id="rel_list" class="pchips"><div class="relpick" id="rel_pick"><input id="rel_q" placeholder="+ Thêm bản khác: gõ tên để tìm" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="rel_pop"><div id="rel_pop" class="relpop" role="listbox" hidden></div></div></div></div><input id="s_rel" hidden></div>
 <div class="full"><label for="s_genres">Thể loại <small>(bấm để chọn, hoặc gõ thêm, cách nhau bằng dấu phẩy)</small></label><div id="g_chips"></div><input id="s_genres"></div>
 <div class="full"><label for="s_desc">Tóm tắt</label><textarea id="s_desc"></textarea></div>
 <div class="full"><label for="s_slug">Đường dẫn <small>(slug, để trống sẽ tự tạo từ tên)</small></label><input id="s_slug"></div>
@@ -270,8 +270,8 @@
 <div id="log" class="fade"></div>
 <div id="pvw" hidden role="dialog" aria-label="Xem trước chương"><div class="pvb"><div class="pvh"><b>Xem trước</b><span id="pv_note"></span><button type="button" class="sec sm" id="pv_x">Đóng</button></div><div class="pvc" id="pv_c"></div></div></div>
 <input type="file" id="bk_in" accept=".json,application/json" hidden>
-<script src="js/admin.js?v=20261128y"></script>
-<script src="js/game.js?v=20261128y"></script>
-<script src="js/admin-game.js?v=20261128y"></script>
+<script src="js/admin.js?v=20261128z"></script>
+<script src="js/game.js?v=20261128z"></script>
+<script src="js/admin-game.js?v=20261128z"></script>
 </body>
 </html>

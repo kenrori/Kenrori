@@ -355,14 +355,27 @@ let RELME = null; // "novel:slug" của bộ đang sửa
 const relName = id => { const [k, ...r] = id.split(":"), sl = r.join(":"), s = (data[KEYS[k]] || []).find(x => x.slug === sl); return s ? `${k === "manga" ? "Manga" : s.format === "Web Novel" ? "Web Novel" : "Light Novel"}: ${s.title}` : null };
 function relUI(kind, slug) {
   if (kind) RELME = kind + ":" + slug; else if (kind === undefined && slug === undefined && !$("#s_rel").value) RELME = null;
-  const L = $("#s_rel").value.split(",").filter(Boolean).filter(relName), box = $("#rel_list"), sel = $("#rel_add");
+  const L = $("#s_rel").value.split(",").filter(Boolean).filter(relName), box = $("#rel_list"), pick = $("#rel_pick");
   box.querySelectorAll(".pchip").forEach(x => x.remove());
-  L.forEach(id => { const c = document.createElement("span"); c.className = "pchip"; c.innerHTML = `<b>${esc(relName(id))}</b><button type="button" class="px" aria-label="Bỏ liên kết">×</button>`; c.querySelector("button").onclick = () => { $("#s_rel").value = L.filter(x => x !== id).join(","); relUI(null) }; box.insertBefore(c, sel) });
-  const opts = []; for (const [kk, key] of [["novel", "novels"], ["manga", "manga"]]) for (const s of data[key] || []) { const id = kk + ":" + s.slug; if (id !== RELME && !L.includes(id)) opts.push([id, relName(id)]) }
-  sel.innerHTML = `<option value="">${opts.length ? "+ Thêm bản khác..." : "Không còn bộ nào để liên kết"}</option>` + opts.sort((a, b) => a[1].localeCompare(b[1], "vi")).map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join("");
+  L.forEach(id => { const c = document.createElement("span"); c.className = "pchip"; c.innerHTML = `<b>${esc(relName(id))}</b><button type="button" class="px" aria-label="Bỏ liên kết">×</button>`; c.querySelector("button").onclick = () => { $("#s_rel").value = L.filter(x => x !== id).join(","); relUI(null) }; box.insertBefore(c, pick) });
+  relPop(false);
 }
+let RELI = 0;
+function relOpts() { const L = $("#s_rel").value.split(",").filter(Boolean), q = $("#rel_q").value.trim().toLowerCase(), out = []; for (const [kk, key] of [["novel", "novels"], ["manga", "manga"]]) for (const s of data[key] || []) { const id = kk + ":" + s.slug; if (id === RELME || L.includes(id)) continue; const f = kk === "manga" ? "Manga" : s.format === "Web Novel" ? "Web Novel" : "Light Novel"; if (q && !(s.title + " " + (s.orig || "") + " " + (s.alts || []).join(" ") + " " + f).toLowerCase().includes(q)) continue; out.push({ id, f, t: s.title, cv: s.cover }) } return out.sort((a, b) => a.f.localeCompare(b.f) || a.t.localeCompare(b.t, "vi")) }
+function relPop(show) {
+  const P = $("#rel_pop"), inp = $("#rel_q"); if (!show) { P.hidden = true; inp.setAttribute("aria-expanded", "false"); return }
+  const O = relOpts(); RELI = Math.min(RELI, Math.max(0, O.length - 1));
+  P.innerHTML = O.length ? O.map((o, k) => `<button type="button" role="option" class="relo${k === RELI ? " on" : ""}" data-id="${esc(o.id)}" aria-selected="${k === RELI}"><i class="relf rf-${o.f === "Manga" ? "mg" : o.f === "Web Novel" ? "wn" : "ln"}">${o.f}</i><span>${esc(o.t)}</span></button>`).join("") : `<p class="relno">${$("#rel_q").value.trim() ? "Không có bộ nào khớp" : "Không còn bộ nào để liên kết"}</p>`;
+  P.hidden = false; inp.setAttribute("aria-expanded", "true"); P.querySelector(".relo.on")?.scrollIntoView({ block: "nearest" });
+}
+function relAdd(id) { if (!id) return; $("#s_rel").value = [...$("#s_rel").value.split(",").filter(Boolean), id].join(","); $("#rel_q").value = ""; RELI = 0; relUI(null); $("#rel_q").focus(); relPop(true) }
+$("#rel_q").onfocus = () => { RELI = 0; relPop(true) };
+$("#rel_q").oninput = () => { RELI = 0; relPop(true) };
+$("#rel_q").onkeydown = e => { const O = relOpts(); if (e.key === "ArrowDown") { e.preventDefault(); RELI = Math.min(O.length - 1, RELI + 1); relPop(true) } else if (e.key === "ArrowUp") { e.preventDefault(); RELI = Math.max(0, RELI - 1); relPop(true) } else if (e.key === "Enter") { e.preventDefault(); if (O[RELI]) relAdd(O[RELI].id) } else if (e.key === "Escape") relPop(false) };
+$("#rel_pop").onmousedown = e => e.preventDefault();
+$("#rel_pop").onclick = e => { const b = e.target.closest(".relo"); if (b) relAdd(b.dataset.id) };
+$("#rel_q").onblur = () => setTimeout(() => relPop(false), 120);
 $("#p-series").addEventListener("reset", () => setTimeout(() => relUI()));
-$("#rel_add").onchange = e => { const v = e.target.value; if (!v) return; $("#s_rel").value = [...$("#s_rel").value.split(",").filter(Boolean), v].join(","); relUI(null) };
 function relApply(kind, s) { // lưu liên kết vào bộ này và gắn ngược ở các bộ kia
   const me = kind + ":" + s.slug, L = [...new Set($("#s_rel").value.split(",").filter(Boolean))].filter(id => id !== me && relName(id));
   if (L.length) s.rel = L; else delete s.rel;
