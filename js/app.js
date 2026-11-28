@@ -81,7 +81,7 @@ function renderSide() {
   $("#nv").innerHTML = NAV.filter(([k, , l], j) => (k !== "sang-tac" || (window.ST && ST.enabled())) && (gOn || (!GK.includes(k) && !(k === "—" && l === "Tu luyện")))).map(([k, icn, l]) => k === "—" ? `<div class="sg">${l}</div>` : `<a href="#${k}" data-k="${k}"${k === cur ? ' class="on"' : ""}>${icn[0] === "#" ? `<i class="spn" style="--c:${icn}" aria-hidden="true"></i>` : ic(I[icn])}<span>${l}</span>${cnt[k] ? `<small>${cnt[k]}</small>` : ""}${k === "library" ? '<b class="bd" hidden></b>' : ""}</a>`).join("");
   navBadge();
   const dc = (DATA.site.about || {}).discord;
-  $("#sfoot").innerHTML = (/^https?:\/\//.test(dc || "") ? `<a class="dcb" href="${esc(dc)}" target="_blank" rel="noopener">Tham gia Discord</a>` : "") + (installEv ? `<a class="dcb ins" href="javascript:void 0" onclick="doInstall()">${ic(I.dl)}Cài ứng dụng</a>` : "") + `<a href="feed.xml">Theo dõi qua RSS</a><a href="admin.html">Quản trị</a><span>© Kenrori</span>`;
+  $("#sfoot").innerHTML = (/^https?:\/\//.test(dc || "") ? `<a class="dcb" href="${esc(dc)}" target="_blank" rel="noopener">Tham gia Discord</a>` : "") + (installEv ? `<a class="dcb ins" href="javascript:void 0" onclick="doInstall()">${ic(I.dl)}Cài ứng dụng</a>` : "") + `<a href="admin.html">Quản trị</a><span>© Kenrori</span>`;
 }
 const STC = t => /sắp/i.test(t || "") ? "soon" : /hoàn/i.test(t || "") ? "done" : /tạm|ngưng|dừng|drop/i.test(t || "") ? "pause" : "on";
 const stDot = s => s.status ? `<span class="st ${STC(s.status)}">${esc(s.status)}</span>` : "";
