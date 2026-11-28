@@ -293,16 +293,28 @@ async function mtJina(u) { // dịch vụ đọc trang công khai (mở trang b�
   try { const r = await fetch("https://r.jina.ai/" + u, { headers: { Accept: "text/plain", "X-Return-Format": "text" }, signal: ac.signal }); if (!r.ok) throw new Error("lỗi " + r.status); const x = await r.text(); if (/Just a moment|cf-chl|Attention Required/i.test(x) && !/Associated Names/i.test(x)) throw new Error("bị Cloudflare chặn"); return x }
   catch (e) { throw new Error(e.name === "AbortError" ? "quá thời gian" : e.message) } finally { clearTimeout(t) }
 }
-function mtNUtext(txt, url) { // dán chữ chép từ trang NovelUpdates (Ctrl+A, Ctrl+C)
-  const L = txt.replace(/\r/g, "").replace(/!\[[^\]]*\]\([^)]*\)/g, "").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").split("\n").map(x => x.replace(/^[#>*\-\s]+|[*_`]+|\s+$/g, "").replace(/:$/, "").trim()), H = ["Type", "Genre", "Tags", "Rating", "Language", "Author(s)", "Artist(s)", "Year", "Status in COO", "Licensed (in English)", "Completely Translated", "Original Publisher", "English Publisher", "Release Frequency", "Associated Names", "Description", "Related Series", "Recommendations", "Latest Release"];
-  const at = h => L.findIndex(x => x === h), sec = h => { const i = at(h); if (i < 0) return []; let j = i + 1; while (j < L.length && !H.includes(L[j])) j++; return L.slice(i + 1, j).filter(Boolean) };
-  const NUG = ["Action", "Adult", "Adventure", "Comedy", "Drama", "Ecchi", "Fantasy", "Gender Bender", "Harem", "Historical", "Horror", "Josei", "Martial Arts", "Mature", "Mecha", "Mystery", "Psychological", "Romance", "School Life", "Sci-fi", "Seinen", "Shoujo Ai", "Shoujo", "Shounen Ai", "Shounen", "Slice of Life", "Smut", "Sports", "Supernatural", "Tragedy", "Wuxia", "Xianxia", "Xuanhuan", "Yaoi", "Yuri"];
-  const gl = sec("Genre").join(" "), gs = NUG.filter(g => new RegExp("(^|\\s)" + g.replace(/ /g, "\\s+") + "(\\s|$)", "i").test(gl));
-  const alts = sec("Associated Names"), native = alts.find(a => /[぀-ヿ㐀-鿿가-힯]/.test(a)) || "", type = sec("Type").join(" "), lang = sec("Language").join(" ");
-  const tj = (/^Title:\s*(.+)$/m.exec(txt) || [])[1], ti = at("Type"), title = tj ? tj.replace(/\s*[-|]\s*Novel Updates\s*$/i, "").trim() : ti > 0 ? L.slice(0, ti).filter(Boolean).filter(x => !/^(Series|Novel Updates|Home|Login|Register|Search)$/i.test(x)).pop() || "" : "";
-  if (!alts.length && !gs.length && !sec("Description").length) throw new Error("Không nhận ra nội dung trang NovelUpdates. Hãy chép cả trang (Ctrl+A rồi Ctrl+C).");
-  return { title, orig: native, alts: alts.filter(a => a !== native), author: sec("Author(s)"), artist: sec("Artist(s)").filter(x => !/^N\/A$/i.test(x)), genres: mtGenres(gs), desc: sec("Description").join("\n\n"), cover: (/https:\/\/cdn\.novelupdates\.com\/images\/[^\s)"]+/.exec(txt) || [""])[0], coverProxy: true, country: /japan/i.test(lang) ? "jp" : /korea/i.test(lang) ? "kr" : /chinese/i.test(lang) ? "cn" : "", adult: gs.some(g => /^(Adult|Smut)$/.test(g)), age16: gs.includes("Mature") || gs.includes("Ecchi"), kind: /web novel/i.test(type) ? "webnovel" : "novel", src: url || "", from: "NovelUpdates" };
+const NUH = ["Type", "Genre", "Tags", "Rating", "Language", "Author(s)", "Artist(s)", "Year", "Status in COO", "Licensed (in English)", "Completely Translated", "Original Publisher", "English Publisher", "Release Frequency", "Activity Stats", "Reading Lists", "Associated Names", "Description", "Related Series", "Recommendations", "Recommendation Lists", "Latest Release", "User Ratings", "Reviews", "Groups", "Group(s)", "Release Groups", "Original Language", "Status", "Your Rating", "Reading List", "Recommended by"];
+const NUG = ["Action", "Adult", "Adventure", "Comedy", "Drama", "Ecchi", "Fantasy", "Gender Bender", "Harem", "Historical", "Horror", "Josei", "Martial Arts", "Mature", "Mecha", "Mystery", "Psychological", "Romance", "School Life", "Sci-fi", "Seinen", "Shoujo Ai", "Shoujo", "Shounen Ai", "Shounen", "Slice of Life", "Smut", "Sports", "Supernatural", "Tragedy", "Wuxia", "Xianxia", "Xuanhuan", "Yaoi", "Yuri"];
+function mtNUtext(txt, url) { // chữ chép từ trang NovelUpdates (Ctrl+A, Ctrl+C) hoặc từ dịch vụ đọc trang; nhãn có thể nằm riêng một dòng hoặc chung dòng với nội dung
+  const L = String(txt || "").replace(/\r/g, "").replace(/ /g, " ").replace(/!\[[^\]]*\]\([^)]*\)/g, "").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").split("\n").map(x => x.replace(/^[#>*\-\s]+|[*_`]+|\s+$/g, "").trim());
+  const rx = new RegExp("^(" + NUH.map(h => h.replace(/[()]/g, "\\$&")).join("|") + ")\\s*(?::\\s*(.*))?$", "i"), S = {}; let cur = null, title = "";
+  for (const x of L) { const m = rx.exec(x); if (m) { const k = NUH.find(h => h.toLowerCase() === m[1].toLowerCase()); if (!S[k]) { S[k] = []; cur = k } else cur = "_dup"; if (m[2] && cur !== "_dup") S[k].push(m[2]); continue } if (/Privacy Policy|Terms of Service/i.test(x)) cur = "_dup"; else if (cur && cur !== "_dup" && x) S[cur].push(x); else if (!cur && x && x.length < 200 && !/^(edit|history|report|series finder|latest releases|login|register|reading list|forum|ranking|\\d+)$/i.test(x)) title = x }
+  const sec = h => (S[h] || []).filter(x => !/^(N\/A|-)$/i.test(x)), tj = (/^Title:\s*(.+)$/m.exec(txt) || [])[1];
+  const gl = sec("Genre").join(" "), gs0 = NUG.filter(g => new RegExp("(^|[\\s,])" + g.replace(/ /g, "\\s+") + "([\\s,]|$)", "i").test(gl)), gs = gs0.filter(g => !(g === "Shoujo" && gs0.includes("Shoujo Ai") && !/(^|[\\s,])Shoujo([\\s,]|$)(?!\\s*Ai)/i.test(gl.replace(/Shoujo\\s+Ai/gi, ""))) && !(g === "Shounen" && gs0.includes("Shounen Ai") && !/(^|[\\s,])Shounen([\\s,]|$)/i.test(gl.replace(/Shounen\\s+Ai/gi, ""))));
+  const alts = sec("Associated Names").flatMap(a => a.split(/\s{2,}|\t/)).map(a => a.trim()).filter(Boolean), native = alts.find(a => /[぀-ヿ㐀-鿿가-힯]/.test(a)) || "", type = sec("Type").join(" "), lang = sec("Language").join(" ");
+  if (!alts.length && !gs.length && !sec("Description").length) throw new Error("không nhận ra nội dung trang NovelUpdates");
+  return { title: tj ? tj.replace(/\s*[-|]\s*Novel Updates\s*$/i, "").trim() : title, orig: native, alts: alts.filter(a => a !== native), author: sec("Author(s)").flatMap(a => a.split(/\s{2,}|\t|,\s*/)).filter(Boolean), artist: sec("Artist(s)").flatMap(a => a.split(/\s{2,}|\t|,\s*/)).filter(Boolean), genres: mtGenres(gs), desc: sec("Description").filter(x => !/^(Show more|Show less|more\.\.\.)$/i.test(x)).join("\n\n"), cover: (/https:\/\/cdn\.novelupdates\.com\/images\/[^\s)"]+/.exec(txt) || [""])[0], coverProxy: true, country: /japan/i.test(lang) ? "jp" : /korea/i.test(lang) ? "kr" : /chinese/i.test(lang) ? "cn" : "", adult: gs.some(g => /^(Adult|Smut)$/.test(g)), age16: gs.includes("Mature") || gs.includes("Ecchi"), kind: /web novel/i.test(type) ? "webnovel" : "novel", src: url || "", from: "NovelUpdates" };
 }
+async function mtNUai(txt, url) { // khi không nhận ra bố cục: nhờ AI đã cài (dịch tự động) đọc giúp
+  if (!PROV.some(p => p.on)) throw new Error("Không nhận ra nội dung đã dán. Hãy mở trang bộ truyện trên NovelUpdates, bấm Ctrl+A rồi Ctrl+C và dán lại. Nếu đã cài dịch tự động, AI sẽ đọc giúp khi bố cục lạ");
+  log("Đang nhờ AI đọc nội dung trang...");
+  const t = await gem(`Đây là chữ chép từ một trang bộ truyện trên NovelUpdates. Hãy trích thông tin và chỉ trả về một đối tượng JSON, không thêm chữ nào khác, với các khóa: "title" (tên tiếng Anh của bộ), "alts" (mảng tên khác, gồm cả tên gốc), "author" (mảng), "artist" (mảng), "genres" (mảng, giữ nguyên tên thể loại tiếng Anh như trên trang), "type" ("Light Novel" hoặc "Web Novel"), "language" (ví dụ "Japanese"), "description" (giữ nguyên văn).\n\n${String(txt).slice(0, 14000)}`);
+  const j = JSON.parse((/\{[\s\S]*\}/.exec(t) || ["{}"])[0]), A = v => Array.isArray(v) ? v.map(String).filter(Boolean) : v ? [String(v)] : [];
+  const alts = A(j.alts), native = alts.find(a => /[぀-ヿ㐀-鿿가-힯]/.test(a)) || "", gs = A(j.genres), lang = String(j.language || "");
+  if (!j.title && !alts.length && !j.description) throw new Error("AI cũng không đọc được nội dung này");
+  return { title: String(j.title || ""), orig: native, alts: alts.filter(a => a !== native), author: A(j.author), artist: A(j.artist), genres: mtGenres(gs), desc: String(j.description || ""), cover: "", country: /japan/i.test(lang) ? "jp" : /korea/i.test(lang) ? "kr" : /chin/i.test(lang) ? "cn" : "", adult: gs.some(g => /^(Adult|Smut)$/i.test(g)), age16: gs.some(g => /^(Mature|Ecchi)$/i.test(g)), kind: /web/i.test(String(j.type)) ? "webnovel" : "novel", src: url || "", from: "NovelUpdates" };
+}
+const mtNUany = async (txt, url) => { try { return mtNUtext(txt, url) } catch (e) { return await mtNUai(txt, url) } };
 async function mtCoverBlob(M) {
   if (!M.cover) return null;
   if (!M.coverProxy) { try { const r = await fetch(M.cover); if (r.ok) return await r.blob() } catch (e) {} }
@@ -341,7 +353,7 @@ function mtPick(L) {
 function mtDone(M, did) { $("#mt_res").innerHTML = `<p class="mtok">Đã điền từ ${esc(M.from)}: ${did.length ? did.join(", ") : "không có ô nào cần điền (bật Ghi đè nếu muốn thay)"}. Kiểm tra lại, đặt tên tiếng Việt nếu cần, rồi bấm Lưu.</p>`; done(`✅ Đã lấy thông tin từ ${M.from}.`) }
 function mtPaste(url, why) {
   $("#mt_res").innerHTML = `<div class="mtpaste"><p>${why} Cách khác: mở trang NovelUpdates của bộ đó, bấm <b>Ctrl+A</b> rồi <b>Ctrl+C</b>, sau đó dán vào ô dưới đây.</p><textarea id="mt_txt" placeholder="Dán toàn bộ chữ của trang NovelUpdates vào đây"></textarea><button type="button" id="mt_txtgo">Đọc nội dung đã dán</button></div>`;
-  $("#mt_txtgo").onclick = () => run(async () => { const M = mtNUtext($("#mt_txt").value, url); const did = await mtApply(M); mtDone(M, did) });
+  $("#mt_txtgo").onclick = () => run(async () => { if (!$("#mt_txt").value.trim()) throw new Error("Hãy dán nội dung trang vào ô trước"); const M = await mtNUany($("#mt_txt").value, url); const did = await mtApply(M); mtDone(M, did) });
 }
 $("#mt_go").onclick = () => run(async () => {
   const q = $("#mt_q").value.trim(); if (!q) throw new Error("Dán link hoặc gõ tên truyện"); $("#mt_res").innerHTML = ""; let m, M = null;
@@ -352,7 +364,7 @@ $("#mt_go").onclick = () => run(async () => {
   else if (/novelupdates\.com\/series\//i.test(q)) {
     const u = q.split("#")[0].split("?")[0]; let why = "";
     try { log("Đang lấy trang NovelUpdates qua hàm meta..."); M = mtNUhtml((await mtProxy(u)).text || "", u) } catch (e) { why = e.setup ? e.message + "." : "NovelUpdates chặn hàm meta (" + e.message + ")." }
-    if (!M) { try { log("Đang thử lấy qua dịch vụ đọc trang r.jina.ai..."); M = mtNUtext(await mtJina(u), u) } catch (e) { why += " Dịch vụ đọc trang cũng không lấy được (" + e.message + ")." } }
+    if (!M) { try { log("Đang thử lấy qua dịch vụ đọc trang r.jina.ai..."); M = mtNUtext(await mtJina(u), u) } catch (e) { why += " Dịch vụ đọc trang r.jina.ai cũng bị chặn hoặc trả về trang lạ (" + e.message + ")." } }
     if (!M) { mtPaste(u, why.trim()); return log("Dán nội dung trang NovelUpdates để tiếp tục.") }
   }
   else if (/^https?:\/\//.test(q)) throw new Error("Chưa hỗ trợ trang này. Dùng link AniList, MyAnimeList, MangaDex, Syosetu hoặc NovelUpdates.");
