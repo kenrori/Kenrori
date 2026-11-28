@@ -1921,7 +1921,10 @@
    "prog": "",
    "sched": "",
    "format": "Light Novel",
-   "cover": "images/jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru-bia.jpg"
+   "cover": "images/jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru-bia.jpg",
+   "rel": [
+    "manga:jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru"
+   ]
   }
  ],
  "manga": [
@@ -2550,7 +2553,10 @@
    "sched": "",
    "cover": "images/jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru-bia.jpg",
    "country": "",
-   "age": ""
+   "age": "",
+   "rel": [
+    "novel:jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru"
+   ]
   },
   {
    "slug": "ore-ni-trauma-wo-ataeta-joshi-tachi-ga-chirachira-mitekuru-kedo-zannen-desuga-teokure-desu",
@@ -4863,5 +4869,5 @@
    }
   ]
  },
- "rev": 1795837461765
+ "rev": 1795837533979
 }
