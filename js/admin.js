@@ -8,6 +8,7 @@ const t64 = b => new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\n/g, 
 const fileB64 = f => new Promise(r => { const x = new FileReader(); x.onload = () => r(x.result.split(",")[1]); x.readAsDataURL(f) });
 const resize = (f, w = 600) => new Promise(r => { const im = new Image(); im.onload = () => { const k = Math.min(1, w / im.width), c = document.createElement("canvas"); c.width = im.width * k; c.height = im.height * k; c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); r(c.toDataURL("image/jpeg", .85).split(",")[1]) }; im.src = URL.createObjectURL(f) });
 const rid = () => Date.now().toString(36);
+const NEWIMG = new Map(), imgSrc = p => NEWIMG.get(p) || p || ""; // ảnh vừa tải lên: hiện bản trên máy cho đến khi web cập nhật xong
 let cfg = {}, data = null;
 
 const api = (p, o = {}) => fetch(`https://api.github.com/repos/${cfg.u}/${cfg.r}/contents/${p}` + (o.q ? o.q + "&_=" + Date.now() : ""), { method: o.m || "GET", cache: "no-store", headers: { Authorization: "Bearer " + cfg.t, Accept: "application/vnd.github+json" }, body: o.body && JSON.stringify(o.body) });
@@ -118,7 +119,7 @@ function bkLine() { const d = bkDays(); return d == null ? "Bạn chưa tải b�
 function bkRepoZip() { bkMark(); window.open(`https://github.com/${cfg.u}/${cfg.r}/archive/refs/heads/${cfg.b}.zip`, "_blank", "noopener"); log("✅ Đang tải toàn bộ kho từ GitHub (gồm chương và ảnh)."); dash() }
 function goSer(k, i) { $("#m_q").value = ""; manage(); $(`#manage button[data-s="${k}|${i}"]`)?.click() }
 function issues() {
-  const out = [], today = Date.now();
+  const out = [], today = Date.now(), COVU = new Map();
   for (const k of ["novels", "manga"]) (data[k] || []).forEach((s, i) => {
     const P = [], ch = s.chapters || [];
     if (!s.cover) P.push(["Thiếu ảnh bìa"]); if (!(s.desc || "").trim()) P.push(["Thiếu tóm tắt"]); if (!(s.genres || []).length) P.push(["Thiếu thể loại"]);
@@ -129,6 +130,7 @@ function issues() {
     const st = s.status || "";
     if (/sắp/i.test(st) && ch.length) P.push(["Đã có chương nhưng vẫn ghi Sắp ra mắt"]);
     if (/đang/i.test(st) && ch.length) { const lu = ch.map(c => c.date || "").sort().pop(); if (lu && (today - Date.parse(lu)) / 864e5 > 60) P.push([`Hơn 2 tháng chưa có chương mới, có thể đổi sang Tạm ngưng`]) }
+    if (s.cover) { const o = COVU.get(s.cover); if (o && o.s !== s) P.push([`Dùng chung ảnh bìa với ${o.s.title} (${o.f}), hãy chọn lại ảnh bìa`]); else COVU.set(s.cover, { s, f: k === "manga" ? "Manga" : s.format || "Light Novel" }) }
     if (P.length) out.push({ k, i, s, P });
   });
   return out;
@@ -415,7 +417,7 @@ $("#p-series").onsubmit = e => { e.preventDefault(); run(async () => {
   Object.assign(s, { title, orig: $("#s_orig").value.trim(), alts: $("#s_alts").value.split("\n").map(x => x.trim()).filter(Boolean), artist: $("#s_artist").value.trim(), author: $("#s_author").value.trim(), country: $("#s_country").value, age: $("#s_age").value, status: $("#s_status").value, genres: $("#s_genres").value.split(",").map(x => x.trim()).filter(Boolean), desc: $("#s_desc").value.trim(), src, team: $("#s_team").value.split("\n").map(l => { const [r, ...n] = l.split("|"); return n.length ? { r: r.trim(), n: n.join("|").trim() } : { r: "", n: r.trim() } }).filter(t => t.n), prog: $("#s_prog").value.trim(), sched: $("#s_sched").value.trim() }); if ($("#s_feat").checked) s.feat = true; else delete s.feat; if (kind === "novel") s.format = fmt === "webnovel" ? "Web Novel" : "Light Novel";
   relApply(kind, s);
   const f = $("#s_cover").files[0];
-  if (f) { log("Đang tải ảnh bìa..."); const p = `images/${slug}-bia.jpg`; await put(p, await resize(f), "Bìa: " + title); s.cover = p }
+  if (f) { log("Đang tải ảnh bìa..."); const p = `images/${kind === "manga" ? "manga-" : ""}${slug}-bia-${rid()}.jpg`, b = await resize(f); await put(p, b, "Bìa: " + title); s.cover = p; NEWIMG.set(p, URL.createObjectURL(f)) }
   else if ($("#mt_cover").value) s.cover = $("#mt_cover").value;
   $("#mt_cover").value = ""; $("#mt_res").innerHTML = "";
   await save("Thêm/sửa truyện: " + title);
@@ -470,7 +472,7 @@ $("#p-vid").onsubmit = e => { e.preventDefault(); run(async () => {
 }) };
 
 const hueOf = t => [...String(t)].reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
-const thumb = s => `<span class="mth" style="--h:${hueOf(s.title)}">${s.cover ? `<img src="${esc(s.cover)}" alt="" loading="lazy" onerror="this.remove()">` : ""}</span>`;
+const thumb = s => `<span class="mth" style="--h:${hueOf(s.title)}">${s.cover ? `<img src="${esc(imgSrc(s.cover))}" alt="" loading="lazy" onerror="this.remove()">` : ""}</span>`;
 // ---------- Tự sắp xếp chương ----------
 const ROM = t => { const v = { I: 1, V: 5, X: 10, L: 50, C: 100 }; let n = 0; t = t.toUpperCase(); for (let i = 0; i < t.length; i++) { const a = v[t[i]], b = v[t[i + 1]] || 0; n += a < b ? -a : a } return n };
 const numOf = x => /^[IVXLC]+$/i.test(x) ? ROM(x) : parseFloat(x.replace(",", "."));
@@ -533,7 +535,7 @@ $("#manage").addEventListener("click", e => {
   } else if (bs) {
     const [k, i] = bs.dataset.s.split("|"), s = data[k][+i];
     $("#s_kind").value = k === "novels" ? (s.format === "Web Novel" ? "webnovel" : "novel") : "manga"; $("#s_src").value = s.src || ""; $("#s_team").value = (s.team || []).map(t => t.r ? t.r + " | " + t.n : t.n).join("\n"); $("#s_prog").value = s.prog || ""; $("#s_feat").checked = !!s.feat; $("#s_sched").value = s.sched || ""; $("#s_title").value = s.title; $("#s_slug").value = s.slug; $("#s_author").value = s.author || ""; $("#s_country").value = s.country || ""; $("#s_age").value = s.age ?? ""; $("#s_orig").value = s.orig || ""; $("#s_alts").value = (s.alts || []).join("\n"); $("#s_artist").value = s.artist || "";
-    $("#s_rel").value = (s.rel || []).join(","); relUI(k === "novels" ? "novel" : "manga", s.slug); $("#s_status").value = s.status || "Đang dịch"; $("#s_desc").value = s.desc || ""; $("#s_genres").value = (s.genres || []).join(", "); gChips(); $("#s_cover").value = ""; cvPrev(s.cover); tab("series"); $("#ptitle").textContent = "Sửa bộ: " + s.title; log("Đang sửa bộ " + s.title + ". Chọn ảnh bìa mới nếu muốn đổi.");
+    $("#s_rel").value = (s.rel || []).join(","); relUI(k === "novels" ? "novel" : "manga", s.slug); $("#s_status").value = s.status || "Đang dịch"; $("#s_desc").value = s.desc || ""; $("#s_genres").value = (s.genres || []).join(", "); gChips(); $("#s_cover").value = ""; cvPrev(imgSrc(s.cover)); tab("series"); $("#ptitle").textContent = "Sửa bộ: " + s.title; log("Đang sửa bộ " + s.title + ". Chọn ảnh bìa mới nếu muốn đổi.");
   } else if (bm) {
     const [k, i, j, d] = bm.dataset.m.split("|"), a = data[k][+i].chapters, x = +j, y = x + +d; if (y < 0 || y >= a.length) return;
     [a[x], a[y]] = [a[y], a[x]]; run(async () => { await save("Đổi thứ tự chương"); done("✅ Đã đổi thứ tự chương.") });
@@ -583,7 +585,7 @@ function wsGrid() {
   const q = $("#ws_q").value.trim().toLowerCase(), L = [];
   for (const k of ["novels", "manga"]) data[k].forEach((s, i) => { const t = wsType(k, s); if (WS.f !== "all" && WS.f !== t) return; if (q && ![s.title, s.orig, ...(s.alts || [])].join(" ").toLowerCase().includes(q)) return; L.push({ k, i, s, t }) });
   L.sort((a, b) => wsLat(b.s).localeCompare(wsLat(a.s)));
-  $("#ws_grid").innerHTML = L.map(({ k, i, s, t }) => `<button type="button" class="wsc" data-ws="${k}|${i}"><span class="wsct" style="--h:${hueOf(s.title)}">${s.cover ? `<img src="${esc(s.cover)}" alt="" loading="lazy" onerror="this.remove()">` : ""}</span><b>${esc(s.title)}</b><small>${t === "manga" ? "Manga" : t === "wn" ? "Web Novel" : "Light Novel"}, ${s.chapters.length} chương</small></button>`).join("") || `<p class="mu">${q || WS.f !== "all" ? "Không có bộ nào khớp." : "Chưa có bộ nào. Bấm Thêm bộ mới để bắt đầu."}</p>`;
+  $("#ws_grid").innerHTML = L.map(({ k, i, s, t }) => `<button type="button" class="wsc" data-ws="${k}|${i}"><span class="wsct" style="--h:${hueOf(s.title)}">${s.cover ? `<img src="${esc(imgSrc(s.cover))}" alt="" loading="lazy" onerror="this.remove()">` : ""}</span><b>${esc(s.title)}</b><small>${t === "manga" ? "Manga" : t === "wn" ? "Web Novel" : "Light Novel"}, ${s.chapters.length} chương</small></button>`).join("") || `<p class="mu">${q || WS.f !== "all" ? "Không có bộ nào khớp." : "Chưa có bộ nào. Bấm Thêm bộ mới để bắt đầu."}</p>`;
 }
 $("#ws_q").oninput = wsGrid;
 $("#ws_f").onclick = e => { const b = e.target.closest("[data-wf]"); if (!b) return; WS.f = b.dataset.wf; document.querySelectorAll("#ws_f .chip").forEach(x => x.classList.toggle("on", x === b)); wsGrid() };
@@ -598,7 +600,7 @@ function wsDraw() {
   const W = WS.W, k = WS.k, kind = k === "manga" ? "manga" : "novel", vs = [...new Set(W.map(wsVol).filter(Boolean))];
   $("#ptitle").textContent = "Bộ truyện"; $("#ws_t").textContent = s.title;
   $("#ws_m").textContent = `${k === "manga" ? "Manga" : s.format || "Light Novel"}, ${s.status || "Đang dịch"}, ${s.chapters.length} chương${vs.length ? ", " + vs.length + " tập" : ""}`;
-  $("#ws_cvw").style.setProperty("--h", hueOf(s.title)); $("#ws_cv").src = s.cover || ""; $("#ws_web").href = `index.html#${kind}/${s.slug}`; $("#ws_imp").hidden = k === "manga"; $("#ws_tr").hidden = k === "manga"; $("#ws_mb").hidden = k !== "manga"; if (k !== "manga") $("#ws_mbox").hidden = true;
+  $("#ws_cvw").style.setProperty("--h", hueOf(s.title)); $("#ws_cv").src = imgSrc(s.cover); $("#ws_web").href = `index.html#${kind}/${s.slug}`; $("#ws_imp").hidden = k === "manga"; $("#ws_tr").hidden = k === "manga"; $("#ws_mb").hidden = k !== "manga"; if (k !== "manga") $("#ws_mbox").hidden = true;
   const runs = []; W.forEach((c, j) => { const v = wsVol(c), r = runs[runs.length - 1]; if (r && r.v === v) r.js.push(j); else runs.push({ v, js: [j] }) });
   if (!WS.open) WS.open = new Set(W.length <= 25 ? runs.map(r => r.v) : runs.filter(r => !r.v).map(r => r.v));
   const vc = s.vc || {}, wd = c => (c.type === "img" || (c.pages && kind === "novel")) ? (c.pages || []).length + " ảnh" : kind === "novel" ? (c.words || 0).toLocaleString("vi-VN") + " chữ" : (c.pages ? c.pages.length : c.n || 0) + " trang";
@@ -668,7 +670,7 @@ $("#ws_addb").onclick = () => { const f = $("#p-chap"); if (f.classList.contains
 $("#ws_tr").onclick = () => { if (WS.dirty) return log("❌ Hãy Lưu thay đổi hoặc Hoàn tác trước"); if (WS.k !== "novels") return; RET = "ws"; tab("tr"); trFill(); $("#t_ser").value = WS.i; $("#t_ser").dispatchEvent(new Event("change")) };
 $("#ws_imp").onclick = () => { if (WS.dirty) return log("❌ Hãy Lưu thay đổi hoặc Hoàn tác trước"); RET = "ws"; tab("imp"); impFill(); $("#i_ser").value = WS.i };
 $("#ws_edit").onclick = () => { if (WS.dirty) return log("❌ Hãy Lưu thay đổi hoặc Hoàn tác trước"); RET = "ws"; let b = $("#manage").querySelector(`button[data-s="${WS.k}|${WS.i}"]`); if (!b) { $("#m_q").value = ""; manage(); b = $("#manage").querySelector(`button[data-s="${WS.k}|${WS.i}"]`) } b?.click() };
-$("#ws_cvf").onchange = e => { const f = e.target.files[0], s = wsS(); if (!f || !s) return; run(async () => { log("Đang tải ảnh bìa..."); const p = `images/${s.slug}-bia-${rid()}.jpg`; await put(p, await resize(f), "Bìa: " + s.title); s.cover = p; await save("Đổi bìa: " + s.title); try { await writeShare(WS.k === "manga" ? "manga" : "novel", s) } catch (err) {} e.target.value = ""; done("✅ Đã đổi ảnh bìa. Web cập nhật sau 1–2 phút."); wsDraw() }) };
+$("#ws_cvf").onchange = e => { const f = e.target.files[0], s = wsS(); if (!f || !s) return; run(async () => { log("Đang tải ảnh bìa..."); const p = `images/${WS.k === "manga" ? "manga-" : ""}${s.slug}-bia-${rid()}.jpg`; await put(p, await resize(f), "Bìa: " + s.title); s.cover = p; NEWIMG.set(p, URL.createObjectURL(f)); await save("Đổi bìa: " + s.title); try { await writeShare(WS.k === "manga" ? "manga" : "novel", s) } catch (err) {} e.target.value = ""; done("✅ Đã đổi ảnh bìa. Web cập nhật sau 1–2 phút."); wsDraw() }) };
 addEventListener("beforeunload", e => { if (WS.dirty) { e.preventDefault(); e.returnValue = "" } });
 function deepLink() {
   const [a, k, slug, j] = decodeURIComponent(location.hash.slice(1)).split("/");
