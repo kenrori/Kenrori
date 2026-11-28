@@ -2506,7 +2506,8 @@
     "Romance",
     "Drama",
     "Comedy",
-    "Học đường"
+    "Học đường",
+    "Adaptation"
    ],
    "desc": "Vào cuối mùa hè, Aono Eiji bắt gặp bạn thơ ấu kiêm bạn gái cậu, Amada Miyuki, đang cắm sừng cậu với Kondo, át chủ bài của đội bóng đá. Bị cô ta phản bội và tổn thương sâu sắc, Eiji trở thành mục tiêu cho những lời vu khống và quấy rối vô căn cứ. Bị dồn vào chân tường và không còn lối thoát, cậu trốn lên sân thượng trường học—nơi cậu gặp một cô gái bí ẩn...",
    "src": "",
@@ -2518,7 +2519,9 @@
    ],
    "prog": "",
    "sched": "",
-   "cover": "images/jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru-bia.jpg"
+   "cover": "images/jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru-bia.jpg",
+   "country": "",
+   "age": ""
   },
   {
    "slug": "ore-ni-trauma-wo-ataeta-joshi-tachi-ga-chirachira-mitekuru-kedo-zannen-desuga-teokure-desu",
@@ -3221,5 +3224,5 @@
    }
   ]
  },
- "rev": 1795822967623
+ "rev": 1795824358532
 }
