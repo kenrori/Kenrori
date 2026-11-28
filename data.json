@@ -35,7 +35,7 @@
      "words": 1671
     },
     {
-     "t": "Chương 3: Công Tước Là Người Tốt",
+     "t": "Chương 3",
      "date": "2026-11-26",
      "file": "novels/yuushashoukan/c3_mwxj12w8.txt",
      "words": 2550
@@ -63,6 +63,12 @@
      "date": "2026-11-27",
      "file": "novels/yuushashoukan/c7_mwz8yskz.txt",
      "words": 3414
+    },
+    {
+     "t": "Chương 8",
+     "date": "2026-11-28",
+     "file": "novels/yuushashoukan/c8_mwzwtx0x.txt",
+     "words": 2775
     }
    ],
    "title": "Yuusha Shoukan Ni Makikomareta Kedo, Isekai Wa Heiwa Deshita",
@@ -4903,5 +4909,5 @@
    }
   ]
  },
- "rev": 1795839909740
+ "rev": 1795840104563
 }
