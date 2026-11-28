@@ -20,9 +20,9 @@ async function flush(msg) {
   if (!NOJ) { try { const g = await api(".nojekyll", { q: "?ref=" + cfg.b }); NOJ = true; if (g.status === 404) L.push({ path: ".nojekyll", b64: "" }) } catch (e) {} }
   let tree;
   try {
-    tree = new Array(L.length); let k = 0, done = 0; const worker = async () => { while (k < L.length) { const i = k++; const b = await ghx("git/blobs", { m: "POST", body: { content: L[i].b64, encoding: "base64" } }); tree[i] = { path: L[i].path, mode: "100644", type: "blob", sha: b.sha }; done++; if (L.length > 3) log(`Đang lưu ${done}/${L.length} file lên GitHub...`) } };
+    tree = new Array(L.length); let k = 0, done = 0; const worker = async () => { while (k < L.length) { const i = k++; if (L[i].sha !== undefined) { tree[i] = { path: L[i].path, mode: "100644", type: "blob", sha: L[i].sha }; done++; continue } const b = await ghx("git/blobs", { m: "POST", body: { content: L[i].b64, encoding: "base64" } }); tree[i] = { path: L[i].path, mode: "100644", type: "blob", sha: b.sha }; done++; if (L.length > 3) log(`Đang lưu ${done}/${L.length} file lên GitHub...`) } };
     await Promise.all(Array.from({ length: Math.min(4, L.length) }, worker));
-  } catch (e) { for (const f of L) await putNow(f.path, f.b64, f.msg || msg); return } // dự phòng: lưu từng file như cũ
+  } catch (e) { if (L.some(f => f.sha !== undefined)) throw e; for (const f of L) await putNow(f.path, f.b64, f.msg || msg); return } // dự phòng: lưu từng file như cũ
   for (let t = 0; t < 4; t++) {
     const ref = await ghx(`git/ref/heads/${encodeURIComponent(cfg.b)}`), base = ref.object.sha, bc = await ghx(`git/commits/${base}`);
     const tr = await ghx("git/trees", { m: "POST", body: { base_tree: bc.tree.sha, tree } }), c = await ghx("git/commits", { m: "POST", body: { message: msg || L[0].msg || "Cập nhật", tree: tr.sha, parents: [base] } });
@@ -214,16 +214,17 @@ const NI = {
   tr: '<path d="M4 5h8M8 3v2M10 5c-1 4-3.5 7-6 8.5M6 9c1 2 3 3.5 5 4.5M13 21l4-9 4 9M14.5 18h5"/>', proj: '<path d="M10 3H5a2 2 0 0 0-2 2v5h3a2 2 0 1 1 0 4H3v5a2 2 0 0 0 2 2h5v-3a2 2 0 1 1 4 0v3h5a2 2 0 0 0 2-2v-5h-3a2 2 0 1 1 0-4h3V5a2 2 0 0 0-2-2h-5v3a2 2 0 1 1-4 0z"/>',
   tip: '<path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/>', link: '<path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>',
   vid: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/>', site: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
-  man: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>'
+  man: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  hist: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/>'
 };
-const TABS = [["dash", "Tổng quan"], ["—", "Truyện"], ["ws", "Bộ truyện"], ["genre", "Thể loại"], ["—", "Game và công cụ"], ["proj", "Dự án"], ["tip", "Mẹo game"], ["—", "Khác"], ["link", "Liên kết"], ["vid", "Video"], ["—", "Hệ thống"], ["game", "Tu luyện"], ["site", "Cài đặt trang web"], ["man", "Quản lý"]];
+const TABS = [["dash", "Tổng quan"], ["—", "Truyện"], ["ws", "Bộ truyện"], ["genre", "Thể loại"], ["—", "Game và công cụ"], ["proj", "Dự án"], ["tip", "Mẹo game"], ["—", "Khác"], ["link", "Liên kết"], ["vid", "Video"], ["—", "Hệ thống"], ["game", "Tu luyện"], ["site", "Cài đặt trang web"], ["hist", "Dung lượng và lịch sử"], ["man", "Quản lý"]];
 const PT = { edit: "Sửa chương", vol: "Tập và bìa tập", series: "Bộ truyện", chap: "Thêm chương", tr: "Dịch chương", imp: "Nhập từ file" };
 /* Các trang chỉ mở được từ bên trong một bộ (không có trên menu) */
 const HID = ["series", "chap", "tr", "imp"];
 $("#tabs").innerHTML = TABS.map(([k, l]) => k === "—" ? `<div class="tg">${l}</div>` : `<button type="button" data-k="${k}"><svg class="i" viewBox="0 0 24 24">${NI[k]}</svg>${l}</button>`).join("");
 const tab = k => { if (k !== "ws") wsPark(); $("#retbar").hidden = !(RET === "ws" && k !== "ws" && WS.k); if (!$("#retbar").hidden) $("#ret_go span").textContent = data[WS.k]?.[WS.i]?.title || ""; document.querySelector("main").classList.toggle("wide", ["tr", "dash", "game", "genre"].includes(k)); $("#ptitle").textContent = PT[k] || (TABS.find(x => x[0] === k) || [])[1] || ""; scrollTo(0, 0); [...TABS.map(x => x[0]).filter(x => x !== "—"), "edit", "vol", ...HID].forEach(t => $("#p-" + t).classList.toggle("on", t === k)); document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.k === (HID.includes(k) ? "ws" : k))); if ($("#p-chap").classList.contains("inws")) $("#p-chap").classList.add("on") };
 let RET = null; const WS = { k: null, i: -1, W: null, dirty: false, f: "all", open: null, last: null };
-$("#tabs").onclick = e => { const b = e.target.closest("button[data-k]"); if (!b) return; if (WS.dirty && !confirm("Bỏ các thay đổi chưa lưu ở trang Bộ truyện?")) return; WS.dirty = false; RET = null; tab(b.dataset.k); if (b.dataset.k === "ws") wsHome() }; tab("dash");
+$("#tabs").onclick = e => { const b = e.target.closest("button[data-k]"); if (!b) return; if (WS.dirty && !confirm("Bỏ các thay đổi chưa lưu ở trang Bộ truyện?")) return; WS.dirty = false; RET = null; tab(b.dataset.k); if (b.dataset.k === "ws") wsHome(); if (b.dataset.k === "hist") histOpen() }; tab("dash");
 
 function fillSel() {
   const o = []; for (const k of ["novel", "manga"]) data[KEYS[k]].forEach((s, i) => o.push(`<option value="${k}|${i}">${k === "novel" ? "📖" : "🖼️"} ${esc(s.title)}</option>`));
@@ -675,7 +676,7 @@ addEventListener("beforeunload", e => { if (WS.dirty) { e.preventDefault(); e.re
 function deepLink() {
   const [a, k, slug, j] = decodeURIComponent(location.hash.slice(1)).split("/");
   if (HID.includes(a) && !k) { tab("ws"); wsHome(a === "chap" || a === "tr" ? a : null); return }
-  if (TABS.some(x => x[0] === a && a !== "—")) { tab(a); if (a === "site" && k === "mk") setTimeout(() => { const x = $("#cm_pw"); if (x) { x.closest("details")?.setAttribute("open", ""); x.scrollIntoView({ block: "center" }); x.focus() } }, 50); return }
+  if (TABS.some(x => x[0] === a && a !== "—")) { tab(a); if (a === "hist") histOpen(); if (a === "site" && k === "mk") setTimeout(() => { const x = $("#cm_pw"); if (x) { x.closest("details")?.setAttribute("open", ""); x.scrollIntoView({ block: "center" }); x.focus() } }, 50); return }
   if (!a || !KEYS[k]) return;
   const key = KEYS[k], i = data[key].findIndex(x => x.slug === slug); if (i < 0) { log("Không tìm thấy bộ truyện này trong dữ liệu."); return }
   if (a === "chap") { wsOpen(key, i); $("#ws_addb").click() }
@@ -1410,14 +1411,14 @@ function dash() {
   const drafts = []; try { for (let x = 0; x < localStorage.length; x++) { const key = localStorage.key(x); if (!key.startsWith("dr:")) continue; const d = JSON.parse(localStorage.getItem(key) || "{}"); if ((d.i || "").trim() || (d.o || "").trim()) drafts.push({ s: data.novels.find(n => n.slug === key.slice(3)), slug: key.slice(3), d }) } } catch (e) {}
   const qa = [["series", "Thêm bộ truyện mới", "$('#ws_new').click()"], ["chap", "Đăng chương", "tab('ws');wsHome('chap')"], ["tr", "Dịch chương mới", "tab('ws');wsHome('tr')"], ["man", "Quản lý nội dung", "tab('man')"]];
   const bw = bkDays() == null || bkDays() > 7;
-  el.innerHTML = `<div class="dgrid"><div class="dmain">${bw ? `<div class="bkwarn"><b>${bkDays() == null ? "Chưa có bản sao lưu" : `Đã ${bkDays()} ngày chưa sao lưu`}</b><span>Chương và ảnh chỉ đang nằm trên GitHub. Tải bản sao lưu để giữ một bản trên máy.</span><button type="button" onclick="backupDl()">Sao lưu ngay</button></div>` : ""}<div class="stats"><div class="stat"><b>${data.novels.filter(s => s.format !== "Web Novel").length}</b><span>Light Novel</span></div><div class="stat"><b>${data.novels.filter(s => s.format === "Web Novel").length}</b><span>Web Novel</span></div><div class="stat"><b>${data.manga.length}</b><span>Manga</span></div><div class="stat"><b>${nch.toLocaleString("vi-VN")}</b><span>Chương đã đăng</span></div><div class="stat"><b>${nw.toLocaleString("vi-VN")}</b><span>Chữ đã dịch</span></div></div>
+  el.innerHTML = `<div class="dgrid"><div class="dmain">${bw ? `<div class="bkwarn"><b>${bkDays() == null ? "Chưa có bản sao lưu" : `Đã ${bkDays()} ngày chưa sao lưu`}</b><span>Chương và ảnh chỉ đang nằm trên GitHub. Tải bản sao lưu để giữ một bản trên máy.</span><button type="button" onclick="backupDl()">Sao lưu ngay</button></div>` : ""}${szBanner()}<div class="stats"><div class="stat"><b>${data.novels.filter(s => s.format !== "Web Novel").length}</b><span>Light Novel</span></div><div class="stat"><b>${data.novels.filter(s => s.format === "Web Novel").length}</b><span>Web Novel</span></div><div class="stat"><b>${data.manga.length}</b><span>Manga</span></div><div class="stat"><b>${nch.toLocaleString("vi-VN")}</b><span>Chương đã đăng</span></div><div class="stat"><b>${nw.toLocaleString("vi-VN")}</b><span>Chữ đã dịch</span></div></div>
 <h4>Làm nhanh</h4><div class="qa">${qa.map(([k, l, x]) => `<button type="button" onclick="${x}"><svg class="i" viewBox="0 0 24 24">${NI[k]}</svg>${l}</button>`).join("")}</div>
 ${issuesHtml()}
-<h4>Bảo trì</h4><p class="bkln">${bkLine()} "Tải bản sao lưu" lưu thông tin các bộ và bảng tên riêng. "Tải toàn bộ kho" tải cả nội dung chương và ảnh từ GitHub.</p><div class="acts" style="margin-top:8px"><button type="button" onclick="backupDl()">Tải bản sao lưu</button><button type="button" class="sec" onclick="bkRepoZip()" title="Tải cả chương và ảnh, dùng khi cần dựng lại web từ đầu">Tải toàn bộ kho (chương và ảnh)</button><button type="button" class="sec" onclick="$('#bk_in').click()">Khôi phục từ bản sao lưu</button><button type="button" class="sec" onclick="regenShare()">Tạo lại trang chia sẻ cho tất cả bộ</button>${/^[a-z0-9-]+$/i.test(data.site?.gc || "") ? `<a class="btnl" href="https://${data.site.gc}.goatcounter.com" target="_blank" rel="noopener">Xem thống kê lượt xem</a>` : ""}</div><p class="mu" style="margin-top:6px">Nên tải bản sao lưu trước những thay đổi lớn như gộp thể loại hay gỡ bộ truyện.</p><p class="mu" style="margin-top:6px">Trang chia sẻ giúp link từng bộ hiện đúng bìa, tên và tóm tắt khi dán lên Discord, Facebook. Bộ mới hoặc vừa sửa được tạo tự động; nút này dùng cho các bộ đăng từ trước.</p>
+<h4>Bảo trì</h4><div id="dsz" class="dsz">${szMini()}</div><p class="bkln">${bkLine()} "Tải bản sao lưu" lưu thông tin các bộ và bảng tên riêng. "Tải toàn bộ kho" tải cả nội dung chương và ảnh từ GitHub.</p><div class="acts" style="margin-top:8px"><button type="button" onclick="backupDl()">Tải bản sao lưu</button><button type="button" class="sec" onclick="bkRepoZip()" title="Tải cả chương và ảnh, dùng khi cần dựng lại web từ đầu">Tải toàn bộ kho (chương và ảnh)</button><button type="button" class="sec" onclick="$('#bk_in').click()">Khôi phục từ bản sao lưu</button><button type="button" class="sec" onclick="regenShare()">Tạo lại trang chia sẻ cho tất cả bộ</button>${/^[a-z0-9-]+$/i.test(data.site?.gc || "") ? `<a class="btnl" href="https://${data.site.gc}.goatcounter.com" target="_blank" rel="noopener">Xem thống kê lượt xem</a>` : ""}</div><p class="mu" style="margin-top:6px">Nên tải bản sao lưu trước những thay đổi lớn như gộp thể loại hay gỡ bộ truyện.</p><p class="mu" style="margin-top:6px">Trang chia sẻ giúp link từng bộ hiện đúng bìa, tên và tóm tắt khi dán lên Discord, Facebook. Bộ mới hoặc vừa sửa được tạo tự động; nút này dùng cho các bộ đăng từ trước.</p>
 ${drafts.length ? `<h4>Bản dịch đang dở trên máy này</h4><div class="lst">${drafts.map(({ s, slug, d }) => `<div class="li"><span class="lt">${esc(s ? s.title : slug)}${d.t ? ` <em>${esc(d.t)}</em>` : ""}</span><small>${(d.o || "").trim() ? d.o.trim().split(/\s+/).length.toLocaleString("vi-VN") + " chữ" : "chưa dịch"}</small><button type="button" class="sec sm" onclick="openDraft('${esc(slug)}')">Mở</button></div>`).join("")}</div>` : ""}
 <h4>Chương mới đăng</h4>${rec.length ? `<div class="lst">${rec.slice(0, 8).map(r => `<div class="li">${thumb(r.s)}<span class="lt">${esc(r.s.title)} <em>${r.c.vol ? esc(r.c.vol) + ", " : ""}${esc(r.c.t)}</em></span><small>${r.c.date || ""}</small><button type="button" class="sec sm" onclick="goEdit('${r.k}',${r.i},${r.j})">Sửa</button></div>`).join("")}</div>` : '<p class="mu">Chưa có chương nào. Tạo bộ truyện rồi đăng chương đầu tiên.</p>'}</div>
 <aside class="stp" id="stp" aria-label="Khu Sáng tác"></aside></div>`;
-  stPanel();
+  stPanel(); szPeek();
 }
 /* ===== Bảng Khu Sáng tác bên phải trang Tổng quan ===== */
 let STP = null;
@@ -1933,3 +1934,159 @@ const hkCode = async () => HKC || (HKC = await (await fetch("tools/hako-export.j
 $("#hk").addEventListener("toggle", async () => { if (!$("#hk").open) return; try { $("#hk_bm").href = "javascript:" + encodeURIComponent((await hkCode()) + "\nvoid 0") } catch (e) { log("❌ Chưa có file tools/hako-export.js trên web. Hãy tải đủ các file trong bản cập nhật lên GitHub.") } });
 $("#hk_bm").addEventListener("click", e => { e.preventDefault(); log("Hãy kéo nút Xuất từ Hako lên thanh dấu trang, rồi bấm nó khi đang mở trang bộ truyện trên Hako.") });
 $("#hk_copy").onclick = () => run(async () => { await navigator.clipboard.writeText(await hkCode()); done("✅ Đã sao chép mã. Mở trang bộ truyện trên Hako, bấm F12, vào Console, dán và bấm Enter.") });
+
+/* ===== Dung lượng kho ===== */
+const GB = 1024 ** 3, SZLIM = GB; // GitHub Pages: trang web tối đa 1 GB, kho nên dưới 1 GB
+const fmtB = n => n >= GB ? (n / GB).toFixed(2).replace(".", ",") + " GB" : n >= 1048576 ? (n / 1048576).toFixed(n >= 100 * 1048576 ? 0 : 1).replace(".", ",") + " MB" : Math.max(1, Math.round(n / 1024)) + " KB";
+let TREE = null, SZ = null, SZBUSY = null;
+async function repoTree(force) {
+  if (TREE && !force && Date.now() - TREE.at < 5 * 60e3) return TREE;
+  const ref = await ghx(`git/ref/heads/${encodeURIComponent(cfg.b)}`), c = await ghx(`git/commits/${ref.object.sha}`), t = await ghx(`git/trees/${c.tree.sha}?recursive=1`);
+  TREE = { at: Date.now(), head: ref.object.sha, files: t.tree.filter(x => x.type === "blob").map(x => ({ path: x.path, size: x.size || 0, sha: x.sha })), trunc: !!t.truncated }; SZ = null; return TREE;
+}
+function dataRefs(D = data) { // mọi đường dẫn file mà danh sách truyện đang dùng
+  const R = new Set(), base = siteBase(), walk = v => { if (typeof v === "string") { R.add(v); if (base && v.startsWith(base)) R.add(v.slice(base.length)); const m = /^https:\/\/[^/]+\.github\.io\/[^/]+\/(.+)$/.exec(v); if (m) R.add(m[1]) } else if (Array.isArray(v)) v.forEach(walk); else if (v && typeof v === "object") Object.values(v).forEach(walk) };
+  walk(D); return R;
+}
+const SZCAT = [["mg", "Ảnh manga"], ["ni", "Ảnh minh họa novel"], ["tx", "Chương chữ"], ["cv", "Ảnh bìa"], ["ui", "Giao diện, mã và dữ liệu"], ["ot", "Khác"]];
+function szCalc(T, X) { // X: bản danh sách truyện mới nhất trên GitHub (khi dọn), để không xóa nhầm file vừa đăng từ máy khác
+  const R = dataRefs(), nov = new Map(data.novels.map((s, i) => [s.slug, i])), mg = new Map(data.manga.map((s, i) => [s.slug, i])), xs = new Set();
+  if (X) { dataRefs(X).forEach(x => R.add(x)); (X.novels || []).forEach(s => xs.add("novels/" + s.slug)); (X.manga || []).forEach(s => xs.add("manga/" + s.slug)) }
+  const cat = {}, ser = new Map(), orph = []; let total = 0;
+  const own = (key, i, n) => { const id = key + "|" + i; ser.set(id, (ser.get(id) || 0) + n) };
+  const byRef = new Map(); for (const key of ["novels", "manga"]) data[key].forEach((s, i) => { const add = p => p && byRef.set(p, [key, i]); add(s.cover); Object.values(s.vc || {}).forEach(add); (s.chapters || []).forEach(c => { add(c.file); (c.pages || []).forEach(add) }) });
+  for (const f of T.files) {
+    const p = f.path, n = f.size; total += n; let c = "ot";
+    const m = /^(novels|manga)\/([^/]+)\/(.+)$/.exec(p);
+    if (m) {
+      c = m[1] === "manga" ? "mg" : /\.txt$/i.test(p) ? "tx" : "ni";
+      const idx = (m[1] === "manga" ? mg : nov).get(m[2]);
+      if (idx != null) own(m[1], idx, n);
+      const imgDir = m[1] === "novels" && /^img\//.test(m[3]);
+      if ((idx == null && !xs.has(m[1] + "/" + m[2])) || (!imgDir && !R.has(p))) orph.push(f);
+    } else if (/^images\/[^/]+$/.test(p)) {
+      c = "cv"; const r = byRef.get(p); if (r) own(r[0], r[1], n);
+      else if (!R.has(p) && /(-bia(-[0-9a-z]{6,})?|-[0-9a-z]{7,9})\.(jpe?g|png|webp)$/i.test(p)) orph.push(f);
+    } else if (/^(js|css|fonts|icons|img|truyen)\/|^[^/]+\.(html|js|json|xml|webmanifest|txt|md)$/i.test(p)) c = "ui";
+    cat[c] = (cat[c] || 0) + n;
+  }
+  const mgCh = data.manga.reduce((a, s) => a + s.chapters.filter(c => c.pages && c.pages.length).length, 0), mgAvg = mgCh ? (cat.mg || 0) / mgCh : 0;
+  return { total, cat, ser: [...ser.entries()].map(([id, n]) => { const [k, i] = id.split("|"); return { k, i: +i, s: data[k][+i], n } }).sort((a, b) => b.n - a.n), orph, mgAvg, trunc: T.trunc };
+}
+async function szGet(force) {
+  if (SZ && !force) return SZ;
+  if (!SZBUSY) SZBUSY = (async () => { try { const T = await repoTree(force); SZ = szCalc(T); try { const r = await fetch(`https://api.github.com/repos/${cfg.u}/${cfg.r}`, { cache: "no-store", headers: { Authorization: "Bearer " + cfg.t } }); if (r.ok) SZ.repoKB = (await r.json()).size } catch (e) {} return SZ } finally { SZBUSY = null } })();
+  return SZBUSY;
+}
+const szPct = n => Math.min(100, n / SZLIM * 100), szLv = n => n >= .9 * SZLIM ? "bad" : n >= .7 * SZLIM ? "warn" : "ok";
+function szBanner() { if (!SZ || SZ.total < .8 * SZLIM) return ""; return `<div class="bkwarn szwarn"><b>Trang web sắp đầy: ${fmtB(SZ.total)} trên 1 GB</b><span>GitHub Pages không nhận trang web lớn hơn 1 GB. Hãy dọn file không dùng, hoặc chuyển ảnh manga sang kho ảnh riêng.</span><button type="button" onclick="tab('hist');histOpen()">Xem dung lượng</button></div>` }
+function szMini() {
+  if (!SZ) return `<span class="mu">Đang tính dung lượng...</span>`;
+  return `<div class="szbar sm ${szLv(SZ.total)}"><i style="width:${szPct(SZ.total).toFixed(1)}%"></i></div><span>Dung lượng: <b>${fmtB(SZ.total)}</b> trên 1 GB${SZ.orph.length ? `, có ${fmtB(SZ.orph.reduce((a, f) => a + f.size, 0))} file không dùng` : ""}.</span> <button type="button" class="lnk" onclick="tab('hist');histOpen()">Xem chi tiết</button>`;
+}
+async function szPeek() { if (SZ || !cfg.t) return; try { await szGet(); const d = $("#dsz"); if (d) d.innerHTML = szMini(); if (SZ.total >= .8 * SZLIM) dash() } catch (e) { const d = $("#dsz"); if (d) d.innerHTML = `<span class="mu">Chưa tính được dung lượng (${esc(e.message)}).</span>` } }
+function szRender() {
+  const el = $("#sz"), S = SZ; if (!el || !S) return;
+  const left = Math.max(0, SZLIM - S.total), oSize = S.orph.reduce((a, f) => a + f.size, 0), top = S.ser.slice(0, 10), mx = top.length ? top[0].n : 1;
+  const fmtK = (k, s) => k === "manga" ? "Manga" : s.format === "Web Novel" ? "Web Novel" : "Light Novel";
+  el.innerHTML = `<div class="szhead"><div><b class="szbig">${fmtB(S.total)}</b><span class="mu"> trên 1 GB (${szPct(S.total).toFixed(0)}%)</span></div><span class="mu">Còn trống ${fmtB(left)}</span></div>
+<div class="szbar ${szLv(S.total)}" role="img" aria-label="Đã dùng ${szPct(S.total).toFixed(0)}%">${SZCAT.map(([k], j) => S.cat[k] ? `<i class="c${j}" style="width:${(S.cat[k] / SZLIM * 100).toFixed(2)}%"></i>` : "").join("")}</div>
+<div class="szleg">${SZCAT.filter(([k]) => S.cat[k]).map(([k, l]) => `<span><i class="c${SZCAT.findIndex(x => x[0] === k)}"></i>${l} <b>${fmtB(S.cat[k])}</b></span>`).join("")}</div>
+<p class="mu szn">${S.mgAvg ? `Mỗi chương manga hiện tốn trung bình ${fmtB(S.mgAvg)}, nên còn chỗ cho khoảng <b>${Math.floor(left / S.mgAvg).toLocaleString("vi-VN")} chương manga</b> nữa. ` : ""}GitHub Pages chỉ nhận trang web tối đa 1 GB. Chữ rất nhẹ, ảnh mới là thứ làm đầy kho.${S.repoKB ? ` Tính cả lịch sử thay đổi thì kho đang khoảng ${fmtB(S.repoKB * 1024)} (GitHub cập nhật con số này chậm).` : ""}${S.trunc ? " Kho có quá nhiều file nên con số có thể thiếu một phần." : ""}</p>
+<h4>Bộ tốn nhiều chỗ nhất</h4>${top.length ? `<div class="lst">${top.map(x => `<div class="li szli">${thumb(x.s)}<span class="lt">${esc(x.s.title)} <em>${fmtK(x.k, x.s)}, ${x.s.chapters.length} chương</em></span><span class="szm"><i style="width:${(x.n / mx * 100).toFixed(1)}%"></i></span><small>${fmtB(x.n)}</small></div>`).join("")}</div>` : `<p class="mu">Chưa có bộ nào.</p>`}
+<h4>File không còn dùng</h4>${S.orph.length ? `<p class="mu">${S.orph.length.toLocaleString("vi-VN")} file, tổng <b>${fmtB(oSize)}</b>: ảnh bìa cũ đã thay, chương đã gỡ hoặc đã đăng lại, file của bộ đã xóa. Dọn đi thì trang web nhẹ hơn. Nếu lỡ cần lại, dùng Khôi phục ở mục Lịch sử bên dưới: các file này được lấy lại cùng danh sách truyện của lúc đó.</p>
+<details class="szo"><summary>Xem danh sách</summary><ul>${S.orph.slice(0, 300).map(f => `<li><code>${esc(f.path)}</code> <small>${fmtB(f.size)}</small></li>`).join("")}${S.orph.length > 300 ? `<li class="mu">và ${S.orph.length - 300} file khác</li>` : ""}</ul></details>
+<div class="acts"><button type="button" id="sz_clean">Dọn ${S.orph.length.toLocaleString("vi-VN")} file không dùng</button></div>` : `<p class="mu">Không có file thừa.</p>`}`;
+  const b = $("#sz_clean"); if (b) b.onclick = szClean;
+}
+function szClean() {
+  if (WS.dirty) return log("❌ Hãy Lưu thay đổi hoặc Hoàn tác ở trang Bộ truyện trước");
+  const L = SZ.orph; if (!L.length || !confirm(`Xóa ${L.length} file không dùng (${fmtB(L.reduce((a, f) => a + f.size, 0))}) khỏi trang web?\n\nDanh sách truyện không thay đổi. Nếu cần lại, có thể lấy lại bằng Khôi phục ở mục Lịch sử.`)) return;
+  run(async () => {
+    const T = await repoTree(true), now = new Set(T.files.map(f => f.path)), cur = szCalc(T, await dataAt(T.head)).orph.map(f => f.path).filter(p => now.has(p)); // tính lại ngay trước khi xóa
+    if (!cur.length) { log("Không còn file nào cần dọn."); return }
+    for (let i = 0; i < cur.length; i += 2000) { STAGE.push(...cur.slice(i, i + 2000).map(path => ({ path, sha: null }))); log(`Đang dọn ${Math.min(i + 2000, cur.length)}/${cur.length} file...`); await flush(`Dọn ${cur.length} file không dùng`) }
+    TREE = null; SZ = null; await szGet(true); szRender(); dash(); HS = null; histLoad(); done(`✅ Đã dọn ${cur.length} file. Web cập nhật sau 1–2 phút.`);
+  });
+}
+
+/* ===== Lịch sử thay đổi và khôi phục ===== */
+let HS = null, HSPAGE = 1;
+const RAWC = new Map();
+async function rawAt(p, sha) { const k = sha + ":" + p; if (RAWC.has(k)) return RAWC.get(k); const r = await fetch(`https://api.github.com/repos/${cfg.u}/${cfg.r}/contents/${p}?ref=${sha}`, { cache: "no-store", headers: { Authorization: "Bearer " + cfg.t, Accept: "application/vnd.github.raw+json" } }); if (r.status === 404) { RAWC.set(k, null); return null } if (!r.ok) throw new Error("Không đọc được " + p + " (" + r.status + ")"); const t = await r.text(); RAWC.set(k, t); return t }
+const dataAt = async sha => { const t = await rawAt("data.json", sha); if (t == null) return null; const d = JSON.parse(t); for (const k of ["tips", "links", "novels", "manga", "videos", "projects"]) d[k] ??= []; d.site ??= {}; return d };
+const whenVN = iso => { const d = new Date(iso), z = n => String(n).padStart(2, "0"), t = z(d.getHours()) + ":" + z(d.getMinutes()), days = Math.floor((new Date().setHours(0, 0, 0, 0) - new Date(d).setHours(0, 0, 0, 0)) / 864e5); return days === 0 ? "hôm nay " + t : days === 1 ? "hôm qua " + t : `${t} ngày ${z(d.getDate())}/${z(d.getMonth() + 1)}${days > 300 || d.getFullYear() !== new Date().getFullYear() ? "/" + d.getFullYear() : ""}` };
+const jnorm = v => JSON.stringify(v, (k, x) => x && typeof x === "object" && !Array.isArray(x) ? Object.fromEntries(Object.keys(x).sort().filter(q => !(x[q] == null || x[q] === "" || x[q] === false || (Array.isArray(x[q]) && !x[q].length) || (typeof x[q] === "object" && !Array.isArray(x[q]) && !Object.keys(x[q]).length))).map(q => [q, x[q]])) : x); // so sánh bỏ qua ô trống
+function hdiff(A, B) { // những gì khác nhau từ A sang B, bằng lời dễ hiểu
+  const out = [], nm = (k, s) => s.title + (k === "manga" ? " (Manga)" : s.format === "Web Novel" ? " (Web Novel)" : ""), few = L => L.slice(0, 3).map(c => c.t).join(", ") + (L.length > 3 ? ` và ${L.length - 3} chương khác` : "");
+  const FL = { title: "tên", orig: "tên gốc", alts: "tên khác", author: "tác giả", artist: "họa sĩ", desc: "tóm tắt", cover: "ảnh bìa", status: "tình trạng", genres: "thể loại", country: "quốc gia", age: "giới hạn tuổi", rel: "bản chuyển thể", vc: "bìa tập", format: "loại truyện", src: "link gốc" };
+  for (const k of ["novels", "manga"]) {
+    const ma = new Map((A[k] || []).map(s => [s.slug, s])), mb = new Map((B[k] || []).map(s => [s.slug, s]));
+    for (const [sl, s] of mb) if (!ma.has(sl)) out.push(["add", `Thêm bộ ${nm(k, s)}${s.chapters.length ? `, ${s.chapters.length} chương` : ""}`]);
+    for (const [sl, s] of ma) if (!mb.has(sl)) out.push(["del", `Gỡ bộ ${nm(k, s)}${s.chapters.length ? `, ${s.chapters.length} chương` : ""}`]);
+    for (const [sl, b] of mb) {
+      const a = ma.get(sl); if (!a) continue;
+      const id = c => (c.vol || "") + "|" + c.t, full = c => id(c) + "|" + (c.file || (c.pages || []).join(",")) + "|" + (c.date || "");
+      const fa = new Set(a.chapters.map(full)), fb = new Set(b.chapters.map(full)), add = b.chapters.filter(c => !fa.has(full(c))), del = a.chapters.filter(c => !fb.has(full(c)));
+      const ida = new Set(del.map(id)), edit = add.filter(c => ida.has(id(c))), eid = new Set(edit.map(id)), add2 = add.filter(c => !eid.has(id(c))), del2 = del.filter(c => !eid.has(id(c)));
+      if (add2.length) out.push(["add", `${nm(k, b)}: thêm ${add2.length} chương (${few(add2)})`]);
+      if (del2.length) out.push(["del", `${nm(k, b)}: gỡ ${del2.length} chương (${few(del2)})`]);
+      if (edit.length) out.push(["mod", `${nm(k, b)}: sửa ${edit.length} chương (${few(edit)})`]);
+      if (!add.length && !del.length && a.chapters.map(full).join("\n") !== b.chapters.map(full).join("\n")) out.push(["mod", `${nm(k, b)}: đổi thứ tự chương`]);
+      const ch = Object.keys(FL).filter(f => jnorm({ v: a[f] }) !== jnorm({ v: b[f] }));
+      if (ch.length) out.push(["mod", `${nm(k, b)}: đổi ${ch.map(f => FL[f]).join(", ")}`]);
+    }
+  }
+  const OT = { tips: "Mẹo game", links: "Liên kết", videos: "Video", projects: "Dự án" };
+  for (const [k, l] of Object.entries(OT)) { const a = A[k] || [], b = B[k] || []; if (jnorm(a) !== jnorm(b)) out.push(["mod", a.length === b.length ? `${l}: sửa nội dung` : `${l}: ${a.length} → ${b.length} mục`]) }
+  if (jnorm(A.site || {}) !== jnorm(B.site || {})) out.push(["mod", "Đổi cài đặt trang web"]);
+  return out;
+}
+const hdHtml = L => L.length ? `<ul class="hdl">${L.map(([t, x]) => `<li class="${t}">${esc(x)}</li>`).join("")}</ul>` : `<p class="mu">Danh sách truyện không đổi.</p>`;
+function histOpen() { if (!cfg.t) return; if (!SZ) { $("#sz").innerHTML = `<p class="mu">Đang tính dung lượng...</p>`; szGet().then(szRender).catch(e => $("#sz").innerHTML = `<p class="mu">❌ Chưa tính được dung lượng: ${esc(e.message)}</p>`) } else szRender(); if (!HS) histLoad() }
+async function histLoad(more) {
+  const el = $("#hs"); if (!el) return;
+  if (!more) { HS = []; HSPAGE = 1; el.innerHTML = `<p class="mu">Đang tải lịch sử...</p>` }
+  try {
+    const L = await ghx(`commits?sha=${encodeURIComponent(cfg.b)}&per_page=30&page=${HSPAGE}`); HSPAGE++;
+    HS.push(...L.map(c => ({ sha: c.sha, msg: (c.commit.message || "").split("\n")[0], at: c.commit.author?.date || c.commit.committer?.date, par: c.parents?.[0]?.sha || null })));
+    el.innerHTML = HS.map((c, i) => `<div class="hsi" data-h="${i}"><div class="hst"><b>${esc(c.msg || "(không ghi chú)")}</b><small>${whenVN(c.at)[0].toUpperCase() + whenVN(c.at).slice(1)}${i === 0 ? ", bản đang dùng" : ""}</small></div><div class="hsa"><button type="button" class="sec sm" data-hv="${i}">Xem thay đổi</button>${i ? `<button type="button" class="sec sm" data-hr="${i}">Khôi phục về lúc này</button>` : ""}</div><div class="hsd" hidden></div></div>`).join("") || `<p class="mu">Chưa có lần lưu nào.</p>`;
+    $("#hs_more").hidden = L.length < 30;
+  } catch (e) { el.innerHTML = `<p class="mu">❌ Không tải được lịch sử: ${esc(e.message)}</p>` }
+}
+$("#hs").addEventListener("click", async e => {
+  const bv = e.target.closest("[data-hv]"), br = e.target.closest("[data-hr]");
+  if (bv) {
+    const c = HS[+bv.dataset.hv], box = bv.closest(".hsi").querySelector(".hsd");
+    if (!box.hidden) { box.hidden = true; bv.textContent = "Xem thay đổi"; return }
+    box.hidden = false; bv.textContent = "Ẩn"; box.innerHTML = `<p class="mu">Đang so sánh...</p>`;
+    try {
+      const info = await ghx(`commits/${c.sha}`), F = info.files || [], cnt = { tx: 0, im: 0, ot: 0 };
+      F.forEach(f => /\.txt$/i.test(f.filename) ? cnt.tx++ : /\.(jpe?g|png|webp|gif|avif)$/i.test(f.filename) ? cnt.im++ : cnt.ot++);
+      let body = "";
+      if (F.some(f => f.filename === "data.json")) { const [a, b] = await Promise.all([c.par ? dataAt(c.par) : Promise.resolve({}), dataAt(c.sha)]); body = hdHtml(hdiff(a || {}, b || {})) }
+      const del = F.filter(f => f.status === "removed").length;
+      box.innerHTML = body + `<p class="mu hsf">${F.length} file thay đổi${cnt.tx ? `, ${cnt.tx} file chương` : ""}${cnt.im ? `, ${cnt.im} ảnh` : ""}${del ? `, ${del} file bị xóa` : ""}.</p>`;
+    } catch (err) { box.innerHTML = `<p class="mu">❌ ${esc(err.message)}</p>` }
+    return;
+  }
+  if (br) histRestore(HS[+br.dataset.hr]);
+});
+$("#hs_more").onclick = () => histLoad(true);
+$("#sz_re").onclick = () => run(async () => { $("#sz").innerHTML = `<p class="mu">Đang tính lại...</p>`; await szGet(true); szRender(); dash(); log("✅ Đã tính lại dung lượng.") });
+function histRestore(c) {
+  if (WS.dirty) return log("❌ Hãy Lưu thay đổi hoặc Hoàn tác ở trang Bộ truyện trước");
+  run(async () => {
+    log("Đang đọc bản lúc " + whenVN(c.at) + "...");
+    const old = await dataAt(c.sha); if (!old) throw new Error("Lần lưu này chưa có danh sách truyện (data.json)");
+    const D = hdiff(data, old);
+    if (!confirm(`Đưa danh sách truyện và cài đặt trang web về lúc ${whenVN(c.at)} ("${c.msg}")?\n\n${D.length ? D.slice(0, 12).map(x => "• " + x[1]).join("\n") + (D.length > 12 ? `\n• và ${D.length - 12} thay đổi khác` : "") : "Danh sách truyện không đổi."}\n\nCác file chương và ảnh của lúc đó mà nay đã bị dọn sẽ được lấy lại. Bản hiện tại không mất: lần khôi phục này cũng nằm trong lịch sử, nên có thể quay lại.`)) { log("Đã hủy khôi phục."); return }
+    log("Đang khôi phục...");
+    const oc = await ghx(`git/commits/${c.sha}`), ot = await ghx(`git/trees/${oc.tree.sha}?recursive=1`), cur = await repoTree(true), have = new Set(cur.files.map(f => f.path));
+    const back = ot.tree.filter(x => x.type === "blob" && /^(novels|manga|images)\//.test(x.path) && !have.has(x.path));
+    back.forEach(x => STAGE.push({ path: x.path, sha: x.sha }));
+    data = old; await save(`Khôi phục về lúc ${whenVN(c.at)}${back.length ? `, lấy lại ${back.length} file` : ""}`);
+    TREE = null; SZ = null; fillSel(); manage(); siteLoad(); relUI(); try { glLoad() } catch (e) {}
+    HS = null; histOpen(); done(`✅ Đã khôi phục về lúc ${whenVN(c.at)}${back.length ? `, lấy lại ${back.length} file chương và ảnh` : ""}. Web cập nhật sau 1–2 phút.`);
+  });
+}

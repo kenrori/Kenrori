@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="fonts/beaufort-medium.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="fonts/beaufort-bold.woff" as="font" type="font/woff" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/admin.css?v=20261129e">
+<link rel="stylesheet" href="css/admin.css?v=20261129f">
 </head>
 <body>
 <div id="gate"><div class="gc">
@@ -269,6 +269,10 @@
 <p class="mu" id="e_mn" hidden>Ảnh bị bỏ chỉ không hiện trên web nữa, file vẫn còn trong repo.</p>
 <div class="acts"><button>Lưu thay đổi</button><button type="button" class="sec" id="e_pv">Xem trước</button><button type="button" id="e_cancel" class="sec">Hủy</button></div></form>
 
+<div class="panel" id="p-hist"><h3>Dung lượng và lịch sử</h3>
+<section class="szs"><div class="szt"><h4>Dung lượng trang web</h4><button type="button" class="sec sm" id="sz_re">Tính lại</button></div><div id="sz"></div></section>
+<section class="hss"><h4>Lịch sử thay đổi</h4><p class="mu">Mỗi lần lưu trong trang quản trị là một mục ở đây. Bấm Xem thay đổi để biết lần đó đổi gì. Khôi phục về lúc này đưa danh sách truyện và cài đặt trang web về đúng lúc đó, và lấy lại file chương, ảnh đã bị dọn. Khôi phục cũng là một lần lưu mới, nên luôn quay lại được.</p>
+<div id="hs" class="hsl"></div><div class="acts"><button type="button" class="sec" id="hs_more" hidden>Xem thêm</button></div></section></div>
 <div class="panel" id="p-man"><h3>Quản lý</h3><p class="mu">Gỡ một mục chỉ ẩn nó khỏi web, file ảnh và chương vẫn còn trong repo.</p>
 <input class="msearch" id="m_q" type="search" placeholder="Lọc theo tên truyện, mẹo, dự án..."><div id="manage"></div>
 <details class="ms" id="gtool" style="margin-top:22px"><summary><span class="mti"><b>Thể loại</b><small>Đổi tên hoặc gộp thể loại cho tất cả các bộ cùng lúc</small></span></summary><div style="padding:4px 12px 14px"><p class="mu">Gõ tên mới rồi bấm Đổi tên. Nếu tên mới trùng một thể loại có sẵn, hai thể loại sẽ được gộp làm một. Để trống tên mới và bấm Gỡ để bỏ thể loại khỏi mọi bộ.</p><div id="g_list" class="lst"></div></div></details></div>
@@ -277,8 +281,8 @@
 <div id="log" class="fade"></div>
 <div id="pvw" hidden role="dialog" aria-label="Xem trước chương"><div class="pvb"><div class="pvh"><b>Xem trước</b><span id="pv_note"></span><button type="button" class="sec sm" id="pv_x">Đóng</button></div><div class="pvc" id="pv_c"></div></div></div>
 <input type="file" id="bk_in" accept=".json,application/json" hidden>
-<script src="js/admin.js?v=20261129e"></script>
-<script src="js/game.js?v=20261129e"></script>
-<script src="js/admin-game.js?v=20261129e"></script>
+<script src="js/admin.js?v=20261129f"></script>
+<script src="js/game.js?v=20261129f"></script>
+<script src="js/admin-game.js?v=20261129f"></script>
 </body>
 </html>
