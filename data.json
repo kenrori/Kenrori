@@ -2782,6 +2782,46 @@
    "prog": "",
    "sched": "",
    "cover": "images/ore-ni-trauma-wo-ataeta-joshi-tachi-ga-chirachira-mitekuru-kedo-zannen-desuga-teokure-desu-bia.jpg"
+  },
+  {
+   "slug": "taida-na-akujoku-kizoku-ni-tensei-shita-ore-scenario-wo-bukkowashitara-kikakugai-no-maryoku-de-saikyou-ni-natta",
+   "chapters": [],
+   "title": "Taida Na Akujoku Kizoku Ni Tensei Shita Ore, Scenario Wo Bukkowashitara Kikakugai No Maryoku De Saikyou Ni Natta",
+   "orig": "怠惰な悪辱貴族に転生した俺、シナリオをぶっ壊したら規格外の魔力で最凶になった",
+   "alts": [
+    "Reborn as an Aristocratic Scoundrel, I Broke the Game and Mastered Magic Beyond Limits!",
+    "Reincarnated as the Lazy and Villainous Noble, I Broke the Scenario and Became the Most Formidable with Extraordinary Magic",
+    "나태한 악욕 귀족으로 전생한 나, 시나리오를 박살 냈더니 월등한 마력으로 최흉이 되었다",
+    "Chuyển sinh thành quý tộc phản diện và lười biếng, tôi trở thành kẻ mạnh nhất học viện"
+   ],
+   "artist": "Douma Oda",
+   "author": "Kikuchi Kousei",
+   "country": "",
+   "age": "",
+   "status": "Đang dịch",
+   "genres": [
+    "Hành động",
+    "Isekai",
+    "Fantasy",
+    "Hài hước",
+    "Harem",
+    "Comedy",
+    "Tragedy",
+    "Phiêu lưu",
+    "Drama",
+    "Romance"
+   ],
+   "desc": "",
+   "src": "https://manga.nicovideo.jp/comic/69646",
+   "team": [
+    {
+     "r": "",
+     "n": "Exist In This World"
+    }
+   ],
+   "prog": "",
+   "sched": "",
+   "cover": "images/taida-na-akujoku-kizoku-ni-tensei-shita-ore-scenario-wo-bukkowashitara-kikakugai-no-maryoku-de-saikyou-ni-natta-bia.jpg"
   }
  ],
  "videos": [
@@ -3224,5 +3264,5 @@
    }
   ]
  },
- "rev": 1795824400787
+ "rev": 1795825297725
 }
