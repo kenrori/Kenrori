@@ -236,6 +236,120 @@ function volList() {
 }
 $("#c_ser").onchange = chapUI;
 
+/* ===== Lấy thông tin bộ truyện từ AniList, MyAnimeList, MangaDex, Syosetu, NovelUpdates ===== */
+const MTG = { Action: ["Hành động"], Adventure: ["Phiêu lưu"], Comedy: ["Hài hước", "Comedy"], Drama: ["Drama"], Ecchi: ["Ecchi"], Fantasy: ["Fantasy"], Horror: ["Kinh dị"], "Mahou Shoujo": ["Ma pháp thiếu nữ"], Mecha: ["Mecha"], Music: ["Âm nhạc"], Mystery: ["Bí ẩn"], Psychological: ["Tâm lý"], Romance: ["Lãng mạn"], "Sci-Fi": ["Sci-fi"], "Sci-fi": ["Sci-fi"], "Slice of Life": ["Đời thường", "Slice of Life"], Sports: ["Thể thao"], Supernatural: ["Siêu nhiên"], Thriller: ["Giật gân"], Tragedy: ["Bi kịch"], Historical: ["Lịch sử"], "School Life": ["Học đường"], School: ["Học đường"], Harem: ["Harem"], "Gender Bender": ["Gender Bender"], "Martial Arts": ["Võ thuật"], Isekai: ["Isekai"], Reincarnation: ["Chuyển sinh"], Magic: ["Phép thuật"], Cultivation: ["Tu tiên"], Xianxia: ["Tiên hiệp"], Xuanhuan: ["Huyền huyễn"], Wuxia: ["Võ hiệp"], Seinen: ["Seinen"], Shounen: ["Shounen"], Shoujo: ["Shoujo"], Josei: ["Josei"], Mature: ["Mature"], Adult: ["Adult"], Smut: ["Smut"], Yuri: ["Yuri"], Yaoi: ["Yaoi"], "Boys' Love": ["Yaoi"], "Girls' Love": ["Yuri"], Villainess: ["Phản diện"], "Time Travel": ["Xuyên không"], Gore: ["Gore"], "Office Workers": ["Công sở"], Military: ["Quân sự"], Medical: ["Y khoa"], Cooking: ["Ẩm thực"], Monsters: ["Quái vật"], Vampires: ["Ma cà rồng"], Survival: ["Sinh tồn"] };
+const mtHave = () => { const S = new Set(); for (const k of Object.values(KEYS)) for (const s of data[k] || []) (s.genres || []).forEach(g => S.add(g)); (data.site.genres || []).forEach(g => g && g.name && S.add(g.name)); return S };
+function mtGenres(L) { const H = mtHave(), out = []; for (const g of L) { const c = MTG[g] || MTG[Object.keys(MTG).find(k => k.toLowerCase() === String(g).toLowerCase())] || [g]; const pick = c.find(x => H.has(x)) || c[0]; if (pick && !out.includes(pick)) out.push(pick) } return out }
+const mtClean = t => String(t || "").replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, "").replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/\(Source:[^)]*\)/gi, "").replace(/\[Written by[^\]]*\]/gi, "").replace(/\r/g, "").replace(/\n{3,}/g, "\n\n").trim();
+async function mtProxy(url, bin) { // qua hàm "meta" trên Supabase, vì MangaDex và NovelUpdates không cho web khác lấy trực tiếp
+  const c = (data.site && data.site.sb) || {}; if (!/^https:\/\//.test(c.url || "") || !c.key) throw Object.assign(new Error("Chưa kết nối Supabase (Cài đặt trang web)"), { setup: true });
+  let r; try { r = await fetch(c.url.replace(/\/+$/, "") + "/functions/v1/meta", { method: "POST", headers: { apikey: c.key, Authorization: "Bearer " + c.key, "Content-Type": "application/json" }, body: JSON.stringify({ url, bin: !!bin }) }) } catch (e) { throw Object.assign(new Error("Không gọi được hàm meta trên Supabase"), { setup: true }) }
+  if (r.status === 404) throw Object.assign(new Error("Chưa cài hàm meta trên Supabase"), { setup: true });
+  const j = await r.json().catch(() => null); if (!r.ok || !j) throw new Error((j && j.error) || "Hàm meta báo lỗi " + r.status);
+  if (j.status >= 400) throw Object.assign(new Error(`Trang nguồn trả lỗi ${j.status}`), { st: j.status });
+  return j;
+}
+const mtSetupMsg = () => 'Để lấy từ MangaDex và NovelUpdates, cần cài hàm nhỏ tên <b>meta</b> trên Supabase một lần (xem file <code>lay-thong-tin.md</code>). AniList, MyAnimeList và Syosetu dùng được ngay.';
+async function mtAniList(v) {
+  const q = `query($id:Int,$mal:Int,$q:String){Page(perPage:8){media(id:$id,idMal:$mal,search:$q,type:MANGA,sort:SEARCH_MATCH){id idMal format status countryOfOrigin isAdult siteUrl startDate{year} title{romaji english native} synonyms description(asHtml:false) genres tags{name rank isMediaSpoiler} coverImage{extraLarge large} staff(perPage:12){edges{role node{name{full}}}}}}}`;
+  const r = await fetch("https://graphql.anilist.co", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ query: q, variables: v }) });
+  const j = await r.json().catch(() => null); if (!r.ok || !j || j.errors) throw new Error(r.status === 429 ? "AniList đang giới hạn lượt, thử lại sau 1 phút" : (j && j.errors && j.errors[0].message) || "AniList báo lỗi " + r.status);
+  return j.data.Page.media || [];
+}
+function mtFromAni(m) {
+  const st = (m.staff && m.staff.edges) || [], who = rx => [...new Set(st.filter(e => rx.test(e.role)).map(e => e.node.name.full))];
+  const fmt = m.format === "NOVEL" ? "novel" : "manga", cc = { JP: "jp", KR: "kr", CN: "cn", TW: "tw" }[m.countryOfOrigin] || "";
+  const tags = (m.tags || []).filter(t => !t.isMediaSpoiler && t.rank >= 65 && MTG[t.name]).map(t => t.name);
+  return { title: m.title.romaji || m.title.english || "", orig: m.title.native || "", alts: [m.title.english, m.title.romaji, ...(m.synonyms || [])].filter(Boolean), author: who(/story|original|author|creator/i), artist: who(/art|illustration|character design/i).filter(x => x), genres: mtGenres([...(m.genres || []), ...tags]), desc: mtClean(m.description), cover: (m.coverImage && (m.coverImage.extraLarge || m.coverImage.large)) || "", country: cc, adult: !!m.isAdult, kind: fmt, src: m.siteUrl, from: "AniList" };
+}
+async function mtMangaDex(id) {
+  const j = JSON.parse((await mtProxy(`https://api.mangadex.org/manga/${id}?includes[]=author&includes[]=artist&includes[]=cover_art`)).text || "{}"); const d = j.data; if (!d) throw new Error("MangaDex không trả dữ liệu");
+  const a = d.attributes, R = d.relationships || [], pick = o => o && (o.vi || o.en || o["ja-ro"] || Object.values(o)[0]) || "";
+  const alts = (a.altTitles || []).map(o => Object.entries(o)[0]), byLang = l => (alts.find(([k]) => k === l) || [])[1];
+  const native = byLang("ja") || byLang("ko") || byLang("zh") || byLang("zh-hk") || "", vi = byLang("vi");
+  const cv = R.find(x => x.type === "cover_art"), cc = { ja: "jp", ko: "kr", zh: "cn", "zh-hk": "cn", vi: "vn", en: "us" }[a.originalLanguage] || "";
+  const tags = (a.tags || []).map(t => t.attributes && t.attributes.name && t.attributes.name.en).filter(Boolean);
+  return { title: pick(a.title), orig: native, alts: [...new Set([vi, ...alts.filter(([k]) => /^(en|ja-ro|ko-ro|zh-ro|vi)$/.test(k)).map(x => x[1]), pick(a.title)].filter(Boolean))], author: R.filter(x => x.type === "author" && x.attributes).map(x => x.attributes.name), artist: R.filter(x => x.type === "artist" && x.attributes).map(x => x.attributes.name), genres: mtGenres(tags), desc: mtClean((a.description && (a.description.vi || a.description.en)) || ""), descVi: !!(a.description && a.description.vi), cover: cv && cv.attributes ? `https://uploads.mangadex.org/covers/${id}/${cv.attributes.fileName}.512.jpg` : "", coverProxy: true, country: cc, adult: /erotica|pornographic/.test(a.contentRating), age16: a.contentRating === "suggestive", kind: "manga", src: `https://mangadex.org/title/${id}`, from: "MangaDex", viTitle: vi };
+}
+function mtJsonp(url) { return new Promise((ok, no) => { const cb = "mtcb" + Date.now().toString(36), sc = document.createElement("script"), t = setTimeout(() => { done(); no(new Error("Syosetu không phản hồi")) }, 15000); const done = () => { clearTimeout(t); delete window[cb]; sc.remove() }; window[cb] = d => { done(); ok(d) }; sc.onerror = () => { done(); no(new Error("Không gọi được Syosetu")) }; sc.src = url + "&callback=" + cb; document.head.appendChild(sc) }) }
+async function mtSyosetu(nc, r18) {
+  const d = await mtJsonp(`https://api.syosetu.com/${r18 ? "novel18api" : "novelapi"}/api/?out=jsonp&ncode=${nc}&of=t-w-s-g-k-e-ga-nt`); const x = d && d[1]; if (!x) throw new Error("Không tìm thấy truyện này trên Syosetu");
+  const G = { 101: ["Romance", "Isekai"], 102: ["Romance"], 201: ["Fantasy"], 202: ["Fantasy"], 302: ["Drama"], 303: ["Historical"], 304: ["Mystery"], 305: ["Horror"], 306: ["Action"], 307: ["Comedy"], 401: ["Sci-Fi"], 402: ["Sci-Fi"], 403: ["Sci-Fi"] }[x.genre] || [];
+  const kw = String(x.keyword || ""), extra = [/異世界/.test(kw) && "Isekai", /転生/.test(kw) && "Reincarnation", /ハーレム/.test(kw) && "Harem", /学園/.test(kw) && "School Life", /恋愛|ラブコメ/.test(kw) && "Romance", /ざまぁ/.test(kw) && "Drama"].filter(Boolean);
+  return { title: "", orig: x.title, alts: [], author: [x.writer].filter(Boolean), artist: [], genres: mtGenres([...G, ...extra]), desc: mtClean(x.story), cover: "", country: "jp", adult: !!r18, kind: "webnovel", src: `https://${r18 ? "novel18" : "ncode"}.syosetu.com/${nc}/`, from: "Syosetu", jaDesc: true };
+}
+function mtNUhtml(html, url) {
+  const D = new DOMParser().parseFromString(html, "text/html"), T = s => (D.querySelector(s) || {}).textContent || "", A = s => [...D.querySelectorAll(s)].map(x => x.textContent.trim()).filter(Boolean);
+  const title = T(".seriestitlenu").trim(); if (!title) throw new Error("Không đọc được trang NovelUpdates");
+  const asc = D.querySelector("#editassociated"), alts = asc ? asc.innerHTML.split(/<br\s*\/?>/i).map(mtClean).filter(Boolean) : [], type = T("#showtype");
+  const lang = (/\((JP|KR|CN|TW)\)/.exec(type) || [])[1] || ({ Japanese: "JP", Korean: "KR", Chinese: "CN" })[T("#showlang").trim()] || "";
+  const native = alts.find(a => /[぀-ヿ㐀-鿿가-힯]/.test(a)) || "", img = D.querySelector(".seriesimg img, .serieseditimg img");
+  return { title, orig: native, alts: alts.filter(a => a !== native), author: A("#showauthors a"), artist: A("#showartists a"), genres: mtGenres(A("#seriesgenre a")), desc: mtClean((D.querySelector("#editdescription") || {}).innerHTML || ""), cover: img ? img.getAttribute("src") : "", coverProxy: true, country: { JP: "jp", KR: "kr", CN: "cn", TW: "tw" }[lang] || "", adult: A("#seriesgenre a").some(g => /^(Adult|Smut)$/.test(g)), age16: A("#seriesgenre a").includes("Mature") || A("#seriesgenre a").includes("Ecchi"), kind: /web novel/i.test(type) ? "webnovel" : "novel", src: url, from: "NovelUpdates" };
+}
+function mtNUtext(txt, url) { // dán chữ chép từ trang NovelUpdates (Ctrl+A, Ctrl+C)
+  const L = txt.replace(/\r/g, "").split("\n").map(x => x.trim()), H = ["Type", "Genre", "Tags", "Rating", "Language", "Author(s)", "Artist(s)", "Year", "Status in COO", "Licensed (in English)", "Completely Translated", "Original Publisher", "English Publisher", "Release Frequency", "Associated Names", "Description", "Related Series", "Recommendations", "Latest Release"];
+  const at = h => L.findIndex(x => x === h), sec = h => { const i = at(h); if (i < 0) return []; let j = i + 1; while (j < L.length && !H.includes(L[j])) j++; return L.slice(i + 1, j).filter(Boolean) };
+  const NUG = ["Action", "Adult", "Adventure", "Comedy", "Drama", "Ecchi", "Fantasy", "Gender Bender", "Harem", "Historical", "Horror", "Josei", "Martial Arts", "Mature", "Mecha", "Mystery", "Psychological", "Romance", "School Life", "Sci-fi", "Seinen", "Shoujo Ai", "Shoujo", "Shounen Ai", "Shounen", "Slice of Life", "Smut", "Sports", "Supernatural", "Tragedy", "Wuxia", "Xianxia", "Xuanhuan", "Yaoi", "Yuri"];
+  const gl = sec("Genre").join(" "), gs = NUG.filter(g => new RegExp("(^|\\s)" + g.replace(/ /g, "\\s+") + "(\\s|$)", "i").test(gl));
+  const alts = sec("Associated Names"), native = alts.find(a => /[぀-ヿ㐀-鿿가-힯]/.test(a)) || "", type = sec("Type").join(" "), lang = sec("Language").join(" ");
+  const ti = at("Type"), title = ti > 0 ? L.slice(0, ti).filter(Boolean).filter(x => !/^(Series|Novel Updates|Home|Login|Register|Search)$/i.test(x)).pop() || "" : "";
+  if (!alts.length && !gs.length && !sec("Description").length) throw new Error("Không nhận ra nội dung trang NovelUpdates. Hãy chép cả trang (Ctrl+A rồi Ctrl+C).");
+  return { title, orig: native, alts: alts.filter(a => a !== native), author: sec("Author(s)"), artist: sec("Artist(s)").filter(x => !/^N\/A$/i.test(x)), genres: mtGenres(gs), desc: sec("Description").join("\n\n"), cover: "", country: /japan/i.test(lang) ? "jp" : /korea/i.test(lang) ? "kr" : /chinese/i.test(lang) ? "cn" : "", adult: gs.some(g => /^(Adult|Smut)$/.test(g)), age16: gs.includes("Mature") || gs.includes("Ecchi"), kind: /web novel/i.test(type) ? "webnovel" : "novel", src: url || "", from: "NovelUpdates" };
+}
+async function mtCoverBlob(M) {
+  if (!M.cover) return null;
+  if (!M.coverProxy) { try { const r = await fetch(M.cover); if (r.ok) return await r.blob() } catch (e) {} }
+  try { const j = await mtProxy(M.cover, true); if (j.b64) { const b = Uint8Array.from(atob(j.b64), c => c.charCodeAt(0)); return new Blob([b], { type: j.type || "image/jpeg" }) } } catch (e) {}
+  return null;
+}
+async function mtApply(M) {
+  const over = $("#mt_over").checked, set = (id, v) => { const el = $("#" + id); if (!el || v == null || v === "" || (Array.isArray(v) && !v.length)) return false; if (!over && String(el.value).trim()) return false; el.value = Array.isArray(v) ? v.join(id === "s_alts" ? "\n" : ", ") : v; return true };
+  const did = [];
+  if (!$("#s_title").value.trim() || over) { if (set("s_title", M.title)) did.push("tên truyện") }
+  if (set("s_orig", M.orig)) did.push("tên gốc");
+  const alts = [...new Set(M.alts.filter(a => a && a !== $("#s_title").value.trim() && a !== M.orig))]; if (set("s_alts", alts)) did.push("tên khác");
+  if (set("s_author", M.author.join(", "))) did.push("tác giả"); if (set("s_artist", M.artist.join(", "))) did.push("họa sĩ");
+  if (set("s_genres", M.genres)) { did.push("thể loại"); try { gChips() } catch (e) {} }
+  if (set("s_src", M.src)) did.push("link gốc");
+  if (M.country && (!$("#s_country").value || over)) { $("#s_country").value = M.country; did.push("quốc gia") }
+  if ((M.adult || M.age16) && (!$("#s_age").value || over)) { $("#s_age").value = M.adult ? "18" : "16"; did.push("giới hạn tuổi") }
+  if (!$("#s_slug").value.trim() && $("#s_kind")) $("#s_kind").value = M.kind;
+  let desc = M.desc;
+  if (desc && $("#mt_ai").checked && !M.descVi && PROV.some(p => p.on)) {
+    log("Đang dịch tóm tắt sang tiếng Việt...");
+    try { desc = (await gem(`Dịch phần giới thiệu truyện sau sang tiếng Việt tự nhiên, giữ nguyên tên riêng theo cách đọc thông dụng (tên Nhật để romaji, tên Trung để Hán Việt). Chỉ trả về bản dịch, không thêm lời dẫn.\n\n${desc}`)).trim() } catch (e) { log("Chưa dịch được tóm tắt: " + e.message) }
+  }
+  if (set("s_desc", desc)) did.push("tóm tắt");
+  if (M.cover && (!$("#s_cover").files.length || over)) {
+    log("Đang lấy ảnh bìa..."); const b = await mtCoverBlob(M);
+    if (b) { const dt = new DataTransfer(); dt.items.add(new File([b], "bia." + ((b.type.split("/")[1] || "jpg").replace("jpeg", "jpg")), { type: b.type || "image/jpeg" })); $("#s_cover").files = dt.files; cvPrev(URL.createObjectURL(b)); did.push("ảnh bìa") }
+    else if (!M.coverProxy) { $("#mt_cover").value = M.cover; cvPrev(M.cover); did.push("ảnh bìa (dùng link trực tiếp)") }
+  }
+  return did;
+}
+function mtPick(L) {
+  $("#mt_res").innerHTML = `<p class="mu">Chọn đúng bộ:</p><div class="mtl">${L.map((m, i) => `<button type="button" class="mti" data-i="${i}">${m.coverImage && m.coverImage.large ? `<img src="${esc(m.coverImage.large)}" alt="" loading="lazy">` : "<span></span>"}<span><b>${esc(m.title.romaji || m.title.english || "")}</b><small>${esc([m.format === "NOVEL" ? "Light Novel" : m.format === "ONE_SHOT" ? "Oneshot" : { KR: "Manhwa", CN: "Manhua", TW: "Manhua" }[m.countryOfOrigin] || "Manga", m.startDate && m.startDate.year, m.title.native].filter(Boolean).join(", "))}</small></span></button>`).join("")}</div>`;
+  $("#mt_res").querySelectorAll(".mti").forEach(b => b.onclick = () => run(async () => { const M = mtFromAni(L[+b.dataset.i]); $("#mt_res").innerHTML = ""; const did = await mtApply(M); mtDone(M, did) }));
+}
+function mtDone(M, did) { $("#mt_res").innerHTML = `<p class="mtok">Đã điền từ ${esc(M.from)}: ${did.length ? did.join(", ") : "không có ô nào cần điền (bật Ghi đè nếu muốn thay)"}. Kiểm tra lại, đặt tên tiếng Việt nếu cần, rồi bấm Lưu.</p>`; done(`✅ Đã lấy thông tin từ ${M.from}.`) }
+function mtPaste(url, why) {
+  $("#mt_res").innerHTML = `<div class="mtpaste"><p>${why} Cách khác: mở trang NovelUpdates của bộ đó, bấm <b>Ctrl+A</b> rồi <b>Ctrl+C</b>, sau đó dán vào ô dưới đây.</p><textarea id="mt_txt" placeholder="Dán toàn bộ chữ của trang NovelUpdates vào đây"></textarea><button type="button" id="mt_txtgo">Đọc nội dung đã dán</button></div>`;
+  $("#mt_txtgo").onclick = () => run(async () => { const M = mtNUtext($("#mt_txt").value, url); const did = await mtApply(M); mtDone(M, did) });
+}
+$("#mt_go").onclick = () => run(async () => {
+  const q = $("#mt_q").value.trim(); if (!q) throw new Error("Dán link hoặc gõ tên truyện"); $("#mt_res").innerHTML = ""; let m, M = null;
+  if ((m = /anilist\.co\/(?:manga|anime)\/(\d+)/.exec(q))) { const L = await mtAniList({ id: +m[1] }); if (!L.length) throw new Error("Không tìm thấy trên AniList"); M = mtFromAni(L[0]) }
+  else if ((m = /myanimelist\.net\/manga\/(\d+)/.exec(q))) { const L = await mtAniList({ mal: +m[1] }); if (!L.length) throw new Error("AniList chưa có bộ này. Thử dán link AniList."); M = mtFromAni(L[0]) }
+  else if ((m = /mangadex\.org\/title\/([0-9a-f-]{36})/i.exec(q))) { try { M = await mtMangaDex(m[1]) } catch (e) { if (e.setup) { $("#mt_res").innerHTML = `<p class="mtwarn">${mtSetupMsg()}</p>`; throw e } throw e } }
+  else if ((m = /(ncode|novel18)\.syosetu\.com\/(n\w+)/i.exec(q))) M = await mtSyosetu(m[2].toLowerCase(), m[1].toLowerCase() === "novel18");
+  else if (/novelupdates\.com\/series\//i.test(q)) {
+    try { M = mtNUhtml((await mtProxy(q.split("#")[0])).text || "", q) } catch (e) { mtPaste(q, e.setup ? "Chưa cài hàm meta trên Supabase nên chưa lấy tự động được." : "NovelUpdates đang chặn lấy tự động (" + e.message + ")."); return log("Dán nội dung trang NovelUpdates để tiếp tục.") }
+  }
+  else if (/^https?:\/\//.test(q)) throw new Error("Chưa hỗ trợ trang này. Dùng link AniList, MyAnimeList, MangaDex, Syosetu hoặc NovelUpdates.");
+  else { const L = await mtAniList({ q }); if (!L.length) throw new Error("Không tìm thấy trên AniList. Thử tên tiếng Anh hoặc romaji."); if (L.length > 1) { mtPick(L); return log("Chọn đúng bộ trong danh sách.") } M = mtFromAni(L[0]) }
+  const did = await mtApply(M); mtDone(M, did);
+});
+$("#mt_q").onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); $("#mt_go").click() } };
 /* ===== Liên kết các bản khác của cùng tác phẩm ===== */
 let RELME = null; // "novel:slug" của bộ đang sửa
 const relName = id => { const [k, ...r] = id.split(":"), sl = r.join(":"), s = (data[KEYS[k]] || []).find(x => x.slug === sl); return s ? `${k === "manga" ? "Manga" : s.format === "Web Novel" ? "Web Novel" : "Light Novel"}: ${s.title}` : null };
@@ -266,6 +380,8 @@ $("#p-series").onsubmit = e => { e.preventDefault(); run(async () => {
   relApply(kind, s);
   const f = $("#s_cover").files[0];
   if (f) { log("Đang tải ảnh bìa..."); const p = `images/${slug}-bia.jpg`; await put(p, await resize(f), "Bìa: " + title); s.cover = p }
+  else if ($("#mt_cover").value) s.cover = $("#mt_cover").value;
+  $("#mt_cover").value = ""; $("#mt_res").innerHTML = "";
   await save("Thêm/sửa truyện: " + title);
   try { log("Đang tạo trang chia sẻ..."); await writeShare(kind, s) } catch (e) { done("✅ Đã lưu bộ truyện, nhưng chưa tạo được trang chia sẻ: " + e.message); return }
   done("✅ Đã lưu bộ truyện. Web cập nhật sau 1–2 phút.");
@@ -1246,7 +1362,7 @@ function pChips(src) {
   draw();
 }
 document.querySelectorAll(".pchip-src").forEach(pChips);
-$("#s_new").onclick = () => { $("#p-series").reset(); $("#s_rel").value = ""; relUI(); cvPrev(""); gChips(); $("#ptitle").textContent = "Bộ truyện"; $("#s_title").focus() };
+$("#s_new").onclick = () => { $("#p-series").reset(); $("#s_rel").value = ""; relUI(); $("#mt_res").innerHTML = ""; $("#mt_cover").value = ""; cvPrev(""); gChips(); $("#ptitle").textContent = "Bộ truyện"; $("#s_title").focus() };
 function goEdit(k, i, j) { $("#m_q").value = ""; manage(); $(`#manage button[data-e="${k}|${i}|${j}"]`)?.click() }
 function dash() {
   const el = $("#dash"); if (!el || !data) return;

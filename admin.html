@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" href="fonts/beaufort-medium.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="fonts/beaufort-bold.woff" as="font" type="font/woff" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&family=Noto+Serif:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/admin.css?v=20261128x">
+<link rel="stylesheet" href="css/admin.css?v=20261128y">
 </head>
 <body>
 <div id="gate"><div class="gc">
@@ -66,6 +66,10 @@
 <div class="panel" id="p-dash"><h3>Tổng quan</h3><div id="dash"></div></div>
 
 <form class="panel" id="p-series"><h3>Thông tin bộ</h3><p class="mu">Điền thông tin bộ. Lưu xong sẽ mở trang của bộ để bạn đăng chương.</p>
+<section class="mtbox" aria-labelledby="mt_h"><h4 id="mt_h">Lấy thông tin tự động</h4><p class="mu">Dán link bộ truyện trên AniList, MyAnimeList, MangaDex, Syosetu hoặc NovelUpdates, hay gõ tên truyện để tìm trên AniList. Web điền sẵn tên gốc, tên khác, tác giả, họa sĩ, thể loại, quốc gia, tóm tắt và ảnh bìa. Bạn xem lại rồi mới bấm Lưu.</p>
+<div class="mtrow"><input id="mt_q" placeholder="https://anilist.co/manga/... hoặc tên truyện" autocomplete="off"><button type="button" id="mt_go">Lấy thông tin</button></div>
+<div class="mtopt"><label class="ck"><input type="checkbox" id="mt_over"> Ghi đè cả ô đã có nội dung</label><label class="ck"><input type="checkbox" id="mt_ai" checked> Dịch tóm tắt sang tiếng Việt bằng AI (nếu đã cài dịch tự động)</label></div>
+<div id="mt_res"></div><input id="mt_cover" hidden></section>
 <div class="sf"><div><label class="cvl">Ảnh bìa</label><div class="cvbox"><img id="s_prev" alt="" hidden><span id="s_ph">Bấm để chọn ảnh bìa</span><input id="s_cover" type="file" accept="image/*" aria-label="Chọn ảnh bìa"></div><p class="mu" style="margin-top:6px">Ảnh tự được thu nhỏ khi lưu.</p></div>
 <div><div class="g2">
 <div><label for="s_kind">Loại</label><select id="s_kind"><option value="novel">Light Novel</option><option value="webnovel">Web Novel</option><option value="manga">Manga</option></select></div>
@@ -266,8 +270,8 @@
 <div id="log" class="fade"></div>
 <div id="pvw" hidden role="dialog" aria-label="Xem trước chương"><div class="pvb"><div class="pvh"><b>Xem trước</b><span id="pv_note"></span><button type="button" class="sec sm" id="pv_x">Đóng</button></div><div class="pvc" id="pv_c"></div></div></div>
 <input type="file" id="bk_in" accept=".json,application/json" hidden>
-<script src="js/admin.js?v=20261128x"></script>
-<script src="js/game.js?v=20261128x"></script>
-<script src="js/admin-game.js?v=20261128x"></script>
+<script src="js/admin.js?v=20261128y"></script>
+<script src="js/game.js?v=20261128y"></script>
+<script src="js/admin-game.js?v=20261128y"></script>
 </body>
 </html>
