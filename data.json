@@ -1923,8 +1923,41 @@
    "format": "Light Novel",
    "cover": "images/jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru-bia-mwzvpjkp.jpg",
    "rel": [
-    "manga:jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru"
+    "manga:jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru",
+    "novel:jinseigyakuten-uwakisare-enzai-wo-kiserareta-orega-gakuenichi-no-bisyoujo-ni-natsukareru"
    ]
+  },
+  {
+   "slug": "jinseigyakuten-uwakisare-enzai-wo-kiserareta-orega-gakuenichi-no-bisyoujo-ni-natsukareru",
+   "chapters": [],
+   "title": "Jinseigyakuten Uwakisare Enzai Wo Kiserareta Orega Gakuenichi No Bisyoujo Ni Natsukareru",
+   "orig": "人生逆転~浮気され、えん罪を着せられた俺が、学園一の美少女に懐かれる~",
+   "alts": [
+    "Life Reversal ~ I Was Cheated On and Falsely Accused, but Now the Most Beautiful Girl in the School Is Getting Close to Me"
+   ],
+   "artist": "",
+   "author": "D",
+   "country": "",
+   "age": "",
+   "status": "Đang dịch",
+   "genres": [
+    "Drama",
+    "Học đường",
+    "Lãng mạn",
+    "Romance",
+    "Tragedy"
+   ],
+   "desc": "Từ vực thẳm của tuyệt vọng, lấy lại tuổi trẻ của mình!\n\nEiji, bị cô bạn gái thời thơ ấu phản bội, cô ta ngoại tình và còn bịa ra tội bạo lực gia đình, rơi vào bờ vực của tuyệt vọng. Tìm nơi ẩn náu trên mái trường, anh gặp Ai, cô gái xinh đẹp nhất trường, cũng đã chán nản với cuộc sống. Hai người quyết định bỏ trốn khỏi trường và bắt đầu một khởi đầu mới.\n\nĐây là câu chuyện về sự trả thù và tình yêu, khi Eiji và Ai hỗ trợ nhau và cố gắng xây dựng lại cuộc đời từ đáy sâu nhất.",
+   "src": "",
+   "team": [],
+   "prog": "",
+   "sched": "",
+   "format": "Web Novel",
+   "rel": [
+    "novel:jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru",
+    "manga:jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru"
+   ],
+   "cover": "images/jinseigyakuten-uwakisare-enzai-wo-kiserareta-orega-gakuenichi-no-bisyoujo-ni-natsukareru-bia-mwzvs31i.jpg"
   }
  ],
  "manga": [
@@ -2555,7 +2588,8 @@
    "country": "",
    "age": "",
    "rel": [
-    "novel:jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru"
+    "novel:jinsei-gyakuten-uwaki-sare-enzai-wo-kiserareta-ore-ga-gakuen-ichi-no-bishoujo-ni-natsukareru",
+    "novel:jinseigyakuten-uwakisare-enzai-wo-kiserareta-orega-gakuenichi-no-bisyoujo-ni-natsukareru"
    ]
   },
   {
@@ -4869,5 +4903,5 @@
    }
   ]
  },
- "rev": 1795838220919
+ "rev": 1795838339448
 }
