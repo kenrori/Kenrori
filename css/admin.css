@@ -367,3 +367,5 @@ h4 .cnt{margin-left:6px;padding:1px 8px;border-radius:999px;background:var(--s1)
 .relf{flex:none;padding:2px 8px;border-radius:999px;font-style:normal;font-size:.72rem;font-weight:700;color:#fff}
 .rf-ln{background:#b000b0}.rf-wn{background:#8a6d00}.rf-mg{background:#0f7a6c}
 .relno{margin:0;padding:10px;color:var(--mu);font-size:.88rem}
+
+.mtfn{display:inline-flex;align-items:center;gap:8px;margin:0;font-size:.86rem;color:var(--mu)}.mtfn input{width:150px;margin:0;padding:4px 8px}

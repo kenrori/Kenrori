@@ -241,10 +241,11 @@ const MTG = { Action: ["Hành động"], Adventure: ["Phiêu lưu"], Comedy: ["H
 const mtHave = () => { const S = new Set(); for (const k of Object.values(KEYS)) for (const s of data[k] || []) (s.genres || []).forEach(g => S.add(g)); (data.site.genres || []).forEach(g => g && g.name && S.add(g.name)); return S };
 function mtGenres(L) { const H = mtHave(), out = []; for (const g of L) { const c = MTG[g] || MTG[Object.keys(MTG).find(k => k.toLowerCase() === String(g).toLowerCase())] || [g]; const pick = c.find(x => H.has(x)) || c[0]; if (pick && !out.includes(pick)) out.push(pick) } return out }
 const mtClean = t => String(t || "").replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, "").replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/\(Source:[^)]*\)/gi, "").replace(/\[Written by[^\]]*\]/gi, "").replace(/\r/g, "").replace(/\n{3,}/g, "\n\n").trim();
+const mtFn = () => (ls.get("metaFn") || "meta").replace(/[^a-z0-9_-]/gi, "") || "meta";
 async function mtProxy(url, bin) { // qua hàm "meta" trên Supabase, vì MangaDex và NovelUpdates không cho web khác lấy trực tiếp
   const c = (data.site && data.site.sb) || {}; if (!/^https:\/\//.test(c.url || "") || !c.key) throw Object.assign(new Error("Chưa kết nối Supabase (Cài đặt trang web)"), { setup: true });
-  let r; try { r = await fetch(c.url.replace(/\/+$/, "") + "/functions/v1/meta", { method: "POST", headers: { apikey: c.key, Authorization: "Bearer " + c.key, "Content-Type": "application/json" }, body: JSON.stringify({ url, bin: !!bin }) }) } catch (e) { throw Object.assign(new Error("Không gọi được hàm meta trên Supabase. Thường do chưa cài hàm, đặt tên khác chữ meta, hoặc chưa tắt Enforce JWT Verification"), { setup: true }) }
-  if (r.status === 404) throw Object.assign(new Error("Supabase báo chưa có hàm tên meta"), { setup: true });
+  let r; try { r = await fetch(c.url.replace(/\/+$/, "") + "/functions/v1/" + mtFn(), { method: "POST", headers: { apikey: c.key, Authorization: "Bearer " + c.key, "Content-Type": "application/json" }, body: JSON.stringify({ url, bin: !!bin }) }) } catch (e) { throw Object.assign(new Error("Không gọi được hàm meta trên Supabase. Thường do chưa cài hàm, đặt tên khác chữ meta, hoặc chưa tắt Enforce JWT Verification"), { setup: true }) }
+  if (r.status === 404) throw Object.assign(new Error(`Supabase báo chưa có hàm tên "${mtFn()}". Mở hàm trên Supabase, xem đường dẫn .../functions/v1/<tên> rồi gõ đúng tên đó vào ô "Tên hàm trên Supabase"`), { setup: true });
   if (r.status === 401 || r.status === 403) throw Object.assign(new Error("Hàm meta từ chối, hãy tắt Enforce JWT Verification cho hàm meta rồi bấm Save"), { setup: true });
   const j = await r.json().catch(() => null); if (!r.ok || !j) throw new Error((j && j.error) || "Hàm meta báo lỗi " + r.status);
   if (j.status >= 400) throw Object.assign(new Error(`Trang nguồn trả lỗi ${j.status}`), { st: j.status });
@@ -358,6 +359,7 @@ $("#mt_go").onclick = () => run(async () => {
   else { const L = await mtAniList({ q }); if (!L.length) throw new Error("Không tìm thấy trên AniList. Thử tên tiếng Anh hoặc romaji."); if (L.length > 1) { mtPick(L); return log("Chọn đúng bộ trong danh sách.") } M = mtFromAni(L[0]) }
   const did = await mtApply(M); mtDone(M, did);
 });
+$("#mt_fn").value = ls.get("metaFn") || ""; $("#mt_fn").oninput = e => { const v = e.target.value.trim().replace(/^.*\/functions\/v1\//, "").replace(/[^a-z0-9_-]/gi, ""); if (v) ls.set("metaFn", v); else ls.del("metaFn") };
 $("#mt_q").onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); $("#mt_go").click() } };
 /* ===== Liên kết các bản khác của cùng tác phẩm ===== */
 let RELME = null; // "novel:slug" của bộ đang sửa
