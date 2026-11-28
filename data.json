@@ -3010,7 +3010,7 @@
      ]
     },
     {
-     "t": "Chương 6",
+     "t": "Chương 6:",
      "date": "2026-11-28",
      "pages": [
       "manga/taida-na-akujoku-kizoku-ni-tensei-shita-ore-scenario-wo-bukkowashitara-kikakugai-no-maryoku-de-saikyou-ni-natta/c13_mwzo8lng12/001.webp",
@@ -3655,7 +3655,7 @@
      ]
     },
     {
-     "t": "Chương 27",
+     "t": "Chương 27:",
      "date": "2026-11-28",
      "pages": [
       "manga/taida-na-akujoku-kizoku-ni-tensei-shita-ore-scenario-wo-bukkowashitara-kikakugai-no-maryoku-de-saikyou-ni-natta/c6_mwzo4u4w5/001.webp",
@@ -3694,7 +3694,7 @@
      ]
     },
     {
-     "t": "Chương 28",
+     "t": "Chương 28:",
      "date": "2026-11-28",
      "pages": [
       "manga/taida-na-akujoku-kizoku-ni-tensei-shita-ore-scenario-wo-bukkowashitara-kikakugai-no-maryoku-de-saikyou-ni-natta/c7_mwzo5b5l6/001.webp",
@@ -3815,7 +3815,7 @@
      ]
     },
     {
-     "t": "Chương 1.5",
+     "t": "Chương 1.5:",
      "date": "2026-11-28",
      "pages": [
       "manga/futago-matomete-kanojo-ni-shinai/c2_mwzpix721/001.webp",
@@ -3905,7 +3905,7 @@
      ]
     },
     {
-     "t": "Chương 3.5",
+     "t": "Chương 3.5:",
      "date": "2026-11-28",
      "pages": [
       "manga/futago-matomete-kanojo-ni-shinai/c5_mwzpk4ck4/001.webp",
@@ -4238,6 +4238,38 @@
    "prog": "",
    "sched": "",
    "cover": "images/futago-matomete-kanojo-ni-shinai-bia.jpg"
+  },
+  {
+   "slug": "buddy-monetize",
+   "chapters": [],
+   "title": "Buddy Monetize",
+   "orig": "バディマネタイズ",
+   "alts": [
+    "バディマネタイズ",
+    "Buddy Monetize"
+   ],
+   "artist": "Beko Taro",
+   "author": "Kuji Masamune",
+   "country": "",
+   "age": "",
+   "status": "Đang dịch",
+   "genres": [
+    "Lãng mạn",
+    "Ecchi",
+    "Seinen",
+    "Drama"
+   ],
+   "desc": "Gaku và Midori là hai freelancer vô định ở độ tuổi hai mươi, không hề có định hướng trong cuộc sống. Nhưng họ lại có một “mặt ẩn” nhất định.  \n\nMỗi đêm, họ xuất hiện như một cặp đôi stream, làm rúng động vô số fan với những buổi livestream nóng bỏng, cố gắng kiếm tiền và vươn lên đỉnh cao.  \n\nTuy nhiên, thực ra họ không phải là một cặp đôi… Mối quan hệ của họ chỉ là một thỏa thuận kinh doanh thuần túy.",
+   "src": "https://comic-walker.com/detail/KC_020125_S/episodes/KC_0201250000200011_E?episodeType=first",
+   "team": [
+    {
+     "r": "",
+     "n": "SoloHunter"
+    }
+   ],
+   "prog": "",
+   "sched": "",
+   "cover": "images/buddy-monetize-bia.jpg"
   }
  ],
  "videos": [
@@ -4680,5 +4712,5 @@
    }
   ]
  },
- "rev": 1795828506593
+ "rev": 1795830708268
 }
